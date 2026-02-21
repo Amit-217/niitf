@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased text-gray-800 bg-gray-50 font-sans;
+  }
+}
+
+@layer components {
+  /* Premium Glassmorphism Utility */
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+  }
+  
+  /* Standard Form Input */
+  .input-field {
+    @apply w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all shadow-sm;
+  }
+  
+  /* Premium Buttons */
+  .btn-primary {
+    @apply w-full flex justify-center items-center py-3 px-4 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-70 disabled:cursor-not-allowed;
+  }
+}
