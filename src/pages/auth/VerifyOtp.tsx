@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 
 export const VerifyOtp: React.FC = () => {
     const [otp, setOtp] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading] = useState(false);
     const [isResending, setIsResending] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();

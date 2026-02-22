@@ -99,13 +99,27 @@ export const Login: React.FC = () => {
                     </div>
                 </div>
 
+                <div className="flex items-center">
+                    <input
+                        id="remember-me"
+                        type="checkbox"
+                        className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded cursor-pointer"
+                    />
+                    <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 cursor-pointer select-none">
+                        Remember me for 30 days
+                    </label>
+                </div>
+
                 <button
                     type="submit"
                     disabled={isLoading}
                     className="btn-primary"
                 >
                     {isLoading ? (
-                        <Loader2 className="animate-spin mr-2" size={20} />
+                        <div className="flex items-center">
+                            <Loader2 className="animate-spin mr-2" size={18} />
+                            Verifying...
+                        </div>
                     ) : (
                         <>
                             Sign In

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../../api/axios';
+import { StaffProfileDrawer } from '../../components/StaffProfileDrawer';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Role = 'SUPER_ADMIN' | 'ADMIN' | 'EMPLOYEE';
@@ -276,6 +277,7 @@ export const UsersPage: React.FC = () => {
     const [modal, setModal] = useState<{ type: 'create' | 'edit'; user?: UserType } | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<{ user: UserType; type: 'soft' | 'hard' } | null>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
+    const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
 
     const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
     const currentUserRole: Role = storedUser.role || 'EMPLOYEE';
@@ -491,44 +493,52 @@ export const UsersPage: React.FC = () => {
                                             <span className="flex items-center gap-1.5"><Calendar size={11} /> {formatDate(user.createdAt)}</span>
                                         </td>
                                         {/* Actions */}
-                                        <td className="px-4 py-3.5">
-                                            <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                {/* Edit */}
+                                        <td className="px-4 py-3.5 text-right">
+                                            <div className="flex items-center justify-end gap-2">
                                                 <button
-                                                    onClick={() => setModal({ type: 'edit', user })}
-                                                    className="p-1.5 rounded-lg text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors"
-                                                    title="Edit user"
+                                                    onClick={() => setSelectedStaffId(user._id)}
+                                                    className="px-2.5 py-1 bg-primary-50 text-primary-700 rounded-lg font-bold text-[10px] uppercase hover:bg-primary-600 hover:text-white transition-all border border-primary-100"
                                                 >
-                                                    <Edit2 size={15} />
+                                                    View Intelligence
                                                 </button>
-                                                {/* Deactivate / Activate */}
-                                                {user.isActive ? (
+                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    {/* Edit */}
                                                     <button
-                                                        onClick={() => setDeleteTarget({ user, type: 'soft' })}
-                                                        className="p-1.5 rounded-lg text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
-                                                        title="Deactivate user"
+                                                        onClick={() => setModal({ type: 'edit', user })}
+                                                        className="p-1.5 rounded-lg text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors"
+                                                        title="Edit user"
                                                     >
-                                                        <ShieldOff size={15} />
+                                                        <Edit2 size={15} />
                                                     </button>
-                                                ) : (
-                                                    <button
-                                                        onClick={() => handleActivate(user)}
-                                                        className="p-1.5 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
-                                                        title="Activate user"
-                                                    >
-                                                        <ShieldCheck size={15} />
-                                                    </button>
-                                                )}
-                                                {/* Hard Delete (SUPER_ADMIN only) */}
-                                                {currentUserRole === 'SUPER_ADMIN' && (
-                                                    <button
-                                                        onClick={() => setDeleteTarget({ user, type: 'hard' })}
-                                                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                                                        title="Permanently delete"
-                                                    >
-                                                        <Trash2 size={15} />
-                                                    </button>
-                                                )}
+                                                    {/* Deactivate / Activate */}
+                                                    {user.isActive ? (
+                                                        <button
+                                                            onClick={() => setDeleteTarget({ user, type: 'soft' })}
+                                                            className="p-1.5 rounded-lg text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+                                                            title="Deactivate user"
+                                                        >
+                                                            <ShieldOff size={15} />
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => handleActivate(user)}
+                                                            className="p-1.5 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+                                                            title="Activate user"
+                                                        >
+                                                            <ShieldCheck size={15} />
+                                                        </button>
+                                                    )}
+                                                    {/* Hard Delete (SUPER_ADMIN only) */}
+                                                    {currentUserRole === 'SUPER_ADMIN' && (
+                                                        <button
+                                                            onClick={() => setDeleteTarget({ user, type: 'hard' })}
+                                                            className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                                            title="Permanently delete"
+                                                        >
+                                                            <Trash2 size={15} />
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
@@ -552,6 +562,12 @@ export const UsersPage: React.FC = () => {
             </div>
 
             {/* Modals */}
+            {selectedStaffId && (
+                <StaffProfileDrawer 
+                    employeeId={selectedStaffId} 
+                    onClose={() => setSelectedStaffId(null)} 
+                />
+            )}
             {modal && (
                 <UserModal
                     mode={modal.type}

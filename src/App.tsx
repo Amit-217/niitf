@@ -12,7 +12,18 @@ import { UsersPage } from './pages/users/UsersPage';
 import { CoursesPage } from './pages/courses/CoursesPage';
 import { BatchesPage } from './pages/batches/BatchesPage';
 import { EnquiriesPage } from './pages/enquiries/EnquiriesPage';
-// Role-Based Protected Route Wrapper
+import { AttendancePage } from './pages/admin/attendance/AttendancePage';
+import { SalaryConfigPage } from './pages/admin/payroll/SalaryConfigPage';
+import { OvertimePage } from './pages/admin/payroll/OvertimePage';
+import { AdvancesPage } from './pages/admin/payroll/AdvancesPage';
+import { SalaryRecordsPage } from './pages/admin/payroll/SalaryRecordsPage';
+import { AdminTasksPage } from './pages/admin/tasks/AdminTasksPage';
+import { EmployeeTasksPage } from './pages/employee/tasks/EmployeeTasksPage';
+import { StudentsPage } from './pages/admin/students/StudentsPage';
+import { AdmissionsPage } from './pages/admin/admissions/AdmissionsPage';
+import { TestsPage } from './pages/admin/tests/TestsPage';
+import { TakeTestPage } from './pages/student/tests/TakeTestPage';
+
 interface ProtectedRouteProps {
   children: React.ReactNode;
   allowedRoles?: string[];
@@ -53,6 +64,16 @@ function App() {
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
+        {/* Student/Employee Exam Route (Full screen, no layout) */}
+        <Route
+          path="/test/:id"
+          element={
+            <ProtectedRoute allowedRoles={['EMPLOYEE', 'ADMIN', 'SUPER_ADMIN']}>
+              <TakeTestPage />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Admin Dashboard Routes */}
         <Route
           path="/admin"
@@ -65,7 +86,16 @@ function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="courses" element={<CoursesPage />} />
+          <Route path="attendance" element={<AttendancePage />} />
+          <Route path="payroll/config" element={<SalaryConfigPage />} />
+          <Route path="payroll/overtime" element={<OvertimePage />} />
+          <Route path="payroll/advances" element={<AdvancesPage />} />
+          <Route path="payroll/records" element={<SalaryRecordsPage />} />
+          <Route path="tasks" element={<AdminTasksPage />} />
           <Route path="batches" element={<BatchesPage />} />
+          <Route path="students" element={<StudentsPage />} />
+          <Route path="admissions" element={<AdmissionsPage />} />
+          <Route path="tests" element={<TestsPage />} />
           <Route path="enquiries" element={<EnquiriesPage />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
@@ -81,6 +111,7 @@ function App() {
           }
         >
           <Route path="dashboard" element={<EmployeeDashboard />} />
+          <Route path="tasks" element={<EmployeeTasksPage />} />
           <Route path="courses" element={<CoursesPage />} />
           <Route path="batches" element={<BatchesPage />} />
           <Route path="enquiries" element={<EnquiriesPage />} />

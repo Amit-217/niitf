@@ -3,15 +3,17 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
     Menu, X, Bell, User, LogOut, LayoutDashboard,
     Users, BookOpen, Clock, CircleHelp, Briefcase,
-    ChevronLeft, ChevronRight
+    ChevronLeft, ChevronRight, ListTodo, FileText, GraduationCap, Search
 } from 'lucide-react';
 
 import { toast } from 'react-toastify';
+import { Breadcrumbs } from '../components/Breadcrumbs';
 
 export const DashboardLayout: React.FC = () => {
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false); // desktop sidebar collapsed state
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
     const profileRef = useRef<HTMLDivElement>(null);
 
@@ -45,12 +47,26 @@ export const DashboardLayout: React.FC = () => {
         ...(role === 'ADMIN' || role === 'SUPER_ADMIN' ? [
             { name: 'Users', path: `/${basePath}/users`, icon: Users },
             { name: 'Courses', path: `/${basePath}/courses`, icon: BookOpen },
-        ] : []),
+            { name: 'Attendance', path: `/${basePath}/attendance`, icon: Clock },
+            { name: 'Task Master', path: `/${basePath}/tasks`, icon: ListTodo },
+            { name: 'Payroll Config', path: `/${basePath}/payroll/config`, icon: Briefcase },
+            { name: 'Overtime', path: `/${basePath}/payroll/overtime`, icon: Clock },
+            { name: 'Advances', path: `/${basePath}/payroll/advances`, icon: Briefcase },
+            { name: 'Salary Generation', path: `/${basePath}/payroll/records`, icon: LayoutDashboard },
+        ] : [
+            { name: 'My Tasks', path: `/${basePath}/tasks`, icon: ListTodo },
+        ]),
         { name: 'Batches', path: `/${basePath}/batches`, icon: Clock },
+        { name: 'Students', path: `/${basePath}/students`, icon: Users },
+        { name: 'Admissions', path: `/${basePath}/admissions`, icon: GraduationCap },
+        { name: 'CBT Tests', path: `/${basePath}/tests`, icon: FileText },
         { name: 'Enquiries', path: `/${basePath}/enquiries`, icon: CircleHelp },
         { name: 'Settings', path: `/${basePath}/settings`, icon: Briefcase },
     ];
 
+    const filteredLinks = navLinks.filter(link => 
+        link.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -140,46 +156,69 @@ export const DashboardLayout: React.FC = () => {
                         ${isCollapsed ? 'w-16' : 'w-64'}
                     `}
                 >
+                    {/* Sidebar Search - only desktop & expanded */}
+                    {!isCollapsed && (
+                        <div className="px-4 pt-4 mb-2">
+                            <div className="relative group">
+                                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                                <input 
+                                    type="text"
+                                    placeholder="Search modules..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full pl-9 pr-3 py-1.5 text-xs bg-gray-50 border border-gray-100 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     {/* Nav Links */}
-                    <div className="flex-1 overflow-y-auto py-5 px-2 space-y-0.5">
+                    <div className="flex-1 overflow-y-auto py-2 px-2 space-y-0.5 custom-scrollbar">
                         {!isCollapsed && (
-                            <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Menu</p>
+                            <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 mt-2">Main Navigation</p>
                         )}
-                        {navLinks.map((link) => {
-                            const Icon = link.icon;
-                            return (
-                                <NavLink
-                                    key={link.name}
-                                    to={link.path}
-                                    title={isCollapsed ? link.name : undefined}
-                                    className={({ isActive }) => `
-                                        flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                                        ${isCollapsed ? 'justify-center' : ''}
-                                        ${isActive
-                                            ? 'bg-primary-50 text-primary-700 shadow-sm'
-                                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}
-                                    `}
-                                    onClick={() => setIsMobileSidebarOpen(false)}
-                                >
-                                    {({ isActive }) => (
-                                        <>
-                                            <Icon size={19} className={`flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
-                                            {!isCollapsed && <span className="truncate">{link.name}</span>}
-                                        </>
-                                    )}
-                                </NavLink>
-                            );
-                        })}
+                        {filteredLinks.length > 0 ? (
+                            filteredLinks.map((link) => {
+                                const Icon = link.icon;
+                                return (
+                                    <NavLink
+                                        key={link.name}
+                                        to={link.path}
+                                        title={isCollapsed ? link.name : undefined}
+                                        className={({ isActive }) => `
+                                            flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group
+                                            ${isCollapsed ? 'justify-center' : ''}
+                                            ${isActive
+                                                ? 'bg-primary-50 text-primary-700 shadow-sm'
+                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
+                                        `}
+                                        onClick={() => setIsMobileSidebarOpen(false)}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <div className={`p-1 rounded-lg transition-colors ${isActive ? 'bg-white shadow-sm' : 'group-hover:bg-white'}`}>
+                                                    <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
+                                                </div>
+                                                {!isCollapsed && <span className="truncate flex-1">{link.name}</span>}
+                                                {isActive && !isCollapsed && <div className="w-1 h-4 bg-primary-600 rounded-full" />}
+                                            </>
+                                        )}
+                                    </NavLink>
+                                );
+                            })
+                        ) : (
+                            !isCollapsed && <p className="text-center py-10 text-xs text-gray-400 italic">No modules found</p>
+                        )}
                     </div>
 
                     {/* Simple Branding Footer */}
                     <div className="p-4 border-t border-gray-50 flex flex-col items-center justify-center">
                         {!isCollapsed ? (
                             <div className="text-center group cursor-default">
-                                <p className="text-[10px] font-medium text-gray-400 tracking-wider">
+                                <p className="text-[10px] font-medium text-gray-400 tracking-wider uppercase">
                                     Powered by
                                 </p>
-                                <p className="text-xs font-bold text-gray-500 mt-0.5 group-hover:text-primary-600 transition-colors">
+                                <p className="text-xs font-black text-gray-600 mt-0.5 group-hover:text-primary-600 transition-colors">
                                     Viplora Tech
                                 </p>
                             </div>
@@ -201,7 +240,8 @@ export const DashboardLayout: React.FC = () => {
 
                 {/* ── Main Content ───────────────────────────────────────────── */}
                 <main className="flex-1 overflow-y-auto bg-gray-50/50 min-w-0">
-                    <div className="container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl animate-in fade-in zoom-in duration-300">
+                    <div className="container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl animate-in fade-in slide-in-from-bottom-2 duration-500">
+                        <Breadcrumbs />
                         <Outlet />
                     </div>
                 </main>

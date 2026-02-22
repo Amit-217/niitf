@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     BookOpen, Plus, Search, Pencil, Trash2, X, Save,
     Loader2, CheckCircle2, XCircle, ChevronDown, IndianRupee,
-    Clock, BarChart3, Filter, MoreVertical, RefreshCw
+    Clock, BarChart3, Filter, MoreVertical, RefreshCw, LayoutGrid, List, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../../api/axios';
@@ -16,6 +16,13 @@ interface Course {
     fees: number;
     isActive: boolean;
     createdAt: string;
+}
+
+interface Pagination {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
 }
 
 const LEVELS = ['Basic', 'Intermediate', 'Advanced', 'Expert'];
@@ -78,51 +85,40 @@ const CourseModal: React.FC<ModalProps> = ({ course, onClose, onSaved }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={onClose} />
             <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md animate-in zoom-in-95 fade-in duration-200">
-                {/* Header */}
                 <div className={`rounded-t-2xl p-6 bg-gradient-to-r ${course ? 'from-violet-500 to-purple-600' : 'from-sky-500 to-blue-600'}`}>
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
-                                <BookOpen size={18} className="text-white" />
+                            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-white">
+                                <BookOpen size={18} />
                             </div>
-                            <h2 className="text-lg font-bold text-white">
-                                {course ? 'Edit Course' : 'New Course'}
-                            </h2>
+                            <h2 className="text-lg font-bold text-white">{course ? 'Edit Course' : 'New Course'}</h2>
                         </div>
-                        <button onClick={onClose} className="text-white/70 hover:text-white transition-colors">
-                            <X size={20} />
-                        </button>
+                        <button onClick={onClose} className="text-white/70 hover:text-white transition-colors"><X size={20} /></button>
                     </div>
                 </div>
-
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    {/* Course Name */}
                     <div>
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Course Name *</label>
                         <input value={courseName} onChange={e => setCourseName(e.target.value)} required placeholder="e.g. NDT Level II"
-                            className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/25 focus:border-violet-400 hover:border-gray-300 transition-all" />
+                            className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/25 transition-all" />
                     </div>
-
-                    {/* Level */}
                     <div>
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Level</label>
                         <div className="relative">
                             <select value={level} onChange={e => setLevel(e.target.value)}
-                                className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/25 focus:border-violet-400 appearance-none cursor-pointer transition-all">
+                                className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none appearance-none cursor-pointer">
                                 <option value="">Select level...</option>
                                 {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
                             </select>
                             <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                         </div>
                     </div>
-
-                    {/* Duration + Fees */}
                     <div className="grid grid-cols-2 gap-3">
                         <div>
                             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Duration</label>
                             <div className="relative">
                                 <input value={duration} onChange={e => setDuration(e.target.value)} placeholder="e.g. 3 months"
-                                    className="w-full px-4 py-3 pl-9 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/25 focus:border-violet-400 transition-all" />
+                                    className="w-full px-4 py-3 pl-9 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none transition-all" />
                                 <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                             </div>
                         </div>
@@ -130,21 +126,16 @@ const CourseModal: React.FC<ModalProps> = ({ course, onClose, onSaved }) => {
                             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Fees (₹)</label>
                             <div className="relative">
                                 <input type="number" value={fees} onChange={e => setFees(e.target.value)} placeholder="0" min="0"
-                                    className="w-full px-4 py-3 pl-9 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/25 focus:border-violet-400 transition-all" />
+                                    className="w-full px-4 py-3 pl-9 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none transition-all" />
                                 <IndianRupee size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                             </div>
                         </div>
                     </div>
-
-                    {/* Actions */}
                     <div className="flex gap-3 pt-2">
-                        <button type="button" onClick={onClose} className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">
-                            Cancel
-                        </button>
+                        <button type="button" onClick={onClose} className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">Cancel</button>
                         <button type="submit" disabled={loading}
                             className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold rounded-xl hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 disabled:opacity-60">
-                            {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                            {course ? 'Update' : 'Create'}
+                            {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} {course ? 'Update' : 'Create'}
                         </button>
                     </div>
                 </form>
@@ -177,15 +168,12 @@ const CourseCard: React.FC<CardProps> = ({ course, onEdit, onDelete, onToggleAct
 
     return (
         <div className={`bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group ${!course.isActive ? 'opacity-60' : ''}`}>
-            {/* Top accent bar */}
             <div className={`h-1.5 bg-gradient-to-r ${gradient}`} />
-
             <div className="p-5">
-                {/* Header row */}
                 <div className="flex items-start justify-between gap-2 mb-3">
                     <div className="flex items-center gap-3 min-w-0">
-                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-sm flex-shrink-0`}>
-                            <BookOpen size={18} className="text-white" />
+                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-sm flex-shrink-0 text-white`}>
+                            <BookOpen size={18} />
                         </div>
                         <div className="min-w-0">
                             <h3 className="text-sm font-bold text-gray-900 truncate leading-tight">{course.courseName}</h3>
@@ -193,65 +181,39 @@ const CourseCard: React.FC<CardProps> = ({ course, onEdit, onDelete, onToggleAct
                         </div>
                     </div>
                     <div className="flex items-center gap-1.5 flex-shrink-0">
-                        {/* Active badge */}
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${course.isActive
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                            : 'bg-gray-100 text-gray-500 border-gray-200'}`}>
-                            {course.isActive ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
-                            {course.isActive ? 'Active' : 'Inactive'}
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${course.isActive ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-100 text-gray-500 border-gray-200'}`}>
+                            {course.isActive ? <CheckCircle2 size={10} /> : <XCircle size={10} />} {course.isActive ? 'Active' : 'Inactive'}
                         </span>
-                        {/* Menu */}
                         <div className="relative" ref={menuRef}>
-                            <button onClick={() => setMenuOpen(!menuOpen)}
-                                className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                                <MoreVertical size={15} />
-                            </button>
+                            <button onClick={() => setMenuOpen(!menuOpen)} className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"><MoreVertical size={15} /></button>
                             {menuOpen && (
                                 <div className="absolute right-0 top-8 w-40 bg-white border border-gray-100 rounded-xl shadow-xl py-1 z-20 animate-in fade-in zoom-in-95 duration-100">
-                                    <button onClick={() => { onEdit(course); setMenuOpen(false); }}
-                                        className="w-full text-left px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                        <Pencil size={13} /> Edit
-                                    </button>
-                                    <button onClick={() => { onToggleActive(course); setMenuOpen(false); }}
-                                        className="w-full text-left px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                        {course.isActive ? <XCircle size={13} /> : <CheckCircle2 size={13} />}
-                                        {course.isActive ? 'Deactivate' : 'Activate'}
-                                    </button>
+                                    <button onClick={() => { onEdit(course); setMenuOpen(false); }} className="w-full text-left px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"><Pencil size={13} /> Edit</button>
+                                    <button onClick={() => { onToggleActive(course); setMenuOpen(false); }} className="w-full text-left px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">{course.isActive ? <XCircle size={13} /> : <CheckCircle2 size={13} />} {course.isActive ? 'Deactivate' : 'Activate'}</button>
                                     <div className="border-t border-gray-100 my-1" />
-                                    <button onClick={() => { onDelete(course); setMenuOpen(false); }}
-                                        className="w-full text-left px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 flex items-center gap-2">
-                                        <Trash2 size={13} /> Delete
-                                    </button>
+                                    <button onClick={() => { onDelete(course); setMenuOpen(false); }} className="w-full text-left px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 flex items-center gap-2"><Trash2 size={13} /> Delete</button>
                                 </div>
                             )}
                         </div>
                     </div>
                 </div>
-
-                {/* Level badge */}
                 {course.level && (
                     <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border mb-3 ${levelColor}`}>
                         <BarChart3 size={10} /> {course.level}
                     </span>
                 )}
-
-                {/* Stats row */}
                 <div className="grid grid-cols-2 gap-2 mt-3">
                     <div className="bg-gray-50 rounded-xl p-2.5">
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                            <Clock size={11} className="text-gray-400" />
-                            <span className="text-xs text-gray-400 font-medium">Duration</span>
+                        <div className="flex items-center gap-1.5 mb-0.5 text-gray-400">
+                            <Clock size={11} /> <span className="text-xs font-medium">Duration</span>
                         </div>
                         <p className="text-sm font-bold text-gray-800 truncate">{course.duration || '—'}</p>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-2.5">
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                            <IndianRupee size={11} className="text-gray-400" />
-                            <span className="text-xs text-gray-400 font-medium">Fees</span>
+                        <div className="flex items-center gap-1.5 mb-0.5 text-gray-400">
+                            <IndianRupee size={11} /> <span className="text-xs font-medium">Fees</span>
                         </div>
-                        <p className="text-sm font-bold text-gray-800">
-                            {course.fees > 0 ? `₹${course.fees.toLocaleString('en-IN')}` : 'Free'}
-                        </p>
+                        <p className="text-sm font-bold text-gray-800">{course.fees > 0 ? `₹${course.fees.toLocaleString('en-IN')}` : 'Free'}</p>
                     </div>
                 </div>
             </div>
@@ -263,9 +225,12 @@ const CourseCard: React.FC<CardProps> = ({ course, onEdit, onDelete, onToggleAct
 export const CoursesPage: React.FC = () => {
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
+    const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
     const [search, setSearch] = useState('');
     const [levelFilter, setLevelFilter] = useState('All');
     const [statusFilter, setStatusFilter] = useState('All');
+    const [page, setPage] = useState(1);
+    const [pagination, setPagination] = useState<Pagination | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [editCourse, setEditCourse] = useState<Course | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<Course | null>(null);
@@ -274,8 +239,10 @@ export const CoursesPage: React.FC = () => {
     const fetchCourses = async () => {
         setLoading(true);
         try {
-            const res: any = await api.get('/courses');
+            const params = new URLSearchParams({ page: String(page), limit: '9', search, level: levelFilter, status: statusFilter });
+            const res: any = await api.get(`/courses?${params.toString()}`);
             setCourses(res.data || []);
+            setPagination(res.pagination);
         } catch {
             toast.error('Failed to load courses.');
         } finally {
@@ -283,7 +250,10 @@ export const CoursesPage: React.FC = () => {
         }
     };
 
-    useEffect(() => { fetchCourses(); }, []);
+    useEffect(() => { 
+        const delayDebounce = setTimeout(() => fetchCourses(), search ? 500 : 0);
+        return () => clearTimeout(delayDebounce);
+    }, [page, search, levelFilter, statusFilter]);
 
     const handleToggleActive = async (course: Course) => {
         try {
@@ -310,147 +280,102 @@ export const CoursesPage: React.FC = () => {
         }
     };
 
-    // Filtered list
-    const filtered = courses.filter(c => {
-        const matchSearch = c.courseName.toLowerCase().includes(search.toLowerCase()) || c.courseId.toLowerCase().includes(search.toLowerCase());
-        const matchLevel = levelFilter === 'All' || c.level === levelFilter;
-        const matchStatus = statusFilter === 'All' || (statusFilter === 'Active' ? c.isActive : !c.isActive);
-        return matchSearch && matchLevel && matchStatus;
-    });
-
-    const stats = {
-        total: courses.length,
-        active: courses.filter(c => c.isActive).length,
-        free: courses.filter(c => c.fees === 0).length,
-    };
-
     return (
         <div className="space-y-6">
-            {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-                            <BookOpen size={18} className="text-white" />
+                        <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white">
+                            <BookOpen size={18} />
                         </span>
                         Courses
                     </h1>
                     <p className="text-sm text-gray-500 mt-0.5">Manage NDT training courses</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button onClick={fetchCourses} className="p-2.5 border border-gray-200 rounded-xl text-gray-500 hover:text-gray-800 hover:bg-gray-50 transition-colors">
-                        <RefreshCw size={16} />
-                    </button>
-                    <button onClick={() => { setEditCourse(null); setShowModal(true); }}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold rounded-xl hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200">
-                        <Plus size={16} /> New Course
-                    </button>
+                    <div className="flex bg-gray-100 p-1 rounded-xl mr-2">
+                        <button onClick={() => setViewMode('grid')} className={`p-1.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white shadow-sm text-primary-600' : 'text-gray-400'}`}><LayoutGrid size={18} /></button>
+                        <button onClick={() => setViewMode('table')} className={`p-1.5 rounded-lg transition-all ${viewMode === 'table' ? 'bg-white shadow-sm text-primary-600' : 'text-gray-400'}`}><List size={18} /></button>
+                    </div>
+                    <button onClick={fetchCourses} className="p-2.5 border border-gray-200 rounded-xl text-gray-500 hover:text-gray-800 hover:bg-gray-50 transition-colors"><RefreshCw size={16} /></button>
+                    <button onClick={() => { setEditCourse(null); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold rounded-xl hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg"><Plus size={16} /> New Course</button>
                 </div>
             </div>
 
-            {/* Stats strip */}
-            <div className="grid grid-cols-3 gap-3">
-                {[
-                    { label: 'Total', value: stats.total, color: 'text-violet-600', bg: 'bg-violet-50' },
-                    { label: 'Active', value: stats.active, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                    { label: 'Free', value: stats.free, color: 'text-sky-600', bg: 'bg-sky-50' },
-                ].map(s => (
-                    <div key={s.label} className={`${s.bg} rounded-2xl p-4 border border-white`}>
-                        <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
-                        <p className="text-xs text-gray-500 font-medium mt-0.5">{s.label}</p>
-                    </div>
-                ))}
-            </div>
-
-            {/* Search + Filters */}
-            <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="relative">
                     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name or ID..."
-                        className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/25 focus:border-violet-400 transition-all" />
+                    <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search by name or ID..." className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 focus:outline-none transition-all" />
                 </div>
-                <div className="flex gap-2">
-                    <div className="relative flex-1">
-                        <select value={levelFilter} onChange={e => setLevelFilter(e.target.value)}
-                            className="w-full pl-8 pr-8 py-2.5 text-sm rounded-xl border border-gray-200 bg-white appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-500/25">
-                            <option value="All">All Levels</option>
-                            {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
-                        </select>
-                        <Filter size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                        <ChevronDown size={13} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                    </div>
-                    <div className="relative flex-1">
-                        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-                            className="w-full pl-3 pr-8 py-2.5 text-sm rounded-xl border border-gray-200 bg-white appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-500/25">
-                            <option value="All">All Status</option>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
-                        <ChevronDown size={13} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                    </div>
-                </div>
+                <select value={levelFilter} onChange={e => { setLevelFilter(e.target.value); setPage(1); }} className="px-4 py-2.5 text-sm rounded-xl border border-gray-200 focus:outline-none appearance-none">
+                    <option value="All">All Levels</option>
+                    {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
+                </select>
+                <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }} className="px-4 py-2.5 text-sm rounded-xl border border-gray-200 focus:outline-none appearance-none">
+                    <option value="All">All Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
             </div>
 
-            {/* Course Grid */}
-            {loading ? (
-                <div className="flex items-center justify-center py-20">
-                    <div className="flex flex-col items-center gap-3">
-                        <Loader2 size={32} className="animate-spin text-violet-500" />
-                        <p className="text-sm text-gray-400">Loading courses...</p>
+            {loading ? <div className="py-20 text-center"><Loader2 size={32} className="animate-spin text-violet-500 inline" /></div> :
+                courses.length === 0 ? <div className="py-20 text-center text-gray-500">No courses found</div> :
+                viewMode === 'grid' ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {courses.map(c => <CourseCard key={c._id} course={c} onEdit={setEditCourse} onDelete={setDeleteTarget} onToggleActive={handleToggleActive} />)}
                     </div>
-                </div>
-            ) : filtered.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                    <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
-                        <BookOpen size={28} className="text-gray-300" />
+                ) : (
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden overflow-x-auto">
+                        <table className="w-full text-sm text-left">
+                            <thead className="bg-gray-50/50 border-b border-gray-100">
+                                <tr>
+                                    <th className="px-6 py-4 font-bold text-gray-400 uppercase">Course Info</th>
+                                    <th className="px-6 py-4 font-bold text-gray-400 uppercase">Level</th>
+                                    <th className="px-6 py-4 font-bold text-gray-400 uppercase">Duration</th>
+                                    <th className="px-6 py-4 font-bold text-gray-400 uppercase">Fees</th>
+                                    <th className="px-6 py-4 font-bold text-gray-400 uppercase">Status</th>
+                                    <th className="px-6 py-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {courses.map(c => (
+                                    <tr key={c._id} className="hover:bg-gray-50/50 transition-colors">
+                                        <td className="px-6 py-4"><strong>{c.courseName}</strong><br/><span className="text-xs text-gray-400">{c.courseId}</span></td>
+                                        <td className="px-6 py-4">{c.level && <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase ${levelColors[c.level]}`}>{c.level}</span>}</td>
+                                        <td className="px-6 py-4">{c.duration || '—'}</td>
+                                        <td className="px-6 py-4 font-bold">₹{c.fees.toLocaleString()}</td>
+                                        <td className="px-6 py-4"><span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${c.isActive ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-100 text-gray-500 border-gray-200'}`}>{c.isActive ? 'Active' : 'Inactive'}</span></td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button onClick={() => { setEditCourse(c); setShowModal(true); }} className="p-1.5 text-gray-400 hover:text-primary-600"><Pencil size={15} /></button>
+                                            <button onClick={() => setDeleteTarget(c)} className="p-1.5 text-gray-400 hover:text-red-600"><Trash2 size={15} /></button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
-                    <p className="text-gray-500 font-semibold">No courses found</p>
-                    <p className="text-gray-400 text-sm mt-1">Try adjusting your search or filters</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filtered.map(course => (
-                        <CourseCard
-                            key={course._id}
-                            course={course}
-                            onEdit={c => { setEditCourse(c); setShowModal(true); }}
-                            onDelete={setDeleteTarget}
-                            onToggleActive={handleToggleActive}
-                        />
-                    ))}
+                )}
+
+            {pagination && pagination.totalPages > 1 && (
+                <div className="flex items-center justify-between bg-white px-4 py-3 rounded-2xl border border-gray-100 shadow-sm">
+                    <p className="text-sm text-gray-700">Page <strong>{page}</strong> of <strong>{pagination.totalPages}</strong></p>
+                    <div className="flex gap-1">
+                        <button disabled={page === 1} onClick={() => setPage(p => p - 1)} className="p-2 border rounded-lg disabled:opacity-50"><ChevronLeft size={16} /></button>
+                        <button disabled={page === pagination.totalPages} onClick={() => setPage(p => p + 1)} className="p-2 border rounded-lg disabled:opacity-50"><ChevronRight size={16} /></button>
+                    </div>
                 </div>
             )}
 
-            {/* Create/Edit Modal */}
-            {showModal && (
-                <CourseModal
-                    course={editCourse}
-                    onClose={() => { setShowModal(false); setEditCourse(null); }}
-                    onSaved={fetchCourses}
-                />
-            )}
-
-            {/* Delete Confirm Modal */}
+            {showModal && <CourseModal course={editCourse} onClose={() => { setShowModal(false); setEditCourse(null); }} onSaved={fetchCourses} />}
             {deleteTarget && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={() => setDeleteTarget(null)} />
-                    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 animate-in zoom-in-95 fade-in duration-200">
-                        <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <Trash2 size={22} className="text-red-600" />
-                        </div>
-                        <h3 className="text-base font-bold text-gray-900 text-center mb-1">Delete Course?</h3>
-                        <p className="text-sm text-gray-500 text-center mb-6">
-                            <span className="font-semibold text-gray-800">"{deleteTarget.courseName}"</span> will be deactivated and hidden.
-                        </p>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center">
+                        <Trash2 size={40} className="mx-auto text-red-600 mb-4" />
+                        <h3 className="text-lg font-bold mb-2">Delete Course?</h3>
+                        <p className="text-sm text-gray-500 mb-6">"{deleteTarget.courseName}" will be removed.</p>
                         <div className="flex gap-3">
-                            <button onClick={() => setDeleteTarget(null)} className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">
-                                Cancel
-                            </button>
-                            <button onClick={handleDelete} disabled={deleting}
-                                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-xl hover:bg-red-700 transition-colors disabled:opacity-60">
-                                {deleting ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
-                                Delete
-                            </button>
+                            <button onClick={() => setDeleteTarget(null)} className="flex-1 py-2.5 border rounded-xl">Cancel</button>
+                            <button onClick={handleDelete} disabled={deleting} className="flex-1 py-2.5 bg-red-600 text-white rounded-xl disabled:opacity-50">Delete</button>
                         </div>
                     </div>
                 </div>
