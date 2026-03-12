@@ -41,7 +41,7 @@ export interface Admission {
     _id: string;
     admissionId: string;
     studentId: Student;
-    courseId: { _id: string; title: string; duration: string };
+    courseId: { _id: string; title?: string; courseName?: string; duration: string };
     batchId: { _id: string; batchName: string; timing: string };
     totalFees: number;
     discount: number;

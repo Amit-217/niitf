@@ -46,6 +46,9 @@ const SOURCE_CONFIG: Record<string, string> = {
 const SOURCES = ['Walk-in', 'Call', 'Website', 'Reference'] as const;
 const STATUSES = ['New', 'Follow-up', 'Converted', 'Not Interested'] as const;
 
+const inputClass = "w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all";
+const labelClass = "block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide";
+
 // ── Components ─────────────────────────────────────────────────────────────
 const StatusTimeline: React.FC<{ status: string }> = ({ status }) => {
     const stages = ['New', 'Follow-up', 'Converted'];
@@ -108,43 +111,133 @@ const EnquiryModal: React.FC<ModalProps> = ({ enquiry, courses, onClose, onSaved
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
-                <div className={`p-5 text-white flex justify-between rounded-t-2xl ${enquiry ? 'bg-amber-500' : 'bg-indigo-600'}`}>
-                    <h2 className="font-bold">{enquiry ? 'Edit Enquiry' : 'New Enquiry'}</h2>
-                    <button onClick={onClose}><X size={20} /></button>
-                </div>
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
-                        <input value={name} onChange={e => setName(e.target.value)} required placeholder="Full Name" className="p-2.5 border rounded-xl w-full" />
-                        <input value={mobile} onChange={e => setMobile(e.target.value)} required placeholder="Mobile" maxLength={10} className="p-2.5 border rounded-xl w-full" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                        <input type="date" value={nextFollowUpDate} onChange={e => setNextFollowUpDate(e.target.value)} className="p-2.5 border rounded-xl w-full text-xs" />
-                        <select value={source} onChange={e => setSource(e.target.value as any)} className="p-2.5 border rounded-xl w-full text-xs">
-                            {SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
-                        </select>
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase mb-2">Remarks History</p>
-                        <div className="bg-gray-50 p-3 rounded-xl border mb-2 max-h-24 overflow-y-auto">
-                            {enquiry?.remarks?.length ? [...enquiry.remarks].reverse().map((r, i) => (
-                                <div key={i} className="text-[10px] mb-2 border-b pb-1 last:border-0">
-                                    <p className="text-gray-700">{r.note}</p>
-                                    <p className="text-gray-400">{new Date(r.date).toLocaleDateString()}</p>
-                                </div>
-                            )) : <p className="text-gray-400 text-center text-xs">No remarks</p>}
+            <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+                <div className={`bg-gradient-to-r ${enquiry ? 'from-amber-500 to-orange-600' : 'from-indigo-600 to-violet-700'} px-6 py-5`}>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-lg font-bold text-white">{enquiry ? 'Edit Enquiry' : 'New Lead Enquiry'}</h2>
+                            <p className="text-white/70 text-sm mt-0.5">{enquiry ? 'Update lead details & status.' : 'Capture details for the new enquiry.'}</p>
                         </div>
-                        <textarea value={newRemark} onChange={e => setNewRemark(e.target.value)} placeholder="Add note..." className="w-full p-3 border rounded-xl text-sm h-20" />
+                        <button onClick={onClose} className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors">
+                            <X size={20} />
+                        </button>
                     </div>
-                    <div className="flex gap-2">
-                        {STATUSES.map(s => (
-                            <button key={s} type="button" onClick={() => setStatus(s)} className={`flex-1 py-2 text-[10px] font-bold border rounded-xl ${status === s ? 'bg-indigo-600 text-white' : 'bg-white text-gray-400'}`}>{s}</button>
-                        ))}
+                </div>
+
+                <form onSubmit={handleSubmit} className="flex flex-col h-[75vh]">
+                    <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                        {/* Section: Basic Info */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                                <div className="p-1.5 bg-indigo-100 text-indigo-600 rounded-lg">
+                                    <User size={16} />
+                                </div>
+                                <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Prospect Details</h3>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className={labelClass}>Full Name *</label>
+                                    <input value={name} onChange={e => setName(e.target.value)} required placeholder="Applicant Name" className={inputClass} />
+                                </div>
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className={labelClass}>Mobile Number *</label>
+                                    <input value={mobile} onChange={e => setMobile(e.target.value)} required placeholder="10 Digit Number" maxLength={10} className={inputClass} />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className={labelClass}>Email Address</label>
+                                    <input type="email" value={email || ''} onChange={e => setEmail(e.target.value)} placeholder="example@mail.com" className={inputClass} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Section: interest */}
+                        <div className="space-y-4 pt-2">
+                            <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                                <div className="p-1.5 bg-sky-100 text-sky-600 rounded-lg">
+                                    <BookOpen size={16} />
+                                </div>
+                                <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Enquiry Context</h3>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                {!enquiry && (
+                                    <div className="col-span-2">
+                                        <label className={labelClass}>Course of Interest *</label>
+                                        <select value={courseId} onChange={e => setCourseId(e.target.value)} required className={inputClass}>
+                                            <option value="">-- Select Course --</option>
+                                            {courses.map(c => <option key={c._id} value={c._id}>{c.courseName}</option>)}
+                                        </select>
+                                    </div>
+                                )}
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className={labelClass}>Source</label>
+                                    <select value={source} onChange={e => setSource(e.target.value as any)} className={inputClass}>
+                                        {SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
+                                    </select>
+                                </div>
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className={labelClass}>Next Followup</label>
+                                    <div className="relative">
+                                        <input type="date" value={nextFollowUpDate} onChange={e => setNextFollowUpDate(e.target.value)} className={`${inputClass} pl-10`} />
+                                        <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Section: Status & Remarks */}
+                        <div className="space-y-4 pt-2">
+                            <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                                <div className="p-1.5 bg-amber-100 text-amber-600 rounded-lg">
+                                    <MessageSquare size={16} />
+                                </div>
+                                <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Status & Remarks</h3>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={labelClass}>Current Status</label>
+                                    <div className="flex gap-1.5 p-1 bg-gray-100 rounded-xl">
+                                        {STATUSES.map(s => (
+                                            <button key={s} type="button" onClick={() => setStatus(s)} className={`flex-1 py-1.5 text-[10px] font-black rounded-lg transition-all ${status === s ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}>{s.split(' ')[0]}</button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className={labelClass}>Notes History</label>
+                                        <span className="text-[10px] font-bold text-gray-400">{enquiry?.remarks?.length || 0} entries</span>
+                                    </div>
+                                    <div className="bg-gray-50/50 rounded-2xl border border-gray-100 overflow-hidden divide-y divide-gray-100">
+                                        {enquiry?.remarks?.length ? [...enquiry.remarks].reverse().map((r, i) => (
+                                            <div key={i} className="p-3 text-[11px]">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <span className="font-bold text-gray-900 flex items-center gap-1"><Clock size={10} /> {new Date(r.date).toLocaleDateString()}</span>
+                                                    <span className="text-gray-400 italic">Admin</span>
+                                                </div>
+                                                <p className="text-gray-600 leading-relaxed font-medium">{r.note}</p>
+                                            </div>
+                                        )) : <div className="p-8 text-center text-gray-400 italic text-xs">No previous notes recorded.</div>}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className={labelClass}>Add New Remark</label>
+                                    <textarea value={newRemark} onChange={e => setNewRemark(e.target.value)} placeholder="Type followup notes here..." className={`${inputClass} h-24 resize-none`} />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <button type="submit" disabled={loading} className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg">
-                        {loading ? <Loader2 className="animate-spin inline" size={16} /> : <Save size={16} className="inline mr-2" />} Save
-                    </button>
+
+                    <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
+                        <button type="button" onClick={onClose} className="flex-1 py-3 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all">Discard</button>
+                        <button type="submit" disabled={loading} className={`flex-[2] py-3 px-4 ${enquiry ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200'} text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-70 group`}>
+                            {loading ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} className="group-hover:scale-110 transition-transform" /> {enquiry ? 'Update Enquiry' : 'Create Enquiry'}</>}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -166,7 +259,7 @@ const EnquiryCard: React.FC<{ enquiry: Enquiry; onEdit: (e: Enquiry) => void; on
             <StatusTimeline status={enquiry.status} />
             <div className="flex items-center justify-between mt-4 border-t pt-3">
                 <div className="text-[10px] font-bold text-gray-500 uppercase">Followup: <span className={isDue ? 'text-amber-600' : 'text-gray-900'}>{enquiry.nextFollowUpDate ? new Date(enquiry.nextFollowUpDate).toLocaleDateString() : 'N/A'}</span></div>
-                {enquiry.status !== 'Converted' && <button onClick={() => onConvert(enquiry)} className="px-3 py-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-lg uppercase flex items-center gap-1">Convert <ArrowRight size={12}/></button>}
+                {enquiry.status !== 'Converted' && <button onClick={() => onConvert(enquiry)} className="px-3 py-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-lg uppercase flex items-center gap-1">Convert <ArrowRight size={12} /></button>}
             </div>
         </div>
     );
@@ -226,9 +319,9 @@ export const EnquiriesPage: React.FC = () => {
             </div>
             {loading ? <div className="py-20 text-center"><Loader2 className="animate-spin inline" size={32} /></div> :
                 enquiries.length === 0 ? <div className="py-20 text-center text-gray-500">No leads found</div> :
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {enquiries.map(e => <EnquiryCard key={e._id} enquiry={e} onEdit={enq => { setEditEnquiry(enq); setShowModal(true); }} onDelete={setDeleteTarget} onConvert={handleConvert} />)}
-                </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {enquiries.map(e => <EnquiryCard key={e._id} enquiry={e} onEdit={enq => { setEditEnquiry(enq); setShowModal(true); }} onDelete={setDeleteTarget} onConvert={handleConvert} />)}
+                    </div>
             }
             {showModal && <EnquiryModal enquiry={editEnquiry} courses={courses} onClose={() => { setShowModal(false); setEditEnquiry(null); }} onSaved={fetchData} />}
             {deleteTarget && (

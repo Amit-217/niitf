@@ -1,10 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
-import { Users, Plus, Search, Pencil, Trash2, X } from 'lucide-react';
+import { Users, Plus, Search, Pencil, Trash2, X, User, MapPin, Building2, Link2, Save, Loader2 } from 'lucide-react';
 import { getStudents, createStudent, updateStudent, deleteStudent, Student, StudentPayload } from '../../../api/admissionApi';
 import { getEnquiries } from '../../../api/enquiryApi';
 
 const INITIAL_FORM: StudentPayload = { fullName: '', mobile: '', email: '', city: '', qualification: '', sponsorType: 'Individual', companyName: '', enquiryId: '' };
+
+const inputClass = "w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition-all";
+const labelClass = "block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide";
 
 export const StudentsPage = () => {
     const [students, setStudents] = useState<Student[]>([]);
@@ -21,10 +24,36 @@ export const StudentsPage = () => {
     const fetchStudents = useCallback(async () => {
         setIsLoading(true);
         try {
-            const res = await getStudents({ page, search });
-            setStudents(res.data.data.students);
-            setTotal(res.data.data.pagination.total);
-        } catch { toast.error('Failed to load students'); }
+            const res: any = await getStudents({ page, search });
+            // By default res is the unwrapped JSON body (via Axios interceptor).
+            // Example successful body: { success: true, message: "...", data: { students: [...], pagination: {...} } }
+
+            let items = [];
+            let count = 0;
+
+            if (Array.isArray(res)) {
+                items = res;
+                count = items.length;
+            } else if (res?.data?.students) {
+                // Shape: res.data = { students: [...], pagination: ... }
+                items = res.data.students;
+                count = res.data.pagination?.total || items.length;
+            } else if (res?.data && Array.isArray(res.data)) {
+                // Shape: res = { success: true, data: [...] }
+                items = res.data;
+                count = items.length;
+            } else if (res?.students) {
+                // Shape: res = { students: [...] }
+                items = res.students;
+                count = res.pagination?.total || items.length;
+            }
+
+            setStudents(items);
+            setTotal(count);
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to load students');
+        }
         finally { setIsLoading(false); }
     }, [page, search]);
 
@@ -67,8 +96,8 @@ export const StudentsPage = () => {
                     <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2"><Users className="text-primary-600" /> Students</h1>
                     <p className="text-sm text-gray-500 mt-1">Manage all enrolled students — {total} total</p>
                 </div>
-                <button onClick={openCreate} className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl font-medium shadow-md transition-all">
-                    <Plus size={18} /> Add Student
+                <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300">
+                    <Plus size={17} /> Add Student
                 </button>
             </div>
 
@@ -113,53 +142,120 @@ export const StudentsPage = () => {
                 </div>
             </div>
 
-            {/* Drawer */}
+            {/* Modal */}
             {isDrawerOpen && (
-                <div className="fixed inset-0 z-50 flex justify-end">
-                    <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
-                    <div className="relative w-full max-w-lg bg-white shadow-2xl flex flex-col h-full animate-in slide-in-from-right duration-300">
-                        <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
-                            <h2 className="text-xl font-bold text-gray-900">{editTarget ? 'Edit Student' : 'Add New Student'}</h2>
-                            <button onClick={() => setDrawerOpen(false)} className="p-2 hover:bg-gray-100 rounded-full"><X size={20} /></button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
+                    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-lg font-bold text-white">{editTarget ? 'Edit Student Profile' : 'New Enrollment Form'}</h2>
+                                    <p className="text-violet-100 text-sm mt-0.5">{editTarget ? 'Update academic and contact info.' : 'Complete the registration for the upcoming batch.'}</p>
+                                </div>
+                                <button onClick={() => setDrawerOpen(false)} className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors">
+                                    <X size={20} />
+                                </button>
+                            </div>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-6">
-                            <form id="student-form" onSubmit={handleSubmit} className="space-y-4">
+
+                        <form onSubmit={handleSubmit} className="flex flex-col h-[75vh]">
+                            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                                {/* Section 0: Link Enquiry */}
                                 {!editTarget && enquiries.length > 0 && (
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1.5">Link to Enquiry <span className="font-normal text-gray-400">(optional)</span></label>
-                                        <select value={form.enquiryId} onChange={e => { const enq = enquiries.find(e2 => e2._id === e.target.value); setForm(f => ({ ...f, enquiryId: e.target.value, fullName: enq?.name || f.fullName, mobile: enq?.mobile || f.mobile, email: enq?.email || f.email, city: enq?.city || f.city })); }} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none bg-white">
-                                            <option value="">-- Select Enquiry (Auto-fill) --</option>
-                                            {enquiries.map(e => <option key={e._id} value={e._id}>{e.name} — {e.mobile}</option>)}
+                                    <div className="p-4 bg-indigo-50/50 border border-indigo-100 rounded-2xl space-y-3">
+                                        <div className="flex items-center gap-2">
+                                            <Link2 size={16} className="text-indigo-600" />
+                                            <span className="text-[10px] font-black uppercase text-indigo-600 tracking-wider">Fast-Track from Enquiry</span>
+                                        </div>
+                                        <select value={form.enquiryId} onChange={e => { const enq = enquiries.find(e2 => e2._id === e.target.value); setForm(f => ({ ...f, enquiryId: e.target.value, fullName: enq?.name || f.fullName, mobile: enq?.mobile || f.mobile, email: enq?.email || f.email, city: enq?.city || f.city })); }} className={`${inputClass} !bg-white`}>
+                                            <option value="">-- Find Applicant to Auto-Fill --</option>
+                                            {enquiries.map(e => <option key={e._id} value={e._id}>{e.name} ({e.mobile})</option>)}
                                         </select>
                                     </div>
                                 )}
-                                {[['fullName', 'Full Name', true], ['mobile', 'Mobile (10 digits)', true], ['email', 'Email', false], ['city', 'City', false], ['qualification', 'Qualification', false]].map(([field, label, req]) => (
-                                    <div key={field as string}>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1.5">{label as string} {req && <span className="text-red-500">*</span>}</label>
-                                        <input required={!!req} value={(form as any)[field as string]} onChange={e => setForm(f => ({ ...f, [field as string]: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" />
+
+                                {/* Section 1: Identity */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                                        <div className="p-1.5 bg-violet-100 text-violet-600 rounded-lg">
+                                            <User size={16} />
+                                        </div>
+                                        <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Identity & Contact</h3>
                                     </div>
-                                ))}
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1.5">Sponsor Type</label>
-                                    <select value={form.sponsorType} onChange={e => setForm(f => ({ ...f, sponsorType: e.target.value as any }))} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none bg-white">
-                                        <option value="Individual">Individual</option>
-                                        <option value="Company">Company</option>
-                                    </select>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="col-span-2 sm:col-span-1">
+                                            <label className={labelClass}>Full Legal Name *</label>
+                                            <input required value={form.fullName} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))} className={inputClass} placeholder="Full Name" />
+                                        </div>
+                                        <div className="col-span-2 sm:col-span-1">
+                                            <label className={labelClass}>Active Mobile *</label>
+                                            <input required value={form.mobile} onChange={e => setForm(f => ({ ...f, mobile: e.target.value }))} className={inputClass} placeholder="Mobile Number" />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <label className={labelClass}>Professional Email</label>
+                                            <input value={form.email || ''} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} className={inputClass} placeholder="student@example.com" />
+                                        </div>
+                                    </div>
                                 </div>
-                                {form.sponsorType === 'Company' && (
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1.5">Company Name</label>
-                                        <input value={form.companyName || ''} onChange={e => setForm(f => ({ ...f, companyName: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" />
+
+                                {/* Section 2: Logistics */}
+                                <div className="space-y-4 pt-2">
+                                    <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                                        <div className="p-1.5 bg-blue-100 text-blue-600 rounded-lg">
+                                            <MapPin size={16} />
+                                        </div>
+                                        <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Background & Location</h3>
                                     </div>
-                                )}
-                            </form>
-                        </div>
-                        <div className="p-5 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
-                            <button type="button" onClick={() => setDrawerOpen(false)} className="px-5 py-2.5 text-gray-600 font-medium hover:bg-gray-200 rounded-xl transition-colors">Cancel</button>
-                            <button type="submit" form="student-form" disabled={submitting} className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 disabled:opacity-70 text-white font-medium rounded-xl shadow-md transition-all">
-                                {submitting ? 'Saving...' : editTarget ? 'Update Student' : 'Create Student'}
-                            </button>
-                        </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="col-span-1">
+                                            <label className={labelClass}>City/Region</label>
+                                            <input value={form.city || ''} onChange={e => setForm(f => ({ ...f, city: e.target.value }))} className={inputClass} placeholder="e.g. Mumbai" />
+                                        </div>
+                                        <div className="col-span-1">
+                                            <label className={labelClass}>Qualification</label>
+                                            <input value={form.qualification || ''} onChange={e => setForm(f => ({ ...f, qualification: e.target.value }))} className={inputClass} placeholder="e.g. Graduate" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Section 3: Sponsorship */}
+                                <div className="space-y-4 pt-2">
+                                    <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                                        <div className="p-1.5 bg-amber-100 text-amber-600 rounded-lg">
+                                            <Building2 size={16} />
+                                        </div>
+                                        <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Sponsorship Details</h3>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className={form.sponsorType === 'Company' ? 'col-span-1' : 'col-span-2'}>
+                                            <label className={labelClass}>Tuition Sponsor *</label>
+                                            <div className="flex gap-2 p-1 bg-gray-50 rounded-xl border border-gray-100">
+                                                {(['Individual', 'Company'] as const).map(s => (
+                                                    <button key={s} type="button" onClick={() => setForm(f => ({ ...f, sponsorType: s }))} className={`flex-1 py-1.5 text-[10px] font-black rounded-lg transition-all ${form.sponsorType === s ? 'bg-white text-violet-600 shadow-sm' : 'text-gray-400'}`}>{s.toUpperCase()}</button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        {form.sponsorType === 'Company' && (
+                                            <div className="col-span-1 animate-in fade-in slide-in-from-left-2 duration-200">
+                                                <label className={labelClass}>Company Name *</label>
+                                                <input required value={form.companyName || ''} onChange={e => setForm(f => ({ ...f, companyName: e.target.value }))} className={inputClass} placeholder="Registered Name" />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
+                                <button type="button" onClick={() => setDrawerOpen(false)} className="flex-1 py-3 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all">Discard</button>
+                                <button type="submit" disabled={submitting} className={`flex-[2] py-3 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-violet-100 hover:from-violet-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 group disabled:opacity-70`}>
+                                    {submitting ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} className="group-hover:scale-110 transition-transform" /> {editTarget ? 'Update Profile' : 'Complete Enrollment'}</>}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

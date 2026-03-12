@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { Plus, ListTodo, Search, Filter, CalendarDays, MoreVertical } from 'lucide-react';
+import { Plus, ListTodo, Search, Filter, CalendarDays, MoreVertical, X } from 'lucide-react';
 import {
     createTask,
     getAllTasks,
@@ -26,6 +26,9 @@ interface Task {
     createdBy: User;
 }
 
+const inputClass = "w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition-all";
+const labelClass = "block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide";
+
 export const AdminTasksPage = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [employees, setEmployees] = useState<User[]>([]);
@@ -47,25 +50,36 @@ export const AdminTasksPage = () => {
         dueDate: ''
     });
 
-    useEffect(() => {
-        fetchInitialData();
-    }, []);
-
-    const fetchInitialData = async () => {
+    const fetchTasks = async () => {
         setIsLoading(true);
         try {
-            const [tasksRes, usersRes] = await Promise.all([
-                getAllTasks(),
-                api.get('/users?role=EMPLOYEE') // Assume this exists from our previous work
-            ]);
-            setTasks(tasksRes.data || []);
-            setEmployees(usersRes.data || []);
+            const res = await getAllTasks();
+            setTasks(res.data || []);
         } catch (error) {
-            toast.error('Failed to load tasks data');
+            toast.error('Failed to load tasks');
         } finally {
             setIsLoading(false);
         }
     };
+
+    const fetchEmployees = async () => {
+        try {
+            const usersRes = await api.get('/users?role=EMPLOYEE');
+            setEmployees(usersRes.data || []);
+        } catch (error) {
+            console.error('Failed to load employees:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchTasks();
+    }, []);
+
+    useEffect(() => {
+        if (isCreateDrawerOpen) {
+            fetchEmployees();
+        }
+    }, [isCreateDrawerOpen]);
 
     const handleCreateSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -86,7 +100,7 @@ export const AdminTasksPage = () => {
                 startDate: new Date().toISOString().split('T')[0],
                 dueDate: ''
             });
-            fetchInitialData();
+            fetchTasks();
         } catch (error: any) {
             toast.error(error.message || 'Failed to create task');
         }
@@ -119,26 +133,107 @@ export const AdminTasksPage = () => {
             await updateTaskStatus(selectedTask._id, 'COMPLETED');
             toast.success('Task marked as completed!');
             setViewDrawerOpen(false);
-            fetchInitialData();
+            fetchTasks();
         } catch (error: any) {
             toast.error('Failed to update status');
         }
     };
 
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'COMPLETED': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-            case 'IN_PROGRESS': return 'bg-blue-100 text-blue-700 border-blue-200';
-            case 'ASSIGNED': return 'bg-amber-100 text-amber-700 border-amber-200';
-            default: return 'bg-gray-100 text-gray-500 border-gray-200';
-        }
+    // Status colors mapping
+    const STATUS_MAP: Record<string, { bg: string, text: string, border: string, dot: string, gradient: string }> = {
+        'COMPLETED': { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-100', dot: 'bg-emerald-500', gradient: 'from-emerald-400 to-green-500' },
+        'IN_PROGRESS': { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-100', dot: 'bg-blue-500', gradient: 'from-blue-400 to-indigo-500' },
+        'ASSIGNED': { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-100', dot: 'bg-amber-500', gradient: 'from-orange-400 to-amber-500' },
+        'DEFAULT': { bg: 'bg-gray-50', text: 'text-gray-500', border: 'border-gray-100', dot: 'bg-gray-400', gradient: 'from-gray-400 to-gray-500' }
     };
+
+    const getStatusConfig = (status: string) => STATUS_MAP[status] || STATUS_MAP.DEFAULT;
 
     // Filter tasks
     const filteredTasks = tasks.filter(t =>
         t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         t.assignedTo.some(emp => emp.name.toLowerCase().includes(searchQuery.toLowerCase()))
     );
+
+    const TaskCard = ({ task, onClick }: { task: Task, onClick: (t: Task) => void }) => {
+        const cfg = getStatusConfig(task.status);
+        return (
+            <div
+                onClick={() => onClick(task)}
+                className="group relative bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden flex flex-col h-full"
+            >
+                {/* Status Gradient Top Line */}
+                <div className={`h-1.5 w-full bg-gradient-to-r ${cfg.gradient}`} />
+
+                <div className="p-5 flex flex-col h-full">
+                    {/* Header */}
+                    <div className="flex justify-between items-start mb-4">
+                        <div className="flex items-center gap-2.5">
+                            <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${cfg.gradient} flex items-center justify-center text-white shadow-sm`}>
+                                <ListTodo size={16} />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-gray-900 group-hover:text-violet-600 transition-colors line-clamp-1 text-sm leading-tight">
+                                    {task.title}
+                                </h3>
+                                <p className="text-[10px] text-gray-400 mt-0.5 font-medium uppercase tracking-tighter">
+                                    Task ID: {task._id.slice(-6).toUpperCase()}
+                                </p>
+                            </div>
+                        </div>
+                        <button className="p-1 px-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                            <MoreVertical size={14} />
+                        </button>
+                    </div>
+
+                    {/* Progress Badge */}
+                    <div className="mb-4">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black border uppercase tracking-wider ${cfg.bg} ${cfg.text} ${cfg.border}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot} animate-pulse`} />
+                            {task.status.replace('_', ' ')}
+                        </span>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-xs text-gray-500 line-clamp-3 mb-5 leading-relaxed flex-1">
+                        {task.description}
+                    </p>
+
+                    {/* Footer Info */}
+                    <div className="pt-4 mt-auto border-t border-gray-100 flex items-center justify-between">
+                        {/* Assignees */}
+                        <div className="flex -space-x-2.5">
+                            {task.assignedTo.slice(0, 3).map((emp) => (
+                                <div
+                                    key={emp._id}
+                                    className="w-8 h-8 rounded-full bg-white border-2 border-white shadow-sm ring-1 ring-gray-100 flex items-center justify-center text-[10px] font-black text-violet-700 bg-violet-50"
+                                    title={emp.name}
+                                >
+                                    {emp.name.charAt(0).toUpperCase()}
+                                </div>
+                            ))}
+                            {task.assignedTo.length > 3 && (
+                                <div className="w-8 h-8 rounded-full bg-gray-50 border-2 border-white shadow-sm ring-1 ring-gray-100 flex items-center justify-center text-[10px] font-black text-gray-500">
+                                    +{task.assignedTo.length - 3}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Due Date */}
+                        {task.dueDate && (
+                            <div className="flex flex-col items-end">
+                                <span className="text-[9px] font-bold text-gray-300 uppercase tracking-widest mb-0.5">Due By</span>
+                                <div className={`flex items-center text-[11px] font-bold gap-1.5 ${new Date(task.dueDate) < new Date() ? 'text-rose-500' : 'text-gray-600'}`}>
+                                    <CalendarDays size={13} strokeWidth={2.5} />
+                                    {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div className="space-y-6 relative">
@@ -153,148 +248,128 @@ export const AdminTasksPage = () => {
 
                 <button
                     onClick={() => setCreateDrawerOpen(true)}
-                    className="px-5 py-2.5 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2 shadow-sm"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"
                 >
-                    <Plus size={18} /> Create New Task
+                    <Plus size={17} /> Create New Task
                 </button>
             </div>
 
             {/* Toolbar */}
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row gap-4 justify-between items-center">
-                <div className="relative w-full sm:w-96">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+            <div className="flex flex-col md:flex-row gap-4 items-center">
+                <div className="relative flex-1 w-full">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <input
                         type="text"
-                        placeholder="Search tasks by title or assignee..."
+                        placeholder="Search tasks by title, description or assignee..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition-all"
+                        className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-violet-500/10 focus:border-violet-400 outline-none bg-white shadow-sm transition-all text-sm"
                     />
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-500 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
-                    <Filter size={16} />
-                    <span>Showing {filteredTasks.length} Tasks</span>
+                <div className="flex items-center gap-2 whitespace-nowrap bg-gray-100/50 p-1.5 rounded-xl border border-gray-100">
+                    <div className="bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-100 text-xs font-bold text-violet-700">
+                        {filteredTasks.length} {filteredTasks.length === 1 ? 'Task' : 'Tasks'} Found
+                    </div>
+                    <div className="px-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                        Task Master View
+                    </div>
                 </div>
             </div>
 
             {/* Grid View */}
             {isLoading ? (
-                <div className="flex justify-center p-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                <div className="flex flex-col items-center justify-center p-20 space-y-4">
+                    <div className="relative">
+                        <div className="w-12 h-12 border-4 border-violet-100 rounded-full animate-pulse"></div>
+                        <div className="absolute inset-0 w-12 h-12 border-t-4 border-violet-600 rounded-full animate-spin"></div>
+                    </div>
+                    <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">Loading Task Data...</p>
                 </div>
             ) : filteredTasks.length === 0 ? (
-                <div className="text-center p-12 bg-white rounded-xl border border-gray-200 shadow-sm text-gray-500">
-                    No tasks found matching your criteria.
+                <div className="text-center p-20 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                    <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Search className="text-gray-300" size={32} />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900">No tasks found</h3>
+                    <p className="text-gray-500 text-sm mt-1 max-w-xs mx-auto">We couldn't find any tasks matching your criteria. Try adjusting your search query.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredTasks.map((task) => (
-                        <div
-                            key={task._id}
-                            onClick={() => openViewDrawer(task)}
-                            className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md transition-all cursor-pointer group flex flex-col"
-                        >
-                            <div className="flex justify-between items-start mb-3">
-                                <span className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider ${getStatusBadge(task.status)}`}>
-                                    {task.status.replace('_', ' ')}
-                                </span>
-                                <button className="text-gray-400 hover:text-gray-600">
-                                    <MoreVertical size={16} />
-                                </button>
-                            </div>
-
-                            <h3 className="font-bold text-gray-900 text-lg mb-1 group-hover:text-primary-600 transition-colors line-clamp-1">{task.title}</h3>
-                            <p className="text-sm text-gray-500 line-clamp-2 mb-4 flex-1">{task.description}</p>
-
-                            <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
-                                <div className="flex -space-x-2">
-                                    {task.assignedTo.slice(0, 3).map((emp) => (
-                                        <div key={emp._id} className="w-8 h-8 rounded-full bg-primary-100 border-2 border-white flex items-center justify-center text-xs font-bold text-primary-700" title={emp.name}>
-                                            {emp.name.charAt(0)}
-                                        </div>
-                                    ))}
-                                    {task.assignedTo.length > 3 && (
-                                        <div className="w-8 h-8 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-xs font-bold text-gray-600">
-                                            +{task.assignedTo.length - 3}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {task.dueDate && (
-                                    <div className="flex items-center text-xs text-gray-400 gap-1.5 font-medium">
-                                        <CalendarDays size={14} />
-                                        {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                        <TaskCard key={task._id} task={task} onClick={openViewDrawer} />
                     ))}
                 </div>
             )}
 
             {/* ── DRAWERS ───────────────────────────────────────────────────────── */}
 
-            {/* 1. Create Drawer */}
+            {/* 1. Create Modal */}
             {isCreateDrawerOpen && (
-                <div className="fixed inset-0 z-50 flex justify-end">
-                    <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => setCreateDrawerOpen(false)} />
-                    <div className="w-full max-w-md bg-white h-full shadow-2xl relative flex flex-col animate-in slide-in-from-right duration-300">
-                        <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-                            <h2 className="text-lg font-bold text-gray-900">Create New Task</h2>
-                            <button onClick={() => setCreateDrawerOpen(false)} className="text-gray-400 hover:text-gray-600">✖</button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setCreateDrawerOpen(false)} />
+                    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="bg-gradient-to-r from-violet-600 to-purple-700 px-6 py-5">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-lg font-bold text-white">Create New Task</h2>
+                                    <p className="text-violet-200 text-sm mt-0.5">Fill in task details and assign to employees.</p>
+                                </div>
+                                <button onClick={() => setCreateDrawerOpen(false)} className="p-1.5 rounded-lg text-violet-200 hover:text-white hover:bg-white/10 transition-colors">
+                                    <X size={20} />
+                                </button>
+                            </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-6">
-                            <form id="create-task-form" onSubmit={handleCreateSubmit} className="space-y-5">
-                                <div className="space-y-1.5">
-                                    <label className="text-sm font-semibold text-gray-700">Task Title</label>
-                                    <input required type="text" value={newTask.title} onChange={e => setNewTask({ ...newTask, title: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none" placeholder="e.g. Design Homepage" />
+                        <form id="create-task-form" onSubmit={handleCreateSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="col-span-2">
+                                    <label className={labelClass}>Task Title *</label>
+                                    <input required type="text" value={newTask.title} onChange={e => setNewTask({ ...newTask, title: e.target.value })} className={inputClass} placeholder="e.g. Design Homepage" />
                                 </div>
 
-                                <div className="space-y-1.5">
-                                    <label className="text-sm font-semibold text-gray-700">Description</label>
-                                    <textarea required rows={4} value={newTask.description} onChange={e => setNewTask({ ...newTask, description: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none resize-none" placeholder="Details of the task..." />
+                                <div className="col-span-2">
+                                    <label className={labelClass}>Description *</label>
+                                    <textarea required rows={4} value={newTask.description} onChange={e => setNewTask({ ...newTask, description: e.target.value })} className={`${inputClass} resize-none`} placeholder="Details of the task..." />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-gray-700">Start Date</label>
-                                        <input required type="date" value={newTask.startDate} onChange={e => setNewTask({ ...newTask, startDate: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                <div>
+                                    <label className={labelClass}>Start Date *</label>
+                                    <input required type="date" value={newTask.startDate} onChange={e => setNewTask({ ...newTask, startDate: e.target.value })} className={inputClass} />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>Due Date</label>
+                                    <input type="date" value={newTask.dueDate} onChange={e => setNewTask({ ...newTask, dueDate: e.target.value })} className={inputClass} />
+                                </div>
+
+                                <div className="col-span-2 space-y-2">
+                                    <div className="flex justify-between items-center mb-1.5">
+                                        <label className={"text-xs font-semibold text-gray-600 uppercase tracking-wide"}>Assign To *</label>
+                                        <span className="text-xs font-medium text-violet-700 bg-violet-100 px-2.5 py-0.5 rounded-full">{newTask.assignedTo.length} selected</span>
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-gray-700">Due Date</label>
-                                        <input type="date" value={newTask.dueDate} onChange={e => setNewTask({ ...newTask, dueDate: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-gray-700 flex justify-between">
-                                        Assign To <span className="text-primary-600 font-medium">{newTask.assignedTo.length} selected</span>
-                                    </label>
-                                    <div className="border border-gray-200 rounded-lg max-h-48 overflow-y-auto divide-y divide-gray-100 bg-white shadow-inner">
+                                    <div className="border border-gray-200 rounded-xl max-h-48 overflow-y-auto divide-y divide-gray-100 bg-gray-50/50 shadow-inner">
                                         {employees.map(emp => (
-                                            <label key={emp._id} className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer transition-colors">
+                                            <label key={emp._id} className="flex items-center gap-3 p-3 hover:bg-violet-50/50 cursor-pointer transition-colors group">
                                                 <input
                                                     type="checkbox"
                                                     checked={newTask.assignedTo.includes(emp._id)}
                                                     onChange={() => toggleEmployeeSelection(emp._id)}
-                                                    className="w-4 h-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
+                                                    className="w-4 h-4 text-violet-600 rounded border-gray-300 focus:ring-violet-500 transition-colors group-hover:border-violet-400"
                                                 />
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm font-medium text-gray-900">{emp.name}</span>
-                                                    <span className="text-xs text-gray-400">{emp.empId}</span>
+                                                    <span className="text-sm font-medium text-gray-900 group-hover:text-violet-900 transition-colors">{emp.name}</span>
+                                                    <span className="text-xs text-gray-500">{emp.empId}</span>
                                                 </div>
                                             </label>
                                         ))}
                                     </div>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
 
-                        <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
-                            <button type="button" onClick={() => setCreateDrawerOpen(false)} className="px-4 py-2 text-gray-600 font-medium hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                            <button type="submit" form="create-task-form" className="px-6 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 shadow-sm transition-colors">Create Task</button>
-                        </div>
+                            <div className="flex gap-3 pt-4">
+                                <button type="button" onClick={() => setCreateDrawerOpen(false)} className="flex-1 py-2.5 px-4 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">Cancel</button>
+                                <button type="submit" className="flex-1 py-2.5 px-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-violet-200">Create Task</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
@@ -385,7 +460,7 @@ export const AdminTasksPage = () => {
                                 <p className="text-xs text-gray-500 max-w-[200px]">Only admins can mark a task as completely finished.</p>
                                 <button
                                     onClick={handleMarkCompleted}
-                                    className="px-5 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 shadow-sm transition-colors"
+                                    className="py-2.5 px-6 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-200"
                                 >
                                     Verify & Complete Task
                                 </button>

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     Layers, Plus, Search, Pencil, Trash2, X, Save, Loader2,
-    ChevronDown, Calendar, BookOpen, MoreVertical, RefreshCw,
-    CheckCircle2, XCircle, CalendarDays, ChevronLeft, ChevronRight, Users
+    Calendar, MoreVertical, RefreshCw,
+    CheckCircle2, XCircle, ChevronLeft, ChevronRight, Users, Clock
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../../api/axios';
@@ -25,6 +25,9 @@ interface Batch {
     studentCount: number;
     createdAt: string;
 }
+
+const inputClass = "w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition-all";
+const labelClass = "block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide";
 
 interface Pagination {
     total: number;
@@ -90,32 +93,86 @@ const BatchModal: React.FC<ModalProps> = ({ batch, courses, onClose, onSaved }) 
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md animate-in zoom-in-95 duration-200">
-                <div className={`rounded-t-2xl p-6 bg-gradient-to-r ${batch ? 'from-emerald-500 to-green-600' : 'from-sky-500 to-blue-600'} text-white flex justify-between`}>
-                    <h2 className="text-lg font-bold">{batch ? 'Edit Batch' : 'New Batch'}</h2>
-                    <button onClick={onClose}><X size={20} /></button>
+            <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+                <div className="bg-gradient-to-r from-emerald-600 to-teal-700 px-6 py-5">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-lg font-bold text-white">{batch ? 'Edit Batch' : 'New Academic Batch'}</h2>
+                            <p className="text-emerald-100 text-sm mt-0.5">{batch ? 'Update schedule or status.' : 'Register a new batch for instruction.'}</p>
+                        </div>
+                        <button onClick={onClose} className="p-1.5 rounded-lg text-emerald-100 hover:text-white hover:bg-white/10 transition-colors">
+                            <X size={20} />
+                        </button>
+                    </div>
                 </div>
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    <input value={batchName} onChange={e => setBatchName(e.target.value)} required placeholder="Batch Name" className="w-full p-3 border rounded-xl" />
-                    {!batch && (
-                        <select value={courseId} onChange={e => setCourseId(e.target.value)} required className="w-full p-3 border rounded-xl">
-                            <option value="">Select Course</option>
-                            {courses.map(c => <option key={c.courseId} value={c.courseId}>{c.courseName}</option>)}
-                        </select>
-                    )}
-                    <div className="grid grid-cols-2 gap-3">
-                        <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} required className="p-3 border rounded-xl" />
-                        <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="p-3 border rounded-xl" />
+
+                <form onSubmit={handleSubmit}>
+                    <div className="p-6 space-y-6">
+                        {/* Section: Basic details */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                                <div className="p-1.5 bg-emerald-100 text-emerald-600 rounded-lg">
+                                    <Layers size={16} />
+                                </div>
+                                <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Batch Identity</h3>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="col-span-2">
+                                    <label className={labelClass}>Batch Name *</label>
+                                    <input value={batchName} onChange={e => setBatchName(e.target.value)} required placeholder="e.g. NDT Level 2 (2026)" className={inputClass} />
+                                </div>
+
+                                {!batch && (
+                                    <div className="col-span-2">
+                                        <label className={labelClass}>Assigned Course *</label>
+                                        <select value={courseId} onChange={e => setCourseId(e.target.value)} required className={inputClass}>
+                                            <option value="">-- Select Master Course --</option>
+                                            {courses.map(c => <option key={c.courseId} value={c.courseId}>{c.courseName}</option>)}
+                                        </select>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Section: Schedule */}
+                        <div className="space-y-4 pt-2">
+                            <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                                <div className="p-1.5 bg-blue-100 text-blue-600 rounded-lg">
+                                    <Calendar size={16} />
+                                </div>
+                                <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Timing & Status</h3>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className={labelClass}>Start Date *</label>
+                                    <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} required className={inputClass} />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>End Date</label>
+                                    <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className={inputClass} />
+                                </div>
+
+                                <div className="col-span-2">
+                                    <label className={labelClass}>Instruction Status</label>
+                                    <div className="flex gap-2 p-1 bg-gray-50 rounded-xl border border-gray-100">
+                                        {(['Upcoming', 'Running', 'Completed'] as const).map(s => (
+                                            <button key={s} type="button" onClick={() => setStatus(s)} className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all ${status === s ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-400 hover:text-gray-600'}`}>{s.toUpperCase()}</button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex gap-2">
-                        {(['Upcoming', 'Running', 'Completed'] as const).map(s => (
-                            <button key={s} type="button" onClick={() => setStatus(s)} className={`flex-1 py-2 text-xs font-bold border rounded-xl ${status === s ? 'bg-primary-600 text-white' : 'bg-gray-50'}`}>{s}</button>
-                        ))}
+
+                    <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
+                        <button type="button" onClick={onClose} className="flex-1 py-3 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all">Discard</button>
+                        <button type="submit" disabled={loading} className="flex-[2] py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-100 hover:from-emerald-700 hover:to-teal-700 transition-all flex items-center justify-center gap-2 group disabled:opacity-70">
+                            {loading ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} className="group-hover:scale-110 transition-transform" /> {batch ? 'Update Batch' : 'Create Batch'}</>}
+                        </button>
                     </div>
-                    <button type="submit" disabled={loading} className="w-full py-3 bg-primary-600 text-white rounded-xl font-bold shadow-lg">
-                        {loading ? <Loader2 className="animate-spin inline" size={16} /> : <Save size={16} className="inline mr-2" />} Save
-                    </button>
                 </form>
             </div>
         </div>
@@ -202,10 +259,10 @@ export const BatchesPage: React.FC = () => {
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between gap-4">
-                <h1 className="text-2xl font-bold flex items-center gap-2"><Layers className="text-primary-600" /> Batches</h1>
+                <h1 className="text-2xl font-bold flex items-center gap-2 text-gray-900"><Layers className="text-emerald-500" /> Batches</h1>
                 <div className="flex gap-2">
-                    <button onClick={fetchData} className="p-2.5 border rounded-xl"><RefreshCw size={16} /></button>
-                    <button onClick={() => { setEditBatch(null); setShowModal(true); }} className="bg-primary-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg"><Plus size={16} className="inline" /> New Batch</button>
+                    <button onClick={fetchData} className="p-2.5 border rounded-xl text-gray-500 hover:text-violet-600 hover:border-violet-300 hover:bg-violet-50 transition-all"><RefreshCw size={16} /></button>
+                    <button onClick={() => { setEditBatch(null); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"><Plus size={17} /> New Batch</button>
                 </div>
             </div>
             <div className="flex flex-col md:flex-row gap-3">
@@ -221,9 +278,9 @@ export const BatchesPage: React.FC = () => {
             </div>
             {loading ? <div className="py-20 text-center"><Loader2 className="animate-spin inline" size={32} /></div> :
                 batches.length === 0 ? <div className="py-20 text-center text-gray-500">No batches found</div> :
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {batches.map(b => <BatchCard key={b._id} batch={b} onEdit={setEditBatch} onDelete={setDeleteTarget} onToggleActive={handleToggleActive} />)}
-                </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {batches.map(b => <BatchCard key={b._id} batch={b} onEdit={(batch) => { setEditBatch(batch); setShowModal(true); }} onDelete={setDeleteTarget} onToggleActive={handleToggleActive} />)}
+                    </div>
             }
             {pagination && pagination.totalPages > 1 && (
                 <div className="flex items-center justify-between bg-white px-4 py-3 rounded-2xl border shadow-sm">

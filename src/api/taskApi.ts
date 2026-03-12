@@ -19,10 +19,10 @@ export interface TaskUpdatePayload {
 // --- Task Endpoints (Admin) ---
 
 export const createTask = (data: TaskPayload) =>
-    api.post('/admin/tasks', data);
+    api.post('/tasks', data);
 
 export const updateTaskStatus = (id: string, status: 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED') =>
-    api.put(`/admin/tasks/${id}`, { status });
+    api.put(`/tasks/${id}`, { status });
 
 // --- Task Endpoints (Shared) ---
 

@@ -6,13 +6,18 @@ import api from '../../../api/axios';
 
 const MODE_COLORS: any = { Online: 'bg-indigo-100 text-indigo-700', Offline: 'bg-slate-100 text-slate-700' };
 
+const inputClass = "w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition-all";
+const labelClass = "block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide";
+
+const INITIAL_FORM = { testName: '', batchId: '', durationMinutes: 60, totalMarks: 100, passingMarks: 35, mode: 'Online', testDate: '', startTimeStr: '', endTimeStr: '' };
+
 export const TestsPage = () => {
     const [tests, setTests] = useState<Test[]>([]);
     const [page] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     const [isCreateOpen, setCreateOpen] = useState(false);
     const [batches, setBatches] = useState<any[]>([]);
-    const [form, setForm] = useState<any>({ testName: '', batchId: '', durationMinutes: 60, totalMarks: 100, passingMarks: 35, mode: 'Online', startTime: '', endTime: '' });
+    const [form, setForm] = useState<any>(INITIAL_FORM);
     const [submitting, setSubmitting] = useState(false);
     const [viewTest, setViewTest] = useState<Test | null>(null);
     const [questions, setQuestions] = useState<Question[]>([]);
@@ -24,17 +29,53 @@ export const TestsPage = () => {
 
     const fetchTests = useCallback(async () => {
         setIsLoading(true);
-        try { const res = await getTests({ page }); setTests(res.data.data.tests); }
+        try {
+            const res: any = await getTests({ page });
+            if (Array.isArray(res)) setTests(res);
+            else if (res?.data?.tests) setTests(res.data.tests);
+            else if (res?.data && Array.isArray(res.data)) setTests(res.data);
+            else if (res?.tests) setTests(res.tests);
+            else setTests([]);
+        }
         catch { toast.error('Failed to load tests'); }
         finally { setIsLoading(false); }
     }, [page]);
 
     useEffect(() => { fetchTests(); }, [fetchTests]);
-    useEffect(() => { if (isCreateOpen) api.get('/batches').then(r => setBatches(r.data.data || [])).catch(() => { }); }, [isCreateOpen]);
+    useEffect(() => { if (isCreateOpen) api.get('/batches').then((r: any) => setBatches(r?.data?.batches || r?.data || r || [])).catch(() => { }); }, [isCreateOpen]);
+
+    const openCreate = () => {
+        setForm(INITIAL_FORM);
+        setCreateOpen(true);
+    };
+
+    const formatTime = (time: string) => {
+        if (!time || time.includes(':')) return time;
+        const clean = time.replace(/\D/g, '');
+        if (clean.length === 4) return `${clean.slice(0, 2)}:${clean.slice(2)}`;
+        if (clean.length === 3) return `0${clean.slice(0, 1)}:${clean.slice(1)}`;
+        return time;
+    };
 
     const handleCreateTest = async (e: React.FormEvent) => {
         e.preventDefault(); setSubmitting(true);
-        try { await createTest(form); toast.success('Test created!'); setCreateOpen(false); fetchTests(); }
+        try {
+            const payload = { ...form };
+            const sTime = formatTime(payload.startTimeStr);
+            const eTime = formatTime(payload.endTimeStr);
+
+            payload.startTime = new Date(`${payload.testDate} ${sTime}`).toISOString();
+            payload.endTime = new Date(`${payload.testDate} ${eTime}`).toISOString();
+            delete payload.testDate;
+            delete payload.startTimeStr;
+            delete payload.endTimeStr;
+
+            await createTest(payload);
+            toast.success('Test created!');
+            setForm(INITIAL_FORM);
+            setCreateOpen(false);
+            fetchTests();
+        }
         catch (err: any) { toast.error(err.response?.data?.message || 'Error'); }
         finally { setSubmitting(false); }
     };
@@ -43,7 +84,13 @@ export const TestsPage = () => {
         setViewTest(t);
         if (t.mode === 'Online') {
             setIsQLoading(true);
-            try { const r = await getQuestions(t._id); setQuestions(r.data.data); }
+            try {
+                const r: any = await getQuestions(t._id);
+                if (Array.isArray(r)) setQuestions(r);
+                else if (r?.data && Array.isArray(r.data)) setQuestions(r.data);
+                else if (r?.data?.data) setQuestions(r.data.data);
+                else setQuestions([]);
+            }
             catch { toast.error('Error'); } finally { setIsQLoading(false); }
         }
     };
@@ -60,7 +107,11 @@ export const TestsPage = () => {
             const payload: any = { ...qForm }; if (qForm.type === 'MCQ') delete payload.passageText;
             await addQuestion(viewTest._id, payload);
             toast.success('Added!');
-            const r = await getQuestions(viewTest._id); setQuestions(r.data.data);
+            const r: any = await getQuestions(viewTest._id);
+            if (Array.isArray(r)) setQuestions(r);
+            else if (r?.data && Array.isArray(r.data)) setQuestions(r.data);
+            else if (r?.data?.data) setQuestions(r.data.data);
+            else setQuestions([]);
             setQForm({ ...qForm, passageText: '', questionText: '', options: ['', '', '', ''], correctOption: 0 });
         } catch { toast.error('Error'); } finally { setAddingQ(false); }
     };
@@ -69,7 +120,9 @@ export const TestsPage = () => {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold flex items-center gap-2"><FileText className="text-primary-600" /> CBT Tests</h1>
-                <button onClick={() => setCreateOpen(true)} className="bg-primary-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg"><Plus size={18} className="inline mr-1" /> New Test</button>
+                <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300">
+                    <Plus size={17} /> New Test
+                </button>
             </div>
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden overflow-x-auto">
@@ -86,8 +139,8 @@ export const TestsPage = () => {
                                     <td className="px-4 py-3">{t.passingMarks}/{t.totalMarks}</td>
                                     <td className="px-4 py-3"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${MODE_COLORS[t.mode]}`}>{t.mode}</span></td>
                                     <td className="px-4 py-3 flex gap-1">
-                                        <button onClick={() => openView(t)} className="p-1.5 text-gray-400 hover:text-primary-600"><Eye size={16}/></button>
-                                        <button onClick={() => openAnalytics(t)} className="p-1.5 text-gray-400 hover:text-amber-600"><BarChart3 size={16}/></button>
+                                        <button onClick={() => openView(t)} className="p-1.5 text-gray-400 hover:text-primary-600"><Eye size={16} /></button>
+                                        <button onClick={() => openAnalytics(t)} className="p-1.5 text-gray-400 hover:text-amber-600"><BarChart3 size={16} /></button>
                                     </td>
                                 </tr>
                             ))
@@ -97,61 +150,269 @@ export const TestsPage = () => {
             </div>
 
             {isCreateOpen && (
-                <div className="fixed inset-0 z-50 flex justify-end bg-gray-900/50 backdrop-blur-sm">
-                    <div className="w-full max-w-md bg-white h-full p-6 animate-in slide-in-from-right">
-                        <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-bold">Create Test</h2><button onClick={() => setCreateOpen(false)}><X/></button></div>
-                        <form onSubmit={handleCreateTest} className="space-y-4">
-                            <input required value={form.testName} onChange={e => setForm({...form, testName: e.target.value})} placeholder="Test Name" className="w-full p-3 border rounded-xl" />
-                            <select required value={form.batchId} onChange={e => setForm({...form, batchId: e.target.value})} className="w-full p-3 border rounded-xl">
-                                <option value="">Select Batch</option>
-                                {batches.map(b => <option key={b._id} value={b._id}>{b.batchName}</option>)}
-                            </select>
-                            <div className="grid grid-cols-2 gap-3">
-                                <div><label className="text-xs font-bold text-gray-400">Start Time</label><input type="datetime-local" required value={form.startTime} onChange={e => setForm({...form, startTime: e.target.value})} className="w-full p-3 border rounded-xl" /></div>
-                                <div><label className="text-xs font-bold text-gray-400">End Time</label><input type="datetime-local" required value={form.endTime} onChange={e => setForm({...form, endTime: e.target.value})} className="w-full p-3 border rounded-xl" /></div>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setCreateOpen(false)} />
+                    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="bg-gradient-to-r from-violet-600 to-purple-700 px-6 py-5">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-lg font-bold text-white">Create New Test</h2>
+                                    <p className="text-violet-200 text-sm mt-0.5">Configure CBT or offline test details below.</p>
+                                </div>
+                                <button onClick={() => setCreateOpen(false)} className="p-1.5 rounded-lg text-violet-200 hover:text-white hover:bg-white/10 transition-colors">
+                                    <X size={20} />
+                                </button>
                             </div>
-                            <div className="grid grid-cols-2 gap-3">
-                                <input type="number" required value={form.durationMinutes} onChange={e => setForm({...form, durationMinutes: +e.target.value})} placeholder="Mins" className="w-full p-3 border rounded-xl" />
-                                <input type="number" required value={form.totalMarks} onChange={e => setForm({...form, totalMarks: +e.target.value})} placeholder="Total" className="w-full p-3 border rounded-xl" />
+                        </div>
+
+                        <form onSubmit={handleCreateTest} className="p-0 flex flex-col max-h-[85vh]">
+                            <div className="p-6 space-y-6 overflow-y-auto flex-1">
+                                {/* Section: Basic Info */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                                        <div className="p-1.5 bg-violet-100 text-violet-600 rounded-lg">
+                                            <FileText size={16} />
+                                        </div>
+                                        <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">General Information</h3>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="col-span-2">
+                                            <label className={labelClass}>Test Name *</label>
+                                            <input required value={form.testName} onChange={e => setForm({ ...form, testName: e.target.value })} placeholder="e.g. Mechanical Engineering Final" className={inputClass} />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <label className={labelClass}>Batch *</label>
+                                            <select required value={form.batchId} onChange={e => setForm({ ...form, batchId: e.target.value })} className={inputClass}>
+                                                <option value="">-- Select Target Batch --</option>
+                                                {batches.map(b => <option key={b._id} value={b._id}>{b.batchName}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Section: Logistics */}
+                                <div className="space-y-4 pt-2">
+                                    <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                                        <div className="p-1.5 bg-blue-100 text-blue-600 rounded-lg">
+                                            <Clock size={16} />
+                                        </div>
+                                        <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Schedule & Duration</h3>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="col-span-2">
+                                            <label className={labelClass}>Examination Date *</label>
+                                            <div className="relative">
+                                                <input type="date" required value={form.testDate} onChange={e => setForm({ ...form, testDate: e.target.value })} className={`${inputClass} pl-10`} />
+                                                <BookOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                            </div>
+                                        </div>
+                                        <div className="relative group">
+                                            <label className={labelClass}>Start Time *</label>
+                                            <div className="relative">
+                                                <input type="text" required value={form.startTimeStr}
+                                                    onBlur={e => setForm({ ...form, startTimeStr: formatTime(e.target.value) })}
+                                                    onChange={e => setForm({ ...form, startTimeStr: e.target.value })}
+                                                    className={`${inputClass} pl-10 border-blue-100 bg-blue-50/10 focus:bg-white`} placeholder="09:30" />
+                                                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-500 font-bold text-xs">GO</div>
+                                            </div>
+                                            <p className="text-[10px] text-gray-400 mt-1 italic pl-1">Format: HH:mm (24h)</p>
+                                        </div>
+                                        <div className="relative group">
+                                            <label className={labelClass}>End Time *</label>
+                                            <div className="relative">
+                                                <input type="text" required value={form.endTimeStr}
+                                                    onBlur={e => setForm({ ...form, endTimeStr: formatTime(e.target.value) })}
+                                                    onChange={e => setForm({ ...form, endTimeStr: e.target.value })}
+                                                    className={`${inputClass} pl-10 border-red-100 bg-red-50/10 focus:bg-white`} placeholder="11:30" />
+                                                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-red-500 font-bold text-xs">END</div>
+                                            </div>
+                                        </div>
+                                        <div className="col-span-2 p-4 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 flex items-center justify-between shadow-sm">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center text-violet-600">
+                                                    <Clock size={20} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Total Duration</p>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <input type="number" required value={form.durationMinutes} onChange={e => setForm({ ...form, durationMinutes: +e.target.value })} className="w-16 bg-transparent border-none p-0 focus:ring-0 text-lg font-black text-gray-900" />
+                                                        <span className="text-sm font-semibold text-gray-500">minutes</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="h-full w-px bg-gray-100 mx-4" />
+                                            <div className="flex-1">
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Grading Policy</p>
+                                                <div className="flex items-center gap-3 mt-1">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[10px] text-gray-400">Total</span>
+                                                        <input type="number" required value={form.totalMarks} onChange={e => setForm({ ...form, totalMarks: +e.target.value })} className="w-12 bg-transparent border-none p-0 focus:ring-0 text-sm font-bold text-gray-900" />
+                                                    </div>
+                                                    <div className="text-gray-300">/</div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[10px] text-gray-400">Passing</span>
+                                                        <input type="number" required value={form.passingMarks} onChange={e => setForm({ ...form, passingMarks: +e.target.value })} className="w-12 bg-transparent border-none p-0 focus:ring-0 text-sm font-bold text-violet-600" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <button type="submit" disabled={submitting} className="w-full py-3 bg-primary-600 text-white rounded-xl font-bold">Create</button>
+
+                            <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
+                                <button type="button" onClick={() => { setCreateOpen(false); setForm(INITIAL_FORM); }} className="flex-1 py-3 px-4 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all">Discard</button>
+                                <button type="submit" disabled={submitting} className="flex-[2] py-3 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-bold hover:from-violet-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-violet-200 disabled:opacity-70 group">
+                                    {submitting ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} className="group-hover:scale-110 transition-transform" /> Confirm & Create Test</>}
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
             )}
 
             {isAnalyticsOpen && (
-                <div className="fixed inset-0 z-50 flex justify-end bg-gray-900/50 backdrop-blur-sm">
-                    <div className="w-full max-w-xl bg-white h-full p-6 overflow-y-auto animate-in slide-in-from-right">
-                        <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-bold uppercase">Difficulty Analytics</h2><button onClick={() => setAnalyticsOpen(false)}><X/></button></div>
-                        <div className="space-y-4">
-                            {analytics.map((item, idx) => (
-                                <div key={item.questionId} className="p-4 border rounded-xl bg-gray-50">
-                                    <div className="flex justify-between mb-2"><p className="text-sm font-bold">{idx+1}. {item.questionText}</p><span className="text-[10px] font-black text-red-600 uppercase">{Math.round(item.incorrectPercentage)}% Error</span></div>
-                                    <div className="w-full bg-gray-200 h-1.5 rounded-full"><div className="bg-red-500 h-full rounded-full" style={{ width: `${item.incorrectPercentage}%` }} /></div>
+                <div className="fixed inset-0 z-50 flex justify-end">
+                    <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => setAnalyticsOpen(false)} />
+                    <div className="relative w-full max-w-xl bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+                        <div className="p-6 bg-amber-500 text-white flex justify-between items-center shrink-0">
+                            <div>
+                                <h2 className="text-xl font-black tracking-tight uppercase">Performance Analytics</h2>
+                                <p className="text-amber-100 text-xs mt-0.5">Top missed questions for {viewTest?.testName}</p>
+                            </div>
+                            <button onClick={() => setAnalyticsOpen(false)} className="p-2 hover:bg-white/10 rounded-xl transition-colors"><X size={20} /></button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/50">
+                            {analytics.length === 0 ? (
+                                <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-3">
+                                    <AlertCircle size={40} className="opacity-20" />
+                                    <p className="text-sm font-medium italic">No performance data available yet.</p>
                                 </div>
-                            ))}
+                            ) : (
+                                analytics.map((item, idx) => (
+                                    <div key={item.questionId} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex items-start justify-between gap-4 mb-4">
+                                            <div className="flex gap-2.5">
+                                                <span className="w-6 h-6 shrink-0 bg-gray-900 text-white text-[10px] font-black rounded-lg flex items-center justify-center">Q{idx + 1}</span>
+                                                <p className="text-sm font-bold text-gray-800 leading-tight">{item.questionText}</p>
+                                            </div>
+                                            <div className="text-right shrink-0">
+                                                <span className="text-[10px] font-black text-red-600 bg-red-50 px-2 py-1 rounded-full uppercase">{Math.round(item.incorrectPercentage)}% Fail</span>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <div className="flex justify-between text-[10px] font-black uppercase text-gray-400 tracking-tighter">
+                                                <span>Error Frequency</span>
+                                                <span>{item.incorrectCount} Students</span>
+                                            </div>
+                                            <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                                <div className="bg-gradient-to-r from-amber-400 to-red-500 h-full rounded-full transition-all duration-1000" style={{ width: `${item.incorrectPercentage}%` }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
             )}
 
             {viewTest && !isAnalyticsOpen && (
-                <div className="fixed inset-0 z-50 flex justify-end bg-gray-900/50 backdrop-blur-sm">
-                    <div className="w-full max-w-2xl bg-white h-full p-6 overflow-y-auto animate-in slide-in-from-right">
-                        <div className="flex justify-between items-center mb-6"><div><h2 className="text-xl font-bold">{viewTest.testName}</h2><p className="text-xs text-gray-400">Manage questions for this exam</p></div><button onClick={() => setViewTest(null)}><X/></button></div>
-                        {viewTest.mode === 'Online' ? (
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <form onSubmit={handleAddQuestion} className="space-y-4 p-4 border rounded-2xl bg-white">
-                                    <select value={qForm.type} onChange={e => setQForm({...qForm, type: e.target.value})} className="w-full p-2 border rounded-lg"><option value="MCQ">Standard MCQ</option><option value="PASSAGE">Passage Based</option></select>
-                                    {qForm.type === 'PASSAGE' && <textarea required value={qForm.passageText} onChange={e => setQForm({...qForm, passageText: e.target.value})} placeholder="Passage..." className="w-full p-2 border rounded-lg" rows={3}/>}
-                                    <textarea required value={qForm.questionText} onChange={e => setQForm({...qForm, questionText: e.target.value})} placeholder="Question..." className="w-full p-2 border rounded-lg" rows={2}/>
-                                    {qForm.options.map((o, i) => <div key={i} className="flex gap-2"><input type="radio" checked={qForm.correctOption === i} onChange={() => setQForm({...qForm, correctOption: i})}/><input value={o} onChange={e => {const n=[...qForm.options]; n[i]=e.target.value; setQForm({...qForm, options: n})}} placeholder={`Option ${i+1}`} className="flex-1 p-1 border rounded" required/></div>)}
-                                    <button type="submit" className="w-full py-2 bg-primary-600 text-white font-bold rounded-lg uppercase text-xs">Save Question</button>
-                                </form>
-                                <div className="space-y-3">{questions.map((q, i) => <div key={q._id} className="p-3 bg-gray-50 border rounded-xl"><p className="text-xs font-bold text-gray-400 mb-1">Q{i+1}</p><p className="text-sm font-medium">{q.questionText}</p></div>)}</div>
+                <div className="fixed inset-0 z-50 flex justify-end">
+                    <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => setViewTest(null)} />
+                    <div className="relative w-full max-w-3xl bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+                        <div className="p-6 bg-gray-900 text-white flex justify-between items-center shrink-0">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10">
+                                    <BookOpen size={24} className="text-primary-400" />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-black tracking-tight">{viewTest.testName}</h2>
+                                    <p className="text-gray-400 text-xs mt-0.5">{viewTest.mode} Examination Card</p>
+                                </div>
                             </div>
-                        ) : <p className="text-center py-20 text-gray-400 italic">Offline exam - no question bank needed.</p>}
+                            <button onClick={() => setViewTest(null)} className="p-2 hover:bg-white/10 rounded-xl transition-colors"><X size={20} /></button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto bg-gray-50/30 p-6">
+                            {viewTest.mode === 'Online' ? (
+                                <div className="grid lg:grid-cols-12 gap-6 items-start">
+                                    {/* Left: Question List */}
+                                    <div className="lg:col-span-12 space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Question Bank ({questions.length})</h3>
+                                            <div className="h-px flex-1 bg-gray-100 mx-4" />
+                                        </div>
+
+                                        <div className="grid sm:grid-cols-2 gap-3">
+                                            {isQLoading ? <div className="col-span-2 py-10 text-center text-gray-400 italic">Scanning database...</div> :
+                                                questions.length === 0 ? <div className="col-span-2 py-10 text-center text-gray-400 italic">No questions added yet.</div> :
+                                                    questions.map((q, i) => (
+                                                        <div key={q._id} className="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:border-primary-200 transition-colors group">
+                                                            <div className="flex gap-3">
+                                                                <span className="shrink-0 w-8 h-8 rounded-xl bg-gray-50 text-gray-400 text-xs font-black flex items-center justify-center group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">{i + 1}</span>
+                                                                <div className="space-y-1">
+                                                                    <p className="text-sm font-bold text-gray-800 line-clamp-2">{q.questionText}</p>
+                                                                    <div className="flex gap-2">
+                                                                        <span className="text-[10px] font-black uppercase text-gray-400">{q.type}</span>
+                                                                        <span className="text-[10px] font-black uppercase text-primary-500">{q.marks} Marks</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                        </div>
+
+                                        <div className="pt-6">
+                                            <div className="flex items-center gap-2 mb-4">
+                                                <Plus size={16} className="text-primary-600" />
+                                                <h3 className="text-sm font-black text-gray-800 uppercase tracking-tight">Add New Question</h3>
+                                            </div>
+                                            <form onSubmit={handleAddQuestion} className="bg-white p-5 rounded-2xl border-2 border-dashed border-gray-200 space-y-4 hover:border-primary-200 transition-colors">
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <select value={qForm.type} onChange={e => setQForm({ ...qForm, type: e.target.value })} className={inputClass + " bg-gray-50"}>
+                                                        <option value="MCQ">Standard MCQ</option>
+                                                        <option value="PASSAGE">Passage Based</option>
+                                                    </select>
+                                                    <div className="relative">
+                                                        <input type="number" value={qForm.marks} onChange={e => setQForm({ ...qForm, marks: +e.target.value })} className={inputClass + " pl-10"} placeholder="Marks" />
+                                                        <AlertCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                                                    </div>
+                                                </div>
+                                                {qForm.type === 'PASSAGE' && <textarea required value={qForm.passageText} onChange={e => setQForm({ ...qForm, passageText: e.target.value })} placeholder="Write or paste the passage here..." className={inputClass + " h-32"} />}
+                                                <textarea required value={qForm.questionText} onChange={e => setQForm({ ...qForm, questionText: e.target.value })} placeholder="Type the question..." className={inputClass + " font-bold"} rows={2} />
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
+                                                    {qForm.options.map((o, i) => (
+                                                        <div key={i} className={`relative flex items-center group ${qForm.correctOption === i ? 'ring-2 ring-primary-500 rounded-xl' : ''}`}>
+                                                            <input type="radio" checked={qForm.correctOption === i} onChange={() => setQForm({ ...qForm, correctOption: i })} className="absolute left-3.5 z-10 w-4 h-4 text-primary-600 accent-primary-600" />
+                                                            <input value={o} onChange={e => { const n = [...qForm.options]; n[i] = e.target.value; setQForm({ ...qForm, options: n }) }} placeholder={`Option ${i + 1}`} className={`${inputClass} pl-10 h-11`} required />
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                <button type="submit" disabled={addingQ} className="w-full py-3 bg-gray-900 text-white font-black rounded-xl uppercase text-xs tracking-widest hover:bg-primary-600 transition-all shadow-lg active:scale-[0.98] disabled:opacity-50">
+                                                    {addingQ ? 'Saving Question...' : 'Add to Bank'}
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="h-full flex flex-col items-center justify-center p-10 text-center space-y-4">
+                                    <div className="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center text-gray-300">
+                                        <AlertCircle size={40} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-900">Offline Manifest</h4>
+                                        <p className="text-sm text-gray-500 mt-1 max-w-xs mx-auto">This exam is conducted offline. Use the analytics tab to view manual score records.</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
