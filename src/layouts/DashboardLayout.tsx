@@ -3,7 +3,8 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
     Menu, X, Bell, User, LogOut, LayoutDashboard,
     Users, BookOpen, Clock, CircleHelp, Briefcase,
-    ChevronLeft, ChevronRight, ListTodo, FileText, GraduationCap, Search
+    ChevronLeft, ChevronRight, ListTodo, FileText, GraduationCap, Search,
+    ChevronDown, ChevronUp
 } from 'lucide-react';
 
 import { toast } from 'react-toastify';
@@ -16,6 +17,17 @@ export const DashboardLayout: React.FC = () => {
     const [isCollapsed, setIsCollapsed] = useState(false); // desktop sidebar collapsed state
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    
+    // Sub-menu states
+    const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({
+        userManagement: true,
+        studentManagement: true
+    });
+
+    const toggleMenu = (menuKey: string) => {
+        setOpenMenus(prev => ({ ...prev, [menuKey]: !prev[menuKey] }));
+    };
+
     const navigate = useNavigate();
     const profileRef = useRef<HTMLDivElement>(null);
 
@@ -44,31 +56,44 @@ export const DashboardLayout: React.FC = () => {
         navigate('/login');
     };
 
-    const navLinks = [
-        { name: 'Dashboard', path: `/${basePath}/dashboard`, icon: LayoutDashboard },
-        ...(role === 'ADMIN' || role === 'SUPER_ADMIN' ? [
-            { name: 'Users', path: `/${basePath}/users`, icon: Users },
-            { name: 'Courses', path: `/${basePath}/courses`, icon: BookOpen },
-            { name: 'Attendance', path: `/${basePath}/attendance`, icon: Clock },
-            { name: 'Task Master', path: `/${basePath}/tasks`, icon: ListTodo },
-            { name: 'Payroll Config', path: `/${basePath}/payroll/config`, icon: Briefcase },
-            { name: 'Overtime', path: `/${basePath}/payroll/overtime`, icon: Clock },
-            { name: 'Advances', path: `/${basePath}/payroll/advances`, icon: Briefcase },
-            { name: 'Salary Generation', path: `/${basePath}/payroll/records`, icon: LayoutDashboard },
-        ] : [
-            { name: 'My Tasks', path: `/${basePath}/tasks`, icon: ListTodo },
-        ]),
-        { name: 'Batches', path: `/${basePath}/batches`, icon: Clock },
-        { name: 'Students', path: `/${basePath}/students`, icon: Users },
-        { name: 'Admissions', path: `/${basePath}/admissions`, icon: GraduationCap },
-        { name: 'CBT Tests', path: `/${basePath}/tests`, icon: FileText },
-        { name: 'Enquiries', path: `/${basePath}/enquiries`, icon: CircleHelp },
-        { name: 'Settings', path: `/${basePath}/settings`, icon: Briefcase },
+    const groups = [
+        {
+            name: 'User Management',
+            key: 'userManagement',
+            icon: Users,
+            links: [
+                ...(role === 'ADMIN' || role === 'SUPER_ADMIN' ? [
+                    { name: 'Users', path: `/${basePath}/users`, icon: Users },
+                    { name: 'Salary Generation', path: `/${basePath}/payroll/records`, icon: LayoutDashboard },
+                    { name: 'Payroll Config', path: `/${basePath}/payroll/config`, icon: Briefcase },
+                    { name: 'Attendance', path: `/${basePath}/attendance`, icon: Clock },
+                    { name: 'Task Master', path: `/${basePath}/tasks`, icon: ListTodo },
+                    { name: 'Overtime', path: `/${basePath}/payroll/overtime`, icon: Clock },
+                    { name: 'Advances', path: `/${basePath}/payroll/advances`, icon: Briefcase },
+                ] : [
+                    { name: 'My Tasks', path: `/${basePath}/tasks`, icon: ListTodo },
+                ]),
+            ]
+        },
+        {
+            name: 'Student Management',
+            key: 'studentManagement',
+            icon: GraduationCap,
+            links: [
+                { name: 'Courses', path: `/${basePath}/courses`, icon: BookOpen },
+                { name: 'Batches', path: `/${basePath}/batches`, icon: Clock },
+                { name: 'Students', path: `/${basePath}/students`, icon: Users },
+                { name: 'Admissions', path: `/${basePath}/admissions`, icon: GraduationCap },
+                { name: 'CBT Tests', path: `/${basePath}/tests`, icon: FileText },
+                { name: 'Enquiries', path: `/${basePath}/enquiries`, icon: CircleHelp },
+            ]
+        }
     ];
 
-    const filteredLinks = navLinks.filter(link => 
-        link.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const standaloneLinks = [
+        { name: 'Dashboard', path: `/${basePath}/dashboard`, icon: LayoutDashboard },
+        { name: 'Settings', path: `/${basePath}/settings`, icon: Briefcase },
+    ];
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -176,41 +201,104 @@ export const DashboardLayout: React.FC = () => {
 
                     {/* Nav Links */}
                     <div className="flex-1 overflow-y-auto py-2 px-2 space-y-0.5 custom-scrollbar">
-                        {!isCollapsed && (
-                            <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 mt-2">Main Navigation</p>
-                        )}
-                        {filteredLinks.length > 0 ? (
-                            filteredLinks.map((link) => {
-                                const Icon = link.icon;
+                        {/* Standalone Link: Dashboard */}
+                        <NavLink
+                            to={standaloneLinks[0].path}
+                            className={({ isActive }) => `
+                                flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group
+                                ${isCollapsed ? 'justify-center' : ''}
+                                ${isActive
+                                    ? 'bg-primary-50 text-primary-700 shadow-sm'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
+                            `}
+                            onClick={() => setIsMobileSidebarOpen(false)}
+                        >
+                            {({ isActive }) => {
+                                const Icon = standaloneLinks[0].icon;
                                 return (
-                                    <NavLink
-                                        key={link.name}
-                                        to={link.path}
-                                        title={isCollapsed ? link.name : undefined}
-                                        className={({ isActive }) => `
-                                            flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group
-                                            ${isCollapsed ? 'justify-center' : ''}
-                                            ${isActive
-                                                ? 'bg-primary-50 text-primary-700 shadow-sm'
-                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
-                                        `}
-                                        onClick={() => setIsMobileSidebarOpen(false)}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <div className={`p-1 rounded-lg transition-colors ${isActive ? 'bg-white shadow-sm' : 'group-hover:bg-white'}`}>
-                                                    <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
-                                                </div>
-                                                {!isCollapsed && <span className="truncate flex-1">{link.name}</span>}
-                                                {isActive && !isCollapsed && <div className="w-1 h-4 bg-primary-600 rounded-full" />}
-                                            </>
-                                        )}
-                                    </NavLink>
+                                    <>
+                                        <div className={`p-1 rounded-lg transition-colors ${isActive ? 'bg-white shadow-sm' : 'group-hover:bg-white'}`}>
+                                            <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
+                                        </div>
+                                        {!isCollapsed && <span className="truncate flex-1">{standaloneLinks[0].name}</span>}
+                                    </>
                                 );
-                            })
-                        ) : (
-                            !isCollapsed && <p className="text-center py-10 text-xs text-gray-400 italic">No modules found</p>
-                        )}
+                            }}
+                        </NavLink>
+
+                        {/* Grouped Menus */}
+                        {groups.map((group) => (
+                            <div key={group.key} className="mt-2">
+                                {!isCollapsed && (
+                                    <button
+                                        onClick={() => toggleMenu(group.key)}
+                                        className="w-full flex items-center justify-between px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-gray-600 transition-colors"
+                                    >
+                                        <span>{group.name}</span>
+                                        {openMenus[group.key] ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                                    </button>
+                                )}
+                                {(openMenus[group.key] || isCollapsed) && (
+                                    <div className={`space-y-0.5 ${!isCollapsed ? 'ml-2 border-l border-gray-100 pl-1' : ''}`}>
+                                        {group.links
+                                            .filter(link => link.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                                            .map((link) => {
+                                                const Icon = link.icon;
+                                                return (
+                                                    <NavLink
+                                                        key={link.name}
+                                                        to={link.path}
+                                                        title={isCollapsed ? link.name : undefined}
+                                                        className={({ isActive }) => `
+                                                            flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group
+                                                            ${isCollapsed ? 'justify-center' : ''}
+                                                            ${isActive
+                                                                ? 'bg-primary-50 text-primary-700 shadow-sm'
+                                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
+                                                        `}
+                                                        onClick={() => setIsMobileSidebarOpen(false)}
+                                                    >
+                                                        {({ isActive }) => (
+                                                            <>
+                                                                <div className={`p-1 rounded-lg transition-colors ${isActive ? 'bg-white shadow-sm' : 'group-hover:bg-white'}`}>
+                                                                    <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
+                                                                </div>
+                                                                {!isCollapsed && <span className="truncate flex-1">{link.name}</span>}
+                                                                {isActive && !isCollapsed && <div className="w-1 h-4 bg-primary-600 rounded-full" />}
+                                                            </>
+                                                        )}
+                                                    </NavLink>
+                                                );
+                                            })}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+
+                        {/* Standalone Link: Settings */}
+                        <NavLink
+                            to={standaloneLinks[1].path}
+                            className={({ isActive }) => `
+                                flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group mt-2
+                                ${isCollapsed ? 'justify-center' : ''}
+                                ${isActive
+                                    ? 'bg-primary-50 text-primary-700 shadow-sm'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
+                            `}
+                            onClick={() => setIsMobileSidebarOpen(false)}
+                        >
+                            {({ isActive }) => {
+                                const Icon = standaloneLinks[1].icon;
+                                return (
+                                    <>
+                                        <div className={`p-1 rounded-lg transition-colors ${isActive ? 'bg-white shadow-sm' : 'group-hover:bg-white'}`}>
+                                            <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
+                                        </div>
+                                        {!isCollapsed && <span className="truncate flex-1">{standaloneLinks[1].name}</span>}
+                                    </>
+                                );
+                            }}
+                        </NavLink>
                     </div>
 
                     {/* Simple Branding Footer */}

@@ -21,6 +21,9 @@ export interface TaskUpdatePayload {
 export const createTask = (data: TaskPayload) =>
     api.post('/tasks', data);
 
+export const updateTask = (id: string, data: Partial<TaskPayload>) =>
+    api.put(`/tasks/${id}`, data);
+
 export const updateTaskStatus = (id: string, status: 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED') =>
     api.put(`/tasks/${id}`, { status });
 
