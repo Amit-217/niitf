@@ -95,16 +95,14 @@ const BatchModal: React.FC<ModalProps> = ({ batch, courses, onClose, onSaved }) 
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={onClose} />
             <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
-                <div className="bg-gradient-to-r from-emerald-600 to-teal-700 px-6 py-5">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-lg font-bold text-white">{batch ? 'Edit Batch' : 'New Academic Batch'}</h2>
-                            <p className="text-emerald-100 text-sm mt-0.5">{batch ? 'Update schedule or status.' : 'Register a new batch for instruction.'}</p>
-                        </div>
-                        <button onClick={onClose} className="p-1.5 rounded-lg text-emerald-100 hover:text-white hover:bg-white/10 transition-colors">
-                            <X size={20} />
-                        </button>
+                <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex items-start justify-between">
+                    <div>
+                        <h2 className="text-lg font-bold text-white">{batch ? 'Edit Batch' : 'New Academic Batch'}</h2>
+                        <p className="text-violet-200 text-sm mt-0.5">{batch ? 'Update schedule or status.' : 'Register a new batch for instruction.'}</p>
                     </div>
+                    <button onClick={onClose} className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors">
+                        <X size={18} />
+                    </button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
@@ -112,8 +110,8 @@ const BatchModal: React.FC<ModalProps> = ({ batch, courses, onClose, onSaved }) 
                         {/* Section: Basic details */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-                                <div className="p-1.5 bg-emerald-100 text-emerald-600 rounded-lg">
-                                    <Layers size={16} />
+                                <div className="w-7 h-7 rounded-lg bg-violet-100 flex items-center justify-center">
+                                    <Layers size={14} className="text-violet-600" />
                                 </div>
                                 <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Batch Identity</h3>
                             </div>
@@ -159,7 +157,7 @@ const BatchModal: React.FC<ModalProps> = ({ batch, courses, onClose, onSaved }) 
                                     <label className={labelClass}>Instruction Status</label>
                                     <div className="flex gap-2 p-1 bg-gray-50 rounded-xl border border-gray-100">
                                         {(['Upcoming', 'Running', 'Completed'] as const).map(s => (
-                                            <button key={s} type="button" onClick={() => setStatus(s)} className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all ${status === s ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-400 hover:text-gray-600'}`}>{s.toUpperCase()}</button>
+                                            <button key={s} type="button" onClick={() => setStatus(s)} className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all ${status === s ? 'bg-violet-600 text-white shadow-md' : 'text-gray-400 hover:text-gray-600'}`}>{s.toUpperCase()}</button>
                                         ))}
                                     </div>
                                 </div>
@@ -169,7 +167,7 @@ const BatchModal: React.FC<ModalProps> = ({ batch, courses, onClose, onSaved }) 
 
                     <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
                         <button type="button" onClick={onClose} className="flex-1 py-3 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all">Discard</button>
-                        <button type="submit" disabled={loading} className="flex-[2] py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-100 hover:from-emerald-700 hover:to-teal-700 transition-all flex items-center justify-center gap-2 group disabled:opacity-70">
+                        <button type="submit" disabled={loading} className="flex-[2] py-3 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-violet-100 hover:from-violet-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 group disabled:opacity-70">
                             {loading ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} className="group-hover:scale-110 transition-transform" /> {batch ? 'Update Batch' : 'Create Batch'}</>}
                         </button>
                     </div>
