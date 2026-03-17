@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { Plus, ListTodo, Search, Filter, CalendarDays, MoreVertical, X } from 'lucide-react';
+import { Plus, ListTodo, Search, Filter, CalendarDays, MoreVertical, X, Edit2 } from 'lucide-react';
 import {
     createTask,
+    updateTask,
     getAllTasks,
     updateTaskStatus,
     getTaskUpdates
@@ -37,17 +38,20 @@ export const AdminTasksPage = () => {
 
     // Drawer states
     const [isCreateDrawerOpen, setCreateDrawerOpen] = useState(false);
+    const [drawerMode, setDrawerMode] = useState<'CREATE' | 'EDIT'>('CREATE');
+    const [editTaskId, setEditTaskId] = useState<string | null>(null);
     const [isViewDrawerOpen, setViewDrawerOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [taskUpdates, setTaskUpdates] = useState<any[]>([]);
 
-    // Create Form states
-    const [newTask, setNewTask] = useState({
+    // Create/Edit Form states
+    const [taskForm, setTaskForm] = useState({
         title: '',
         description: '',
         assignedTo: [] as string[],
         startDate: new Date().toISOString().split('T')[0],
-        dueDate: ''
+        dueDate: '',
+        status: 'ASSIGNED' as 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED'
     });
 
     const fetchTasks = async () => {
@@ -81,33 +85,58 @@ export const AdminTasksPage = () => {
         }
     }, [isCreateDrawerOpen]);
 
-    const handleCreateSubmit = async (e: React.FormEvent) => {
+    const handleOpenCreate = () => {
+        setDrawerMode('CREATE');
+        setEditTaskId(null);
+        setTaskForm({
+            title: '',
+            description: '',
+            assignedTo: [],
+            startDate: new Date().toISOString().split('T')[0],
+            dueDate: '',
+            status: 'ASSIGNED'
+        });
+        setCreateDrawerOpen(true);
+    };
+
+    const handleOpenEdit = (task: Task, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setDrawerMode('EDIT');
+        setEditTaskId(task._id);
+        setTaskForm({
+            title: task.title,
+            description: task.description,
+            assignedTo: task.assignedTo.map(emp => emp._id),
+            startDate: task.startDate.split('T')[0],
+            dueDate: task.dueDate ? task.dueDate.split('T')[0] : '',
+            status: task.status
+        });
+        setCreateDrawerOpen(true);
+    };
+
+    const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newTask.title || !newTask.description || newTask.assignedTo.length === 0) {
+        if (!taskForm.title || !taskForm.description || taskForm.assignedTo.length === 0) {
             return toast.warning('Please fill all required fields');
         }
 
         try {
-            await createTask(newTask);
-            toast.success('Task created successfully!');
+            if (drawerMode === 'CREATE') {
+                await createTask(taskForm);
+                toast.success('Task created successfully!');
+            } else {
+                await updateTask(editTaskId!, taskForm);
+                toast.success('Task updated successfully!');
+            }
             setCreateDrawerOpen(false);
-
-            // Reset form
-            setNewTask({
-                title: '',
-                description: '',
-                assignedTo: [],
-                startDate: new Date().toISOString().split('T')[0],
-                dueDate: ''
-            });
             fetchTasks();
         } catch (error: any) {
-            toast.error(error.message || 'Failed to create task');
+            toast.error(error.message || 'Failed to process task');
         }
     };
 
     const toggleEmployeeSelection = (empId: string) => {
-        setNewTask(prev => ({
+        setTaskForm(prev => ({
             ...prev,
             assignedTo: prev.assignedTo.includes(empId)
                 ? prev.assignedTo.filter(id => id !== empId)
@@ -149,6 +178,11 @@ export const AdminTasksPage = () => {
 
     const getStatusConfig = (status: string) => STATUS_MAP[status] || STATUS_MAP.DEFAULT;
 
+    const getStatusBadge = (status: string) => {
+        const cfg = getStatusConfig(status);
+        return `${cfg.bg} ${cfg.text} ${cfg.border}`;
+    };
+
     // Filter tasks
     const filteredTasks = tasks.filter(t =>
         t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -181,9 +215,17 @@ export const AdminTasksPage = () => {
                                 </p>
                             </div>
                         </div>
-                        <button className="p-1 px-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
-                            <MoreVertical size={14} />
-                        </button>
+                        <div className="flex items-center gap-1">
+                            <button 
+                                onClick={(e) => handleOpenEdit(task, e)}
+                                className="p-1.5 rounded-lg text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors"
+                            >
+                                <Edit2 size={14} />
+                            </button>
+                            <button className="p-1 px-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                                <MoreVertical size={14} />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Progress Badge */}
@@ -247,7 +289,7 @@ export const AdminTasksPage = () => {
                 </div>
 
                 <button
-                    onClick={() => setCreateDrawerOpen(true)}
+                    onClick={handleOpenCreate}
                     className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"
                 >
                     <Plus size={17} /> Create New Task
@@ -303,7 +345,7 @@ export const AdminTasksPage = () => {
 
             {/* ── DRAWERS ───────────────────────────────────────────────────────── */}
 
-            {/* 1. Create Modal */}
+            {/* 1. Create/Edit Modal */}
             {isCreateDrawerOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setCreateDrawerOpen(false)} />
@@ -311,8 +353,12 @@ export const AdminTasksPage = () => {
                         <div className="bg-gradient-to-r from-violet-600 to-purple-700 px-6 py-5">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h2 className="text-lg font-bold text-white">Create New Task</h2>
-                                    <p className="text-violet-200 text-sm mt-0.5">Fill in task details and assign to employees.</p>
+                                    <h2 className="text-lg font-bold text-white">
+                                        {drawerMode === 'CREATE' ? 'Create New Task' : 'Edit Task'}
+                                    </h2>
+                                    <p className="text-violet-200 text-sm mt-0.5">
+                                        {drawerMode === 'CREATE' ? 'Fill in task details and assign to employees.' : 'Update task details and assignments.'}
+                                    </p>
                                 </div>
                                 <button onClick={() => setCreateDrawerOpen(false)} className="p-1.5 rounded-lg text-violet-200 hover:text-white hover:bg-white/10 transition-colors">
                                     <X size={20} />
@@ -320,38 +366,51 @@ export const AdminTasksPage = () => {
                             </div>
                         </div>
 
-                        <form id="create-task-form" onSubmit={handleCreateSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                        <form id="create-task-form" onSubmit={handleFormSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="col-span-2">
                                     <label className={labelClass}>Task Title *</label>
-                                    <input required type="text" value={newTask.title} onChange={e => setNewTask({ ...newTask, title: e.target.value })} className={inputClass} placeholder="e.g. Design Homepage" />
+                                    <input required type="text" value={taskForm.title} onChange={e => setTaskForm({ ...taskForm, title: e.target.value })} className={inputClass} placeholder="e.g. Design Homepage" />
                                 </div>
 
                                 <div className="col-span-2">
                                     <label className={labelClass}>Description *</label>
-                                    <textarea required rows={4} value={newTask.description} onChange={e => setNewTask({ ...newTask, description: e.target.value })} className={`${inputClass} resize-none`} placeholder="Details of the task..." />
+                                    <textarea required rows={4} value={taskForm.description} onChange={e => setTaskForm({ ...taskForm, description: e.target.value })} className={`${inputClass} resize-none`} placeholder="Details of the task..." />
                                 </div>
 
                                 <div>
                                     <label className={labelClass}>Start Date *</label>
-                                    <input required type="date" value={newTask.startDate} onChange={e => setNewTask({ ...newTask, startDate: e.target.value })} className={inputClass} />
+                                    <input required type="date" value={taskForm.startDate} onChange={e => setTaskForm({ ...taskForm, startDate: e.target.value })} className={inputClass} />
                                 </div>
                                 <div>
                                     <label className={labelClass}>Due Date</label>
-                                    <input type="date" value={newTask.dueDate} onChange={e => setNewTask({ ...newTask, dueDate: e.target.value })} className={inputClass} />
+                                    <input type="date" value={taskForm.dueDate} onChange={e => setTaskForm({ ...taskForm, dueDate: e.target.value })} className={inputClass} />
+                                </div>
+
+                                <div className="col-span-2">
+                                    <label className={labelClass}>Status</label>
+                                    <select 
+                                        value={taskForm.status} 
+                                        onChange={e => setTaskForm({ ...taskForm, status: e.target.value as any })}
+                                        className={inputClass}
+                                    >
+                                        <option value="ASSIGNED">Assigned</option>
+                                        <option value="IN_PROGRESS">In Progress</option>
+                                        <option value="COMPLETED">Completed</option>
+                                    </select>
                                 </div>
 
                                 <div className="col-span-2 space-y-2">
                                     <div className="flex justify-between items-center mb-1.5">
                                         <label className={"text-xs font-semibold text-gray-600 uppercase tracking-wide"}>Assign To *</label>
-                                        <span className="text-xs font-medium text-violet-700 bg-violet-100 px-2.5 py-0.5 rounded-full">{newTask.assignedTo.length} selected</span>
+                                        <span className="text-xs font-medium text-violet-700 bg-violet-100 px-2.5 py-0.5 rounded-full">{taskForm.assignedTo.length} selected</span>
                                     </div>
                                     <div className="border border-gray-200 rounded-xl max-h-48 overflow-y-auto divide-y divide-gray-100 bg-gray-50/50 shadow-inner">
                                         {employees.map(emp => (
                                             <label key={emp._id} className="flex items-center gap-3 p-3 hover:bg-violet-50/50 cursor-pointer transition-colors group">
                                                 <input
                                                     type="checkbox"
-                                                    checked={newTask.assignedTo.includes(emp._id)}
+                                                    checked={taskForm.assignedTo.includes(emp._id)}
                                                     onChange={() => toggleEmployeeSelection(emp._id)}
                                                     className="w-4 h-4 text-violet-600 rounded border-gray-300 focus:ring-violet-500 transition-colors group-hover:border-violet-400"
                                                 />
@@ -367,7 +426,9 @@ export const AdminTasksPage = () => {
 
                             <div className="flex gap-3 pt-4">
                                 <button type="button" onClick={() => setCreateDrawerOpen(false)} className="flex-1 py-2.5 px-4 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">Cancel</button>
-                                <button type="submit" className="flex-1 py-2.5 px-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-violet-200">Create Task</button>
+                                <button type="submit" className="flex-1 py-2.5 px-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-violet-200">
+                                    {drawerMode === 'CREATE' ? 'Create Task' : 'Save Changes'}
+                                </button>
                             </div>
                         </form>
                     </div>
