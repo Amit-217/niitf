@@ -113,16 +113,14 @@ const EnquiryModal: React.FC<ModalProps> = ({ enquiry, courses, onClose, onSaved
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={onClose} />
             <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
-                <div className={`bg-gradient-to-r ${enquiry ? 'from-amber-500 to-orange-600' : 'from-indigo-600 to-violet-700'} px-6 py-5`}>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-lg font-bold text-white">{enquiry ? 'Edit Enquiry' : 'New Lead Enquiry'}</h2>
-                            <p className="text-white/70 text-sm mt-0.5">{enquiry ? 'Update lead details & status.' : 'Capture details for the new enquiry.'}</p>
-                        </div>
-                        <button onClick={onClose} className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors">
-                            <X size={20} />
-                        </button>
+                <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex items-start justify-between">
+                    <div>
+                        <h2 className="text-lg font-bold text-white">{enquiry ? 'Edit Enquiry' : 'New Lead Enquiry'}</h2>
+                        <p className="text-violet-200 text-sm mt-0.5">{enquiry ? 'Update lead details & status.' : 'Capture details for the new enquiry.'}</p>
                     </div>
+                    <button onClick={onClose} className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors">
+                        <X size={18} />
+                    </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col h-[75vh]">
@@ -167,7 +165,7 @@ const EnquiryModal: React.FC<ModalProps> = ({ enquiry, courses, onClose, onSaved
                                         <label className={labelClass}>Course of Interest *</label>
                                         <select value={courseId} onChange={e => setCourseId(e.target.value)} required className={inputClass}>
                                             <option value="">-- Select Course --</option>
-                                            {courses.map(c => <option key={c._id} value={c._id}>{c.courseName}</option>)}
+                                            {courses.map(c => <option key={c._id} value={c.courseId}>{c.courseName}</option>)}
                                         </select>
                                     </div>
                                 )}
@@ -190,8 +188,8 @@ const EnquiryModal: React.FC<ModalProps> = ({ enquiry, courses, onClose, onSaved
                         {/* Section: Status & Remarks */}
                         <div className="space-y-4 pt-2">
                             <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-                                <div className="p-1.5 bg-amber-100 text-amber-600 rounded-lg">
-                                    <MessageSquare size={16} />
+                                <div className="w-7 h-7 rounded-lg bg-violet-100 flex items-center justify-center">
+                                    <MessageSquare size={14} className="text-violet-600" />
                                 </div>
                                 <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Status & Remarks</h3>
                             </div>
@@ -234,7 +232,7 @@ const EnquiryModal: React.FC<ModalProps> = ({ enquiry, courses, onClose, onSaved
 
                     <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
                         <button type="button" onClick={onClose} className="flex-1 py-3 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all">Discard</button>
-                        <button type="submit" disabled={loading} className={`flex-[2] py-3 px-4 bg-gradient-to-r ${enquiry ? 'from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-amber-100' : 'from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-violet-100'} text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-70 group`}>
+                        <button type="submit" disabled={loading} className="flex-[2] py-3 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-violet-100 disabled:opacity-70 group">
                             {loading ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} className="group-hover:scale-110 transition-transform" /> {enquiry ? 'Update Enquiry' : 'Create Enquiry'}</>}
                         </button>
                     </div>

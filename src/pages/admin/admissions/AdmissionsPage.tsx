@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
-import { BookOpen, Plus, Eye, X, CheckCircle, BadgeDollarSign, User, Layers, Calendar, CreditCard, Save, Loader2, MinusCircle } from 'lucide-react';
+import { BookOpen, Plus, Eye, X, CheckCircle, BadgeDollarSign, User, Layers, Calendar, CreditCard, Save, Loader2, MinusCircle, Pencil, Trash2 } from 'lucide-react';
 import {
-    getAdmissions, createAdmission, completeAdmission,
+    getAdmissions, createAdmission, completeAdmission, updateAdmission,
     getFeesByAdmission, payFee,
     Admission, AdmissionPayload, FeePaymentPayload
 } from '../../../api/admissionApi';
@@ -19,6 +19,17 @@ const inputClass = "w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-
 const labelClass = "block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide";
 
 export const AdmissionsPage = () => {
+        // Delete admission
+        const handleDelete = async (id: string) => {
+            if (!window.confirm('Are you sure you want to delete this admission?')) return;
+            try {
+                await api.delete(`/admin/admissions/${id}`);
+                toast.success('Admission deleted!');
+                fetchAdmissions();
+            } catch (err: any) {
+                toast.error(err?.message || err?.error || 'Failed to delete admission');
+            }
+        };
     const [admissions, setAdmissions] = useState<Admission[]>([]);
     const [total, setTotal] = useState(0);
     const [page] = useState(1);
@@ -33,6 +44,11 @@ export const AdmissionsPage = () => {
     const [batches, setBatches] = useState<any[]>([]);
     const [form, setForm] = useState({ studentId: '', courseId: '', batchId: '', admissionDate: new Date().toISOString().split('T')[0], totalFees: '', discount: '0', finalPayable: '' });
     const [submitting, setSubmitting] = useState(false);
+
+    // Edit modal
+    const [editAdm, setEditAdm] = useState<Admission | null>(null);
+    const [editForm, setEditForm] = useState({ admissionDate: '', totalFees: '', discount: '0', finalPayable: '', status: '' });
+    const [editSubmitting, setEditSubmitting] = useState(false);
 
     // View + fee drawer
     const [viewAdm, setViewAdm] = useState<Admission | null>(null);
@@ -121,6 +137,36 @@ export const AdmissionsPage = () => {
         try { const r = await getFeesByAdmission(adm._id); setFeeSummary(r.data.data); } catch { }
     };
 
+    const openEdit = (adm: Admission) => {
+        setEditAdm(adm);
+        setEditForm({
+            admissionDate: adm.admissionDate?.slice(0, 10) || '',
+            totalFees: String(adm.totalFees ?? ''),
+            discount: String(adm.discount ?? '0'),
+            finalPayable: String(adm.finalPayable ?? ''),
+            status: adm.status || 'Active',
+        });
+    };
+
+    const handleUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editAdm) return;
+        setEditSubmitting(true);
+        try {
+            await updateAdmission(editAdm._id, {
+                admissionDate: editForm.admissionDate,
+                totalFees: +editForm.totalFees,
+                discount: +editForm.discount,
+                finalPayable: +editForm.finalPayable,
+                status: editForm.status as any,
+            });
+            toast.success('Admission updated!');
+            setEditAdm(null);
+            fetchAdmissions();
+        } catch (err: any) { toast.error(err?.message || 'Failed to update'); }
+        finally { setEditSubmitting(false); }
+    };
+
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
@@ -206,7 +252,10 @@ export const AdmissionsPage = () => {
                                             <td className="px-4 py-3 font-semibold">₹{a.finalPayable?.toLocaleString()}</td>
                                             <td className="px-4 py-3"><span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold border ${STATUS_BADGE[a.status] || ''}`}>{a.status}</span></td>
                                             <td className="px-4 py-3 text-gray-500">{new Date(a.admissionDate).toLocaleDateString()}</td>
-                                            <td className="px-4 py-3"><button onClick={() => openView(a)} className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"><Eye size={16} /></button></td>
+                                            <td className="px-4 py-3 flex items-center gap-1">
+                                                <button onClick={() => openEdit(a)} className="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors" title="Edit"><Pencil size={15} /></button>
+                                                <button onClick={() => handleDelete(a._id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete"><Trash2 size={15} /></button>
+                                            </td>
                                         </tr>
                                     ))}
                         </tbody>
@@ -335,15 +384,15 @@ export const AdmissionsPage = () => {
 
             {/* View + Fee Drawer */}
             {viewAdm && (
-                <div className="fixed inset-0 z-50 flex justify-end">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={() => setViewAdm(null)} />
-                    <div className="relative w-full max-w-lg bg-white shadow-2xl flex flex-col h-full animate-in slide-in-from-right duration-300">
-                        <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                    <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+                        <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex items-start justify-between shrink-0">
                             <div>
-                                <h2 className="text-lg font-bold text-gray-900">{viewAdm.admissionId}</h2>
-                                <p className="text-sm text-gray-500">{viewAdm.studentId?.fullName}</p>
+                                <h2 className="text-lg font-bold text-white">{viewAdm.admissionId}</h2>
+                                <p className="text-violet-200 text-sm mt-0.5">{viewAdm.studentId?.fullName}</p>
                             </div>
-                            <button onClick={() => setViewAdm(null)} className="p-2 hover:bg-gray-100 rounded-full"><X size={20} /></button>
+                            <button onClick={() => setViewAdm(null)} className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors"><X size={18} /></button>
                         </div>
 
                         <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -412,6 +461,65 @@ export const AdmissionsPage = () => {
                                 </div>
                             )}
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Admission Modal */}
+            {editAdm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setEditAdm(null)} />
+                    <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl flex flex-col animate-in fade-in zoom-in-95 duration-200">
+                        <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex items-start justify-between shrink-0">
+                            <div>
+                                <h2 className="text-lg font-bold text-white">Edit Admission</h2>
+                                <p className="text-violet-200 text-sm mt-0.5">{editAdm.admissionId}</p>
+                            </div>
+                            <button onClick={() => setEditAdm(null)} className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors"><X size={18} /></button>
+                        </div>
+                        <form onSubmit={handleUpdate} className="flex flex-col">
+                            <div className="px-6 py-5 space-y-4">
+                                <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+                                    <div className="w-7 h-7 rounded-lg bg-violet-100 flex items-center justify-center">
+                                        <User size={14} className="text-violet-600" />
+                                    </div>
+                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Admission Details</span>
+                                </div>
+                                <div>
+                                    <label className={labelClass}>Admission Date</label>
+                                    <input type="date" value={editForm.admissionDate} onChange={e => setEditForm(f => ({ ...f, admissionDate: e.target.value }))} className={inputClass} />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className={labelClass}>Total Fees (₹)</label>
+                                        <input type="number" min="0" value={editForm.totalFees} onChange={e => { const v = e.target.value; setEditForm(f => ({ ...f, totalFees: v, finalPayable: String(+v - +(f.discount || 0)) })); }} className={inputClass} />
+                                    </div>
+                                    <div>
+                                        <label className={labelClass}>Discount (₹)</label>
+                                        <input type="number" min="0" value={editForm.discount} onChange={e => { const v = e.target.value; setEditForm(f => ({ ...f, discount: v, finalPayable: String(+(f.totalFees || 0) - +v) })); }} className={inputClass} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className={labelClass}>Final Payable (₹)</label>
+                                    <input type="number" min="0" value={editForm.finalPayable} onChange={e => setEditForm(f => ({ ...f, finalPayable: e.target.value }))} className={inputClass} />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>Status</label>
+                                    <select value={editForm.status} onChange={e => setEditForm(f => ({ ...f, status: e.target.value }))} className={inputClass}>
+                                        <option value="Active">Active</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Cancelled">Cancelled</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3 rounded-b-2xl">
+                                <button type="button" onClick={() => setEditAdm(null)} className="flex-1 py-3 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all">Discard</button>
+                                <button type="submit" disabled={editSubmitting} className="flex-[2] py-3 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-violet-100 hover:from-violet-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70">
+                                    {editSubmitting ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                                    Update Admission
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

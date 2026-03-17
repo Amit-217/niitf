@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
-import { FileText, Plus, Eye, X, BookOpen, Clock, BarChart3, AlertCircle, Save, Loader2 } from 'lucide-react';
+import { FileText, Plus, Eye, X, BookOpen, Clock, BarChart3, AlertCircle, Save, Loader2, ListChecks } from 'lucide-react';
 import { getTests, createTest, addQuestion, getQuestions, Test, TestPayload, Question } from '../../../api/testApi';
 import api from '../../../api/axios';
 
@@ -26,6 +26,25 @@ export const TestsPage = () => {
     const [addingQ, setAddingQ] = useState(false);
     const [analytics, setAnalytics] = useState<any[]>([]);
     const [isAnalyticsOpen, setAnalyticsOpen] = useState(false);
+    // Question Paper Review Modal
+    const [isQuestionPaperOpen, setQuestionPaperOpen] = useState(false);
+    const [questionPaperTest, setQuestionPaperTest] = useState<Test | null>(null);
+    const [questionPaperQuestions, setQuestionPaperQuestions] = useState<Question[]>([]);
+    const [isQPLoading, setQPLoading] = useState(false);
+    // Handler to open question paper modal
+    const openQuestionPaper = async (t: Test) => {
+        setQuestionPaperTest(t);
+        setQuestionPaperOpen(true);
+        setQPLoading(true);
+        try {
+            const r: any = await getQuestions(t._id);
+            if (Array.isArray(r)) setQuestionPaperQuestions(r);
+            else if (r?.data && Array.isArray(r.data)) setQuestionPaperQuestions(r.data);
+            else if (r?.data?.data) setQuestionPaperQuestions(r.data.data);
+            else setQuestionPaperQuestions([]);
+        } catch { toast.error('Failed to load questions'); setQuestionPaperQuestions([]); }
+        finally { setQPLoading(false); }
+    };
 
     const fetchTests = useCallback(async () => {
         setIsLoading(true);
@@ -138,10 +157,89 @@ export const TestsPage = () => {
                                     <td className="px-4 py-3 text-gray-500">{t.batchId?.batchName}</td>
                                     <td className="px-4 py-3">{t.passingMarks}/{t.totalMarks}</td>
                                     <td className="px-4 py-3"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${MODE_COLORS[t.mode]}`}>{t.mode}</span></td>
-                                    <td className="px-4 py-3 flex gap-1">
-                                        <button onClick={() => openView(t)} className="p-1.5 text-gray-400 hover:text-primary-600"><Eye size={16} /></button>
-                                        <button onClick={() => openAnalytics(t)} className="p-1.5 text-gray-400 hover:text-amber-600"><BarChart3 size={16} /></button>
+                                    <td className="px-4 py-3 flex gap-2">
+                                        {/* Add Question to Bank */}
+                                        <button
+                                            title="Add Question to Bank"
+                                            onClick={() => openView(t)}
+                                            className="p-1.5 rounded-full text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors"
+                                        >
+                                            <Plus size={16} />
+                                        </button>
+                                        {/* View Question Paper */}
+                                        <button
+                                            title="View Question Paper"
+                                            onClick={() => openQuestionPaper(t)}
+                                            className="p-1.5 rounded-full text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                        >
+                                            <Eye size={16} />
+                                        </button>
+                                        {/* View Results */}
+                                        <button
+                                            title="View Results"
+                                            onClick={() => openAnalytics(t)}
+                                            className="p-1.5 rounded-full text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+                                        >
+                                            <BarChart3 size={16} />
+                                        </button>
                                     </td>
+                                            {/* Question Paper Review Modal */}
+                                            {isQuestionPaperOpen && (
+                                                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                                                    <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setQuestionPaperOpen(false)} />
+                                                    <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+                                                        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex justify-between items-start shrink-0">
+                                                            <div>
+                                                                <h2 className="text-lg font-bold text-white flex items-center gap-2"><ListChecks size={20} /> Question Paper</h2>
+                                                                <p className="text-blue-100 text-sm mt-0.5">{questionPaperTest?.testName}</p>
+                                                            </div>
+                                                            <button onClick={() => setQuestionPaperOpen(false)} className="p-1.5 rounded-lg text-blue-100 hover:text-white hover:bg-white/10 transition-colors"><X size={18} /></button>
+                                                        </div>
+                                                        <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50">
+                                                            {isQPLoading ? (
+                                                                <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-3">
+                                                                    <Loader2 className="animate-spin" size={32} />
+                                                                    <p className="text-sm font-medium italic">Loading question paper...</p>
+                                                                </div>
+                                                            ) : questionPaperQuestions.length === 0 ? (
+                                                                <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-3">
+                                                                    <AlertCircle size={40} className="opacity-20" />
+                                                                    <p className="text-sm font-medium italic">No questions found for this test.</p>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="space-y-6">
+                                                                    {questionPaperQuestions.map((q, idx) => (
+                                                                        <div key={q._id || idx} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                                                                            <div className="flex items-center gap-2 mb-2">
+                                                                                <span className="w-7 h-7 shrink-0 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg flex items-center justify-center">Q{idx + 1}</span>
+                                                                                <span className="font-semibold text-gray-800">{q.questionText}</span>
+                                                                            </div>
+                                                                            {q.type === 'MCQ' && q.options && (
+                                                                                <ul className="pl-8 space-y-1 mt-2">
+                                                                                    {q.options.map((opt, oidx) => (
+                                                                                        <li key={oidx} className="flex items-center gap-2 text-gray-700">
+                                                                                            <span className="w-5 h-5 rounded-full border border-gray-300 flex items-center justify-center text-xs font-bold bg-gray-50">{String.fromCharCode(65 + oidx)}</span>
+                                                                                            <span>{opt}</span>
+                                                                                        </li>
+                                                                                    ))}
+                                                                                </ul>
+                                                                            )}
+                                                                            {q.type === 'PASSAGE' && q.passageText && (
+                                                                                <div className="mt-2 p-3 bg-gray-50 border-l-4 border-blue-200 text-gray-600 text-sm rounded">
+                                                                                    {q.passageText}
+                                                                                </div>
+                                                                            )}
+                                                                            {q.marks && (
+                                                                                <div className="mt-2 text-xs text-gray-400">Marks: {q.marks}</div>
+                                                                            )}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                 </tr>
                             ))
                         }
@@ -274,10 +372,10 @@ export const TestsPage = () => {
             )}
 
             {isAnalyticsOpen && (
-                <div className="fixed inset-0 z-50 flex justify-end">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setAnalyticsOpen(false)} />
-                    <div className="relative w-full max-w-xl bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-                        <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 flex justify-between items-center shrink-0">
+                    <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+                        <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex justify-between items-start shrink-0">
                             <div>
                                 <h2 className="text-lg font-bold text-white">Performance Analytics</h2>
                                 <p className="text-violet-200 text-sm mt-0.5">Top missed questions for {viewTest?.testName}</p>
@@ -321,10 +419,10 @@ export const TestsPage = () => {
             )}
 
             {viewTest && !isAnalyticsOpen && (
-                <div className="fixed inset-0 z-50 flex justify-end">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setViewTest(null)} />
-                    <div className="relative w-full max-w-3xl bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-                        <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 flex justify-between items-center shrink-0">
+                    <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+                        <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex justify-between items-start shrink-0">
                             <div>
                                 <h2 className="text-lg font-bold text-white">{viewTest.testName}</h2>
                                 <p className="text-violet-200 text-sm mt-0.5">{viewTest.mode} Examination Card</p>

@@ -328,7 +328,7 @@ export const CoursesPage: React.FC = () => {
                 courses.length === 0 ? <div className="py-20 text-center text-gray-500">No courses found</div> :
                 viewMode === 'grid' ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {courses.map(c => <CourseCard key={c._id} course={c} onEdit={setEditCourse} onDelete={setDeleteTarget} onToggleActive={handleToggleActive} />)}
+                        {courses.map(c => <CourseCard key={c._id} course={c} onEdit={c => { setEditCourse(c); setShowModal(true); }} onDelete={setDeleteTarget} onToggleActive={handleToggleActive} />)}
                     </div>
                 ) : (
                     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden overflow-x-auto">
