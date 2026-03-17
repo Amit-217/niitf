@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 
 import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 
 export const DashboardLayout: React.FC = () => {
@@ -334,6 +336,7 @@ export const DashboardLayout: React.FC = () => {
                     </div>
                 </main>
             </div>
+            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnHover theme="colored" style={{ zIndex: 99999 }} />
         </div>
     );
 };

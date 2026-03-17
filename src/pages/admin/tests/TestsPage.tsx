@@ -76,7 +76,7 @@ export const TestsPage = () => {
             setCreateOpen(false);
             fetchTests();
         }
-        catch (err: any) { toast.error(err.response?.data?.message || 'Error'); }
+        catch (err: any) { toast.error(err?.message || err?.error || 'Failed to create test'); }
         finally { setSubmitting(false); }
     };
 
@@ -275,14 +275,14 @@ export const TestsPage = () => {
 
             {isAnalyticsOpen && (
                 <div className="fixed inset-0 z-50 flex justify-end">
-                    <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => setAnalyticsOpen(false)} />
+                    <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setAnalyticsOpen(false)} />
                     <div className="relative w-full max-w-xl bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-                        <div className="p-6 bg-amber-500 text-white flex justify-between items-center shrink-0">
+                        <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 flex justify-between items-center shrink-0">
                             <div>
-                                <h2 className="text-xl font-black tracking-tight uppercase">Performance Analytics</h2>
-                                <p className="text-amber-100 text-xs mt-0.5">Top missed questions for {viewTest?.testName}</p>
+                                <h2 className="text-lg font-bold text-white">Performance Analytics</h2>
+                                <p className="text-violet-200 text-sm mt-0.5">Top missed questions for {viewTest?.testName}</p>
                             </div>
-                            <button onClick={() => setAnalyticsOpen(false)} className="p-2 hover:bg-white/10 rounded-xl transition-colors"><X size={20} /></button>
+                            <button onClick={() => setAnalyticsOpen(false)} className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors"><X size={18} /></button>
                         </div>
 
                         <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/50">
@@ -296,7 +296,7 @@ export const TestsPage = () => {
                                     <div key={item.questionId} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                                         <div className="flex items-start justify-between gap-4 mb-4">
                                             <div className="flex gap-2.5">
-                                                <span className="w-6 h-6 shrink-0 bg-gray-900 text-white text-[10px] font-black rounded-lg flex items-center justify-center">Q{idx + 1}</span>
+                                                <span className="w-6 h-6 shrink-0 bg-violet-100 text-violet-700 text-[10px] font-bold rounded-lg flex items-center justify-center">Q{idx + 1}</span>
                                                 <p className="text-sm font-bold text-gray-800 leading-tight">{item.questionText}</p>
                                             </div>
                                             <div className="text-right shrink-0">
@@ -322,19 +322,14 @@ export const TestsPage = () => {
 
             {viewTest && !isAnalyticsOpen && (
                 <div className="fixed inset-0 z-50 flex justify-end">
-                    <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => setViewTest(null)} />
+                    <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setViewTest(null)} />
                     <div className="relative w-full max-w-3xl bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-                        <div className="p-6 bg-gray-900 text-white flex justify-between items-center shrink-0">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10">
-                                    <BookOpen size={24} className="text-primary-400" />
-                                </div>
-                                <div>
-                                    <h2 className="text-xl font-black tracking-tight">{viewTest.testName}</h2>
-                                    <p className="text-gray-400 text-xs mt-0.5">{viewTest.mode} Examination Card</p>
-                                </div>
+                        <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 flex justify-between items-center shrink-0">
+                            <div>
+                                <h2 className="text-lg font-bold text-white">{viewTest.testName}</h2>
+                                <p className="text-violet-200 text-sm mt-0.5">{viewTest.mode} Examination Card</p>
                             </div>
-                            <button onClick={() => setViewTest(null)} className="p-2 hover:bg-white/10 rounded-xl transition-colors"><X size={20} /></button>
+                            <button onClick={() => setViewTest(null)} className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors"><X size={18} /></button>
                         </div>
 
                         <div className="flex-1 overflow-y-auto bg-gray-50/30 p-6">
@@ -394,8 +389,8 @@ export const TestsPage = () => {
                                                     ))}
                                                 </div>
 
-                                                <button type="submit" disabled={addingQ} className="w-full py-3 bg-gray-900 text-white font-black rounded-xl uppercase text-xs tracking-widest hover:bg-primary-600 transition-all shadow-lg active:scale-[0.98] disabled:opacity-50">
-                                                    {addingQ ? 'Saving Question...' : 'Add to Bank'}
+                                                <button type="submit" disabled={addingQ} className="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold rounded-xl text-sm hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-100 flex items-center justify-center gap-2 disabled:opacity-70">
+                                                    {addingQ ? <><Loader2 size={16} className="animate-spin" /> Saving...</> : <><Plus size={16} /> Add to Bank</>}
                                                 </button>
                                             </form>
                                         </div>

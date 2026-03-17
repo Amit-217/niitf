@@ -213,11 +213,11 @@ const UserModal: React.FC<UserModalProps> = ({ mode, editUser, currentUserRole, 
                     </div>
 
                     <div className="flex gap-3 pt-2">
-                        <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
-                            Cancel
+                        <button type="button" onClick={onClose} className="flex-1 py-3 px-4 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all">
+                            Discard
                         </button>
                         <button type="submit" disabled={loading}
-                            className="flex-1 py-2.5 px-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-violet-200 disabled:opacity-60">
+                            className="flex-[2] py-3 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-bold hover:from-violet-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-violet-100 disabled:opacity-70">
                             {loading ? <Loader2 size={16} className="animate-spin" /> : null}
                             {mode === 'create' ? 'Create User' : 'Save Changes'}
                         </button>

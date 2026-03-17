@@ -99,15 +99,15 @@ export const AdmissionsPage = () => {
 
     useEffect(() => {
         if (!isCreateOpen) return;
-        getStudents({ limit: 100 }).then((r: any) => {
+        getStudents({ limit: 200 }).then((r: any) => {
             if (Array.isArray(r)) setStudents(r);
             else if (r?.data?.students) setStudents(r.data.students);
             else if (r?.data && Array.isArray(r.data)) setStudents(r.data);
             else if (r?.students) setStudents(r.students);
             else setStudents([]);
-        }).catch(() => { });
-        api.get('/courses').then((r: any) => setCourses(r?.data?.data || r?.data || r || [])).catch(() => { });
-        api.get('/batches').then((r: any) => setBatches(r?.data?.data || r?.data || r || [])).catch(() => { });
+        }).catch(() => toast.error('Failed to load students'));
+        api.get('/courses?limit=200&status=Active').then((r: any) => setCourses(r?.data?.data || r?.data || r || [])).catch(() => toast.error('Failed to load courses'));
+        api.get('/batches?limit=200').then((r: any) => setBatches(r?.data?.data || r?.data || r || [])).catch(() => toast.error('Failed to load batches'));
     }, [isCreateOpen]);
 
     // Auto-compute finalPayable when fees/discount change
@@ -130,7 +130,7 @@ export const AdmissionsPage = () => {
             setCreateOpen(false);
             fetchAdmissions();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || 'Failed to create admission');
+            toast.error(err?.message || err?.error || 'Failed to create admission');
         } finally { setSubmitting(false); }
     };
 
@@ -141,7 +141,7 @@ export const AdmissionsPage = () => {
             toast.success('Admission completed!');
             fetchAdmissions();
             setViewAdm(null);
-        } catch (err: any) { toast.error(err.response?.data?.message || 'Cannot complete'); }
+        } catch (err: any) { toast.error(err?.message || err?.error || 'Cannot complete'); }
     };
 
     const handlePayFee = async (e: React.FormEvent) => {
@@ -154,7 +154,7 @@ export const AdmissionsPage = () => {
             const r = await getFeesByAdmission(viewAdm._id);
             setFeeSummary(r.data.data);
             setFeeForm({ installmentNo: 1, amount: 0, paymentMode: 'Cash' });
-        } catch (err: any) { toast.error(err.response?.data?.message || 'Payment failed'); }
+        } catch (err: any) { toast.error(err?.message || err?.error || 'Payment failed'); }
         finally { setFeeSubmitting(false); }
     };
 

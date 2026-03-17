@@ -41,6 +41,9 @@ const levelGradients: Record<string, string> = {
     Expert: 'from-rose-500 to-red-600',
 };
 
+const inputClass = "w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition-all";
+const labelClass = "block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide";
+
 // ── Modal ──────────────────────────────────────────────────────────────────
 interface ModalProps {
     course?: Course | null;
@@ -75,7 +78,7 @@ const CourseModal: React.FC<ModalProps> = ({ course, onClose, onSaved }) => {
             onSaved();
             onClose();
         } catch (err: any) {
-            toast.error(err?.response?.data?.message || 'Failed to save course.');
+            toast.error(err?.message || err?.error || 'Failed to save course.');
         } finally {
             setLoading(false);
         }
@@ -83,59 +86,62 @@ const CourseModal: React.FC<ModalProps> = ({ course, onClose, onSaved }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md animate-in zoom-in-95 fade-in duration-200">
-                <div className={`rounded-t-2xl p-6 bg-gradient-to-r ${course ? 'from-violet-500 to-purple-600' : 'from-sky-500 to-blue-600'}`}>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-white">
-                                <BookOpen size={18} />
-                            </div>
-                            <h2 className="text-lg font-bold text-white">{course ? 'Edit Course' : 'New Course'}</h2>
-                        </div>
-                        <button onClick={onClose} className="text-white/70 hover:text-white transition-colors"><X size={20} /></button>
+            <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col animate-in zoom-in-95 fade-in duration-200">
+                <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex items-start justify-between">
+                    <div>
+                        <h2 className="text-lg font-bold text-white">{course ? 'Edit Course' : 'New Course'}</h2>
+                        <p className="text-sm text-violet-200 mt-0.5">{course ? 'Update course details' : 'Add a new training course'}</p>
                     </div>
+                    <button onClick={onClose} className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors">
+                        <X size={18} />
+                    </button>
                 </div>
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Course Name *</label>
-                        <input value={courseName} onChange={e => setCourseName(e.target.value)} required placeholder="e.g. NDT Level II"
-                            className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/25 transition-all" />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Level</label>
-                        <div className="relative">
-                            <select value={level} onChange={e => setLevel(e.target.value)}
-                                className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none appearance-none cursor-pointer">
-                                <option value="">Select level...</option>
-                                {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
-                            </select>
-                            <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Duration</label>
-                            <div className="relative">
-                                <input value={duration} onChange={e => setDuration(e.target.value)} placeholder="e.g. 3 months"
-                                    className="w-full px-4 py-3 pl-9 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none transition-all" />
-                                <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <form onSubmit={handleSubmit} className="flex flex-col">
+                    <div className="px-6 py-5 space-y-4 overflow-y-auto max-h-[60vh]">
+                        <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+                            <div className="w-7 h-7 rounded-lg bg-violet-100 flex items-center justify-center">
+                                <BookOpen size={14} className="text-violet-600" />
                             </div>
+                            <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Course Details</span>
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Fees (₹)</label>
+                            <label className={labelClass}>Course Name *</label>
+                            <input value={courseName} onChange={e => setCourseName(e.target.value)} required placeholder="e.g. NDT Level II" className={inputClass} />
+                        </div>
+                        <div>
+                            <label className={labelClass}>Level</label>
                             <div className="relative">
-                                <input type="number" value={fees} onChange={e => setFees(e.target.value)} placeholder="0" min="0"
-                                    className="w-full px-4 py-3 pl-9 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none transition-all" />
-                                <IndianRupee size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                <select value={level} onChange={e => setLevel(e.target.value)} className={`${inputClass} appearance-none cursor-pointer`}>
+                                    <option value="">Select level...</option>
+                                    {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
+                                </select>
+                                <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 pb-3 border-b border-gray-100 pt-2">
+                            <div className="w-7 h-7 rounded-lg bg-amber-100 flex items-center justify-center">
+                                <Clock size={14} className="text-amber-600" />
+                            </div>
+                            <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Schedule & Pricing</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className={labelClass}>Duration</label>
+                                <input value={duration} onChange={e => setDuration(e.target.value)} placeholder="e.g. 3 months" className={inputClass} />
+                            </div>
+                            <div>
+                                <label className={labelClass}>Fees (₹)</label>
+                                <input type="number" value={fees} onChange={e => setFees(e.target.value)} placeholder="0" min="0" className={inputClass} />
                             </div>
                         </div>
                     </div>
-                    <div className="flex gap-3 pt-2">
-                        <button type="button" onClick={onClose} className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">Cancel</button>
+                    <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3 rounded-b-2xl">
+                        <button type="button" onClick={onClose} className="flex-1 py-3 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all">Discard</button>
                         <button type="submit" disabled={loading}
-                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold rounded-xl hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 disabled:opacity-60">
-                            {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} {course ? 'Update' : 'Create'}
+                            className="flex-[2] py-3 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-violet-100 hover:from-violet-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70">
+                            {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                            {course ? 'Update Course' : 'Create Course'}
                         </button>
                     </div>
                 </form>
@@ -298,7 +304,7 @@ export const CoursesPage: React.FC = () => {
                         <button onClick={() => setViewMode('table')} className={`p-1.5 rounded-lg transition-all ${viewMode === 'table' ? 'bg-white shadow-sm text-primary-600' : 'text-gray-400'}`}><List size={18} /></button>
                     </div>
                     <button onClick={fetchCourses} className="p-2.5 border border-gray-200 rounded-xl text-gray-500 hover:text-gray-800 hover:bg-gray-50 transition-colors"><RefreshCw size={16} /></button>
-                    <button onClick={() => { setEditCourse(null); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold rounded-xl hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg"><Plus size={16} /> New Course</button>
+                    <button onClick={() => { setEditCourse(null); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold rounded-xl hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"><Plus size={16} /> New Course</button>
                 </div>
             </div>
 
