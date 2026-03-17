@@ -46,7 +46,7 @@ const SOURCE_CONFIG: Record<string, string> = {
 const SOURCES = ['Walk-in', 'Call', 'Website', 'Reference'] as const;
 const STATUSES = ['New', 'Follow-up', 'Converted', 'Not Interested'] as const;
 
-const inputClass = "w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all";
+const inputClass = "w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition-all";
 const labelClass = "block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide";
 
 // ── Components ─────────────────────────────────────────────────────────────
@@ -234,7 +234,7 @@ const EnquiryModal: React.FC<ModalProps> = ({ enquiry, courses, onClose, onSaved
 
                     <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
                         <button type="button" onClick={onClose} className="flex-1 py-3 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all">Discard</button>
-                        <button type="submit" disabled={loading} className={`flex-[2] py-3 px-4 ${enquiry ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200'} text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-70 group`}>
+                        <button type="submit" disabled={loading} className={`flex-[2] py-3 px-4 bg-gradient-to-r ${enquiry ? 'from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-amber-100' : 'from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-violet-100'} text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-70 group`}>
                             {loading ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} className="group-hover:scale-110 transition-transform" /> {enquiry ? 'Update Enquiry' : 'Create Enquiry'}</>}
                         </button>
                     </div>
@@ -304,7 +304,7 @@ export const EnquiriesPage: React.FC = () => {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold flex items-center gap-2"><MessageSquare className="text-indigo-600" /> Enquiries</h1>
-                <button onClick={() => { setEditEnquiry(null); setShowModal(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg"><Plus size={16} className="inline mr-1" /> New lead</button>
+                <button onClick={() => { setEditEnquiry(null); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"><Plus size={17} /> New Lead</button>
             </div>
             <div className="flex flex-col md:flex-row gap-3">
                 <div className="relative flex-1">

@@ -87,37 +87,37 @@ export const TakeTestPage = () => {
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <div className="text-center">
                 <Loader2 className="animate-spin text-primary-600 mx-auto mb-4" size={40} />
-                <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Preparing your examination...</p>
+                <p className="text-gray-500 font-semibold uppercase tracking-widest text-xs">Preparing your examination...</p>
             </div>
         </div>
     );
 
     if (result) return (
         <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
-            <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-300">
                 <div className={`p-8 text-center ${result.result === 'PASS' ? 'bg-emerald-500' : 'bg-red-500'} text-white`}>
                     <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
                         {result.result === 'PASS' ? <CheckCircle2 size={40} /> : <AlertCircle size={40} />}
                     </div>
-                    <h2 className="text-3xl font-black uppercase tracking-tight">Examination {result.result}</h2>
-                    <p className="opacity-80 font-bold mt-1">{testData.testName}</p>
+                    <h2 className="text-2xl font-bold uppercase tracking-tight">Examination {result.result}</h2>
+                    <p className="opacity-80 font-semibold mt-1">{testData.testName}</p>
                 </div>
                 <div className="p-8 space-y-6">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="bg-gray-50 p-4 rounded-2xl text-center border border-gray-100">
-                            <p className="text-[10px] font-black text-gray-400 uppercase">Score</p>
-                            <p className="text-2xl font-black text-gray-900">{result.score} / {result.totalMarks}</p>
+                            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Score</p>
+                            <p className="text-2xl font-bold text-gray-900">{result.score} / {result.totalMarks}</p>
                         </div>
                         <div className="bg-gray-50 p-4 rounded-2xl text-center border border-gray-100">
-                            <p className="text-[10px] font-black text-gray-400 uppercase">Accuracy</p>
-                            <p className="text-2xl font-black text-gray-900">{Math.round(result.percentage)}%</p>
+                            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Accuracy</p>
+                            <p className="text-2xl font-bold text-gray-900">{Math.round(result.percentage)}%</p>
                         </div>
                     </div>
                     <div className="flex justify-between text-sm font-bold text-gray-500 px-2">
                         <span>Correct: <span className="text-emerald-600">{result.correctCount}</span></span>
                         <span>Incorrect: <span className="text-red-600">{result.incorrectCount}</span></span>
                     </div>
-                    <button onClick={() => navigate('/employee/dashboard')} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-gray-800 transition-all shadow-xl">Back to Dashboard</button>
+                    <button onClick={() => navigate('/employee/dashboard')} className="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-100">Back to Dashboard</button>
                 </div>
             </div>
         </div>
@@ -134,12 +134,12 @@ export const TakeTestPage = () => {
                         <FileText size={20} />
                     </div>
                     <div>
-                        <h1 className="text-sm font-black text-gray-900 leading-tight uppercase truncate max-w-[200px]">{testData.testName}</h1>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Question {currentIndex + 1} of {questions.length}</p>
+                        <h1 className="text-sm font-bold text-gray-900 leading-tight uppercase truncate max-w-[200px]">{testData.testName}</h1>
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-tighter">Question {currentIndex + 1} of {questions.length}</p>
                     </div>
                 </div>
 
-                <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 font-black text-sm transition-all ${timeLeft! < 300 ? 'bg-red-50 border-red-200 text-red-600 animate-pulse' : 'bg-gray-50 border-gray-100 text-gray-700'}`}>
+                <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 font-bold text-sm transition-all ${timeLeft! < 300 ? 'bg-red-50 border-red-200 text-red-600 animate-pulse' : 'bg-gray-50 border-gray-100 text-gray-700'}`}>
                     <Clock size={18} />
                     {formatTime(timeLeft!)}
                 </div>
@@ -149,16 +149,16 @@ export const TakeTestPage = () => {
                 {/* Main Exam Area */}
                 <main className="flex-1 flex flex-col gap-6">
                     {currentQ.type === 'PASSAGE' && (
-                        <div className="bg-amber-50 border border-amber-100 p-6 rounded-3xl shadow-sm">
-                            <h4 className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] mb-3">Reading Passage</h4>
+                        <div className="bg-amber-50 border border-amber-100 p-6 rounded-2xl shadow-sm">
+                            <h4 className="text-[10px] font-semibold text-amber-600 uppercase tracking-wider mb-3">Reading Passage</h4>
                             <div className="text-sm text-amber-900 leading-relaxed font-medium whitespace-pre-wrap">{currentQ.passageText}</div>
                         </div>
                     )}
 
-                    <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 flex-1 flex flex-col">
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 flex-1 flex flex-col">
                         <div className="flex justify-between items-start mb-6">
-                            <h2 className="text-lg md:text-xl font-black text-gray-900 leading-tight">{currentQ.questionText}</h2>
-                            <span className="shrink-0 bg-gray-100 text-gray-500 text-[10px] font-black px-2 py-1 rounded-lg uppercase">{currentQ.marks} PTS</span>
+                            <h2 className="text-lg md:text-xl font-bold text-gray-900 leading-tight">{currentQ.questionText}</h2>
+                            <span className="shrink-0 bg-gray-100 text-gray-500 text-[10px] font-semibold px-2 py-1 rounded-lg uppercase">{currentQ.marks} PTS</span>
                         </div>
 
                         <div className="space-y-3 flex-1">
@@ -180,7 +180,7 @@ export const TakeTestPage = () => {
                             <button
                                 disabled={currentIndex === 0}
                                 onClick={() => setCurrentIndex(prev => prev - 1)}
-                                className="flex items-center gap-2 px-6 py-3 text-gray-400 hover:text-primary-600 font-black text-xs uppercase disabled:opacity-30 transition-all"
+                                className="flex items-center gap-2 px-6 py-3 text-gray-400 hover:text-primary-600 font-semibold text-xs uppercase disabled:opacity-30 transition-all"
                             >
                                 <ChevronLeft size={18} /> Previous
                             </button>
@@ -195,14 +195,14 @@ export const TakeTestPage = () => {
                                 <button
                                     onClick={handleSubmit}
                                     disabled={isSubmitting}
-                                    className="flex items-center gap-2 px-8 py-3 bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase hover:bg-emerald-700 shadow-lg shadow-emerald-100 transition-all"
+                                    className="flex items-center gap-2 px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold text-xs uppercase hover:bg-emerald-700 shadow-lg shadow-emerald-100 transition-all"
                                 >
                                     {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />} Finish Test
                                 </button>
                             ) : (
                                 <button
                                     onClick={() => setCurrentIndex(prev => prev + 1)}
-                                    className="flex items-center gap-2 px-8 py-3 bg-gray-900 text-white rounded-2xl font-black text-xs uppercase hover:bg-gray-800 shadow-lg shadow-gray-200 transition-all"
+                                    className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold text-xs uppercase hover:from-violet-700 hover:to-indigo-700 shadow-lg shadow-violet-100 transition-all"
                                 >
                                     Next Question <ChevronRight size={18} />
                                 </button>
@@ -213,14 +213,14 @@ export const TakeTestPage = () => {
 
                 {/* Sidebar Navigation (Desktop) */}
                 <aside className="w-full lg:w-72 space-y-6">
-                    <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-                        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Question Map</h3>
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-4">Question Map</h3>
                         <div className="grid grid-cols-5 gap-2">
                             {questions.map((q, idx) => (
                                 <button
                                     key={q._id}
                                     onClick={() => setCurrentIndex(idx)}
-                                    className={`aspect-square rounded-xl flex items-center justify-center text-xs font-black transition-all border-2 ${idx === currentIndex ? 'border-primary-600 bg-primary-50 text-primary-700' : (answers[q._id] !== undefined ? 'bg-emerald-500 border-emerald-500 text-white shadow-md' : 'bg-gray-50 border-transparent text-gray-400 hover:border-gray-200')}`}
+                                    className={`aspect-square rounded-xl flex items-center justify-center text-xs font-bold transition-all border-2 ${idx === currentIndex ? 'border-primary-600 bg-primary-50 text-primary-700' : (answers[q._id] !== undefined ? 'bg-emerald-500 border-emerald-500 text-white shadow-md' : 'bg-gray-50 border-transparent text-gray-400 hover:border-gray-200')}`}
                                 >
                                     {idx + 1}
                                 </button>
