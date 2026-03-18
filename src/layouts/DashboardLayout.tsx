@@ -35,7 +35,7 @@ export const DashboardLayout: React.FC = () => {
     const userStr = localStorage.getItem('user');
     const user = userStr ? JSON.parse(userStr) : null;
     const role = user?.role || 'EMPLOYEE';
-    const basePath = role === 'ADMIN' || role === 'SUPER_ADMIN' ? 'admin' : 'employee';
+    const basePath = role === 'STUDENT' ? 'student' : (role === 'ADMIN' || role === 'SUPER_ADMIN' ? 'admin' : 'employee');
 
     // Close profile dropdown on outside click
     useEffect(() => {
@@ -56,7 +56,16 @@ export const DashboardLayout: React.FC = () => {
         navigate('/login');
     };
 
-    const groups = [
+    const groups = role === 'STUDENT' ? [
+        {
+            name: 'Exam Center',
+            key: 'examCenter',
+            icon: FileText,
+            links: [
+                { name: 'My Tests', path: `/${basePath}/dashboard`, icon: FileText }
+            ]
+        }
+    ] : [
         {
             name: 'User Management',
             key: 'userManagement',
@@ -86,11 +95,14 @@ export const DashboardLayout: React.FC = () => {
                 { name: 'Admissions', path: `/${basePath}/admissions`, icon: GraduationCap },
                 { name: 'CBT Tests', path: `/${basePath}/tests`, icon: FileText },
                 { name: 'Enquiries', path: `/${basePath}/enquiries`, icon: CircleHelp },
+                { name: 'Test Login Portal', path: '/student-login', icon: BookOpen },
             ]
         }
     ];
 
-    const standaloneLinks = [
+    const standaloneLinks = role === 'STUDENT' ? [
+        { name: 'Dashboard', path: `/${basePath}/dashboard`, icon: LayoutDashboard }
+    ] : [
         { name: 'Dashboard', path: `/${basePath}/dashboard`, icon: LayoutDashboard },
         { name: 'Settings', path: `/${basePath}/settings`, icon: Briefcase },
     ];
@@ -276,29 +288,31 @@ export const DashboardLayout: React.FC = () => {
                         ))}
 
                         {/* Standalone Link: Settings */}
-                        <NavLink
-                            to={standaloneLinks[1].path}
-                            className={({ isActive }) => `
-                                flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group mt-2
-                                ${isCollapsed ? 'justify-center' : ''}
-                                ${isActive
-                                    ? 'bg-primary-50 text-primary-700 shadow-sm'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
-                            `}
-                            onClick={() => setIsMobileSidebarOpen(false)}
-                        >
-                            {({ isActive }) => {
-                                const Icon = standaloneLinks[1].icon;
-                                return (
-                                    <>
-                                        <div className={`p-1 rounded-lg transition-colors ${isActive ? 'bg-white shadow-sm' : 'group-hover:bg-white'}`}>
-                                            <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
-                                        </div>
-                                        {!isCollapsed && <span className="truncate flex-1">{standaloneLinks[1].name}</span>}
-                                    </>
-                                );
-                            }}
-                        </NavLink>
+                        {standaloneLinks.length > 1 && (
+                            <NavLink
+                                to={standaloneLinks[1].path}
+                                className={({ isActive }) => `
+                                    flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group mt-2
+                                    ${isCollapsed ? 'justify-center' : ''}
+                                    ${isActive
+                                        ? 'bg-primary-50 text-primary-700 shadow-sm'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
+                                `}
+                                onClick={() => setIsMobileSidebarOpen(false)}
+                            >
+                                {({ isActive }) => {
+                                    const Icon = standaloneLinks[1].icon;
+                                    return (
+                                        <>
+                                            <div className={`p-1 rounded-lg transition-colors ${isActive ? 'bg-white shadow-sm' : 'group-hover:bg-white'}`}>
+                                                <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
+                                            </div>
+                                            {!isCollapsed && <span className="truncate flex-1">{standaloneLinks[1].name}</span>}
+                                        </>
+                                    );
+                                }}
+                            </NavLink>
+                        )}
                     </div>
 
                     {/* Simple Branding Footer */}

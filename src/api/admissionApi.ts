@@ -6,6 +6,7 @@ export interface StudentPayload {
     fullName: string;
     mobile: string;
     email?: string | null;
+    dob?: string | null;
     city?: string | null;
     qualification?: string | null;
     sponsorType?: 'Individual' | 'Company';
@@ -19,6 +20,7 @@ export interface Student {
     fullName: string;
     mobile: string;
     email?: string;
+    dob?: string;
     city?: string;
     qualification?: string;
     sponsorType: 'Individual' | 'Company';

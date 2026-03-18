@@ -113,12 +113,13 @@ export const AttendancePage = () => {
         setExportLoading(true);
         try {
             const monthStr = selectedDate.substring(0, 7); // YYYY-MM
-            const response = await api.get(`/admin/attendance/export?month=${monthStr}`, { 
+            const response: any = await api.get(`/admin/attendance/export?month=${monthStr}`, { 
                 responseType: 'blob' 
             });
             
-            // Create a blob from the response data
-            const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+            // Create a blob from the response data (handling interceptor unwrapping)
+            const responseData = response.data || response;
+            const blob = new Blob([responseData], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
@@ -204,7 +205,7 @@ export const AttendancePage = () => {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Attendance Center</h1>
+                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2"><CalendarIcon className="text-primary-600" size={26} /> Attendance Center</h1>
                     <p className="text-sm text-gray-500 mt-1">Mark daily presence and generate reports</p>
                 </div>
 

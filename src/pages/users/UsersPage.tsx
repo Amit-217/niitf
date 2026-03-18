@@ -431,16 +431,16 @@ export const UsersPage: React.FC = () => {
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-gray-100 bg-gray-50/70">
-                                <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
-                                <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Contact</th>
-                                <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
-                                <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                                <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Joined</th>
-                                <th className="text-right px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">User</th>
+                                <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">Contact</th>
+                                <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">Role</th>
+                                <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">Status</th>
+                                <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">Joined</th>
+                                <th className="text-right px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {loading ? (
+                            {loading && users.length === 0 ? (
                                 [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
                             ) : filtered.length === 0 ? (
                                 <tr>
@@ -460,7 +460,7 @@ export const UsersPage: React.FC = () => {
                                 filtered.map(user => (
                                     <tr key={user._id} className="hover:bg-gray-50/50 transition-colors group">
                                         {/* User */}
-                                        <td className="px-4 py-3.5">
+                                        <td className="px-4 py-3.5 whitespace-nowrap">
                                             <div className="flex items-center gap-3">
                                                 <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${getGradient(user.name)} flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm`}>
                                                     {user.name.charAt(0).toUpperCase()}
@@ -474,7 +474,7 @@ export const UsersPage: React.FC = () => {
                                             </div>
                                         </td>
                                         {/* Contact */}
-                                        <td className="px-4 py-3.5 hidden md:table-cell">
+                                        <td className="px-4 py-3.5 whitespace-nowrap">
                                             <p className="text-gray-600 flex items-center gap-1.5 text-xs">
                                                 <Mail size={12} className="text-gray-400" /> {user.email}
                                             </p>
@@ -485,11 +485,11 @@ export const UsersPage: React.FC = () => {
                                             )}
                                         </td>
                                         {/* Role */}
-                                        <td className="px-4 py-3.5"><RoleBadge role={user.role} /></td>
+                                        <td className="px-4 py-3.5 whitespace-nowrap"><RoleBadge role={user.role} /></td>
                                         {/* Status */}
-                                        <td className="px-4 py-3.5"><StatusBadge isActive={user.isActive} /></td>
+                                        <td className="px-4 py-3.5 whitespace-nowrap"><StatusBadge isActive={user.isActive} /></td>
                                         {/* Joined */}
-                                        <td className="px-4 py-3.5 hidden lg:table-cell text-xs text-gray-500">
+                                        <td className="px-4 py-3.5 text-xs text-gray-500 whitespace-nowrap">
                                             <span className="flex items-center gap-1.5"><Calendar size={11} /> {formatDate(user.createdAt)}</span>
                                         </td>
                                         {/* Actions */}
@@ -501,7 +501,7 @@ export const UsersPage: React.FC = () => {
                                                 >
                                                     View Intelligence
                                                 </button>
-                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className="flex items-center gap-1 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity">
                                                     {/* Edit */}
                                                     <button
                                                         onClick={() => setModal({ type: 'edit', user })}

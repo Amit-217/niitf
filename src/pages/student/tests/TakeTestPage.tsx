@@ -21,6 +21,7 @@ export const TakeTestPage = () => {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<string, number>>({});
+    const [visited, setVisited] = useState<Record<string, boolean>>({});
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,6 +43,12 @@ export const TakeTestPage = () => {
 
     useEffect(() => { startTest(); }, [startTest]);
 
+    useEffect(() => {
+        if (questions.length > 0 && !visited[questions[currentIndex]._id]) {
+            setVisited(prev => ({ ...prev, [questions[currentIndex]._id]: true }));
+        }
+    }, [currentIndex, questions]);
+
     // Timer Logic
     useEffect(() => {
         if (timeLeft === null || timeLeft <= 0 || result) return;
@@ -61,6 +68,14 @@ export const TakeTestPage = () => {
     const handleOptionSelect = (qId: string, optIdx: number) => {
         if (result) return;
         setAnswers(prev => ({ ...prev, [qId]: optIdx }));
+    };
+
+    const handleClearResponse = (qId: string) => {
+        setAnswers(prev => {
+            const newAnswers = { ...prev };
+            delete newAnswers[qId];
+            return newAnswers;
+        });
     };
 
     const handleSubmit = async () => {
@@ -145,9 +160,13 @@ export const TakeTestPage = () => {
                 </div>
             </header>
 
-            <div className="flex-1 flex flex-col lg:flex-row p-4 md:p-6 gap-6 max-w-7xl mx-auto w-full">
+            <div className="flex-1 flex flex-col lg:flex-row p-4 md:p-6 gap-6 w-full bg-slate-200/50">
                 {/* Main Exam Area */}
-                <main className="flex-1 flex flex-col gap-6">
+                <main className="flex-1 flex flex-col border border-gray-300 shadow-sm bg-white">
+                    {/* Header bar inside main */}
+                    <div className="bg-blue-600 text-white px-4 py-2 font-bold text-sm flex justify-between">
+                        <span>{testData.testName}</span>
+                    </div>
                     {currentQ.type === 'PASSAGE' && (
                         <div className="bg-amber-50 border border-amber-100 p-6 rounded-2xl shadow-sm">
                             <h4 className="text-[10px] font-semibold text-amber-600 uppercase tracking-wider mb-3">Reading Passage</h4>
@@ -155,10 +174,13 @@ export const TakeTestPage = () => {
                         </div>
                     )}
 
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 flex-1 flex flex-col">
-                        <div className="flex justify-between items-start mb-6">
-                            <h2 className="text-lg md:text-xl font-bold text-gray-900 leading-tight">{currentQ.questionText}</h2>
-                            <span className="shrink-0 bg-gray-100 text-gray-500 text-[10px] font-semibold px-2 py-1 rounded-lg uppercase">{currentQ.marks} PTS</span>
+                    <div className="flex-1 flex flex-col p-6">
+                        <div className="flex justify-between items-start mb-6 pb-4 border-b border-gray-200">
+                            <h2 className="text-lg md:text-xl font-bold text-gray-900 leading-relaxed">
+                                <span className="text-blue-600 mr-2">Q.{currentIndex + 1}</span> 
+                                {currentQ.questionText}
+                            </h2>
+                            <span className="shrink-0 bg-gray-100 border border-gray-300 text-gray-600 text-[10px] font-bold px-2 py-1 uppercase">{currentQ.marks} Marks</span>
                         </div>
 
                         <div className="space-y-3 flex-1">
@@ -166,45 +188,47 @@ export const TakeTestPage = () => {
                                 <button
                                     key={idx}
                                     onClick={() => handleOptionSelect(currentQ._id, idx)}
-                                    className={`w-full text-left p-5 rounded-2xl border-2 transition-all group flex items-center gap-4 ${answers[currentQ._id] === idx ? 'bg-primary-50 border-primary-500 shadow-md ring-4 ring-primary-500/5' : 'bg-white border-gray-100 hover:border-primary-200'}`}
+                                    className={`w-full text-left p-4 border transition-all flex items-center gap-4 ${answers[currentQ._id] === idx ? 'bg-blue-50 border-blue-500 shadow-sm' : 'bg-white border-gray-300 hover:bg-gray-50'}`}
                                 >
-                                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black transition-all ${answers[currentQ._id] === idx ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-primary-100 group-hover:text-primary-600'}`}>
+                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold ${answers[currentQ._id] === idx ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-400 text-gray-600'}`}>
                                         {String.fromCharCode(65 + idx)}
                                     </div>
-                                    <span className={`text-sm md:text-base font-bold ${answers[currentQ._id] === idx ? 'text-primary-900' : 'text-gray-600'}`}>{opt}</span>
+                                    <span className={`text-sm md:text-base ${answers[currentQ._id] === idx ? 'font-bold text-blue-900' : 'font-medium text-gray-700'}`}>{opt}</span>
                                 </button>
                             ))}
                         </div>
 
-                        <div className="mt-8 flex items-center justify-between border-t border-gray-50 pt-6">
-                            <button
-                                disabled={currentIndex === 0}
-                                onClick={() => setCurrentIndex(prev => prev - 1)}
-                                className="flex items-center gap-2 px-6 py-3 text-gray-400 hover:text-primary-600 font-semibold text-xs uppercase disabled:opacity-30 transition-all"
-                            >
-                                <ChevronLeft size={18} /> Previous
-                            </button>
-                            
-                            <div className="hidden sm:flex gap-1.5">
-                                {questions.map((_, i) => (
-                                    <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === currentIndex ? 'w-6 bg-primary-600' : (answers[questions[i]._id] !== undefined ? 'bg-emerald-400' : 'bg-gray-200')}`} />
-                                ))}
+                        <div className="mt-8 bg-gray-100 -mx-6 -mb-6 p-4 flex items-center justify-between border-t border-gray-300">
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => handleClearResponse(currentQ._id)}
+                                    className="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-bold text-sm hover:bg-gray-50 shadow-sm transition-all"
+                                >
+                                    Clear Response
+                                </button>
+                                <button
+                                    disabled={currentIndex === 0}
+                                    onClick={() => setCurrentIndex(prev => prev - 1)}
+                                    className="px-6 py-2 bg-white border border-gray-300 text-gray-700 font-bold text-sm disabled:opacity-50 hover:bg-gray-50 shadow-sm transition-all flex items-center gap-1"
+                                >
+                                    <ChevronLeft size={16} /> Previous
+                                </button>
                             </div>
 
                             {currentIndex === questions.length - 1 ? (
                                 <button
                                     onClick={handleSubmit}
                                     disabled={isSubmitting}
-                                    className="flex items-center gap-2 px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold text-xs uppercase hover:bg-emerald-700 shadow-lg shadow-emerald-100 transition-all"
+                                    className="px-8 py-2 bg-green-600 text-white font-bold text-sm hover:bg-green-700 shadow-sm transition-all uppercase"
                                 >
-                                    {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />} Finish Test
+                                    {isSubmitting ? 'Submitting...' : 'Submit Test'}
                                 </button>
                             ) : (
                                 <button
                                     onClick={() => setCurrentIndex(prev => prev + 1)}
-                                    className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold text-xs uppercase hover:from-violet-700 hover:to-indigo-700 shadow-lg shadow-violet-100 transition-all"
+                                    className="px-8 py-2 bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 shadow-sm transition-all flex items-center gap-1 uppercase"
                                 >
-                                    Next Question <ChevronRight size={18} />
+                                    Save & Next <ChevronRight size={16} />
                                 </button>
                             )}
                         </div>
@@ -212,26 +236,58 @@ export const TakeTestPage = () => {
                 </main>
 
                 {/* Sidebar Navigation (Desktop) */}
-                <aside className="w-full lg:w-72 space-y-6">
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                        <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-4">Question Map</h3>
-                        <div className="grid grid-cols-5 gap-2">
-                            {questions.map((q, idx) => (
-                                <button
-                                    key={q._id}
-                                    onClick={() => setCurrentIndex(idx)}
-                                    className={`aspect-square rounded-xl flex items-center justify-center text-xs font-bold transition-all border-2 ${idx === currentIndex ? 'border-primary-600 bg-primary-50 text-primary-700' : (answers[q._id] !== undefined ? 'bg-emerald-500 border-emerald-500 text-white shadow-md' : 'bg-gray-50 border-transparent text-gray-400 hover:border-gray-200')}`}
-                                >
-                                    {idx + 1}
-                                </button>
-                            ))}
+                <aside className="w-full lg:w-80 flex flex-col gap-4">
+                    {/* Candidate Info */}
+                    <div className="bg-white border border-gray-300 shadow-sm p-4 flex items-center gap-4">
+                        <div className="w-16 h-16 bg-gray-200 border border-gray-300 flex items-center justify-center shrink-0">
+                            <span className="text-gray-400 text-xs text-center font-bold">Photo</span>
                         </div>
-                        <div className="mt-6 pt-6 border-t border-gray-50 space-y-2">
-                            <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase">
-                                <div className="w-3 h-3 rounded-md bg-emerald-500" /> Answered
+                        <div>
+                            <p className="text-xs font-bold text-gray-500 uppercase">Candidate</p>
+                            <p className="text-sm font-bold text-gray-900 leading-tight">Student Testing</p>
+                            <p className="text-xs text-blue-600 font-bold mt-1">CBT Portal</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-white shadow-sm border border-gray-300 flex-1 flex flex-col">
+                        <div className="bg-blue-600 text-white px-4 py-2 font-bold text-sm">
+                            Question Palette
+                        </div>
+                        <div className="p-4 grid grid-cols-5 gap-2 overflow-y-auto" style={{ maxHeight: '300px' }}>
+                            {questions.map((q, idx) => {
+                                const isAnswered = answers[q._id] !== undefined;
+                                const isVisited = visited[q._id];
+                                
+                                let btnClass = 'bg-gray-100 border-gray-300 text-gray-700'; // Not visited
+                                if (isAnswered) btnClass = 'bg-green-600 border-green-700 text-white'; // Answered
+                                else if (isVisited) btnClass = 'bg-red-500 border-red-600 text-white'; // Not answered but visited
+                                
+                                const isCurrent = idx === currentIndex;
+
+                                return (
+                                    <button
+                                        key={q._id}
+                                        onClick={() => setCurrentIndex(idx)}
+                                        className={`aspect-square flex items-center justify-center text-sm font-bold border transition-all ${btnClass} ${isCurrent ? 'ring-2 ring-offset-2 ring-blue-500' : ''}`}
+                                    >
+                                        {idx + 1}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="p-4 bg-gray-50 border-t border-gray-200 grid grid-cols-2 gap-y-3 gap-x-2 text-xs font-bold text-gray-700">
+                            <div className="flex items-center gap-2">
+                                <span className="w-5 h-5 bg-green-600 border border-green-700 block text-white text-center text-[10px] leading-5 font-bold">{Object.keys(answers).length}</span> Answered
                             </div>
-                            <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase">
-                                <div className="w-3 h-3 rounded-md bg-gray-100" /> Unvisited
+                            <div className="flex items-center gap-2">
+                                <span className="w-5 h-5 bg-red-500 border border-red-600 block text-white text-center text-[10px] leading-5 font-bold">
+                                    {Object.keys(visited).length - Object.keys(answers).length}
+                                </span> Not Answered
+                            </div>
+                            <div className="flex items-center gap-2 col-span-2 mt-1 pt-2 border-t border-gray-200">
+                                <span className="w-5 h-5 bg-gray-100 border border-gray-300 block text-gray-600 text-center text-[10px] leading-5 font-bold">
+                                    {questions.length - Object.keys(visited).length}
+                                </span> Not Visited
                             </div>
                         </div>
                     </div>

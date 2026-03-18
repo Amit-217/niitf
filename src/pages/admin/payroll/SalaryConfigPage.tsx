@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { Plus, User2 } from 'lucide-react';
+import { Plus, User2, Download, Table2, Settings2 } from 'lucide-react';
 import {
     createSalaryConfig,
-    getCurrentSalaryConfig
+    getCurrentSalaryConfig,
+    getAllSalaryConfigs
 } from '../../../api/payrollApi';
 import api from '../../../api/axios';
 
@@ -19,11 +20,22 @@ export const SalaryConfigPage = () => {
     const [monthlySalary, setMonthlySalary] = useState<number | ''>('');
     const [effectiveFrom, setEffectiveFrom] = useState<string>(new Date().toISOString().split('T')[0]);
     const [currentSalary, setCurrentSalary] = useState<any>(null);
+    const [allConfigs, setAllConfigs] = useState<any[]>([]);
 
     useEffect(() => {
         // Fetch Employees
         api.get('/users?role=EMPLOYEE').then(res => setEmployees(res.data || []));
+        fetchAllConfigs();
     }, []);
+
+    const fetchAllConfigs = async () => {
+        try {
+            const res = await getAllSalaryConfigs();
+            setAllConfigs(res.data || []);
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     useEffect(() => {
         if (selectedUser) {
@@ -56,16 +68,33 @@ export const SalaryConfigPage = () => {
             });
             toast.success('Salary Configuration Updated!');
             fetchCurrentSalary(selectedUser);
+            fetchAllConfigs();
             setMonthlySalary('');
         } catch (error: any) {
             toast.error(error.message || 'Failed to update salary');
         }
     };
 
+    const exportCSV = () => {
+        if (!allConfigs.length) return toast.warning('No data to export');
+        const headers = 'Employee Name,Employee ID,Monthly Salary,Effective From,Status\n';
+        const rows = allConfigs.map(c => 
+            `"${c.employeeId?.name || '-'}","${c.employeeId?.empId || '-'}","${c.monthlySalary}","${new Date(c.effectiveFrom).toLocaleDateString()}","${c.isActive ? 'Active' : 'Inactive'}"`
+        ).join('\n');
+        
+        const blob = new Blob([headers + rows], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `All_Salary_Configs.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Salary Configuration</h1>
+                <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2"><Settings2 className="text-primary-600" size={26} /> Salary Configuration</h1>
                 <p className="text-sm text-gray-500 mt-1">Manage base salaries for employees</p>
             </div>
 
@@ -147,6 +176,56 @@ export const SalaryConfigPage = () => {
                     </div>
                 </div>
             )}
+
+            {/* Global Extracted Table */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Table2 className="text-gray-500" size={18} />
+                        <h3 className="font-semibold text-gray-700">All Active Profiles</h3>
+                    </div>
+                    <button
+                        onClick={exportCSV}
+                        className="flex items-center gap-2 px-4 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm"
+                    >
+                        <Download size={14} /> Export CSV
+                    </button>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm whitespace-nowrap min-w-full">
+                        <thead className="bg-gray-50/50 text-gray-500 border-b border-gray-100">
+                            <tr>
+                                <th className="px-4 py-3">Employee</th>
+                                <th className="px-4 py-3">Emp ID</th>
+                                <th className="px-4 py-3">Monthly Salary</th>
+                                <th className="px-4 py-3">Effective From</th>
+                                <th className="px-4 py-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {allConfigs.length === 0 ? (
+                                <tr>
+                                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">No active salary configurations found.</td>
+                                </tr>
+                            ) : (
+                                allConfigs.map((c) => (
+                                    <tr key={c._id} className="hover:bg-gray-50/50">
+                                        <td className="px-4 py-3 font-medium text-gray-900">{c.employeeId?.name || '-'}</td>
+                                        <td className="px-4 py-3 text-gray-500">{c.employeeId?.empId || '-'}</td>
+                                        <td className="px-4 py-3 font-bold text-primary-700">₹{c.monthlySalary?.toLocaleString()}</td>
+                                        <td className="px-4 py-3 text-gray-500">{new Date(c.effectiveFrom).toLocaleDateString()}</td>
+                                        <td className="px-4 py-3">
+                                            <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase ${c.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
+                                                {c.isActive ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     );
 };

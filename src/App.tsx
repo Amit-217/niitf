@@ -4,10 +4,12 @@ import { Login } from './pages/auth/Login';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
 import { VerifyOtp } from './pages/auth/VerifyOtp';
 import { ResetPassword } from './pages/auth/ResetPassword';
+import { StudentLogin } from './pages/auth/StudentLogin';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { AdminDashboard } from './pages/dashboard/AdminDashboard';
 import { EmployeeDashboard } from './pages/dashboard/EmployeeDashboard';
 import { Settings } from './pages/settings/Settings';
+import { StudentDashboard } from './pages/student/dashboard/StudentDashboard';
 import { UsersPage } from './pages/users/UsersPage';
 import { CoursesPage } from './pages/courses/CoursesPage';
 import { BatchesPage } from './pages/batches/BatchesPage';
@@ -43,6 +45,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
   if (allowedRoles && !allowedRoles.includes(userRole)) {
     if (userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') {
       return <Navigate to="/admin/dashboard" replace />;
+    } else if (userRole === 'STUDENT') {
+      return <Navigate to="/student/dashboard" replace />;
     } else {
       return <Navigate to="/employee/dashboard" replace />;
     }
@@ -60,6 +64,7 @@ function App() {
         {/* Auth Routes */}
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/student-login" element={<StudentLogin />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -68,7 +73,7 @@ function App() {
         <Route
           path="/test/:id"
           element={
-            <ProtectedRoute allowedRoles={['EMPLOYEE', 'ADMIN', 'SUPER_ADMIN']}>
+            <ProtectedRoute allowedRoles={['EMPLOYEE', 'ADMIN', 'SUPER_ADMIN', 'STUDENT']}>
               <TakeTestPage />
             </ProtectedRoute>
           }
@@ -117,6 +122,19 @@ function App() {
           <Route path="enquiries" element={<EnquiriesPage />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<Navigate to="/employee/dashboard" replace />} />
+        </Route>
+
+        {/* Student Dashboard Routes */}
+        <Route
+          path="/student"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT']}>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<StudentDashboard />} />
+          <Route path="*" element={<Navigate to="/student/dashboard" replace />} />
         </Route>
 
         {/* Fallback */}
