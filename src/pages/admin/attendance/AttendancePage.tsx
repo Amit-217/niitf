@@ -39,7 +39,8 @@ export const AttendancePage = () => {
     // Fetch all active employees (Admin, Super Admin, and Employees)
     const fetchEmployees = async () => {
         try {
-            const response: any = await api.get('/users?limit=100');
+            // Remove role=EMPLOYEE filter to show admins as well
+            const response: any = await api.get('/users?status=active&limit=100');
             setEmployees(response.data || []);
         } catch (error: any) {
             toast.error('Failed to load employees');
@@ -61,20 +62,23 @@ export const AttendancePage = () => {
 
     const [monthlyData, setMonthlyData] = useState<{ [empId: string]: any[] }>({});
     const fetchMonthlyData = async () => {
-        setIsLoading(true);
         try {
-            const month = selectedDate.substring(0, 7);
-            const newData: { [empId: string]: any[] } = {};
+            const month = selectedDate.substring(0, 7); // YYYY-MM
+            const response: any = await api.get(`/admin/attendance/month?month=${month}`);
+            const data = response.data || response;
             
-            for (const emp of employees) {
-                const res = await api.get(`/admin/attendance/employee/${emp._id}?month=${month}`);
-                newData[emp._id] = res.data || [];
+            // Group by employeeId
+            const grouped: { [empId: string]: any[] } = {};
+            if (Array.isArray(data)) {
+                data.forEach((att: any) => {
+                    const eid = att.employeeId?._id || att.employeeId;
+                    if (!grouped[eid]) grouped[eid] = [];
+                    grouped[eid].push(att);
+                });
             }
-            setMonthlyData(newData);
+            setMonthlyData(grouped);
         } catch (error) {
-            toast.error("Failed to load monthly patterns");
-        } finally {
-            setIsLoading(false);
+            console.error("Monthly fetch failed", error);
         }
     };
 
@@ -83,12 +87,18 @@ export const AttendancePage = () => {
     }, []);
 
     useEffect(() => {
-        if (viewMode === 'daily') {
-            fetchAttendance();
-        } else {
+        // Fetch daily attendance
+        fetchAttendance();
+        // Always fetch monthly data for the stats shown on cards
+        fetchMonthlyData();
+    }, [selectedDate, employees.length]);
+
+    // Re-fetch monthly data specifically when month changes (substring 0,7)
+    useEffect(() => {
+        if (viewMode === 'monthly') {
             fetchMonthlyData();
         }
-    }, [selectedDate, viewMode, employees.length]);
+    }, [selectedDate.substring(0, 7), viewMode]);
 
     const handleBulkMarkAllPresent = async () => {
         const unmarked = displayData.filter(d => !d.status);
@@ -117,18 +127,18 @@ export const AttendancePage = () => {
                 responseType: 'blob' 
             });
             
-            // Create a blob from the response data (handling interceptor unwrapping)
-            const responseData = response.data || response;
+            // Note: Axios interceptor unwraps response.data, so 'response' IS the Blob
+            const responseData = response instanceof Blob ? response : response.data;
             const blob = new Blob([responseData], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `attendance_report_${monthStr}.csv`);
+            link.setAttribute('download', `NIIT_Attendance_${monthStr}.csv`);
             document.body.appendChild(link);
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
-            toast.success("CSV Exported successfully");
+            toast.success("CSV Report downloaded");
         } catch (err) {
             toast.error("Failed to export attendance");
         } finally {
@@ -152,6 +162,7 @@ export const AttendancePage = () => {
                 toast.success(`Marked as ${status}`);
             }
             fetchAttendance();
+            fetchMonthlyData(); // Refresh stats on card too
         } catch (error: any) {
             toast.error(error.message || 'Failed to update attendance');
         }
@@ -163,10 +174,20 @@ export const AttendancePage = () => {
         emp.empId.toLowerCase().includes(searchQuery.toLowerCase())
     ).map(emp => {
         const record = attendanceRecords.find(r => r.employeeId._id === emp._id);
+        
+        // Calculate monthly stats for this employee
+        const eMonthlyRecords = monthlyData[emp._id] || [];
+        const stats = {
+            P: eMonthlyRecords.filter(r => r.status === 'PRESENT').length,
+            A: eMonthlyRecords.filter(r => r.status === 'ABSENT').length,
+            H: eMonthlyRecords.filter(r => r.status === 'HALF_DAY').length
+        };
+
         return {
             employee: emp,
             status: record?.status || null,
-            recordId: record?._id || null
+            recordId: record?._id || null,
+            stats
         };
     });
 
@@ -175,8 +196,8 @@ export const AttendancePage = () => {
     };
 
     const year = parseInt(selectedDate.split('-')[0]);
-    const month = parseInt(selectedDate.split('-')[1]);
-    const daysInMonth = getDaysInMonth(year, month);
+    const monthVal = parseInt(selectedDate.split('-')[1]);
+    const daysInMonth = getDaysInMonth(year, monthVal);
     const dayLabels = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
     const getStatusColor = (status: string | null) => {
@@ -262,23 +283,31 @@ export const AttendancePage = () => {
                     {isLoading ? (
                         <div className="col-span-full py-20 text-center"><Loader2 className="animate-spin inline-block text-primary-500" size={32} /></div>
                     ) : displayData.map((row) => (
-                        <div key={row.employee._id} className={`bg-white rounded-2xl border p-4 transition-all duration-300 ${row.status ? 'border-gray-100 shadow-sm' : 'border-dashed border-primary-200 bg-primary-50/10'}`}>
-                            <div className="flex items-center justify-between mb-4">
+                        <div key={row.employee._id} className={"bg-white rounded-2xl border p-4 transition-all duration-300 " + (row.status ? 'border-gray-100 shadow-sm' : 'border-dashed border-primary-200 bg-primary-50/10')}>
+                            <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-black border border-primary-200">
-                                        {row.employee.name.charAt(0).toUpperCase()}
+                                    <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-black border border-primary-200 text-xs uppercase">
+                                        {row.employee.name.charAt(0)}
                                     </div>
-                                    <div>
-                                        <p className="text-sm font-black text-gray-900">{row.employee.name}</p>
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{row.employee.empId}</p>
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-black text-gray-900 truncate">{row.employee.name}</p>
+                                        <div className="flex items-center gap-1.5 mt-0.5">
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{row.employee.empId}</span>
+                                            {/* Monthly Summary Badges */}
+                                            <div className="flex items-center gap-1">
+                                                <span className="bg-emerald-50 text-emerald-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-emerald-100">P:{row.stats.P}</span>
+                                                <span className="bg-red-50 text-red-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-red-100">A:{row.stats.A}</span>
+                                                <span className="bg-orange-50 text-orange-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-orange-100">H:{row.stats.H}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter border ${getStatusColor(row.status)}`}>
+                                <span className={"px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter border " + getStatusColor(row.status)}>
                                     {row.status || 'Unmarked'}
                                 </span>
                             </div>
 
-                            <div className="grid grid-cols-5 gap-1.5">
+                            <div className="grid grid-cols-5 gap-1.5 mt-4">
                                 {[
                                     { s: 'PRESENT', icon: CheckCircle2, label: 'P' },
                                     { s: 'ABSENT', icon: XCircle, label: 'A' },
@@ -289,9 +318,9 @@ export const AttendancePage = () => {
                                     <button
                                         key={opt.s}
                                         onClick={() => handleStatusChange(row.employee._id, opt.s as any)}
-                                        className={`flex flex-col items-center justify-center py-2.5 rounded-xl border transition-all ${row.status === opt.s
+                                        className={"flex flex-col items-center justify-center py-2.5 rounded-xl border transition-all " + (row.status === opt.s
                                             ? 'bg-primary-600 border-primary-600 text-white shadow-md ring-2 ring-primary-100'
-                                            : 'bg-white border-gray-100 text-gray-400 hover:bg-gray-50 hover:border-gray-200'}`}
+                                            : 'bg-white border-gray-100 text-gray-400 hover:bg-gray-50 hover:border-gray-200')}
                                     >
                                         <opt.icon size={16} className="mb-1" />
                                         <span className="text-[10px] font-black">{opt.label}</span>
@@ -330,7 +359,7 @@ export const AttendancePage = () => {
                                             </div>
                                         </td>
                                         {dayLabels.map(day => {
-                                            const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                                            const dateStr = `${year}-${String(monthVal).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                                             const att = monthlyData[emp._id]?.find(a => a.date.startsWith(dateStr));
                                             return (
                                                 <td key={day} className="p-1">

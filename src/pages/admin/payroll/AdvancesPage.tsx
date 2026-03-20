@@ -26,7 +26,7 @@ export const AdvancesPage = () => {
     const [allAdvances, setAllAdvances] = useState<any[]>([]);
 
     useEffect(() => {
-        api.get('/users?role=EMPLOYEE').then(res => setEmployees(res.data || []));
+        api.get('/users?status=active').then(res => setEmployees(res.data || []));
     }, []);
 
     useEffect(() => {

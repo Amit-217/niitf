@@ -79,7 +79,7 @@ export const AdminTasksPage = () => {
 
   const fetchEmployees = async () => {
     try {
-      const usersRes = await api.get("/users?role=EMPLOYEE");
+      const usersRes = await api.get("/users?status=active");
       setEmployees(usersRes.data || []);
     } catch (error) {
       console.error("Failed to load employees:", error);

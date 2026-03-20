@@ -56,7 +56,7 @@ export const OvertimePage = () => {
 
     const fetchUsers = async () => {
         try {
-            const res = await api.get('/users?role=EMPLOYEE&limit=100');
+            const res = await api.get('/users?status=active&limit=100');
             setUsers(res.data || []);
         } catch (error: any) {
             toast.error(error?.message || 'Failed to load employees');

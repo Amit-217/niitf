@@ -24,7 +24,7 @@ export const SalaryConfigPage = () => {
 
     useEffect(() => {
         // Fetch Employees
-        api.get('/users?role=EMPLOYEE').then(res => setEmployees(res.data || []));
+        api.get('/users?status=active').then(res => setEmployees(res.data || []));
         fetchAllConfigs();
     }, []);
 

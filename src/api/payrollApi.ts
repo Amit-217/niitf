@@ -33,6 +33,7 @@ export interface AdvancePayload {
     amount: number;
     date: string; // YYYY-MM-DD
     remarks?: string;
+    repaymentMonth: string; // YYYY-MM
 }
 
 export interface GenerateSalaryPayload {
