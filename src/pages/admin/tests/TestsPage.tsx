@@ -93,7 +93,9 @@ export const TestsPage = () => {
     try {
       const res: any = await sendExamInvites(questionPaperTest._id);
       const d = res?.data?.data || res?.data || res;
-      toast.success(`Invites sent to ${d.sent} student(s). Skipped: ${d.skipped} (no email).`);
+      toast.success(
+        `Invites sent to ${d.sent} student(s). Skipped: ${d.skipped} (no email).`,
+      );
     } catch (err: any) {
       toast.error(err?.message || "Failed to send invites");
     } finally {
@@ -159,7 +161,8 @@ export const TestsPage = () => {
     if (!str.includes(":")) {
       const clean = str.replace(/\D/g, "");
       if (clean.length === 4) str = `${clean.slice(0, 2)}:${clean.slice(2)}`;
-      else if (clean.length === 3) str = `0${clean.slice(0, 1)}:${clean.slice(1)}`;
+      else if (clean.length === 3)
+        str = `0${clean.slice(0, 1)}:${clean.slice(1)}`;
     }
     return str;
   };
@@ -320,7 +323,14 @@ export const TestsPage = () => {
         <table className="w-full text-sm text-left">
           <thead className="bg-gray-50 border-b">
             <tr>
-              {["Test Name", "Test Code", "Batch", "Marks", "Mode", "Actions"].map((h) => (
+              {[
+                "Test Name",
+                "Test Code",
+                "Batch",
+                "Marks",
+                "Mode",
+                "Actions",
+              ].map((h) => (
                 <th
                   key={h}
                   className="px-4 py-3 font-bold text-gray-500 uppercase text-[10px]"
@@ -342,10 +352,13 @@ export const TestsPage = () => {
                 <tr key={t._id}>
                   <td className="px-4 py-3 font-bold">{t.testName}</td>
                   <td className="px-4 py-3">
-                    {t.testCode
-                      ? <span className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 font-bold text-xs tracking-widest">{t.testCode}</span>
-                      : <span className="text-gray-300 text-xs italic">—</span>
-                    }
+                    {t.testCode ? (
+                      <span className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 font-bold text-xs tracking-widest">
+                        {t.testCode}
+                      </span>
+                    ) : (
+                      <span className="text-gray-300 text-xs italic">—</span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-gray-500">
                     {t.batchId?.batchName}
@@ -982,16 +995,24 @@ export const TestsPage = () => {
 
       {isResultsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setResultsOpen(false)} />
+          <div
+            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+            onClick={() => setResultsOpen(false)}
+          />
           <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
             <div className="bg-gradient-to-r from-emerald-600 to-teal-700 px-6 py-5 rounded-t-2xl flex justify-between items-start shrink-0">
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <Users size={20} /> Student Results
                 </h2>
-                <p className="text-emerald-200 text-sm mt-0.5">{resultsTest?.testName}</p>
+                <p className="text-emerald-200 text-sm mt-0.5">
+                  {resultsTest?.testName}
+                </p>
               </div>
-              <button onClick={() => setResultsOpen(false)} className="p-1.5 rounded-lg text-emerald-100 hover:text-white hover:bg-white/10 transition-colors">
+              <button
+                onClick={() => setResultsOpen(false)}
+                className="p-1.5 rounded-lg text-emerald-100 hover:text-white hover:bg-white/10 transition-colors"
+              >
                 <X size={18} />
               </button>
             </div>
@@ -1011,8 +1032,22 @@ export const TestsPage = () => {
                 <table className="w-full text-sm text-left">
                   <thead className="bg-gray-100 border-b sticky top-0">
                     <tr>
-                      {["Student", "ID", "Score", "%", "Correct", "Wrong", "Result", "Submitted"].map(h => (
-                        <th key={h} className="px-4 py-3 text-[10px] font-bold text-gray-500 uppercase">{h}</th>
+                      {[
+                        "Student",
+                        "ID",
+                        "Score",
+                        "%",
+                        "Correct",
+                        "Wrong",
+                        "Result",
+                        "Submitted",
+                      ].map((h) => (
+                        <th
+                          key={h}
+                          className="px-4 py-3 text-[10px] font-bold text-gray-500 uppercase"
+                        >
+                          {h}
+                        </th>
                       ))}
                     </tr>
                   </thead>
@@ -1020,21 +1055,39 @@ export const TestsPage = () => {
                     {results.map((r, i) => (
                       <tr key={i} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
-                          <p className="font-bold text-gray-800">{r.studentName}</p>
-                          <p className="text-[11px] text-gray-400">{r.studentEmail}</p>
+                          <p className="font-bold text-gray-800">
+                            {r.studentName}
+                          </p>
+                          <p className="text-[11px] text-gray-400">
+                            {r.studentEmail}
+                          </p>
                         </td>
-                        <td className="px-4 py-3 text-xs font-mono text-gray-500">{r.studentCode}</td>
-                        <td className="px-4 py-3 font-black text-gray-900">{r.score}</td>
-                        <td className="px-4 py-3 font-bold text-gray-700">{Math.round(r.percentage)}%</td>
-                        <td className="px-4 py-3 text-emerald-600 font-bold">{r.correctCount}</td>
-                        <td className="px-4 py-3 text-red-500 font-bold">{r.incorrectCount}</td>
+                        <td className="px-4 py-3 text-xs font-mono text-gray-500">
+                          {r.studentCode}
+                        </td>
+                        <td className="px-4 py-3 font-black text-gray-900">
+                          {r.score}
+                        </td>
+                        <td className="px-4 py-3 font-bold text-gray-700">
+                          {Math.round(r.percentage)}%
+                        </td>
+                        <td className="px-4 py-3 text-emerald-600 font-bold">
+                          {r.correctCount}
+                        </td>
+                        <td className="px-4 py-3 text-red-500 font-bold">
+                          {r.incorrectCount}
+                        </td>
                         <td className="px-4 py-3">
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${r.result === 'PASS' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-600'}`}>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-black ${r.result === "PASS" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"}`}
+                          >
                             {r.result}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-[11px] text-gray-400">
-                          {r.submittedAt ? new Date(r.submittedAt).toLocaleString() : '—'}
+                          {r.submittedAt
+                            ? new Date(r.submittedAt).toLocaleString()
+                            : "—"}
                         </td>
                       </tr>
                     ))}
@@ -1142,7 +1195,8 @@ export const TestsPage = () => {
               >
                 {isSendingInvites ? (
                   <>
-                    <Loader2 size={16} className="animate-spin" /> Sending Invites...
+                    <Loader2 size={16} className="animate-spin" /> Sending
+                    Invites...
                   </>
                 ) : (
                   <>
