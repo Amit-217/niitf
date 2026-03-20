@@ -4,6 +4,7 @@ import api from './axios';
 
 export interface Test {
     _id: string;
+    testCode?: string;
     testName: string;
     batchId: { _id: string; batchName: string };
     durationMinutes: number;
@@ -66,6 +67,9 @@ export const getQuestions = (testId: string) =>
 
 export const recordOfflineScore = (testId: string, data: OfflineScorePayload) =>
     api.post(`/admin/tests/${testId}/offline-score`, data);
+
+export const sendExamInvites = (testId: string) =>
+    api.post(`/admin/tests/${testId}/send-invites`);
 
 // ─── Student Test APIs ───────────────────────────────────────────────────────
 

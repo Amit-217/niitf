@@ -12,12 +12,15 @@ import {
   Save,
   Loader2,
   ListChecks,
+  Mail,
+  Users,
 } from "lucide-react";
 import {
   getTests,
   createTest,
   addQuestion,
   getQuestions,
+  sendExamInvites,
   Test,
   TestPayload,
   Question,
@@ -43,7 +46,9 @@ const INITIAL_FORM = {
   mode: "Online",
   testDate: "",
   startTimeStr: "",
+  startAmPm: "AM",
   endTimeStr: "",
+  endAmPm: "AM",
 };
 
 export const TestsPage = () => {
@@ -68,6 +73,7 @@ export const TestsPage = () => {
   const [addingQ, setAddingQ] = useState(false);
   const [analytics, setAnalytics] = useState<any[]>([]);
   const [isAnalyticsOpen, setAnalyticsOpen] = useState(false);
+  const [analyticsTest, setAnalyticsTest] = useState<Test | null>(null);
   // Question Paper Review Modal
   const [isQuestionPaperOpen, setQuestionPaperOpen] = useState(false);
   const [questionPaperTest, setQuestionPaperTest] = useState<Test | null>(null);
@@ -75,6 +81,28 @@ export const TestsPage = () => {
     Question[]
   >([]);
   const [isQPLoading, setQPLoading] = useState(false);
+  const [isSendingInvites, setIsSendingInvites] = useState(false);
+  const [isResultsOpen, setResultsOpen] = useState(false);
+  const [resultsTest, setResultsTest] = useState<Test | null>(null);
+  const [results, setResults] = useState<any[]>([]);
+  const [isResultsLoading, setResultsLoading] = useState(false);
+
+  const handleSendInvites = async () => {
+    if (!questionPaperTest) return;
+    setIsSendingInvites(true);
+    try {
+      const res: any = await sendExamInvites(questionPaperTest._id);
+      const d = res?.data?.data || res?.data || res;
+      toast.success(
+        `Invites sent to ${d.sent} student(s). Skipped: ${d.skipped} (no email).`,
+      );
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to send invites");
+    } finally {
+      setIsSendingInvites(false);
+    }
+  };
+
   // Handler to open question paper modal
   const openQuestionPaper = async (t: Test) => {
     setQuestionPaperTest(t);
@@ -127,12 +155,36 @@ export const TestsPage = () => {
     setCreateOpen(true);
   };
 
-  const formatTime = (time: string) => {
-    if (!time || time.includes(":")) return time;
-    const clean = time.replace(/\D/g, "");
-    if (clean.length === 4) return `${clean.slice(0, 2)}:${clean.slice(2)}`;
-    if (clean.length === 3) return `0${clean.slice(0, 1)}:${clean.slice(1)}`;
-    return time;
+  const formatTime12h = (time: string): string => {
+    if (!time) return time;
+    let str = time.replace(/[^\d:]/g, "");
+    if (!str.includes(":")) {
+      const clean = str.replace(/\D/g, "");
+      if (clean.length === 4) str = `${clean.slice(0, 2)}:${clean.slice(2)}`;
+      else if (clean.length === 3)
+        str = `0${clean.slice(0, 1)}:${clean.slice(1)}`;
+    }
+    return str;
+  };
+
+  const to24h = (timeStr: string, ampm: string): string => {
+    const [hStr, mStr] = timeStr.split(":");
+    let h = parseInt(hStr, 10);
+    const m = parseInt(mStr, 10);
+    if (isNaN(h) || isNaN(m)) return timeStr;
+    if (ampm === "AM") {
+      if (h === 12) h = 0;
+    } else {
+      if (h !== 12) h += 12;
+    }
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  };
+
+  const validateTime12h = (timeStr: string): boolean => {
+    const formatted = formatTime12h(timeStr);
+    const [hStr] = formatted.split(":");
+    const h = parseInt(hStr, 10);
+    return !isNaN(h) && h >= 1 && h <= 12;
   };
 
   const handleCreateTest = async (e: React.FormEvent) => {
@@ -140,8 +192,23 @@ export const TestsPage = () => {
     setSubmitting(true);
     try {
       const payload = { ...form };
-      const sTime = formatTime(payload.startTimeStr);
-      const eTime = formatTime(payload.endTimeStr);
+
+      const sFormatted = formatTime12h(payload.startTimeStr);
+      const eFormatted = formatTime12h(payload.endTimeStr);
+
+      if (!validateTime12h(sFormatted)) {
+        toast.error("Invalid Start Time. Hours must be 1–12.");
+        setSubmitting(false);
+        return;
+      }
+      if (!validateTime12h(eFormatted)) {
+        toast.error("Invalid End Time. Hours must be 1–12.");
+        setSubmitting(false);
+        return;
+      }
+
+      const sTime = to24h(sFormatted, payload.startAmPm);
+      const eTime = to24h(eFormatted, payload.endAmPm);
 
       payload.startTime = new Date(
         `${payload.testDate} ${sTime}`,
@@ -149,7 +216,9 @@ export const TestsPage = () => {
       payload.endTime = new Date(`${payload.testDate} ${eTime}`).toISOString();
       delete payload.testDate;
       delete payload.startTimeStr;
+      delete payload.startAmPm;
       delete payload.endTimeStr;
+      delete payload.endAmPm;
 
       await createTest(payload);
       toast.success("Test created!");
@@ -181,8 +250,24 @@ export const TestsPage = () => {
     }
   };
 
+  const openResults = async (t: Test) => {
+    setResultsTest(t);
+    setResultsOpen(true);
+    setResultsLoading(true);
+    try {
+      const res: any = await api.get(`/admin/tests/${t._id}/results`);
+      const data = res?.data?.data || res?.data || res;
+      setResults(Array.isArray(data) ? data : []);
+    } catch {
+      toast.error("Failed to load results");
+      setResults([]);
+    } finally {
+      setResultsLoading(false);
+    }
+  };
+
   const openAnalytics = async (t: Test) => {
-    setViewTest(t);
+    setAnalyticsTest(t);
     try {
       const res: any = await api.get(`/admin/tests/${t._id}/analytics`);
       setAnalytics(res.data);
@@ -238,7 +323,14 @@ export const TestsPage = () => {
         <table className="w-full text-sm text-left">
           <thead className="bg-gray-50 border-b">
             <tr>
-              {["Test Name", "Batch", "Marks", "Mode", "Actions"].map((h) => (
+              {[
+                "Test Name",
+                "Test Code",
+                "Batch",
+                "Marks",
+                "Mode",
+                "Actions",
+              ].map((h) => (
                 <th
                   key={h}
                   className="px-4 py-3 font-bold text-gray-500 uppercase text-[10px]"
@@ -251,7 +343,7 @@ export const TestsPage = () => {
           <tbody className="divide-y">
             {isLoading ? (
               <tr>
-                <td colSpan={5} className="py-10 text-center">
+                <td colSpan={6} className="py-10 text-center">
                   Loading...
                 </td>
               </tr>
@@ -259,6 +351,15 @@ export const TestsPage = () => {
               tests.map((t) => (
                 <tr key={t._id}>
                   <td className="px-4 py-3 font-bold">{t.testName}</td>
+                  <td className="px-4 py-3">
+                    {t.testCode ? (
+                      <span className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 font-bold text-xs tracking-widest">
+                        {t.testCode}
+                      </span>
+                    ) : (
+                      <span className="text-gray-300 text-xs italic">—</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-gray-500">
                     {t.batchId?.batchName}
                   </td>
@@ -289,102 +390,23 @@ export const TestsPage = () => {
                     >
                       <Eye size={16} />
                     </button>
-                    {/* View Results */}
+                    {/* View Student Results */}
                     <button
-                      title="View Results"
+                      title="View Student Results"
+                      onClick={() => openResults(t)}
+                      className="p-1.5 rounded-full text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+                    >
+                      <Users size={16} />
+                    </button>
+                    {/* View Analytics */}
+                    <button
+                      title="View Analytics"
                       onClick={() => openAnalytics(t)}
                       className="p-1.5 rounded-full text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
                     >
                       <BarChart3 size={16} />
                     </button>
                   </td>
-                  {/* Question Paper Review Modal */}
-                  {isQuestionPaperOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                      <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
-                        onClick={() => setQuestionPaperOpen(false)}
-                      />
-                      <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
-                        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex justify-between items-start shrink-0">
-                          <div>
-                            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                              <ListChecks size={20} /> Question Paper
-                            </h2>
-                            <p className="text-blue-100 text-sm mt-0.5">
-                              {questionPaperTest?.testName}
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => setQuestionPaperOpen(false)}
-                            className="p-1.5 rounded-lg text-blue-100 hover:text-white hover:bg-white/10 transition-colors"
-                          >
-                            <X size={18} />
-                          </button>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50">
-                          {isQPLoading ? (
-                            <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-3">
-                              <Loader2 className="animate-spin" size={32} />
-                              <p className="text-sm font-medium italic">
-                                Loading question paper...
-                              </p>
-                            </div>
-                          ) : questionPaperQuestions.length === 0 ? (
-                            <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-3">
-                              <AlertCircle size={40} className="opacity-20" />
-                              <p className="text-sm font-medium italic">
-                                No questions found for this test.
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="space-y-6">
-                              {questionPaperQuestions.map((q, idx) => (
-                                <div
-                                  key={q._id || idx}
-                                  className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm"
-                                >
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <span className="w-7 h-7 shrink-0 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg flex items-center justify-center">
-                                      Q{idx + 1}
-                                    </span>
-                                    <span className="font-semibold text-gray-800">
-                                      {q.questionText}
-                                    </span>
-                                  </div>
-                                  {q.type === "MCQ" && q.options && (
-                                    <ul className="pl-8 space-y-1 mt-2">
-                                      {q.options.map((opt, oidx) => (
-                                        <li
-                                          key={oidx}
-                                          className="flex items-center gap-2 text-gray-700"
-                                        >
-                                          <span className="w-5 h-5 rounded-full border border-gray-300 flex items-center justify-center text-xs font-bold bg-gray-50">
-                                            {String.fromCharCode(65 + oidx)}
-                                          </span>
-                                          <span>{opt}</span>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  )}
-                                  {q.type === "PASSAGE" && q.passageText && (
-                                    <div className="mt-2 p-3 bg-gray-50 border-l-4 border-blue-200 text-gray-600 text-sm rounded">
-                                      {q.passageText}
-                                    </div>
-                                  )}
-                                  {q.marks && (
-                                    <div className="mt-2 text-xs text-gray-400">
-                                      Marks: {q.marks}
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </tr>
               ))
             )}
@@ -500,52 +522,79 @@ export const TestsPage = () => {
                     </div>
                     <div className="relative group">
                       <label className={labelClass}>Start Time *</label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          required
-                          value={form.startTimeStr}
-                          onBlur={(e) =>
-                            setForm({
-                              ...form,
-                              startTimeStr: formatTime(e.target.value),
-                            })
-                          }
-                          onChange={(e) =>
-                            setForm({ ...form, startTimeStr: e.target.value })
-                          }
-                          className={`${inputClass} pl-10 border-blue-100 bg-blue-50/10 focus:bg-white`}
-                          placeholder="09:30"
-                        />
-                        <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-500 font-bold text-xs">
-                          GO
+                      <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            required
+                            value={form.startTimeStr}
+                            onBlur={(e) =>
+                              setForm({
+                                ...form,
+                                startTimeStr: formatTime12h(e.target.value),
+                              })
+                            }
+                            onChange={(e) =>
+                              setForm({ ...form, startTimeStr: e.target.value })
+                            }
+                            className={`${inputClass} pl-10 border-blue-100 bg-blue-50/10 focus:bg-white`}
+                            placeholder="09:30"
+                            maxLength={5}
+                          />
+                          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-500 font-bold text-xs">
+                            GO
+                          </div>
+                        </div>
+                        <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold shrink-0">
+                          {["AM", "PM"].map((v) => (
+                            <button
+                              key={v}
+                              type="button"
+                              onClick={() => setForm({ ...form, startAmPm: v })}
+                              className={`px-3 py-2 transition-colors ${form.startAmPm === v ? "bg-blue-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
+                            >
+                              {v}
+                            </button>
+                          ))}
                         </div>
                       </div>
-                      <p className="text-[10px] text-gray-400 mt-1 italic pl-1">
-                        Format: HH:mm (24h)
-                      </p>
                     </div>
                     <div className="relative group">
                       <label className={labelClass}>End Time *</label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          required
-                          value={form.endTimeStr}
-                          onBlur={(e) =>
-                            setForm({
-                              ...form,
-                              endTimeStr: formatTime(e.target.value),
-                            })
-                          }
-                          onChange={(e) =>
-                            setForm({ ...form, endTimeStr: e.target.value })
-                          }
-                          className={`${inputClass} pl-10 border-red-100 bg-red-50/10 focus:bg-white`}
-                          placeholder="11:30"
-                        />
-                        <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-red-500 font-bold text-xs">
-                          END
+                      <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            required
+                            value={form.endTimeStr}
+                            onBlur={(e) =>
+                              setForm({
+                                ...form,
+                                endTimeStr: formatTime12h(e.target.value),
+                              })
+                            }
+                            onChange={(e) =>
+                              setForm({ ...form, endTimeStr: e.target.value })
+                            }
+                            className={`${inputClass} pl-10 border-red-100 bg-red-50/10 focus:bg-white`}
+                            placeholder="11:30"
+                            maxLength={5}
+                          />
+                          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-red-500 font-bold text-xs">
+                            END
+                          </div>
+                        </div>
+                        <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold shrink-0">
+                          {["AM", "PM"].map((v) => (
+                            <button
+                              key={v}
+                              type="button"
+                              onClick={() => setForm({ ...form, endAmPm: v })}
+                              className={`px-3 py-2 transition-colors ${form.endAmPm === v ? "bg-red-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
+                            >
+                              {v}
+                            </button>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -663,7 +712,9 @@ export const TestsPage = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
-            onClick={() => setAnalyticsOpen(false)}
+            onClick={() => {
+              setAnalyticsOpen(false);
+            }}
           />
           <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
             <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex justify-between items-start shrink-0">
@@ -672,11 +723,14 @@ export const TestsPage = () => {
                   Performance Analytics
                 </h2>
                 <p className="text-violet-200 text-sm mt-0.5">
-                  Top missed questions for {viewTest?.testName}
+                  Top missed questions for {analyticsTest?.testName}
                 </p>
               </div>
               <button
-                onClick={() => setAnalyticsOpen(false)}
+                onClick={() => {
+                  setAnalyticsOpen(false);
+                  setAnalyticsTest(null);
+                }}
                 className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors"
               >
                 <X size={18} />
@@ -934,6 +988,222 @@ export const TestsPage = () => {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isResultsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+            onClick={() => setResultsOpen(false)}
+          />
+          <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-gradient-to-r from-emerald-600 to-teal-700 px-6 py-5 rounded-t-2xl flex justify-between items-start shrink-0">
+              <div>
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <Users size={20} /> Student Results
+                </h2>
+                <p className="text-emerald-200 text-sm mt-0.5">
+                  {resultsTest?.testName}
+                </p>
+              </div>
+              <button
+                onClick={() => setResultsOpen(false)}
+                className="p-1.5 rounded-lg text-emerald-100 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto bg-gray-50/30">
+              {isResultsLoading ? (
+                <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
+                  <Loader2 className="animate-spin" size={32} />
+                  <p className="text-sm italic">Loading results...</p>
+                </div>
+              ) : results.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
+                  <AlertCircle size={40} className="opacity-20" />
+                  <p className="text-sm italic">No submissions yet.</p>
+                </div>
+              ) : (
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-100 border-b sticky top-0">
+                    <tr>
+                      {[
+                        "Student",
+                        "ID",
+                        "Score",
+                        "%",
+                        "Correct",
+                        "Wrong",
+                        "Result",
+                        "Submitted",
+                      ].map((h) => (
+                        <th
+                          key={h}
+                          className="px-4 py-3 text-[10px] font-bold text-gray-500 uppercase"
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {results.map((r, i) => (
+                      <tr key={i} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <p className="font-bold text-gray-800">
+                            {r.studentName}
+                          </p>
+                          <p className="text-[11px] text-gray-400">
+                            {r.studentEmail}
+                          </p>
+                        </td>
+                        <td className="px-4 py-3 text-xs font-mono text-gray-500">
+                          {r.studentCode}
+                        </td>
+                        <td className="px-4 py-3 font-black text-gray-900">
+                          {r.score}
+                        </td>
+                        <td className="px-4 py-3 font-bold text-gray-700">
+                          {Math.round(r.percentage)}%
+                        </td>
+                        <td className="px-4 py-3 text-emerald-600 font-bold">
+                          {r.correctCount}
+                        </td>
+                        <td className="px-4 py-3 text-red-500 font-bold">
+                          {r.incorrectCount}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-black ${r.result === "PASS" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"}`}
+                          >
+                            {r.result}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-[11px] text-gray-400">
+                          {r.submittedAt
+                            ? new Date(r.submittedAt).toLocaleString()
+                            : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isQuestionPaperOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+            onClick={() => setQuestionPaperOpen(false)}
+          />
+          <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex justify-between items-start shrink-0">
+              <div>
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <ListChecks size={20} /> Question Paper
+                </h2>
+                <p className="text-violet-200 text-sm mt-0.5">
+                  {questionPaperTest?.testName}
+                </p>
+              </div>
+              <button
+                onClick={() => setQuestionPaperOpen(false)}
+                className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/50">
+              {isQPLoading ? (
+                <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-3">
+                  <Loader2 className="animate-spin" size={32} />
+                  <p className="text-sm font-medium italic">
+                    Loading question paper...
+                  </p>
+                </div>
+              ) : questionPaperQuestions.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-3">
+                  <AlertCircle size={40} className="opacity-20" />
+                  <p className="text-sm font-medium italic">
+                    No questions found for this test.
+                  </p>
+                </div>
+              ) : (
+                questionPaperQuestions.map((q, idx) => (
+                  <div
+                    key={q._id || idx}
+                    className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-start justify-between gap-4 mb-4">
+                      <div className="flex gap-2.5">
+                        <span className="w-6 h-6 shrink-0 bg-violet-100 text-violet-700 text-[10px] font-bold rounded-lg flex items-center justify-center">
+                          Q{idx + 1}
+                        </span>
+                        <div>
+                          <p className="text-sm font-bold text-gray-800 leading-tight">
+                            {q.questionText}
+                          </p>
+                          {q.type === "PASSAGE" && q.passageText && (
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                              {q.passageText}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-[10px] font-black text-violet-700 bg-violet-50 px-2 py-1 rounded-full uppercase">
+                          {q.marks || 1} Mark
+                        </span>
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-[10px] font-black uppercase text-gray-400 tracking-tighter">
+                        <span>{q.type} Question</span>
+                        <span>
+                          {q.type === "MCQ" && q.options
+                            ? `${q.options.length} Options`
+                            : "Passage Based"}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                        <div
+                          className="bg-gradient-to-r from-violet-400 to-indigo-500 h-full rounded-full transition-all duration-700"
+                          style={{
+                            width: `${Math.min(100, ((q.marks || 1) / 5) * 100)}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="shrink-0 px-6 py-4 bg-white border-t border-gray-100 rounded-b-2xl">
+              <button
+                onClick={handleSendInvites}
+                disabled={isSendingInvites || isQPLoading}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-bold hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-200 disabled:opacity-60"
+              >
+                {isSendingInvites ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" /> Sending
+                    Invites...
+                  </>
+                ) : (
+                  <>
+                    <Mail size={16} /> Send Exam Invites to Batch Students
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>

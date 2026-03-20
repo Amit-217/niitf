@@ -22,8 +22,12 @@ const clearSession = () => {
 };
 
 const redirectToLogin = () => {
-    if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+    const loginRoute = window.location.pathname.startsWith('/student')
+        ? '/student/login'
+        : '/login';
+
+    if (window.location.pathname !== loginRoute) {
+        window.location.href = loginRoute;
     }
 };
 
