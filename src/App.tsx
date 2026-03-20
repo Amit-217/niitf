@@ -1,10 +1,11 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import { Login } from './pages/auth/Login';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
 import { VerifyOtp } from './pages/auth/VerifyOtp';
 import { ResetPassword } from './pages/auth/ResetPassword';
-import { StudentLogin } from './pages/auth/StudentLogin';
+import { StudentLogin } from './pages/student/auth/StudentLogin';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { AdminDashboard } from './pages/dashboard/AdminDashboard';
 import { EmployeeDashboard } from './pages/dashboard/EmployeeDashboard';
@@ -25,6 +26,7 @@ import { StudentsPage } from './pages/admin/students/StudentsPage';
 import { AdmissionsPage } from './pages/admin/admissions/AdmissionsPage';
 import { TestsPage } from './pages/admin/tests/TestsPage';
 import { TakeTestPage } from './pages/student/tests/TakeTestPage';
+import { StudentExamAccessPage } from './pages/student/tests/StudentExamAccessPage';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -34,9 +36,13 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
   const token = localStorage.getItem('accessToken');
   const userStr = localStorage.getItem('user');
+  const location = useLocation();
 
   if (!token || !userStr) {
-    return <Navigate to="/login" replace />;
+    const isStudentRoute =
+      location.pathname.startsWith('/student') ||
+      location.pathname.startsWith('/test/');
+    return <Navigate to={isStudentRoute ? '/student/login' : '/login'} state={{ from: location }} replace />;
   }
 
   const user = JSON.parse(userStr);
@@ -46,7 +52,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
     if (userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') {
       return <Navigate to="/admin/dashboard" replace />;
     } else if (userRole === 'STUDENT') {
-      return <Navigate to="/student/dashboard" replace />;
+      return <Navigate to="/student/exam" replace />;
     } else {
       return <Navigate to="/employee/dashboard" replace />;
     }
@@ -55,8 +61,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
   return <>{children}</>;
 };
 
-
-
 function App() {
   return (
     <BrowserRouter>
@@ -64,16 +68,25 @@ function App() {
         {/* Auth Routes */}
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/student-login" element={<StudentLogin />} />
+        <Route path="/student/login" element={<StudentLogin />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+
+        <Route
+          path="/student/exam"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT']}>
+              <StudentExamAccessPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Student/Employee Exam Route (Full screen, no layout) */}
         <Route
           path="/test/:id"
           element={
-            <ProtectedRoute allowedRoles={['EMPLOYEE', 'ADMIN', 'SUPER_ADMIN', 'STUDENT']}>
+            <ProtectedRoute allowedRoles={['STUDENT', 'EMPLOYEE', 'ADMIN', 'SUPER_ADMIN']}>
               <TakeTestPage />
             </ProtectedRoute>
           }
@@ -140,6 +153,7 @@ function App() {
         {/* Fallback */}
         <Route path="*" element={<Login />} />
       </Routes>
+      <ToastContainer position="top-right" autoClose={3000} />
     </BrowserRouter>
   );
 }

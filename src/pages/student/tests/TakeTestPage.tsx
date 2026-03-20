@@ -16,6 +16,10 @@ interface Question {
 export const TakeTestPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    const studentId = user?.id;
+    const isStudent = user?.role === 'STUDENT';
     
     const [testData, setTestData] = useState<any>(null);
     const [questions, setQuestions] = useState<Question[]>([]);
@@ -28,18 +32,27 @@ export const TakeTestPage = () => {
     const [result, setResult] = useState<any>(null);
 
     const startTest = useCallback(async () => {
+        if (!studentId) {
+            toast.error('Student session not found. Please login again.');
+            navigate('/student/login');
+            setIsLoading(false);
+            return;
+        }
+
         try {
-            const res: any = await api.get(`/tests/${id}/start`);
+            const res: any = await api.get(`/tests/${id}/start`, {
+                params: { studentId }
+            });
             setTestData(res.data.test);
             setQuestions(res.data.questions);
             setTimeLeft(res.data.test.durationMinutes * 60);
         } catch (err: any) {
             toast.error(err.message || "Failed to start test");
-            navigate('/employee/dashboard');
+            navigate(isStudent ? '/student/exam' : '/employee/dashboard');
         } finally {
             setIsLoading(false);
         }
-    }, [id, navigate]);
+    }, [id, isStudent, navigate, studentId]);
 
     useEffect(() => { startTest(); }, [startTest]);
 
@@ -88,7 +101,10 @@ export const TakeTestPage = () => {
                 questionId: qId,
                 selectedOption: opt
             }));
-            const res: any = await api.post(`/tests/${id}/submit`, { answers: formattedAnswers });
+            const res: any = await api.post(`/tests/${id}/submit`, {
+                studentId,
+                answers: formattedAnswers
+            });
             setResult(res.data);
             toast.success("Test submitted successfully!");
         } catch (err: any) {
@@ -132,7 +148,7 @@ export const TakeTestPage = () => {
                         <span>Correct: <span className="text-emerald-600">{result.correctCount}</span></span>
                         <span>Incorrect: <span className="text-red-600">{result.incorrectCount}</span></span>
                     </div>
-                    <button onClick={() => navigate('/employee/dashboard')} className="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-100">Back to Dashboard</button>
+                    <button onClick={() => navigate(isStudent ? '/student/exam' : '/employee/dashboard')} className="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-100">Back to Dashboard</button>
                 </div>
             </div>
         </div>
