@@ -61,11 +61,7 @@ export const TakeTestPage = () => {
     } catch (err: any) {
       const msg = err?.message || err?.error || "Failed to start test";
       toast.error(msg);
-      // Keep loading spinner visible while navigating away (prevents blank page crash)
-      setTimeout(
-        () => navigate(isStudent ? "/student/exam" : "/employee/dashboard"),
-        1500,
-      );
+      navigate(isStudent ? "/student/exam" : "/employee/dashboard");
     }
   }, [id, isStudent, navigate, studentId]);
 
@@ -92,6 +88,20 @@ export const TakeTestPage = () => {
   const handleOptionSelect = (qId: string, optIdx: number) => {
     if (result) return;
     setAnswers((prev) => ({ ...prev, [qId]: optIdx }));
+  };
+
+  const handleBackToDashboard = () => {
+    if (isStudent) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
+      toast.info(
+        "You have been logged out. Thank you for completing the exam.",
+      );
+      navigate("/student/login");
+    } else {
+      navigate("/employee/dashboard");
+    }
   };
 
   const handleSubmit = async () => {
@@ -182,12 +192,10 @@ export const TakeTestPage = () => {
               </span>
             </div>
             <button
-              onClick={() =>
-                navigate(isStudent ? "/student/exam" : "/employee/dashboard")
-              }
+              onClick={handleBackToDashboard}
               className="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-100"
             >
-              Back to Dashboard
+              {isStudent ? "Finish & Logout" : "Back to Dashboard"}
             </button>
           </div>
         </div>
