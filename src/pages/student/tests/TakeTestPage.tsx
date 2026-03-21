@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
@@ -35,7 +35,6 @@ export const TakeTestPage = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
-  const [visited, setVisited] = useState<Record<string, boolean>>({});
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,12 +73,6 @@ export const TakeTestPage = () => {
     startTest();
   }, [startTest]);
 
-  useEffect(() => {
-    if (questions.length > 0 && !visited[questions[currentIndex]._id]) {
-      setVisited((prev) => ({ ...prev, [questions[currentIndex]._id]: true }));
-    }
-  }, [currentIndex, questions]);
-
   // Timer Logic
   useEffect(() => {
     if (timeLeft === null || timeLeft <= 0 || result) return;
@@ -99,14 +92,6 @@ export const TakeTestPage = () => {
   const handleOptionSelect = (qId: string, optIdx: number) => {
     if (result) return;
     setAnswers((prev) => ({ ...prev, [qId]: optIdx }));
-  };
-
-  const handleClearResponse = (qId: string) => {
-    setAnswers((prev) => {
-      const newAnswers = { ...prev };
-      delete newAnswers[qId];
-      return newAnswers;
-    });
   };
 
   const handleSubmit = async () => {
@@ -285,21 +270,13 @@ export const TakeTestPage = () => {
             </div>
 
             <div className="mt-8 flex items-center justify-between border-t border-gray-50 pt-6">
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleClearResponse(currentQ._id)}
-                  className="px-4 py-2 border border-gray-200 text-gray-500 rounded-lg text-xs font-bold hover:bg-gray-50 transition-all uppercase"
-                >
-                  Clear
-                </button>
-                <button
-                  disabled={currentIndex === 0}
-                  onClick={() => setCurrentIndex((prev) => prev - 1)}
-                  className="flex items-center gap-2 px-6 py-3 text-gray-400 hover:text-primary-600 font-semibold text-xs uppercase disabled:opacity-30 transition-all"
-                >
-                  <ChevronLeft size={18} /> Previous
-                </button>
-              </div>
+              <button
+                disabled={currentIndex === 0}
+                onClick={() => setCurrentIndex((prev) => prev - 1)}
+                className="flex items-center gap-2 px-6 py-3 text-gray-400 hover:text-primary-600 font-semibold text-xs uppercase disabled:opacity-30 transition-all"
+              >
+                <ChevronLeft size={18} /> Previous
+              </button>
 
               <div className="hidden sm:flex gap-1.5">
                 {questions.map((_, i) => (
@@ -342,31 +319,19 @@ export const TakeTestPage = () => {
               Question Map
             </h3>
             <div className="grid grid-cols-5 gap-2">
-              {questions.map((q, idx) => {
-                const isAnswered = answers[q._id] !== undefined;
-                const isVisited = visited[q._id];
-                
-                let btnClass = "bg-gray-50 border-transparent text-gray-400";
-                if (isAnswered) btnClass = "bg-emerald-500 border-emerald-500 text-white shadow-md";
-                else if (isVisited) btnClass = "bg-red-500 border-red-500 text-white";
-
-                return (
-                  <button
-                    key={q._id}
-                    onClick={() => setCurrentIndex(idx)}
-                    className={`aspect-square rounded-xl flex items-center justify-center text-xs font-bold transition-all border-2 ${idx === currentIndex ? "border-primary-600 bg-primary-50 text-primary-700" : btnClass}`}
-                  >
-                    {idx + 1}
-                  </button>
-                );
-              })}
+              {questions.map((q, idx) => (
+                <button
+                  key={q._id}
+                  onClick={() => setCurrentIndex(idx)}
+                  className={`aspect-square rounded-xl flex items-center justify-center text-xs font-bold transition-all border-2 ${idx === currentIndex ? "border-primary-600 bg-primary-50 text-primary-700" : answers[q._id] !== undefined ? "bg-emerald-500 border-emerald-500 text-white shadow-md" : "bg-gray-50 border-transparent text-gray-400 hover:border-gray-200"}`}
+                >
+                  {idx + 1}
+                </button>
+              ))}
             </div>
             <div className="mt-6 pt-6 border-t border-gray-50 space-y-2">
               <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase">
                 <div className="w-3 h-3 rounded-md bg-emerald-500" /> Answered
-              </div>
-              <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase">
-                <div className="w-3 h-3 rounded-md bg-red-500" /> Not Answered
               </div>
               <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase">
                 <div className="w-3 h-3 rounded-md bg-gray-100" /> Unvisited
