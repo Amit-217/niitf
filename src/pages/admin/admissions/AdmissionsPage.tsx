@@ -75,6 +75,8 @@ export const AdmissionsPage = () => {
     totalFees: "",
     discount: "0",
     finalPayable: "",
+    initialPayment: "0",
+    initialPaymentMode: "Cash" as "Cash" | "UPI" | "Bank",
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -129,6 +131,14 @@ export const AdmissionsPage = () => {
         count = res.pagination?.total || items.length;
       }
 
+      if (items.length > 0) {
+        console.log('[Admissions] Sample item payload:', {
+          totalFees: items[0]?.totalFees,
+          totalPaid: items[0]?.totalPaid,
+          balance: items[0]?.balance,
+          paymentStatus: items[0]?.paymentStatus,
+        });
+      }
       setAdmissions(items);
       setTotal(count);
     } catch (error) {
@@ -163,6 +173,7 @@ export const AdmissionsPage = () => {
 
   useEffect(() => {
     if (!isCreateOpen) return;
+    setForm((f) => ({ ...f, initialPayment: "0", initialPaymentMode: "Cash" }));
     getStudents({ limit: 200 })
       .then((r: any) => {
         if (Array.isArray(r)) setStudents(r);
@@ -192,8 +203,8 @@ export const AdmissionsPage = () => {
   const openView = async (adm: Admission) => {
     setViewAdm(adm);
     try {
-      const r = await getFeesByAdmission(adm._id);
-      setFeeSummary(r.data.data);
+      const r = (await getFeesByAdmission(adm._id)) as { data?: unknown };
+      setFeeSummary(r?.data ?? r);
     } catch {}
   };
 
@@ -234,12 +245,36 @@ export const AdmissionsPage = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await createAdmission({
+      const admission = await createAdmission({
         ...form,
         totalFees: +form.totalFees,
         discount: +form.discount,
         finalPayable: +form.finalPayable,
       } as AdmissionPayload);
+
+      // If initial payment is provided, record it immediately
+      const initAmt = parseFloat(form.initialPayment || "0");
+      if (initAmt > 0) {
+        const res = admission as {
+          data?: { data?: { _id?: string }; _id?: string };
+          _id?: string;
+        };
+        const admId = res?.data?.data?._id || res?.data?._id || res?._id;
+        if (admId) {
+          try {
+            await payFee(admId, {
+              installmentNo: 1,
+              amount: initAmt,
+              paymentMode: form.initialPaymentMode,
+            });
+          } catch (feeErr) {
+            toast.warning(
+              `Admission created but initial payment failed: ${feeErr instanceof Error ? feeErr.message : "Unknown error"}`,
+            );
+          }
+        }
+      }
+
       toast.success("Admission created!");
       setCreateOpen(false);
       fetchAdmissions();
@@ -333,7 +368,9 @@ export const AdmissionsPage = () => {
                   "Student",
                   "Course",
                   "Batch",
-                  "Final Payable",
+                  "Total Fees",
+                  "Paid",
+                  "Remaining",
                   "Status",
                   "Date",
                   "Actions",
@@ -351,7 +388,7 @@ export const AdmissionsPage = () => {
               {isLoading ? (
                 <tr>
                   <td
-                    colSpan={8}
+                    colSpan={10}
                     className="px-4 py-12 text-center text-gray-400"
                   >
                     Loading...
@@ -360,7 +397,7 @@ export const AdmissionsPage = () => {
               ) : admissions.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={8}
+                    colSpan={10}
                     className="px-4 py-12 text-center text-gray-400"
                   >
                     No admissions found
@@ -384,8 +421,14 @@ export const AdmissionsPage = () => {
                     <td className="px-4 py-3 text-gray-500">
                       {a.batchId?.batchName}
                     </td>
-                    <td className="px-4 py-3 font-semibold">
+                    <td className="px-4 py-3 font-semibold text-gray-800">
                       ₹{a.finalPayable?.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-emerald-600">
+                      ₹{(a.totalPaid ?? 0).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-red-500">
+                      ₹{(a.balance ?? a.finalPayable)?.toLocaleString()}
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -398,6 +441,13 @@ export const AdmissionsPage = () => {
                       {new Date(a.admissionDate).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3 flex items-center gap-1">
+                      <button
+                        onClick={() => openView(a)}
+                        className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        title="View Fees"
+                      >
+                        <Eye size={15} />
+                      </button>
                       <button
                         onClick={() => openEdit(a)}
                         className="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors"
@@ -617,6 +667,77 @@ export const AdmissionsPage = () => {
                           className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                           size={16}
                         />
+                      </div>
+                    </div>
+
+                    <div className="col-span-2 sm:col-span-1">
+                      <label className={labelClass}>Paid Fees (₹)</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          min={0}
+                          value={form.initialPayment}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              initialPayment: e.target.value,
+                            }))
+                          }
+                          className={`${inputClass} pl-10 h-11`}
+                          placeholder="0.00"
+                        />
+                        <CheckCircle
+                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                          size={16}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-span-2 sm:col-span-1">
+                      <label className={labelClass}>Payment Mode</label>
+                      <select
+                        value={form.initialPaymentMode}
+                        onChange={(e) =>
+                          setForm((f) => ({
+                            ...f,
+                            initialPaymentMode: e.target.value as
+                              | "Cash"
+                              | "UPI"
+                              | "Bank",
+                          }))
+                        }
+                        className={`${inputClass} h-11`}
+                      >
+                        {["Cash", "UPI", "Bank"].map((m) => (
+                          <option key={m}>{m}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="col-span-2 grid grid-cols-2 gap-3">
+                      <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-center">
+                        <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">
+                          Paid
+                        </p>
+                        <p className="text-lg font-black text-emerald-700">
+                          ₹
+                          {parseFloat(
+                            form.initialPayment || "0",
+                          ).toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-center">
+                        <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-1">
+                          Remaining
+                        </p>
+                        <p className="text-lg font-black text-red-600">
+                          ₹
+                          {Math.max(
+                            0,
+                            parseFloat(form.finalPayable || "0") -
+                              parseFloat(form.initialPayment || "0"),
+                          ).toLocaleString()}
+                        </p>
                       </div>
                     </div>
 
