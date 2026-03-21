@@ -5,14 +5,14 @@ import api from './axios';
 export interface AttendancePayload {
     employeeId: string;
     date: string; // YYYY-MM-DD
-    status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT';
+    status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'HALF_DAY';
 }
 
 export interface BulkAttendancePayload {
     date: string; // YYYY-MM-DD
     attendances: {
         employeeId: string;
-        status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT';
+        status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'HALF_DAY';
     }[];
 }
 
@@ -48,7 +48,7 @@ export const markAttendance = (data: AttendancePayload) =>
 export const bulkMarkAttendance = (data: BulkAttendancePayload) =>
     api.post('/admin/attendance/bulk', data);
 
-export const updateAttendance = (id: string, status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT') =>
+export const updateAttendance = (id: string, status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'HALF_DAY') =>
     api.put(`/admin/attendance/${id}`, { status });
 
 export const getAttendanceByDate = (date: string) =>
@@ -69,6 +69,9 @@ export const getAllSalaryConfigs = () =>
 
 export const getSalaryHistory = (employeeId: string) =>
     api.get(`/admin/salary-config/history/${employeeId}`);
+
+export const toggleSalaryConfig = (id: string) =>
+    api.patch(`/admin/salary-config/${id}/toggle`);
 
 // --- Overtime Endpoints ---
 export const markOvertime = (data: OvertimePayload) =>

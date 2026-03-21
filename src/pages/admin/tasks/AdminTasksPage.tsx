@@ -4,11 +4,10 @@ import {
   Plus,
   ListTodo,
   Search,
-  Filter,
   CalendarDays,
-  MoreVertical,
   X,
   Edit2,
+  Trash2,
 } from "lucide-react";
 import {
   createTask,
@@ -16,6 +15,7 @@ import {
   getAllTasks,
   updateTaskStatus,
   getTaskUpdates,
+  deleteTask,
 } from "../../../api/taskApi";
 import api from "../../../api/axios";
 
@@ -79,7 +79,7 @@ export const AdminTasksPage = () => {
 
   const fetchEmployees = async () => {
     try {
-      const usersRes = await api.get("/users?status=active");
+      const usersRes = await api.get("/users?status=active&limit=100");
       setEmployees(usersRes.data || []);
     } catch (error) {
       console.error("Failed to load employees:", error);
@@ -183,6 +183,18 @@ export const AdminTasksPage = () => {
     }
   };
 
+  const handleDeleteTask = async (taskId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this task?")) return;
+    try {
+      await deleteTask(taskId);
+      toast.success("Task deleted successfully!");
+      fetchTasks();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete task");
+    }
+  };
+
   // Status colors mapping
   const STATUS_MAP: Record<
     string,
@@ -276,8 +288,12 @@ export const AdminTasksPage = () => {
               >
                 <Edit2 size={14} />
               </button>
-              <button className="p-1 px-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
-                <MoreVertical size={14} />
+              <button
+                onClick={(e) => handleDeleteTask(task._id, e)}
+                className="p-1.5 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                title="Delete Task"
+              >
+                <Trash2 size={14} />
               </button>
             </div>
           </div>

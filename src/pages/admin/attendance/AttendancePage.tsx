@@ -191,8 +191,8 @@ export const AttendancePage = () => {
         };
     });
 
-    const getDaysInMonth = (year: number, month: number) => {
-        return new Date(year, month, 0).getDate();
+    const getDaysInMonth = (year: number, monthVal: number) => {
+        return new Date(year, monthVal, 0).getDate();
     };
 
     const year = parseInt(selectedDate.split('-')[0]);
@@ -394,4 +394,3 @@ export const AttendancePage = () => {
         </div>
     );
 };
-

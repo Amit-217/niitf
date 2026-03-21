@@ -27,6 +27,9 @@ export const updateTask = (id: string, data: Partial<TaskPayload>) =>
 export const updateTaskStatus = (id: string, status: 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED') =>
     api.put(`/tasks/${id}`, { status });
 
+export const deleteTask = (id: string) =>
+    api.delete(`/tasks/${id}`);
+
 // --- Task Endpoints (Shared) ---
 
 export const getAllTasks = () =>

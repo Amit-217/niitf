@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { Calculator, CheckCircle2, Download, CreditCard, Loader2, Clock } from 'lucide-react';
+import { 
+    Download, 
+    Calculator,
+    CreditCard,
+    Loader2
+} from 'lucide-react';
 import { generateSalary, getAllSalaryRecordsForMonth } from '../../../api/payrollApi';
 import api from '../../../api/axios';
 
@@ -52,7 +57,7 @@ export const SalaryRecordsPage = () => {
 
     const fetchEmployees = async () => {
         try {
-            const res = await api.get('/users?role=EMPLOYEE&limit=100');
+            const res = await api.get('/users?status=active&limit=100');
             setEmployees(res.data || []);
         } catch (error) {
             toast.error('Failed to load employees for generation');
@@ -129,7 +134,7 @@ export const SalaryRecordsPage = () => {
                         </div>
                         <div>
                             <div class="row"><span>Generation Date:</span> <strong>${new Date(record.createdAt).toLocaleDateString()}</strong></div>
-                            <div class="row"><span>Payment Status:</span> <strong>${record.status}</strong></div>
+                            <div class="row"><span>Payment Status:</span> <strong>${record.status === 'PAID' ? 'PAID' : 'PENDING'}</strong></div>
                         </div>
                     </div>
                     <h3>Earnings & Deductions</h3>
@@ -231,7 +236,7 @@ export const SalaryRecordsPage = () => {
                                 records.map((record) => (
                                     <tr key={record._id} className={`hover:bg-gray-50/50 transition-colors ${record.status === 'PAID' ? 'bg-emerald-50/10' : ''}`}>
                                         <td className="px-4 py-4">
-                                            {record.status === 'DRAFT' && (
+                                            {record.status !== 'PAID' && (
                                                 <input
                                                     type="checkbox"
                                                     checked={selectedRecords.includes(record._id)}
@@ -259,10 +264,11 @@ export const SalaryRecordsPage = () => {
                                         </td>
                                         <td className="px-4 py-4 font-black text-primary-700 text-base">₹{Math.round(record.netSalary || 0).toLocaleString()}</td>
                                         <td className="px-4 py-4 text-center">
-                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${record.status === 'PAID' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-amber-100 text-amber-700 border-amber-200'}`}>
-                                                {record.status === 'PAID' ? <CheckCircle2 size={12} /> : <Clock size={12} />}
-                                                {record.status}
-                                            </span>
+                                            <span className={`inline-flex px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tighter border ${
+                                            record.status === 'PAID' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-blue-100 text-blue-700 border-blue-200'
+                                        }`}>
+                                            {record.status === 'PAID' ? 'PAID' : 'ACTIVE'}
+                                        </span>
                                         </td>
                                         <td className="px-4 py-4 text-right">
                                             <button
