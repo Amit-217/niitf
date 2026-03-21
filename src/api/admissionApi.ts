@@ -35,6 +35,7 @@ export interface AdmissionPayload {
     totalFees: number;
     discount?: number;
     finalPayable: number;
+    status?: 'Active' | 'Completed' | 'Cancelled';
 }
 
 export interface Admission {
@@ -48,6 +49,9 @@ export interface Admission {
     finalPayable: number;
     status: 'Active' | 'Completed' | 'Cancelled';
     admissionDate: string;
+    totalPaid?: number;
+    balance?: number;
+    paymentStatus?: 'Pending' | 'Partial' | 'Full';
 }
 
 export interface FeePayment {
@@ -86,7 +90,7 @@ export const deleteStudent = (id: string) =>
 
 // ─── Admission APIs ──────────────────────────────────────────────────────────
 
-export const getAdmissions = (params?: { page?: number; limit?: number; studentId?: string; status?: string }) =>
+export const getAdmissions = (params?: { page?: number; limit?: number; studentId?: string; status?: string; hasBalance?: string }) =>
     api.get('/admin/admissions', { params });
 
 export const getAdmissionById = (id: string) =>

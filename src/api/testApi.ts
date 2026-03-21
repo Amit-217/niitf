@@ -29,14 +29,22 @@ export interface Question {
     testId: string;
     type: 'MCQ' | 'PASSAGE';
     passageText?: string;
+    passageId?: string;
     questionText: string;
     options: string[];
     marks: number;
 }
 
+export interface Passage {
+    passageId: string;
+    passageText: string;
+    questionCount: number;
+}
+
 export interface QuestionPayload {
     type: 'MCQ' | 'PASSAGE';
     passageText?: string;
+    passageId?: string;
     questionText: string;
     options: string[];
     correctOption: number;
@@ -64,6 +72,9 @@ export const addQuestion = (testId: string, data: QuestionPayload) =>
 
 export const getQuestions = (testId: string) =>
     api.get(`/admin/tests/${testId}/questions`);
+
+export const getPassages = (testId: string) =>
+    api.get(`/admin/tests/${testId}/passages`);
 
 export const recordOfflineScore = (testId: string, data: OfflineScorePayload) =>
     api.post(`/admin/tests/${testId}/offline-score`, data);
