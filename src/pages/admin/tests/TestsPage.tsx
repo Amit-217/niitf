@@ -20,10 +20,12 @@ import {
   createTest,
   addQuestion,
   getQuestions,
+  getPassages,
   sendExamInvites,
   Test,
   TestPayload,
   Question,
+  Passage,
 } from "../../../api/testApi";
 import api from "../../../api/axios";
 
@@ -62,14 +64,18 @@ export const TestsPage = () => {
   const [viewTest, setViewTest] = useState<Test | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isQLoading, setIsQLoading] = useState(false);
+  // passageMode: "none" = regular MCQ, "new" = new passage, "existing" = link to existing
   const [qForm, setQForm] = useState({
-    type: "MCQ",
+    passageMode: "none",
     passageText: "",
+    passageId: "",
     questionText: "",
     options: ["", "", "", ""],
     correctOption: 0,
     marks: 1,
   });
+  const [passages, setPassages] = useState<Passage[]>([]);
+  const [passagesLoading, setPassagesLoading] = useState(false);
   const [addingQ, setAddingQ] = useState(false);
   const [analytics, setAnalytics] = useState<any[]>([]);
   const [isAnalyticsOpen, setAnalyticsOpen] = useState(false);
@@ -232,8 +238,37 @@ export const TestsPage = () => {
     }
   };
 
+  const fetchPassages = async (testId: string): Promise<Passage[]> => {
+    setPassagesLoading(true);
+    try {
+      const r: any = await getPassages(testId);
+      const ps: Passage[] = Array.isArray(r)
+        ? r
+        : Array.isArray(r?.data)
+          ? r.data
+          : [];
+      setPassages(ps);
+      return ps;
+    } catch {
+      setPassages([]);
+      return [];
+    } finally {
+      setPassagesLoading(false);
+    }
+  };
+
   const openView = async (t: Test) => {
     setViewTest(t);
+    setPassages([]);
+    setQForm({
+      passageMode: "none",
+      passageText: "",
+      passageId: "",
+      questionText: "",
+      options: ["", "", "", ""],
+      correctOption: 0,
+      marks: 1,
+    });
     if (t.mode === "Online") {
       setIsQLoading(true);
       try {
@@ -247,6 +282,7 @@ export const TestsPage = () => {
       } finally {
         setIsQLoading(false);
       }
+      fetchPassages(t._id);
     }
   };
 
@@ -281,9 +317,21 @@ export const TestsPage = () => {
     e.preventDefault();
     if (!viewTest) return;
     setAddingQ(true);
+    const prevMode = qForm.passageMode;
+    const prevPassageText = qForm.passageText;
     try {
-      const payload: any = { ...qForm };
-      if (qForm.type === "MCQ") delete payload.passageText;
+      const payload: any = {
+        type: qForm.passageMode === "none" ? "MCQ" : "PASSAGE",
+        questionText: qForm.questionText,
+        options: qForm.options,
+        correctOption: qForm.correctOption,
+        marks: qForm.marks,
+      };
+      if (qForm.passageMode === "new") {
+        payload.passageText = qForm.passageText;
+      } else if (qForm.passageMode === "existing") {
+        payload.passageId = qForm.passageId;
+      }
       await addQuestion(viewTest._id, payload);
       toast.success("Added!");
       const r: any = await getQuestions(viewTest._id);
@@ -291,13 +339,30 @@ export const TestsPage = () => {
       else if (r?.data && Array.isArray(r.data)) setQuestions(r.data);
       else if (r?.data?.data) setQuestions(r.data.data);
       else setQuestions([]);
-      setQForm({
-        ...qForm,
-        passageText: "",
+
+      // Refresh passages and auto-select newly created passage
+      const updatedPassages = await fetchPassages(viewTest._id);
+      const questionReset = {
         questionText: "",
         options: ["", "", "", ""],
         correctOption: 0,
-      });
+        marks: qForm.marks,
+      };
+      if (prevMode === "new") {
+        // Auto-switch to "existing" so next question links to same passage
+        const created = updatedPassages.find(
+          (p) => p.passageText === prevPassageText,
+        );
+        setQForm({
+          passageMode: created ? "existing" : "none",
+          passageId: created?.passageId || "",
+          passageText: created?.passageText || "",
+          ...questionReset,
+        });
+      } else {
+        // Keep existing passage or none — just reset question fields
+        setQForm({ ...qForm, ...questionReset });
+      }
     } catch {
       toast.error("Error");
     } finally {
@@ -832,31 +897,49 @@ export const TestsPage = () => {
                           No questions added yet.
                         </div>
                       ) : (
-                        questions.map((q, i) => (
-                          <div
-                            key={q._id}
-                            className="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:border-primary-200 transition-colors group"
-                          >
-                            <div className="flex gap-3">
-                              <span className="shrink-0 w-8 h-8 rounded-xl bg-gray-50 text-gray-400 text-xs font-black flex items-center justify-center group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
-                                {i + 1}
-                              </span>
-                              <div className="space-y-1">
-                                <p className="text-sm font-bold text-gray-800 line-clamp-2">
-                                  {q.questionText}
-                                </p>
-                                <div className="flex gap-2">
-                                  <span className="text-[10px] font-black uppercase text-gray-400">
-                                    {q.type}
+                        questions.map((q, i) => {
+                          const prevQ = i > 0 ? questions[i - 1] : null;
+                          const isNewPassageGroup =
+                            q.type === "PASSAGE" &&
+                            q.passageId &&
+                            (!prevQ || prevQ.passageId !== q.passageId);
+                          return (
+                            <React.Fragment key={q._id}>
+                              {isNewPassageGroup && (
+                                <div className="col-span-2 p-3 bg-amber-50 border border-amber-100 rounded-xl">
+                                  <p className="text-[10px] font-bold text-amber-600 uppercase mb-1">
+                                    Passage
+                                  </p>
+                                  <p className="text-xs text-gray-700 line-clamp-2">
+                                    {q.passageText}
+                                  </p>
+                                </div>
+                              )}
+                              <div className="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:border-primary-200 transition-colors group">
+                                <div className="flex gap-3">
+                                  <span className="shrink-0 w-8 h-8 rounded-xl bg-gray-50 text-gray-400 text-xs font-black flex items-center justify-center group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
+                                    {i + 1}
                                   </span>
-                                  <span className="text-[10px] font-black uppercase text-primary-500">
-                                    {q.marks} Marks
-                                  </span>
+                                  <div className="space-y-1">
+                                    <p className="text-sm font-bold text-gray-800 line-clamp-2">
+                                      {q.questionText}
+                                    </p>
+                                    <div className="flex gap-2">
+                                      <span
+                                        className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded ${q.passageId ? "bg-amber-50 text-amber-600" : "bg-gray-50 text-gray-400"}`}
+                                      >
+                                        {q.passageId ? "Passage" : "MCQ"}
+                                      </span>
+                                      <span className="text-[10px] font-black uppercase text-primary-500">
+                                        {q.marks} Marks
+                                      </span>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </div>
-                        ))
+                            </React.Fragment>
+                          );
+                        })
                       )}
                     </div>
 
@@ -871,34 +954,66 @@ export const TestsPage = () => {
                         onSubmit={handleAddQuestion}
                         className="bg-white p-5 rounded-2xl border-2 border-dashed border-gray-200 space-y-4 hover:border-primary-200 transition-colors"
                       >
-                        <div className="grid grid-cols-2 gap-3">
+                        {/* Passage selector — optional */}
+                        <div>
+                          <label className={labelClass}>
+                            Passage (optional)
+                          </label>
                           <select
-                            value={qForm.type}
-                            onChange={(e) =>
-                              setQForm({ ...qForm, type: e.target.value })
+                            value={
+                              qForm.passageMode === "existing"
+                                ? qForm.passageId
+                                : qForm.passageMode
                             }
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              if (val === "none") {
+                                setQForm({
+                                  ...qForm,
+                                  passageMode: "none",
+                                  passageId: "",
+                                  passageText: "",
+                                });
+                              } else if (val === "new") {
+                                setQForm({
+                                  ...qForm,
+                                  passageMode: "new",
+                                  passageId: "",
+                                  passageText: "",
+                                });
+                              } else {
+                                const p = passages.find(
+                                  (p) => p.passageId === val,
+                                );
+                                setQForm({
+                                  ...qForm,
+                                  passageMode: "existing",
+                                  passageId: val,
+                                  passageText: p?.passageText || "",
+                                });
+                              }
+                            }}
                             className={inputClass + " bg-gray-50"}
                           >
-                            <option value="MCQ">Standard MCQ</option>
-                            <option value="PASSAGE">Passage Based</option>
+                            <option value="none">
+                              No Passage (Regular MCQ)
+                            </option>
+                            <option value="new">+ Create New Passage</option>
+                            {passagesLoading ? (
+                              <option disabled>Loading passages...</option>
+                            ) : (
+                              passages.map((p) => (
+                                <option key={p.passageId} value={p.passageId}>
+                                  {p.passageText.slice(0, 50)}
+                                  {p.passageText.length > 50 ? "…" : ""} (
+                                  {p.questionCount} Q)
+                                </option>
+                              ))
+                            )}
                           </select>
-                          <div className="relative">
-                            <input
-                              type="number"
-                              value={qForm.marks}
-                              onChange={(e) =>
-                                setQForm({ ...qForm, marks: +e.target.value })
-                              }
-                              className={inputClass + " pl-10"}
-                              placeholder="Marks"
-                            />
-                            <AlertCircle
-                              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                              size={14}
-                            />
-                          </div>
                         </div>
-                        {qForm.type === "PASSAGE" && (
+
+                        {qForm.passageMode === "new" && (
                           <textarea
                             required
                             value={qForm.passageText}
@@ -908,10 +1023,36 @@ export const TestsPage = () => {
                                 passageText: e.target.value,
                               })
                             }
-                            placeholder="Write or paste the passage here..."
+                            placeholder="Write or paste the passage text here..."
                             className={inputClass + " h-32"}
                           />
                         )}
+                        {qForm.passageMode === "existing" && (
+                          <div className="p-3 bg-amber-50 border border-amber-100 rounded-xl max-h-28 overflow-y-auto">
+                            <p className="text-[10px] font-bold text-amber-600 uppercase mb-1">
+                              Linked Passage
+                            </p>
+                            <p className="text-xs text-gray-700">
+                              {qForm.passageText}
+                            </p>
+                          </div>
+                        )}
+
+                        <div className="relative">
+                          <input
+                            type="number"
+                            value={qForm.marks}
+                            onChange={(e) =>
+                              setQForm({ ...qForm, marks: +e.target.value })
+                            }
+                            className={inputClass + " pl-10"}
+                            placeholder="Marks"
+                          />
+                          <AlertCircle
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                            size={14}
+                          />
+                        </div>
                         <textarea
                           required
                           value={qForm.questionText}

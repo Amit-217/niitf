@@ -17,6 +17,7 @@ interface Question {
   _id: string;
   type: "MCQ" | "PASSAGE";
   passageText?: string;
+  passageId?: string;
   questionText: string;
   options: string[];
   marks: number;
@@ -52,14 +53,20 @@ export const TakeTestPage = () => {
       const res: any = await api.get(`/tests/${id}/start`, {
         params: { studentId },
       });
-      setTestData(res.data.test);
-      setQuestions(res.data.questions);
-      setTimeLeft(res.data.test.durationMinutes * 60);
-    } catch (err: any) {
-      toast.error(err.message || "Failed to start test");
-      navigate(isStudent ? "/student/exam" : "/employee/dashboard");
-    } finally {
+      // axios interceptor unwraps response.data → res = { success, data: { test, questions } }
+      const payload = res?.data ?? res;
+      setTestData(payload.test);
+      setQuestions(payload.questions);
+      setTimeLeft(payload.test.durationMinutes * 60);
       setIsLoading(false);
+    } catch (err: any) {
+      const msg = err?.message || err?.error || "Failed to start test";
+      toast.error(msg);
+      // Keep loading spinner visible while navigating away (prevents blank page crash)
+      setTimeout(
+        () => navigate(isStudent ? "/student/exam" : "/employee/dashboard"),
+        1500,
+      );
     }
   }, [id, isStudent, navigate, studentId]);
 
@@ -119,7 +126,8 @@ export const TakeTestPage = () => {
       setResult(res.data);
       toast.success("Test submitted successfully!");
     } catch (err: any) {
-      toast.error("Submission failed");
+      const msg = err?.message || err?.error || "Submission failed";
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -166,7 +174,7 @@ export const TakeTestPage = () => {
                   Score
                 </p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {result.score} / {result.totalMarks}
+                  {result.score} / {testData?.totalMarks}
                 </p>
               </div>
               <div className="bg-gray-50 p-4 rounded-2xl text-center border border-gray-100">
@@ -202,6 +210,8 @@ export const TakeTestPage = () => {
     );
 
   const currentQ = questions[currentIndex];
+  // Always show passage for every passage-based question
+  const showPassage = currentQ.type === "PASSAGE" && !!currentQ.passageText;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -232,7 +242,7 @@ export const TakeTestPage = () => {
       <div className="flex-1 flex flex-col lg:flex-row p-4 md:p-6 gap-6 max-w-7xl mx-auto w-full">
         {/* Main Exam Area */}
         <main className="flex-1 flex flex-col gap-6">
-          {currentQ.type === "PASSAGE" && (
+          {showPassage && (
             <div className="bg-amber-50 border border-amber-100 p-6 rounded-2xl shadow-sm">
               <h4 className="text-[10px] font-semibold text-amber-600 uppercase tracking-wider mb-3">
                 Reading Passage
