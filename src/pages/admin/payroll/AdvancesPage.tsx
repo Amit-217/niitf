@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { Wallet } from 'lucide-react';
+import { Wallet, Download, Table2 } from 'lucide-react';
 import {
     createAdvance,
-    getEmployeeMonthlyAdvances
+    getEmployeeMonthlyAdvances,
+    getAllAdvancesForMonth
 } from '../../../api/payrollApi';
 import api from '../../../api/axios';
 
@@ -22,10 +23,24 @@ export const AdvancesPage = () => {
     const [remarks, setRemarks] = useState('');
 
     const [recentAdvances, setRecentAdvances] = useState<any[]>([]);
+    const [allAdvances, setAllAdvances] = useState<any[]>([]);
 
     useEffect(() => {
-        api.get('/users?role=EMPLOYEE').then(res => setEmployees(res.data || []));
+        api.get('/users?status=active&limit=100').then(res => setEmployees(res.data || []));
     }, []);
+
+    useEffect(() => {
+        fetchAllAdvances(repaymentMonth);
+    }, [repaymentMonth]);
+
+    const fetchAllAdvances = async (month: string) => {
+        try {
+            const res = await getAllAdvancesForMonth(month);
+            setAllAdvances(res.data || []);
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     useEffect(() => {
         if (selectedUser) {
@@ -58,6 +73,7 @@ export const AdvancesPage = () => {
             setAmount('');
             setRemarks('');
             fetchAdvances(selectedUser, repaymentMonth);
+            fetchAllAdvances(repaymentMonth);
         } catch (error: any) {
             toast.error(error.message || 'Failed to record advance');
         }
@@ -65,10 +81,26 @@ export const AdvancesPage = () => {
 
     const totalMonthlyAdvances = recentAdvances.reduce((sum, adv) => sum + adv.amount, 0);
 
+    const exportCSV = () => {
+        if (!allAdvances.length) return toast.warning('No data to export');
+        const headers = 'Employee Name,Employee ID,Disbursement Date,Repayment Month,Amount,Status,Remarks\n';
+        const rows = allAdvances.map(a => 
+            `"${a.employeeId?.name || '-'}","${a.employeeId?.empId || '-'}","${new Date(a.date).toLocaleDateString()}","${a.repaymentMonth}","${a.amount}","${a.isRepaid ? 'Deducted' : 'Pending'}","${a.remarks || '-'}"`
+        ).join('\n');
+        
+        const blob = new Blob([headers + rows], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Advances_${repaymentMonth}.csv`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+    };
+
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Salary Advances</h1>
+                <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2"><Wallet className="text-primary-600" size={26} /> Salary Advances</h1>
                 <p className="text-sm text-gray-500 mt-1">Record disbursements and set repayment schedules</p>
             </div>
 
@@ -165,32 +197,86 @@ export const AdvancesPage = () => {
                             Total: ₹{totalMonthlyAdvances.toLocaleString()}
                         </span>
                     </div>
-                    <table className="w-full text-left text-sm">
-                        <thead className="bg-gray-50/50 text-gray-500">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm whitespace-nowrap min-w-full">
+                            <thead className="bg-gray-50/50 text-gray-500">
+                                <tr>
+                                    <th className="px-4 py-3">Date</th>
+                                    <th className="px-4 py-3">Amount</th>
+                                    <th className="px-4 py-3 text-center">Status</th>
+                                    <th className="px-4 py-3">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {recentAdvances.map((adv: any) => (
+                                    <tr key={adv._id}>
+                                        <td className="px-4 py-3">{new Date(adv.date).toLocaleDateString()}</td>
+                                        <td className="px-4 py-3 font-medium text-red-600">-₹{adv.amount.toLocaleString()}</td>
+                                        <td className="px-4 py-3 text-center">
+                                            <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase ${adv.isRepaid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                                                {adv.isRepaid ? 'Deducted' : 'Pending'}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-500">{adv.remarks || '-'}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Global Extracted Table */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-6">
+                <div className="p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Table2 className="text-gray-500" size={18} />
+                        <h3 className="font-semibold text-gray-700">All Advances for {repaymentMonth}</h3>
+                    </div>
+                    <button
+                        onClick={exportCSV}
+                        className="flex items-center gap-2 px-4 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm"
+                    >
+                        <Download size={14} /> Export CSV
+                    </button>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm whitespace-nowrap min-w-full">
+                        <thead className="bg-gray-50/50 text-gray-500 border-b border-gray-100">
                             <tr>
+                                <th className="px-4 py-3">Employee</th>
                                 <th className="px-4 py-3">Date</th>
                                 <th className="px-4 py-3">Amount</th>
-                                <th className="px-4 py-3 text-center">Status</th>
+                                <th className="px-4 py-3">Status</th>
                                 <th className="px-4 py-3">Remarks</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {recentAdvances.map((adv: any) => (
-                                <tr key={adv._id}>
-                                    <td className="px-4 py-3">{new Date(adv.date).toLocaleDateString()}</td>
-                                    <td className="px-4 py-3 font-medium text-red-600">-₹{adv.amount.toLocaleString()}</td>
-                                    <td className="px-4 py-3 text-center">
-                                        <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase ${adv.isRepaid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                                            {adv.isRepaid ? 'Deducted' : 'Pending'}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3 text-gray-500">{adv.remarks || '-'}</td>
+                            {allAdvances.length === 0 ? (
+                                <tr>
+                                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">No advances recorded for this month.</td>
                                 </tr>
-                            ))}
+                            ) : (
+                                allAdvances.map((adv) => (
+                                    <tr key={adv._id} className="hover:bg-gray-50/50">
+                                        <td className="px-4 py-3 font-medium text-gray-900">
+                                            {adv.employeeId?.name || '-'} <span className="text-gray-400 font-normal ml-1">({adv.employeeId?.empId || '-'})</span>
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-500">{new Date(adv.date).toLocaleDateString()}</td>
+                                        <td className="px-4 py-3 font-bold text-red-600">-₹{adv.amount?.toLocaleString()}</td>
+                                        <td className="px-4 py-3">
+                                            <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase ${adv.isRepaid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                                                {adv.isRepaid ? 'Deducted' : 'Pending'}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-500">{adv.remarks || '-'}</td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

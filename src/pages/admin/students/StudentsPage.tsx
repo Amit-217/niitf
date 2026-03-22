@@ -28,6 +28,7 @@ const INITIAL_FORM: StudentPayload = {
   fullName: "",
   mobile: "",
   email: "",
+  dob: "",
   city: "",
   qualification: "",
   sponsorType: "Individual",
@@ -112,6 +113,7 @@ export const StudentsPage = () => {
       fullName: s.fullName,
       mobile: s.mobile,
       email: s.email || "",
+      dob: s.dob ? new Date(s.dob).toISOString().split('T')[0] : "",
       city: s.city || "",
       qualification: s.qualification || "",
       sponsorType: s.sponsorType,
@@ -125,6 +127,17 @@ export const StudentsPage = () => {
     if (!form.fullName.trim()) { toast.error("Full name is required"); return; }
     if (!form.mobile.trim()) { toast.error("Mobile number is required"); return; }
     if (!/^\d{10}$/.test(form.mobile.trim())) { toast.error("Mobile must be exactly 10 digits"); return; }
+    
+    if (form.dob) {
+      const selectedDate = new Date(form.dob);
+      const todayDate = new Date();
+      todayDate.setHours(0, 0, 0, 0);
+      if (selectedDate >= todayDate) {
+        toast.error("Date of birth cannot be today or in the future.");
+        return;
+      }
+    }
+
     if (form.sponsorType === "Company" && !form.companyName?.trim()) { toast.error("Company name is required"); return; }
     setSubmitting(true);
     try {
@@ -199,9 +212,10 @@ export const StudentsPage = () => {
                 {[
                   "Student ID",
                   "Name",
+                  "Login ID (Email)",
+                  "Password (DOB)",
                   "Mobile",
                   "City",
-                  "Qualification",
                   "Sponsor",
                   "Actions",
                 ].map((h) => (
@@ -218,7 +232,7 @@ export const StudentsPage = () => {
               {isLoading ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     className="px-4 py-12 text-center text-gray-400"
                   >
                     Loading...
@@ -227,7 +241,7 @@ export const StudentsPage = () => {
               ) : students.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     className="px-4 py-12 text-center text-gray-400"
                   >
                     No students found
@@ -245,11 +259,14 @@ export const StudentsPage = () => {
                     <td className="px-4 py-3 font-semibold text-gray-900">
                       {s.fullName}
                     </td>
+                    <td className="px-4 py-3 text-blue-600 font-mono text-xs font-semibold">
+                      {s.email}
+                    </td>
+                    <td className="px-4 py-3 text-emerald-600 font-mono text-xs font-bold">
+                      {s.dob ? new Date(s.dob).toISOString().split('T')[0] : "—"}
+                    </td>
                     <td className="px-4 py-3 text-gray-600">{s.mobile}</td>
                     <td className="px-4 py-3 text-gray-500">{s.city || "—"}</td>
-                    <td className="px-4 py-3 text-gray-500">
-                      {s.qualification || "—"}
-                    </td>
                     <td className="px-4 py-3">
                       <span
                         className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${s.sponsorType === "Company" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"}`}
@@ -388,7 +405,19 @@ export const StudentsPage = () => {
                         placeholder="Mobile Number"
                       />
                     </div>
-                    <div className="col-span-2">
+                    <div className="col-span-2 sm:col-span-1">
+                      <label className={labelClass}>Date of Birth</label>
+                      <input
+                        type="date"
+                        max={new Date(Date.now() - 86400000).toISOString().split("T")[0]}
+                        value={form.dob || ""}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, dob: e.target.value }))
+                        }
+                        className={inputClass}
+                      />
+                    </div>
+                    <div className="col-span-2 sm:col-span-1">
                       <label className={labelClass}>Professional Email</label>
                       <input
                         value={form.email || ""}

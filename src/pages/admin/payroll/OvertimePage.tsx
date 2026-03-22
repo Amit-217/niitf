@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { Clock, CheckCircle2, XCircle, Save } from 'lucide-react';
-import { markOvertime, getEmployeeMonthlyOvertime } from '../../../api/payrollApi';
+import { Clock, CheckCircle2, XCircle, Save, Download, Table2, Info } from 'lucide-react';
+import { markOvertime, getEmployeeMonthlyOvertime, getOvertimeByDate } from '../../../api/payrollApi';
 import api from '../../../api/axios';
 
 interface User {
@@ -21,15 +21,30 @@ interface OvertimeRecord {
 
 export const OvertimePage = () => {
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0]);
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUser, setSelectedUser] = useState<string>('');
     const [units, setUnits] = useState<number>(0);
     const [recentOvertimes, setRecentOvertimes] = useState<OvertimeRecord[]>([]);
+    const [allOvertimes, setAllOvertimes] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         fetchUsers();
     }, []);
+
+    useEffect(() => {
+        fetchAllOvertimes();
+    }, [filterDate]);
+
+    const fetchAllOvertimes = async () => {
+        try {
+            const res = await getOvertimeByDate(filterDate);
+            setAllOvertimes(res.data || []);
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     useEffect(() => {
         if (selectedUser) {
@@ -41,10 +56,10 @@ export const OvertimePage = () => {
 
     const fetchUsers = async () => {
         try {
-            const res = await api.get('/users?role=EMPLOYEE&limit=100');
+            const res = await api.get('/users?status=active&limit=100');
             setUsers(res.data || []);
-        } catch (error) {
-            toast.error('Failed to load employees');
+        } catch (error: any) {
+            toast.error(error?.message || 'Failed to load employees');
         }
     };
 
@@ -54,8 +69,8 @@ export const OvertimePage = () => {
             const month = date.substring(0, 7);
             const res = await getEmployeeMonthlyOvertime(selectedUser, month);
             setRecentOvertimes(res.data || []);
-        } catch (error) {
-            toast.error('Failed to load overtime records');
+        } catch (error: any) {
+            toast.error(error?.message || 'Failed to load overtime records');
         }
     };
 
@@ -76,8 +91,11 @@ export const OvertimePage = () => {
             toast.success('Overtime recorded successfully');
             setUnits(0);
             fetchRecentOvertimes();
-        } catch (error) {
-            toast.error('Failed to save overtime');
+            fetchAllOvertimes();
+        } catch (error: any) {
+            // Unpack backend error response specifically if it is from validation
+            const errMessage = error?.response?.data?.message || error?.message || 'Failed to save overtime';
+            toast.error(errMessage);
         } finally {
             setLoading(false);
         }
@@ -88,6 +106,7 @@ export const OvertimePage = () => {
             await api.patch(`/admin/overtime/${id}/approve`, { status });
             toast.success(`Overtime ${status.toLowerCase()}!`);
             fetchRecentOvertimes();
+            fetchAllOvertimes();
         } catch (err) {
             toast.error("Failed to update status");
         }
@@ -101,11 +120,41 @@ export const OvertimePage = () => {
         }
     };
 
+    const exportCSV = () => {
+        if (!allOvertimes.length) return toast.warning('No data to export');
+        const headers = 'Employee Name,Employee ID,Date,Units,Status,Recorded By\n';
+        const rows = allOvertimes.map(ot => 
+            `"${ot.employeeId?.name || '-'}","${ot.employeeId?.empId || '-'}","${new Date(ot.date).toLocaleDateString()}","${ot.units}","${ot.status || 'PENDING'}","${ot.markedBy?.name || '-'}"`
+        ).join('\n');
+        
+        const blob = new Blob([headers + rows], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Overtime_${filterDate}.csv`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+    };
+
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold text-gray-900">Overtime Management</h1>
-                <p className="text-sm text-gray-500 mt-1">Record and manage employee overtime hours</p>
+        <div className="space-y-6">
+            <div className="flex justify-between items-start">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2"><Clock className="text-primary-600" size={26} /> Overtime Management</h1>
+                    <p className="text-sm text-gray-500 mt-1">Record and manage employee overtime hours</p>
+                </div>
+            </div>
+
+            <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
+                <Info size={18} className="text-blue-500 mt-0.5" />
+                <div className="text-sm text-blue-800">
+                    <p className="font-semibold">Important Overtime Rules:</p>
+                    <ul className="list-disc pl-4 mt-1 space-y-0.5 text-blue-700/80">
+                        <li>Employee MUST have their attendance marked for the date first.</li>
+                        <li>Overtime on a 'PRESENT' day maxes out at 2.5 units.</li>
+                        <li>Overtime on a 'HOLIDAY' maxes out at 2.5 units.</li>
+                    </ul>
+                </div>
             </div>
 
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
@@ -163,13 +212,14 @@ export const OvertimePage = () => {
                         <Clock className="text-gray-400" size={18} />
                         <h3 className="font-black text-gray-700 uppercase tracking-widest text-xs">Monthly Records</h3>
                     </div>
-                    <table className="w-full text-left text-sm">
-                        <thead className="bg-gray-50/30 text-gray-400">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm whitespace-nowrap min-w-full">
+                        <thead className="bg-gray-50/30 text-gray-400 border-b border-gray-100">
                             <tr>
-                                <th className="px-4 py-3 font-bold text-[10px] uppercase">Date</th>
-                                <th className="px-4 py-3 font-bold text-[10px] uppercase">Units</th>
-                                <th className="px-4 py-3 font-bold text-[10px] uppercase text-center">Status</th>
-                                <th className="px-4 py-3 font-bold text-[10px] uppercase text-right">Actions</th>
+                                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider">Date</th>
+                                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider">Units</th>
+                                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider text-center">Status</th>
+                                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
@@ -195,7 +245,69 @@ export const OvertimePage = () => {
                         </tbody>
                     </table>
                 </div>
+                </div>
             )}
+
+            {/* Global Extracted Table */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-6">
+                <div className="p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between flex-wrap gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <Table2 className="text-gray-500" size={18} />
+                            <h3 className="font-semibold text-gray-700">Daily Records</h3>
+                        </div>
+                        <div className="h-6 w-px bg-gray-300 hidden sm:block"></div>
+                        <input
+                            type="date"
+                            value={filterDate}
+                            onChange={(e) => setFilterDate(e.target.value)}
+                            className="text-sm px-3 py-1.5 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500/30 text-gray-700 font-medium"
+                        />
+                    </div>
+                    <button
+                        onClick={exportCSV}
+                        className="flex items-center gap-2 px-4 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm"
+                    >
+                        <Download size={14} /> Export CSV
+                    </button>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm whitespace-nowrap min-w-full">
+                        <thead className="bg-gray-50/50 text-gray-500 border-b border-gray-100">
+                            <tr>
+                                <th className="px-4 py-3">Employee</th>
+                                <th className="px-4 py-3">Date</th>
+                                <th className="px-4 py-3">Units</th>
+                                <th className="px-4 py-3 text-center">Status</th>
+                                <th className="px-4 py-3">Recorded By</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {allOvertimes.length === 0 ? (
+                                <tr>
+                                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">No overtimes recorded for this date.</td>
+                                </tr>
+                            ) : (
+                                allOvertimes.map((ot) => (
+                                    <tr key={ot._id} className="hover:bg-gray-50/50">
+                                        <td className="px-4 py-3 font-medium text-gray-900">
+                                            {ot.employeeId?.name || '-'} <span className="text-gray-400 font-normal ml-1">({ot.employeeId?.empId || '-'})</span>
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-500">{new Date(ot.date).toLocaleDateString()}</td>
+                                        <td className="px-4 py-3 font-bold text-primary-700">+{ot.units}</td>
+                                        <td className="px-4 py-3 text-center">
+                                            <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase border tracking-tighter ${getStatusStyle(ot.status || 'PENDING')}`}>
+                                                {ot.status || 'PENDING'}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-500 text-xs">{ot.markedBy?.name || '-'}</td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     );
 };
