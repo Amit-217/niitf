@@ -98,7 +98,7 @@ export const deleteStudent = (id: string) =>
 
 // ─── Admission APIs ──────────────────────────────────────────────────────────
 
-export const getAdmissions = (params?: { page?: number; limit?: number; studentId?: string; status?: string; hasBalance?: string }) =>
+export const getAdmissions = (params?: { page?: number; limit?: number; studentId?: string; status?: string; hasBalance?: string; search?: string }) =>
     api.get('/admin/admissions', { params });
 
 export const getAdmissionById = (id: string) =>

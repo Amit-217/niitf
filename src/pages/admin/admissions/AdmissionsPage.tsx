@@ -16,6 +16,7 @@ import {
   MinusCircle,
   Pencil,
   Trash2,
+  Search,
 } from "lucide-react";
 import {
   getAdmissions,
@@ -62,6 +63,8 @@ export const AdmissionsPage = () => {
   const [filterStatus, setFilterStatus] = useState("");
   const [balanceOnly, setBalanceOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   // Create form
   const [isCreateOpen, setCreateOpen] = useState(false);
@@ -111,6 +114,12 @@ export const AdmissionsPage = () => {
     return level1 ?? res;
   };
 
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const fetchAdmissions = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -118,6 +127,7 @@ export const AdmissionsPage = () => {
         page,
         status: filterStatus || undefined,
         hasBalance: balanceOnly ? "true" : undefined,
+        search: debouncedSearch || undefined,
       });
       // By default res is the unwrapped JSON body (via Axios interceptor).
 
@@ -157,7 +167,7 @@ export const AdmissionsPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [page, filterStatus, balanceOnly]);
+  }, [page, filterStatus, balanceOnly, debouncedSearch]);
 
   useEffect(() => {
     fetchAdmissions();
@@ -363,7 +373,28 @@ export const AdmissionsPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+        {/* Search */}
+        <div className="relative">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search name, mobile, ID…"
+            className="pl-9 pr-8 py-2 text-sm border border-gray-200 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition-all w-64"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              <X size={13} />
+            </button>
+          )}
+        </div>
+
+        {/* Status tabs */}
         <div className="flex gap-2 bg-gray-100 p-1 rounded-xl">
           {["", "Active", "Completed", "Cancelled"].map((s) => (
             <button
@@ -375,6 +406,7 @@ export const AdmissionsPage = () => {
             </button>
           ))}
         </div>
+
         <button
           onClick={() => setBalanceOnly(!balanceOnly)}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border transition-all ${balanceOnly ? "bg-red-50 border-red-200 text-red-600 shadow-sm" : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"}`}
@@ -503,7 +535,7 @@ export const AdmissionsPage = () => {
             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
             onClick={() => setCreateOpen(false)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-5">
               <div className="flex items-center justify-between">
                 <div>
@@ -1018,7 +1050,7 @@ export const AdmissionsPage = () => {
             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
             onClick={() => setEditAdm(null)}
           />
-          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl flex flex-col animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl flex flex-col animate-in fade-in zoom-in-95 duration-200">
             <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex items-start justify-between shrink-0">
               <div>
                 <h2 className="text-lg font-bold text-white">Edit Admission</h2>
