@@ -10,6 +10,7 @@ export interface Test {
     durationMinutes: number;
     totalMarks: number;
     passingMarks: number;
+    passingPercentage: number;
     mode: 'Online' | 'Offline';
     isActive: boolean;
     createdAt: string;
@@ -20,7 +21,7 @@ export interface TestPayload {
     batchId: string;
     durationMinutes: number;
     totalMarks: number;
-    passingMarks: number;
+    passingPercentage: number;
     mode: 'Online' | 'Offline';
 }
 
@@ -28,6 +29,7 @@ export interface Question {
     _id: string;
     testId: string;
     type: 'MCQ' | 'PASSAGE';
+    passageName?: string;
     passageText?: string;
     passageId?: string;
     questionText: string;
@@ -37,12 +39,14 @@ export interface Question {
 
 export interface Passage {
     passageId: string;
+    passageName: string;
     passageText: string;
     questionCount: number;
 }
 
 export interface QuestionPayload {
     type: 'MCQ' | 'PASSAGE';
+    passageName?: string;
     passageText?: string;
     passageId?: string;
     questionText: string;

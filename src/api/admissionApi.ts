@@ -57,7 +57,7 @@ export interface Admission {
 export interface FeePayment {
     _id: string;
     admissionId: string;
-    installmentNo: 1 | 2;
+    installmentNo: 1 | 2 | 3 | 4;
     amount: number;
     paymentMode: 'Cash' | 'UPI' | 'Bank';
     paymentDate: string;
@@ -65,10 +65,16 @@ export interface FeePayment {
 }
 
 export interface FeePaymentPayload {
-    installmentNo: 1 | 2;
+    installmentNo: 1 | 2 | 3 | 4;
     amount: number;
     paymentMode: 'Cash' | 'UPI' | 'Bank';
     remarks?: string;
+}
+
+export interface PayRemainingFeePayload {
+    paymentMode?: 'Cash' | 'UPI' | 'Bank';
+    remarks?: string;
+    paymentDate?: string;
 }
 
 // ─── Student APIs ────────────────────────────────────────────────────────────
@@ -112,3 +118,6 @@ export const getFeesByAdmission = (admissionId: string) =>
 
 export const payFee = (admissionId: string, data: FeePaymentPayload) =>
     api.post(`/admin/fees/${admissionId}/pay`, data);
+
+export const payRemainingFee = (admissionId: string, data?: PayRemainingFeePayload) =>
+    api.post(`/admin/fees/${admissionId}/pay-remaining`, data || {});
