@@ -406,9 +406,10 @@ export const StudentsPage = () => {
                       />
                     </div>
                     <div className="col-span-2 sm:col-span-1">
-                      <label className={labelClass}>Date of Birth</label>
+                      <label className={labelClass}>Date of Birth *</label>
                       <input
                         type="date"
+                        required
                         max={new Date(Date.now() - 86400000).toISOString().split("T")[0]}
                         value={form.dob || ""}
                         onChange={(e) =>
