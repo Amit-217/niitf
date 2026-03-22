@@ -535,7 +535,7 @@ export const AdmissionsPage = () => {
             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
             onClick={() => setCreateOpen(false)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-5">
               <div className="flex items-center justify-between">
                 <div>
@@ -1050,7 +1050,7 @@ export const AdmissionsPage = () => {
             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
             onClick={() => setEditAdm(null)}
           />
-          <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl flex flex-col animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col animate-in fade-in zoom-in-95 duration-200">
             <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex items-start justify-between shrink-0">
               <div>
                 <h2 className="text-lg font-bold text-white">Edit Admission</h2>
