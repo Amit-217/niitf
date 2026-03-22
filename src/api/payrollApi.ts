@@ -5,14 +5,14 @@ import api from './axios';
 export interface AttendancePayload {
     employeeId: string;
     date: string; // YYYY-MM-DD
-    status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT';
+    status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'HALF_DAY';
 }
 
 export interface BulkAttendancePayload {
     date: string; // YYYY-MM-DD
     attendances: {
         employeeId: string;
-        status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT';
+        status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'HALF_DAY';
     }[];
 }
 
@@ -33,6 +33,7 @@ export interface AdvancePayload {
     amount: number;
     date: string; // YYYY-MM-DD
     remarks?: string;
+    repaymentMonth: string; // YYYY-MM
 }
 
 export interface GenerateSalaryPayload {
@@ -47,7 +48,7 @@ export const markAttendance = (data: AttendancePayload) =>
 export const bulkMarkAttendance = (data: BulkAttendancePayload) =>
     api.post('/admin/attendance/bulk', data);
 
-export const updateAttendance = (id: string, status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT') =>
+export const updateAttendance = (id: string, status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'HALF_DAY') =>
     api.put(`/admin/attendance/${id}`, { status });
 
 export const getAttendanceByDate = (date: string) =>
@@ -63,8 +64,14 @@ export const createSalaryConfig = (data: SalaryConfigPayload) =>
 export const getCurrentSalaryConfig = (employeeId: string) =>
     api.get(`/admin/salary-config/current/${employeeId}`);
 
+export const getAllSalaryConfigs = () =>
+    api.get('/admin/salary-config/all');
+
 export const getSalaryHistory = (employeeId: string) =>
     api.get(`/admin/salary-config/history/${employeeId}`);
+
+export const toggleSalaryConfig = (id: string) =>
+    api.patch(`/admin/salary-config/${id}/toggle`);
 
 // --- Overtime Endpoints ---
 export const markOvertime = (data: OvertimePayload) =>
@@ -79,6 +86,9 @@ export const getOvertimeByDate = (date: string) =>
 export const getEmployeeMonthlyOvertime = (employeeId: string, month: string) =>
     api.get(`/admin/overtime/employee/${employeeId}?month=${month}`);
 
+export const getAllOvertimeForMonth = (month: string) =>
+    api.get(`/admin/overtime/month/all?month=${month}`);
+
 // --- Advance Endpoints ---
 export const createAdvance = (data: AdvancePayload) =>
     api.post('/admin/advance', data);
@@ -88,6 +98,9 @@ export const updateAdvance = (id: string, data: Partial<AdvancePayload>) =>
 
 export const getEmployeeMonthlyAdvances = (employeeId: string, month: string) =>
     api.get(`/admin/advance/employee/${employeeId}?month=${month}`);
+
+export const getAllAdvancesForMonth = (month: string) =>
+    api.get(`/admin/advance/month/all?month=${month}`);
 
 // --- Salary Record Endpoints ---
 export const generateSalary = (data: GenerateSalaryPayload) =>
