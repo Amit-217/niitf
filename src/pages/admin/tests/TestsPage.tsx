@@ -7,13 +7,13 @@ import {
   X,
   BookOpen,
   Clock,
-  BarChart3,
   AlertCircle,
   Save,
   Loader2,
   ListChecks,
   Mail,
   Users,
+  BarChart3,
 } from "lucide-react";
 import {
   getTests,
@@ -44,7 +44,7 @@ const INITIAL_FORM = {
   batchId: "",
   durationMinutes: 60,
   totalMarks: 100,
-  passingMarks: 35,
+  passingPercentage: 40,
   mode: "Online",
   testDate: "",
   startTimeStr: "",
@@ -67,6 +67,7 @@ export const TestsPage = () => {
   // passageMode: "none" = regular MCQ, "new" = new passage, "existing" = link to existing
   const [qForm, setQForm] = useState({
     passageMode: "none",
+    passageName: "",
     passageText: "",
     passageId: "",
     questionText: "",
@@ -262,6 +263,7 @@ export const TestsPage = () => {
     setPassages([]);
     setQForm({
       passageMode: "none",
+      passageName: "",
       passageText: "",
       passageId: "",
       questionText: "",
@@ -318,6 +320,7 @@ export const TestsPage = () => {
     if (!viewTest) return;
     setAddingQ(true);
     const prevMode = qForm.passageMode;
+    const prevPassageName = qForm.passageName;
     const prevPassageText = qForm.passageText;
     try {
       const payload: any = {
@@ -328,6 +331,7 @@ export const TestsPage = () => {
         marks: qForm.marks,
       };
       if (qForm.passageMode === "new") {
+        payload.passageName = qForm.passageName;
         payload.passageText = qForm.passageText;
       } else if (qForm.passageMode === "existing") {
         payload.passageId = qForm.passageId;
@@ -351,11 +355,14 @@ export const TestsPage = () => {
       if (prevMode === "new") {
         // Auto-switch to "existing" so next question links to same passage
         const created = updatedPassages.find(
-          (p) => p.passageText === prevPassageText,
+          (p) =>
+            p.passageName === prevPassageName &&
+            p.passageText === prevPassageText,
         );
         setQForm({
           passageMode: created ? "existing" : "none",
           passageId: created?.passageId || "",
+          passageName: created?.passageName || "",
           passageText: created?.passageText || "",
           ...questionReset,
         });
@@ -429,7 +436,14 @@ export const TestsPage = () => {
                     {t.batchId?.batchName}
                   </td>
                   <td className="px-4 py-3">
-                    {t.passingMarks}/{t.totalMarks}
+                    <div className="flex flex-col">
+                      <span className="text-gray-400 text-xs">
+                        Total: {t.totalMarks}
+                      </span>
+                      <span className="text-green-600 font-bold text-sm">
+                        {t.passingPercentage}% pass
+                      </span>
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <span
@@ -460,14 +474,6 @@ export const TestsPage = () => {
                       title="View Student Results"
                       onClick={() => openResults(t)}
                       className="p-1.5 rounded-full text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
-                    >
-                      <Users size={16} />
-                    </button>
-                    {/* View Analytics */}
-                    <button
-                      title="View Analytics"
-                      onClick={() => openAnalytics(t)}
-                      className="p-1.5 rounded-full text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
                     >
                       <BarChart3 size={16} />
                     </button>
@@ -521,7 +527,7 @@ export const TestsPage = () => {
                     </h3>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div className="col-span-2">
                       <label className={labelClass}>Test Name *</label>
                       <input
@@ -585,38 +591,33 @@ export const TestsPage = () => {
                         />
                       </div>
                     </div>
-                    <div className="relative group">
+                    <div className="relative group col-span-2 lg:col-span-1">
                       <label className={labelClass}>Start Time *</label>
-                      <div className="flex gap-2">
-                        <div className="relative flex-1">
-                          <input
-                            type="text"
-                            required
-                            value={form.startTimeStr}
-                            onBlur={(e) =>
-                              setForm({
-                                ...form,
-                                startTimeStr: formatTime12h(e.target.value),
-                              })
-                            }
-                            onChange={(e) =>
-                              setForm({ ...form, startTimeStr: e.target.value })
-                            }
-                            className={`${inputClass} pl-10 border-blue-100 bg-blue-50/10 focus:bg-white`}
-                            placeholder="09:30"
-                            maxLength={5}
-                          />
-                          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-500 font-bold text-xs">
-                            GO
-                          </div>
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          required
+                          value={form.startTimeStr}
+                          onBlur={(e) =>
+                            setForm({
+                              ...form,
+                              startTimeStr: formatTime12h(e.target.value),
+                            })
+                          }
+                          onChange={(e) =>
+                            setForm({ ...form, startTimeStr: e.target.value })
+                          }
+                          className={`${inputClass} border-blue-100 bg-blue-50/10 focus:bg-white font-semibold w-16`}
+                          placeholder="09:30"
+                          maxLength={5}
+                        />
                         <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold shrink-0">
                           {["AM", "PM"].map((v) => (
                             <button
                               key={v}
                               type="button"
                               onClick={() => setForm({ ...form, startAmPm: v })}
-                              className={`px-3 py-2 transition-colors ${form.startAmPm === v ? "bg-blue-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
+                              className={`px-2.5 sm:px-3 py-2 transition-colors ${form.startAmPm === v ? "bg-blue-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
                             >
                               {v}
                             </button>
@@ -624,38 +625,33 @@ export const TestsPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="relative group">
+                    <div className="relative group col-span-2 lg:col-span-1">
                       <label className={labelClass}>End Time *</label>
-                      <div className="flex gap-2">
-                        <div className="relative flex-1">
-                          <input
-                            type="text"
-                            required
-                            value={form.endTimeStr}
-                            onBlur={(e) =>
-                              setForm({
-                                ...form,
-                                endTimeStr: formatTime12h(e.target.value),
-                              })
-                            }
-                            onChange={(e) =>
-                              setForm({ ...form, endTimeStr: e.target.value })
-                            }
-                            className={`${inputClass} pl-10 border-red-100 bg-red-50/10 focus:bg-white`}
-                            placeholder="11:30"
-                            maxLength={5}
-                          />
-                          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-red-500 font-bold text-xs">
-                            END
-                          </div>
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          required
+                          value={form.endTimeStr}
+                          onBlur={(e) =>
+                            setForm({
+                              ...form,
+                              endTimeStr: formatTime12h(e.target.value),
+                            })
+                          }
+                          onChange={(e) =>
+                            setForm({ ...form, endTimeStr: e.target.value })
+                          }
+                          className={`${inputClass} border-red-100 bg-red-50/10 focus:bg-white font-semibold w-16`}
+                          placeholder="11:30"
+                          maxLength={5}
+                        />
                         <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold shrink-0">
                           {["AM", "PM"].map((v) => (
                             <button
                               key={v}
                               type="button"
                               onClick={() => setForm({ ...form, endAmPm: v })}
-                              className={`px-3 py-2 transition-colors ${form.endAmPm === v ? "bg-red-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
+                              className={`px-2.5 sm:px-3 py-2 transition-colors ${form.endAmPm === v ? "bg-red-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
                             >
                               {v}
                             </button>
@@ -663,8 +659,8 @@ export const TestsPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="col-span-2 p-4 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 flex items-center justify-between shadow-sm">
-                      <div className="flex items-center gap-3">
+                    <div className="col-span-2 p-4 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+                      <div className="flex items-center gap-3 w-full md:w-auto">
                         <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center text-violet-600">
                           <Clock size={20} />
                         </div>
@@ -714,22 +710,24 @@ export const TestsPage = () => {
                               className="w-12 bg-transparent border-none p-0 focus:ring-0 text-sm font-bold text-gray-900"
                             />
                           </div>
-                          <div className="text-gray-300">/</div>
+                          <div className="text-gray-300">|</div>
                           <div className="flex flex-col">
                             <span className="text-[10px] text-gray-400">
-                              Passing
+                              Passing %
                             </span>
                             <input
                               type="number"
                               required
-                              value={form.passingMarks}
+                              min="1"
+                              max="100"
+                              value={form.passingPercentage}
                               onChange={(e) =>
                                 setForm({
                                   ...form,
-                                  passingMarks: +e.target.value,
+                                  passingPercentage: +e.target.value,
                                 })
                               }
-                              className="w-12 bg-transparent border-none p-0 focus:ring-0 text-sm font-bold text-violet-600"
+                              className="w-12 bg-transparent border-none p-0 focus:ring-0 text-sm font-bold text-green-600"
                             />
                           </div>
                         </div>
@@ -972,6 +970,7 @@ export const TestsPage = () => {
                                   ...qForm,
                                   passageMode: "none",
                                   passageId: "",
+                                  passageName: "",
                                   passageText: "",
                                 });
                               } else if (val === "new") {
@@ -979,6 +978,7 @@ export const TestsPage = () => {
                                   ...qForm,
                                   passageMode: "new",
                                   passageId: "",
+                                  passageName: "",
                                   passageText: "",
                                 });
                               } else {
@@ -989,6 +989,7 @@ export const TestsPage = () => {
                                   ...qForm,
                                   passageMode: "existing",
                                   passageId: val,
+                                  passageName: p?.passageName || "",
                                   passageText: p?.passageText || "",
                                 });
                               }
@@ -1004,9 +1005,7 @@ export const TestsPage = () => {
                             ) : (
                               passages.map((p) => (
                                 <option key={p.passageId} value={p.passageId}>
-                                  {p.passageText.slice(0, 50)}
-                                  {p.passageText.length > 50 ? "…" : ""} (
-                                  {p.questionCount} Q)
+                                  {p.passageName}
                                 </option>
                               ))
                             )}
@@ -1014,23 +1013,38 @@ export const TestsPage = () => {
                         </div>
 
                         {qForm.passageMode === "new" && (
-                          <textarea
-                            required
-                            value={qForm.passageText}
-                            onChange={(e) =>
-                              setQForm({
-                                ...qForm,
-                                passageText: e.target.value,
-                              })
-                            }
-                            placeholder="Write or paste the passage text here..."
-                            className={inputClass + " h-32"}
-                          />
+                          <div className="space-y-3">
+                            <input
+                              required
+                              type="text"
+                              value={qForm.passageName}
+                              onChange={(e) =>
+                                setQForm({
+                                  ...qForm,
+                                  passageName: e.target.value,
+                                })
+                              }
+                              placeholder="Passage name (e.g., Environment Article)"
+                              className={inputClass}
+                            />
+                            <textarea
+                              required
+                              value={qForm.passageText}
+                              onChange={(e) =>
+                                setQForm({
+                                  ...qForm,
+                                  passageText: e.target.value,
+                                })
+                              }
+                              placeholder="Write or paste the passage text here..."
+                              className={inputClass + " h-32"}
+                            />
+                          </div>
                         )}
                         {qForm.passageMode === "existing" && (
                           <div className="p-3 bg-amber-50 border border-amber-100 rounded-xl max-h-28 overflow-y-auto">
                             <p className="text-[10px] font-bold text-amber-600 uppercase mb-1">
-                              Linked Passage
+                              Linked Passage: {qForm.passageName || "Untitled"}
                             </p>
                             <p className="text-xs text-gray-700">
                               {qForm.passageText}
@@ -1141,18 +1155,18 @@ export const TestsPage = () => {
             onClick={() => setResultsOpen(false)}
           />
           <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-gradient-to-r from-emerald-600 to-teal-700 px-6 py-5 rounded-t-2xl flex justify-between items-start shrink-0">
+            <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex justify-between items-start shrink-0">
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <Users size={20} /> Student Results
                 </h2>
-                <p className="text-emerald-200 text-sm mt-0.5">
+                <p className="text-violet-200 text-sm mt-0.5">
                   {resultsTest?.testName}
                 </p>
               </div>
               <button
                 onClick={() => setResultsOpen(false)}
-                className="p-1.5 rounded-lg text-emerald-100 hover:text-white hover:bg-white/10 transition-colors"
+                className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors"
               >
                 <X size={18} />
               </button>

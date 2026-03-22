@@ -24,6 +24,7 @@ import {
   updateAdmission,
   getFeesByAdmission,
   payFee,
+  payRemainingFee,
   Admission,
   AdmissionPayload,
   FeePaymentPayload,
@@ -100,6 +101,15 @@ export const AdmissionsPage = () => {
     paymentMode: "Cash",
   });
   const [feeSubmitting, setFeeSubmitting] = useState(false);
+  const [payRemainingSubmitting, setPayRemainingSubmitting] = useState(false);
+
+  const normalizeFeeSummary = (res: unknown) => {
+    const level1 = (res as { data?: unknown })?.data;
+    if (level1 && typeof level1 === "object" && "data" in level1) {
+      return (level1 as { data?: unknown }).data ?? level1;
+    }
+    return level1 ?? res;
+  };
 
   const fetchAdmissions = useCallback(async () => {
     setIsLoading(true);
@@ -132,7 +142,7 @@ export const AdmissionsPage = () => {
       }
 
       if (items.length > 0) {
-        console.log('[Admissions] Sample item payload:', {
+        console.log("[Admissions] Sample item payload:", {
           totalFees: items[0]?.totalFees,
           totalPaid: items[0]?.totalPaid,
           balance: items[0]?.balance,
@@ -204,7 +214,7 @@ export const AdmissionsPage = () => {
     setViewAdm(adm);
     try {
       const r = (await getFeesByAdmission(adm._id)) as { data?: unknown };
-      setFeeSummary(r?.data ?? r);
+      setFeeSummary(normalizeFeeSummary(r));
     } catch {}
   };
 
@@ -309,13 +319,29 @@ export const AdmissionsPage = () => {
     try {
       await payFee(viewAdm._id, feeForm);
       toast.success("Payment recorded!");
-      const r = await getFeesByAdmission(viewAdm._id);
-      setFeeSummary(r.data.data);
       setFeeForm({ installmentNo: 1, amount: 0, paymentMode: "Cash" });
+      setViewAdm(null);
+      fetchAdmissions();
     } catch (err: any) {
       toast.error(err?.message || err?.error || "Payment failed");
     } finally {
       setFeeSubmitting(false);
+    }
+  };
+
+  const handlePayRemaining = async () => {
+    if (!viewAdm) return;
+    setPayRemainingSubmitting(true);
+    try {
+      await payRemainingFee(viewAdm._id, { paymentMode: feeForm.paymentMode });
+      toast.success("Remaining fee paid successfully!");
+      setFeeForm((f) => ({ ...f, amount: 0 }));
+      setViewAdm(null);
+      fetchAdmissions();
+    } catch (err: any) {
+      toast.error(err?.message || err?.error || "Remaining fee payment failed");
+    } finally {
+      setPayRemainingSubmitting(false);
     }
   };
 
@@ -902,6 +928,8 @@ export const AdmissionsPage = () => {
                           >
                             <option value={1}>1st Installment</option>
                             <option value={2}>2nd Installment</option>
+                            <option value={3}>3rd Installment</option>
+                            <option value={4}>4th Installment</option>
                           </select>
                         </div>
                         <div>
@@ -948,6 +976,16 @@ export const AdmissionsPage = () => {
                         className="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-all shadow-sm"
                       >
                         {feeSubmitting ? "Saving..." : "Record Payment"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handlePayRemaining}
+                        disabled={payRemainingSubmitting}
+                        className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-all shadow-sm"
+                      >
+                        {payRemainingSubmitting
+                          ? "Processing..."
+                          : "Pay Remaining"}
                       </button>
                     </form>
                   </div>
