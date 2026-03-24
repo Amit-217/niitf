@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
 import { createMPTReport, MPTObservation, MPTInspector } from '../../../api/customerApi';
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const inputClass =
   'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500';
@@ -12,7 +12,7 @@ const labelClass = 'block text-xs font-medium text-gray-700 mb-1';
 const sectionClass = 'bg-white rounded-xl border border-gray-200 p-5 mb-5';
 const sectionTitleClass = 'text-sm font-semibold text-indigo-700 uppercase tracking-wide mb-4 pb-2 border-b border-gray-100';
 
-// ─── SelectWithOther ──────────────────────────────────────────────────────────
+// â”€â”€â”€ SelectWithOther â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface SelectWithOtherProps {
   id: string;
@@ -34,19 +34,19 @@ const SelectWithOther: React.FC<SelectWithOtherProps> = ({
         <option key={opt} value={opt}>{opt}</option>
       ))}
     </select>
-    {value === 'Custom' && (
+    {value === 'Other' && (
       <input
         type="text"
         value={otherValue}
         onChange={e => onOtherChange(e.target.value)}
-        placeholder="Specify custom value..."
+        placeholder="Specify other value..."
         className={inputClass}
       />
     )}
   </div>
 );
 
-// ─── Form State ───────────────────────────────────────────────────────────────
+// â”€â”€â”€ Form State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface ObsRow extends Omit<MPTObservation, 'quantity'> {
   quantity: string;
@@ -65,7 +65,7 @@ const emptyInspector = (): InspRow => ({
   name: '', qualification: '', designation: '', signature: '', idNo: '', date: '',
 });
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export const MPTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
@@ -76,13 +76,14 @@ export const MPTReportFormPage: React.FC = () => {
 
   const [saving, setSaving] = useState(false);
 
-  // ── Job Details ──
+  // â”€â”€ Job Details â”€â”€
   const [reportNo, setReportNo] = useState('');
-  const [jobCustomer, setJobCustomer] = useState(customerName);
+  const jobCustomer = customerName;
   const [jobClient, setJobClient] = useState('');
   const [jobReportDate, setJobReportDate] = useState('');
   const [jobInspectionDate, setJobInspectionDate] = useState('');
-  const [jobReferenceStd, setJobReferenceStd] = useState('ASME SEC V Article 7, ASTM E 709');
+  const [jobInspectionEndDate, setJobInspectionEndDate] = useState('');
+  const [jobReferenceStd, setJobReferenceStd] = useState('');
   const [jobAcceptanceCriteria, setJobAcceptanceCriteria] = useState('');
   const [jobInspectionTime, setJobInspectionTime] = useState('');
   const [jobStageOfInspection, setJobStageOfInspection] = useState('');
@@ -94,16 +95,16 @@ export const MPTReportFormPage: React.FC = () => {
   const [jobSurfaceCondition, setJobSurfaceCondition] = useState('');
   const [jobWeldingProcess, setJobWeldingProcess] = useState('');
 
-  // ── Equipment Details ──
-  const [eqType, setEqType] = useState('Yoke');
+  // â”€â”€ Equipment Details â”€â”€
+  const [eqType, setEqType] = useState('');
   const [eqSrNo, setEqSrNo] = useState('');
   const [eqMake, setEqMake] = useState('');
   const [eqMakeOther, setEqMakeOther] = useState('');
   const [eqCalibrationDue, setEqCalibrationDue] = useState('');
   const [eqYokeSpacing, setEqYokeSpacing] = useState('');
-  const [eqPieGauge, setEqPieGauge] = useState('Done');
+  const [eqPieGauge, setEqPieGauge] = useState('');
 
-  // ── Medium Details ──
+  // â”€â”€ Medium Details â”€â”€
   const [biManufacturer, setBiManufacturer] = useState('');
   const [biManufacturerOther, setBiManufacturerOther] = useState('');
   const [biBatchNo, setBiBatchNo] = useState('');
@@ -113,26 +114,26 @@ export const MPTReportFormPage: React.FC = () => {
   const [wcBatchNo, setWcBatchNo] = useState('');
   const [wcExpiryDate, setWcExpiryDate] = useState('');
 
-  // ── Method Description ──
+  // â”€â”€ Method Description â”€â”€
   const [method, setMethod] = useState('');
   const [lightIntensity, setLightIntensity] = useState('');
   const [magnetizationType, setMagnetizationType] = useState('');
-  const [lightEquipUsed, setLightEquipUsed] = useState('Bulb');
+  const [lightEquipUsed, setLightEquipUsed] = useState('');
   const [magnetizingMethod, setMagnetizingMethod] = useState('');
   const [bathConcentration, setBathConcentration] = useState('');
   const [bathConcentrationOther, setBathConcentrationOther] = useState('');
   const [demagnetization, setDemagnetization] = useState('');
-  const [magFieldVerifiedBy, setMagFieldVerifiedBy] = useState('Pie Gauge');
+  const [magFieldVerifiedBy, setMagFieldVerifiedBy] = useState('');
   const [gaussMeterReading, setGaussMeterReading] = useState('');
   const [current, setCurrent] = useState('');
   const [currentType, setCurrentType] = useState('');
   const [currentTypeOther, setCurrentTypeOther] = useState('');
-  const [postCleaning, setPostCleaning] = useState('Done');
+  const [postCleaning, setPostCleaning] = useState('');
 
-  // ── Observations ──
+  // â”€â”€ Observations â”€â”€
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
-  // ── Final Section ──
+  // â”€â”€ Final Section â”€â”€
   const [examinedBy, setExaminedBy] = useState('');
   const [custName, setCustName] = useState('');
   const [custSig, setCustSig] = useState('');
@@ -144,9 +145,9 @@ export const MPTReportFormPage: React.FC = () => {
   const [clientDate, setClientDate] = useState('');
   const [inspectors, setInspectors] = useState<InspRow[]>([emptyInspector()]);
 
-  // ── Helpers ──
+  // â”€â”€ Helpers â”€â”€
   const resolveCustom = (val: string, other: string) =>
-    val === 'Custom' && other.trim() ? other.trim() : val;
+    val === 'Other' && other.trim() ? other.trim() : val;
 
   const updateObs = (idx: number, key: keyof ObsRow, value: string) => {
     setObservations(prev =>
@@ -172,7 +173,7 @@ export const MPTReportFormPage: React.FC = () => {
   const removeInspector = (idx: number) =>
     setInspectors(prev => prev.filter((_, i) => i !== idx));
 
-  // ── Submit ──
+  // â”€â”€ Submit â”€â”€
   const handleSubmit = async (status: 'draft' | 'final') => {
     if (!customerId) {
       toast.error('Customer ID is missing. Go back and try again.');
@@ -194,6 +195,7 @@ export const MPTReportFormPage: React.FC = () => {
           client: jobClient,
           reportDate: jobReportDate || undefined,
           inspectionDate: jobInspectionDate || undefined,
+          inspectionEndDate: jobInspectionEndDate || undefined,
           referenceStd: jobReferenceStd,
           acceptanceCriteria: jobAcceptanceCriteria,
           inspectionTime: jobInspectionTime,
@@ -270,9 +272,9 @@ export const MPTReportFormPage: React.FC = () => {
     }
   };
 
-  // ─── Render ───────────────────────────────────────────────────────────────
+  // â”€â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  const manufacturerOptions = ['Pradeep', 'Dyeglo', 'Ferrochem', 'MR Chem', 'Magnaflux', 'Custom'];
+  const manufacturerOptions = ['Pradeep', 'Dyeglo', 'Ferrochem', 'MR Chem', 'Magnaflux', 'Other'];
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
@@ -311,13 +313,13 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Job Details ── */}
+      {/* â”€â”€ Job Details â”€â”€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={labelClass} htmlFor="jobCustomer">Customer</label>
-            <input id="jobCustomer" type="text" value={jobCustomer} onChange={e => setJobCustomer(e.target.value)} className={inputClass} />
+            <input id="jobCustomer" type="text" value={jobCustomer} disabled className={inputClass + ' bg-gray-100 cursor-not-allowed'} />
           </div>
           <div>
             <label className={labelClass} htmlFor="reportNo2">Report No.</label>
@@ -336,8 +338,12 @@ export const MPTReportFormPage: React.FC = () => {
             <input id="jobReferenceStd" type="text" value={jobReferenceStd} onChange={e => setJobReferenceStd(e.target.value)} className={inputClass} />
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobInspectionDate">Inspection Date</label>
+            <label className={labelClass} htmlFor="jobInspectionDate">Inspection Start Date</label>
             <input id="jobInspectionDate" type="date" value={jobInspectionDate} onChange={e => setJobInspectionDate(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="jobInspectionEndDate">Inspection End Date</label>
+            <input id="jobInspectionEndDate" type="date" value={jobInspectionEndDate} onChange={e => setJobInspectionEndDate(e.target.value)} className={inputClass} />
           </div>
           <div>
             <label className={labelClass} htmlFor="jobAcceptanceCriteria">Acceptance Criteria</label>
@@ -368,7 +374,7 @@ export const MPTReportFormPage: React.FC = () => {
               onChange={setJobExtentOfExamination}
               otherValue={jobExtentOther}
               onOtherChange={setJobExtentOther}
-              options={['10%', '100%', 'To the maximum extent possible', 'Custom']}
+              options={['10%', '100%', 'To the maximum extent possible', 'Other']}
             />
           </div>
           <div>
@@ -404,13 +410,14 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Equipment Details ── */}
+      {/* â”€â”€ Equipment Details â”€â”€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Equipment Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={labelClass} htmlFor="eqType">Equipment Type</label>
             <select id="eqType" value={eqType} onChange={e => setEqType(e.target.value)} className={inputClass}>
+              <option value="">Select...</option>
               <option>Yoke</option>
             </select>
           </div>
@@ -426,7 +433,7 @@ export const MPTReportFormPage: React.FC = () => {
               onChange={setEqMake}
               otherValue={eqMakeOther}
               onOtherChange={setEqMakeOther}
-              options={['EECI', 'Ferrochem', 'Custom']}
+              options={['EECI', 'Ferrochem', 'Other']}
             />
           </div>
           <div>
@@ -440,13 +447,14 @@ export const MPTReportFormPage: React.FC = () => {
           <div>
             <label className={labelClass} htmlFor="eqPie">Pie Gauge Calibration</label>
             <select id="eqPie" value={eqPieGauge} onChange={e => setEqPieGauge(e.target.value)} className={inputClass}>
+              <option value="">Select...</option>
               <option>Done</option>
             </select>
           </div>
         </div>
       </div>
 
-      {/* ── Medium Details ── */}
+      {/* â”€â”€ Medium Details â”€â”€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Medium Details</h2>
         <div className="overflow-x-auto">
@@ -503,7 +511,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Method Description ── */}
+      {/* â”€â”€ Method Description â”€â”€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Description</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -531,6 +539,7 @@ export const MPTReportFormPage: React.FC = () => {
           <div>
             <label className={labelClass} htmlFor="lightEquip">Light Equipment Used</label>
             <select id="lightEquip" value={lightEquipUsed} onChange={e => setLightEquipUsed(e.target.value)} className={inputClass}>
+              <option value="">Select...</option>
               <option>Bulb</option>
             </select>
           </div>
@@ -552,7 +561,7 @@ export const MPTReportFormPage: React.FC = () => {
               onChange={setBathConcentration}
               otherValue={bathConcentrationOther}
               onOtherChange={setBathConcentrationOther}
-              options={['Ready Bath', 'Custom']}
+              options={['Ready Bath', 'Other']}
             />
           </div>
           <div>
@@ -566,6 +575,7 @@ export const MPTReportFormPage: React.FC = () => {
           <div>
             <label className={labelClass} htmlFor="magFieldVerify">Magnetic Field Direction Verified By</label>
             <select id="magFieldVerify" value={magFieldVerifiedBy} onChange={e => setMagFieldVerifiedBy(e.target.value)} className={inputClass}>
+              <option value="">Select...</option>
               <option>Pie Gauge</option>
             </select>
           </div>
@@ -585,19 +595,20 @@ export const MPTReportFormPage: React.FC = () => {
               onChange={setCurrentType}
               otherValue={currentTypeOther}
               onOtherChange={setCurrentTypeOther}
-              options={['AC', 'DC', 'HWDC', 'Custom']}
+              options={['AC', 'DC', 'HWDC', 'Other']}
             />
           </div>
           <div>
             <label className={labelClass} htmlFor="postCleaning">Post Cleaning</label>
             <select id="postCleaning" value={postCleaning} onChange={e => setPostCleaning(e.target.value)} className={inputClass}>
+              <option value="">Select...</option>
               <option>Done</option>
             </select>
           </div>
         </div>
       </div>
 
-      {/* ── Observations ── */}
+      {/* â”€â”€ Observations â”€â”€ */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4">
           <h2 className={sectionTitleClass.replace(' mb-4 pb-2 border-b border-gray-100', '')}>Observations</h2>
@@ -671,7 +682,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Final Section ── */}
+      {/* â”€â”€ Final Section â”€â”€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Final Section</h2>
 
@@ -785,7 +796,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Action Buttons ── */}
+      {/* â”€â”€ Action Buttons â”€â”€ */}
       <div className="flex items-center justify-end gap-3 pb-8">
         <button
           type="button"

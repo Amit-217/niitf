@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { getMPTReportById, MPTReport } from '../../../api/customerApi';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { getMPTReportById, MPTReport } from "../../../api/customerApi";
 
 // ─── Print Styles ─────────────────────────────────────────────────────────────
 
@@ -60,13 +60,17 @@ const PRINT_STYLES = `
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const fmtDate = (d?: string | null) => {
-  if (!d) return '';
+  if (!d) return "";
   const dt = new Date(d);
   if (isNaN(dt.getTime())) return d;
-  return dt.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  return dt.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 };
 
-const v = (val?: string | null) => val || '';
+const v = (val?: string | null) => val || "";
 
 // ─── Print Page ───────────────────────────────────────────────────────────────
 
@@ -74,7 +78,7 @@ export const MPTReportPrintPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const autoPrint = searchParams.get('autoprint') === 'true';
+  const autoPrint = searchParams.get("autoprint") === "true";
   const [report, setReport] = useState<MPTReport | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -92,8 +96,8 @@ export const MPTReportPrintPage = () => {
 
   useEffect(() => {
     if (autoPrint) {
-      document.body.classList.add('autoprint-mode');
-      return () => document.body.classList.remove('autoprint-mode');
+      document.body.classList.add("autoprint-mode");
+      return () => document.body.classList.remove("autoprint-mode");
     }
   }, [autoPrint]);
 
@@ -108,7 +112,15 @@ export const MPTReportPrintPage = () => {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: 'Arial' }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          fontFamily: "Arial",
+        }}
+      >
         Loading report...
       </div>
     );
@@ -116,9 +128,24 @@ export const MPTReportPrintPage = () => {
 
   if (!report) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: 'Arial', gap: 12 }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          fontFamily: "Arial",
+          gap: 12,
+        }}
+      >
         <p>Report not found.</p>
-        <button onClick={() => navigate(-1)} style={{ padding: '8px 16px', cursor: 'pointer' }}>Go Back</button>
+        <button
+          onClick={() => navigate(-1)}
+          style={{ padding: "8px 16px", cursor: "pointer" }}
+        >
+          Go Back
+        </button>
       </div>
     );
   }
@@ -136,50 +163,101 @@ export const MPTReportPrintPage = () => {
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
       {/* ── No-Print Action Bar ── */}
-      <div className="no-print" style={{ background: '#1e293b', padding: '10px 16px', display: autoPrint ? 'none' : 'flex', gap: 10, alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
-        <button
-          onClick={() => navigate(-1)}
-          style={{ padding: '6px 14px', background: '#334155', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13 }}
-        >
-          ← Back
-        </button>
-        <button
-          onClick={() => window.print()}
-          style={{ padding: '6px 16px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
-        >
-          🖨 Print / Save as PDF
-        </button>
-        <span style={{ color: '#94a3b8', fontSize: 12, marginLeft: 8 }}>
-          {report.reportNo} — {report.status === 'final' ? '✅ Final' : '📝 Draft'}
-        </span>
-      </div>
 
       {/* ── Report Content ── */}
-      <div id="report-root" style={{ background: '#f1f5f9', minHeight: '100vh', padding: '24px 16px' }}>
-        <div style={{ width: '210mm', minHeight: '297mm', background: '#fff', margin: '0 auto', padding: '5mm', boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
-
+      <div
+        id="report-root"
+        style={{
+          background: "#f1f5f9",
+          minHeight: "100vh",
+          padding: "24px 16px",
+        }}
+      >
+        <div
+          style={{
+            width: "210mm",
+            minHeight: "297mm",
+            background: "#fff",
+            margin: "0 auto",
+            padding: "5mm",
+            boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+          }}
+        >
           {/* ── HEADER TABLE ── */}
           <table className="report-title-table" style={{ marginBottom: -1 }}>
             <tbody>
               <tr>
-                <td rowSpan={2} style={{ width: '18%', textAlign: 'center', verticalAlign: 'middle', padding: 6 }}>
+                <td
+                  rowSpan={2}
+                  style={{
+                    width: "18%",
+                    textAlign: "center",
+                    verticalAlign: "middle",
+                    padding: 6,
+                  }}
+                >
                   {/* Company Logo placeholder */}
-                  <div style={{ border: '1px solid #ccc', width: 60, height: 60, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 7, color: '#888', textAlign: 'center' }}>
-                    NIIT<br />LOGO
+                  <div
+                    style={{
+                      border: "1px solid #ccc",
+                      width: 60,
+                      height: 60,
+                      margin: "0 auto",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 7,
+                      color: "#888",
+                      textAlign: "center",
+                    }}
+                  >
+                    NIIT
+                    <br />
+                    LOGO
                   </div>
                 </td>
-                <td style={{ textAlign: 'center', verticalAlign: 'bottom', paddingBottom: 2 }}>
-                  <div className="company-name">National Industrial Inspection And Training</div>
+                <td
+                  style={{
+                    textAlign: "center",
+                    verticalAlign: "bottom",
+                    paddingBottom: 2,
+                  }}
+                >
+                  <div className="company-name">
+                    National Industrial Inspection And Training
+                  </div>
                 </td>
-                <td rowSpan={2} style={{ width: '22%', verticalAlign: 'middle', fontSize: '8pt', lineHeight: 1.6 }}>
-                  <div><strong>Format No:</strong> FMT-NDT-01</div>
-                  <div><strong>Rev. No:</strong> 00</div>
-                  <div><strong>Page No:</strong> 1/1</div>
+                <td
+                  rowSpan={2}
+                  style={{
+                    width: "22%",
+                    verticalAlign: "middle",
+                    fontSize: "8pt",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  <div>
+                    <strong>Format No:</strong> FMT-NDT-01
+                  </div>
+                  <div>
+                    <strong>Rev. No:</strong> 00
+                  </div>
+                  <div>
+                    <strong>Page No:</strong> 1/1
+                  </div>
                 </td>
               </tr>
               <tr>
-                <td style={{ textAlign: 'center', paddingTop: 2, paddingBottom: 4 }}>
-                  <div className="report-title">Magnetic Particle Examination Report</div>
+                <td
+                  style={{
+                    textAlign: "center",
+                    paddingTop: 2,
+                    paddingBottom: 4,
+                  }}
+                >
+                  <div className="report-title">
+                    Magnetic Particle Examination Report
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -188,13 +266,17 @@ export const MPTReportPrintPage = () => {
           {/* ── JOB DETAILS ── */}
           <table className="report-table mt-n1">
             <colgroup>
-              <col style={{ width: '20%' }} />
-              <col style={{ width: '30%' }} />
-              <col style={{ width: '20%' }} />
-              <col style={{ width: '30%' }} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "30%" }} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "30%" }} />
             </colgroup>
             <tbody>
-              <tr><td colSpan={4} className="section-hdr">JOB DETAILS</td></tr>
+              <tr>
+                <td colSpan={4} className="section-hdr">
+                  JOB DETAILS
+                </td>
+              </tr>
               <tr>
                 <td className="lbl">Customer</td>
                 <td className="val">{v(jd.customer)}</td>
@@ -211,7 +293,7 @@ export const MPTReportPrintPage = () => {
                 <td className="lbl">Reference Std.</td>
                 <td className="val">{v(jd.referenceStd)}</td>
                 <td className="lbl">Inspection Date</td>
-                <td className="val">{fmtDate(jd.inspectionDate)}</td>
+                <td className="val">{fmtDate(jd.inspectionDate)}{jd.inspectionEndDate ? ` to ${fmtDate(jd.inspectionEndDate)}` : ''}</td>
               </tr>
               <tr>
                 <td className="lbl">Acceptance Criteria</td>
@@ -249,13 +331,17 @@ export const MPTReportPrintPage = () => {
           {/* ── EQUIPMENT DETAILS ── */}
           <table className="report-table mt-n1">
             <colgroup>
-              <col style={{ width: '20%' }} />
-              <col style={{ width: '30%' }} />
-              <col style={{ width: '20%' }} />
-              <col style={{ width: '30%' }} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "30%" }} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "30%" }} />
             </colgroup>
             <tbody>
-              <tr><td colSpan={4} className="section-hdr">EQUIPMENT DETAILS</td></tr>
+              <tr>
+                <td colSpan={4} className="section-hdr">
+                  EQUIPMENT DETAILS
+                </td>
+              </tr>
               <tr>
                 <td className="lbl">Equip. Type</td>
                 <td className="val">{v(eq.equipmentType)}</td>
@@ -280,13 +366,17 @@ export const MPTReportPrintPage = () => {
           {/* ── MEDIUM DETAILS ── */}
           <table className="report-table mt-n1">
             <colgroup>
-              <col style={{ width: '20%' }} />
-              <col style={{ width: '30%' }} />
-              <col style={{ width: '20%' }} />
-              <col style={{ width: '30%' }} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "30%" }} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "30%" }} />
             </colgroup>
             <tbody>
-              <tr><td colSpan={4} className="section-hdr">MEDIUM DETAILS</td></tr>
+              <tr>
+                <td colSpan={4} className="section-hdr">
+                  MEDIUM DETAILS
+                </td>
+              </tr>
               <tr>
                 <td className="col-hdr">Material</td>
                 <td className="col-hdr">Manufacturer</td>
@@ -311,13 +401,17 @@ export const MPTReportPrintPage = () => {
           {/* ── METHOD DESCRIPTION ── */}
           <table className="report-table mt-n1">
             <colgroup>
-              <col style={{ width: '20%' }} />
-              <col style={{ width: '30%' }} />
-              <col style={{ width: '20%' }} />
-              <col style={{ width: '30%' }} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "30%" }} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "30%" }} />
             </colgroup>
             <tbody>
-              <tr><td colSpan={4} className="section-hdr">METHOD DESCRIPTION</td></tr>
+              <tr>
+                <td colSpan={4} className="section-hdr">
+                  METHOD DESCRIPTION
+                </td>
+              </tr>
               <tr>
                 <td className="lbl">Method</td>
                 <td className="val">{v(me.method)}</td>
@@ -340,7 +434,9 @@ export const MPTReportPrintPage = () => {
                 <td className="lbl">Demagnetization</td>
                 <td className="val">{v(me.demagnetization)}</td>
                 <td className="lbl">Mag. Field Dir. Verified By</td>
-                <td className="val">{v(me.magneticFieldDirectionVerifiedBy)}</td>
+                <td className="val">
+                  {v(me.magneticFieldDirectionVerifiedBy)}
+                </td>
               </tr>
               <tr>
                 <td className="lbl">Gauss Meter Reading</td>
@@ -360,16 +456,20 @@ export const MPTReportPrintPage = () => {
           {/* ── OBSERVATIONS ── */}
           <table className="obs-table mt-n1">
             <colgroup>
-              <col style={{ width: '5%' }} />
-              <col style={{ width: '20%' }} />
-              <col style={{ width: '14%' }} />
-              <col style={{ width: '10%' }} />
-              <col style={{ width: '7%' }} />
-              <col style={{ width: '26%' }} />
-              <col style={{ width: '18%' }} />
+              <col style={{ width: "5%" }} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "14%" }} />
+              <col style={{ width: "10%" }} />
+              <col style={{ width: "7%" }} />
+              <col style={{ width: "26%" }} />
+              <col style={{ width: "18%" }} />
             </colgroup>
             <thead>
-              <tr><th colSpan={7} className="section-hdr">OBSERVATIONS</th></tr>
+              <tr>
+                <th colSpan={7} className="section-hdr">
+                  OBSERVATIONS
+                </th>
+              </tr>
               <tr>
                 <th className="col-hdr">Sr. No.</th>
                 <th className="col-hdr">Job Description</th>
@@ -383,51 +483,82 @@ export const MPTReportPrintPage = () => {
             <tbody>
               {obs.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', color: '#888', padding: '8px 4px' }}>No observations recorded</td>
+                  <td
+                    colSpan={7}
+                    style={{
+                      textAlign: "center",
+                      color: "#888",
+                      padding: "8px 4px",
+                    }}
+                  >
+                    No observations recorded
+                  </td>
                 </tr>
-              ) : obs.map((o, i) => (
-                <tr key={i}>
-                  <td style={{ textAlign: 'center' }}>{o.srNo}</td>
-                  <td>{v(o.jobDescription)}</td>
-                  <td>{v(o.drawingOrJointNo)}</td>
-                  <td>{v(o.size)}</td>
-                  <td style={{ textAlign: 'center' }}>{o.quantity || ''}</td>
-                  <td>{v(o.evaluation)}</td>
-                  <td>{v(o.result)}{o.remark ? ` / ${o.remark}` : ''}</td>
-                </tr>
-              ))}
+              ) : (
+                obs.map((o, i) => (
+                  <tr key={i}>
+                    <td style={{ textAlign: "center" }}>{o.srNo}</td>
+                    <td>{v(o.jobDescription)}</td>
+                    <td>{v(o.drawingOrJointNo)}</td>
+                    <td>{v(o.size)}</td>
+                    <td style={{ textAlign: "center" }}>{o.quantity || ""}</td>
+                    <td>{v(o.evaluation)}</td>
+                    <td>
+                      {v(o.result)}
+                      {o.remark ? ` / ${o.remark}` : ""}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
 
           {/* ── FINAL / SIGNATURE SECTION ── */}
           <table className="sign-table mt-n1">
             <colgroup>
-              <col style={{ width: '33.33%' }} />
-              <col style={{ width: '33.33%' }} />
-              <col style={{ width: '33.34%' }} />
+              <col style={{ width: "33.33%" }} />
+              <col style={{ width: "33.33%" }} />
+              <col style={{ width: "33.34%" }} />
             </colgroup>
             <tbody>
               {/* Examined By row */}
               <tr>
-                <td colSpan={3} style={{ padding: '3px 6px', fontWeight: 600, fontSize: '8.5pt' }}>
-                  EXAMINED BY: &nbsp; National Industrial Inspection And Training
+                <td
+                  colSpan={3}
+                  style={{
+                    padding: "3px 6px",
+                    fontWeight: 600,
+                    fontSize: "8.5pt",
+                  }}
+                >
+                  EXAMINED BY: &nbsp; National Industrial Inspection And
+                  Training
                 </td>
               </tr>
               {/* Header row for signature columns */}
               <tr>
                 <td className="col-hdr">CUSTOMER: {v(fs.customer?.name)}</td>
-                <td className="col-hdr">CLIENT / TPI: {v(fs.clientOrTPI?.name)}</td>
-                <td className="col-hdr">{inspectors[0] ? `INSPECTOR: ${inspectors[0].name}` : 'INSPECTOR:'}</td>
+                <td className="col-hdr">
+                  CLIENT / TPI: {v(fs.clientOrTPI?.name)}
+                </td>
+                <td className="col-hdr">
+                  {inspectors[0]
+                    ? `INSPECTOR: ${inspectors[0].name}`
+                    : "INSPECTOR:"}
+                </td>
               </tr>
               <tr>
                 <td>
-                  <span className="sign-lbl">Name: </span>{v(fs.customer?.name)}
+                  <span className="sign-lbl">Name: </span>
+                  {v(fs.customer?.name)}
                 </td>
                 <td>
-                  <span className="sign-lbl">Name: </span>{v(fs.clientOrTPI?.name)}
+                  <span className="sign-lbl">Name: </span>
+                  {v(fs.clientOrTPI?.name)}
                 </td>
                 <td>
-                  <span className="sign-lbl">Name: </span>{inspectors[0]?.name || ''}
+                  <span className="sign-lbl">Name: </span>
+                  {inspectors[0]?.name || ""}
                 </td>
               </tr>
               <tr>
@@ -438,40 +569,50 @@ export const MPTReportPrintPage = () => {
                   <span className="sign-lbl">Designation: </span>
                 </td>
                 <td>
-                  <span className="sign-lbl">Qualification: </span>{inspectors[0]?.qualification || ''}
+                  <span className="sign-lbl">Qualification: </span>
+                  {inspectors[0]?.qualification || ""}
                 </td>
               </tr>
               <tr>
                 <td style={{ minHeight: 28 }}>
-                  <span className="sign-lbl">Signature: </span>{v(fs.customer?.signature)}
+                  <span className="sign-lbl">Signature: </span>
+                  {v(fs.customer?.signature)}
                 </td>
                 <td style={{ minHeight: 28 }}>
-                  <span className="sign-lbl">Signature: </span>{v(fs.clientOrTPI?.signature)}
+                  <span className="sign-lbl">Signature: </span>
+                  {v(fs.clientOrTPI?.signature)}
                 </td>
                 <td>
-                  <span className="sign-lbl">Signature: </span>{inspectors[0]?.signature || ''}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <span className="sign-lbl">I.D. No.: </span>{v(fs.customer?.idNo)}
-                </td>
-                <td>
-                  <span className="sign-lbl">I.D. No.: </span>{v(fs.clientOrTPI?.idNo)}
-                </td>
-                <td>
-                  <span className="sign-lbl">I.D. No.: </span>{inspectors[0]?.idNo || ''}
+                  <span className="sign-lbl">Signature: </span>
+                  {inspectors[0]?.signature || ""}
                 </td>
               </tr>
               <tr>
                 <td>
-                  <span className="sign-lbl">Date: </span>{fmtDate(fs.customer?.date)}
+                  <span className="sign-lbl">I.D. No.: </span>
+                  {v(fs.customer?.idNo)}
                 </td>
                 <td>
-                  <span className="sign-lbl">Date: </span>{fmtDate(fs.clientOrTPI?.date)}
+                  <span className="sign-lbl">I.D. No.: </span>
+                  {v(fs.clientOrTPI?.idNo)}
                 </td>
                 <td>
-                  <span className="sign-lbl">Date: </span>{fmtDate(inspectors[0]?.date)}
+                  <span className="sign-lbl">I.D. No.: </span>
+                  {inspectors[0]?.idNo || ""}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span className="sign-lbl">Date: </span>
+                  {fmtDate(fs.customer?.date)}
+                </td>
+                <td>
+                  <span className="sign-lbl">Date: </span>
+                  {fmtDate(fs.clientOrTPI?.date)}
+                </td>
+                <td>
+                  <span className="sign-lbl">Date: </span>
+                  {fmtDate(inspectors[0]?.date)}
                 </td>
               </tr>
 
@@ -479,14 +620,61 @@ export const MPTReportPrintPage = () => {
               {inspectors.slice(1).map((insp, i) => (
                 <tr key={i}>
                   <td colSpan={3} style={{ padding: 0 }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <table
+                      style={{ width: "100%", borderCollapse: "collapse" }}
+                    >
                       <tbody>
                         <tr>
-                          <td style={{ border: '1px solid #444', padding: '3px 5px', width: '25%' }}><span className="sign-lbl">Name: </span>{insp.name}</td>
-                          <td style={{ border: '1px solid #444', padding: '3px 5px', width: '25%' }}><span className="sign-lbl">Qualification: </span>{insp.qualification}</td>
-                          <td style={{ border: '1px solid #444', padding: '3px 5px', width: '17%' }}><span className="sign-lbl">Sig: </span>{insp.signature}</td>
-                          <td style={{ border: '1px solid #444', padding: '3px 5px', width: '17%' }}><span className="sign-lbl">I.D. No.: </span>{insp.idNo}</td>
-                          <td style={{ border: '1px solid #444', padding: '3px 5px', width: '16%' }}><span className="sign-lbl">Date: </span>{fmtDate(insp.date)}</td>
+                          <td
+                            style={{
+                              border: "1px solid #444",
+                              padding: "3px 5px",
+                              width: "25%",
+                            }}
+                          >
+                            <span className="sign-lbl">Name: </span>
+                            {insp.name}
+                          </td>
+                          <td
+                            style={{
+                              border: "1px solid #444",
+                              padding: "3px 5px",
+                              width: "25%",
+                            }}
+                          >
+                            <span className="sign-lbl">Qualification: </span>
+                            {insp.qualification}
+                          </td>
+                          <td
+                            style={{
+                              border: "1px solid #444",
+                              padding: "3px 5px",
+                              width: "17%",
+                            }}
+                          >
+                            <span className="sign-lbl">Sig: </span>
+                            {insp.signature}
+                          </td>
+                          <td
+                            style={{
+                              border: "1px solid #444",
+                              padding: "3px 5px",
+                              width: "17%",
+                            }}
+                          >
+                            <span className="sign-lbl">I.D. No.: </span>
+                            {insp.idNo}
+                          </td>
+                          <td
+                            style={{
+                              border: "1px solid #444",
+                              padding: "3px 5px",
+                              width: "16%",
+                            }}
+                          >
+                            <span className="sign-lbl">Date: </span>
+                            {fmtDate(insp.date)}
+                          </td>
                         </tr>
                       </tbody>
                     </table>
@@ -495,7 +683,6 @@ export const MPTReportPrintPage = () => {
               ))}
             </tbody>
           </table>
-
         </div>
       </div>
     </>

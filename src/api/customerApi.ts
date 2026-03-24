@@ -189,6 +189,7 @@ export interface MPTReportPayload {
     client?: string;
     reportDate?: string;
     inspectionDate?: string;
+    inspectionEndDate?: string;
     referenceStd?: string;
     acceptanceCriteria?: string;
     inspectionTime?: string;
@@ -258,11 +259,191 @@ export const updateMPTReport = (id: string, data: Partial<MPTReportPayload>) =>
 export const deleteMPTReport = (id: string) =>
   api.delete(`/reports/mpt/${id}`);
 
+// ─── PT Report Types ──────────────────────────────────────────────────────────
+
+export interface PTObservation {
+  srNo: number;
+  jobDescription: string;
+  drawingOrJointNo: string;
+  size: string;
+  quantity: number;
+  evaluation: string;
+  remark: string;
+}
+
+export interface PTReportPayload {
+  customerId: string;
+  reportNo: string;
+  status?: 'draft' | 'final';
+  jobDetails?: {
+    customer?: string;
+    client?: string;
+    reportDate?: string;
+    inspectionDate?: string;
+    inspectionEndDate?: string;
+    project?: string;
+    referenceStandard?: string;
+    acceptanceCriteria?: string;
+    inspectionTime?: string;
+    stageOfInspection?: string;
+    material?: string;
+    extentOfExamination?: string;
+    thickness?: string;
+    typeOfJoint?: string;
+    surfaceCondition?: string;
+    surfaceTemperature?: string;
+    weldingProcess?: string;
+  };
+  methodDetails?: {
+    penetrantMethod?: string;
+    excessPenetrantRemovalMethod?: string;
+  };
+  consumablesDetails?: {
+    penetrant?: { manufacturer?: string; batch?: string; expiryDate?: string };
+    developer?: { manufacturer?: string; batch?: string; expiryDate?: string };
+    cleaner?: { manufacturer?: string; batch?: string; expiryDate?: string };
+  };
+  methodDescription?: {
+    dwellTime?: string;
+    lightIntensity?: string;
+    developingTime?: string;
+    lightEquipmentUsed?: string;
+    postCleaning?: string;
+    dryingTime?: string;
+  };
+  observations?: PTObservation[];
+  finalSection?: {
+    examinedBy?: string;
+    inspector?: { name?: string; qualification?: string; designation?: string; idNo?: string; date?: string }[];
+    customer?: { name?: string; designation?: string; signature?: string; idNo?: string; date?: string };
+    clientOrTPI?: { name?: string; designation?: string; signature?: string; idNo?: string; date?: string };
+  };
+}
+
+export interface PTReport extends PTReportPayload {
+  _id: string;
+  reportType: string;
+  createdAt: string;
+}
+
+// ─── UT Report Types ──────────────────────────────────────────────────────────
+
+export interface UTSearchUnit {
+  model: string;
+  angle: string;
+  srNo: string;
+  crystalSize: string;
+  waveMode: string;
+  frequency: string;
+}
+
+export interface UTCalibrationPoint {
+  range: string;
+  point1: string;
+  point2: string;
+  point3: string;
+  refDb: string;
+}
+
+export interface UTObservation {
+  srNo: number;
+  jobDescription: string;
+  drawingOrJointNo: string;
+  size: string;
+  quantity: number;
+  evaluation: string;
+  remark: string;
+}
+
+export interface UTReportPayload {
+  customerId: string;
+  reportNo: string;
+  status?: 'draft' | 'final';
+  jobDetails?: {
+    customer?: string;
+    client?: string;
+    reportDate?: string;
+    inspectionDate?: string;
+    inspectionEndDate?: string;
+    project?: string;
+    referenceStd?: string;
+    acceptanceCriteria?: string;
+    inspectionTime?: string;
+    stageOfInspection?: string;
+    material?: string;
+    extentOfExamination?: string;
+    thickness?: string;
+    typeOfJoint?: string;
+    surfaceCondition?: string;
+    surfaceTemperature?: string;
+    weldingProcess?: string;
+  };
+  equipmentDetails?: {
+    equipmentType?: string;
+    srNo?: string;
+    make?: string;
+    calibrationDue?: string;
+    couplant?: string;
+    basicCalibrationBlock?: string;
+  };
+  searchUnitDetails?: UTSearchUnit[];
+  techniqueDetails?: {
+    utMethod?: string;
+    referenceCalibrationBlock?: string;
+    utCalibrationMethod?: string;
+    scanningDb?: string;
+    scanningSensitivity?: string;
+  };
+  angleProbeCalibration?: {
+    deg0?: UTCalibrationPoint;
+    deg45?: UTCalibrationPoint;
+    deg60?: UTCalibrationPoint;
+    deg70?: UTCalibrationPoint;
+  };
+  observations?: UTObservation[];
+  finalSection?: {
+    examinedBy?: string;
+    inspector?: { name?: string; qualification?: string; designation?: string; idNo?: string; date?: string }[];
+    customer?: { name?: string; designation?: string; signature?: string; idNo?: string; date?: string };
+    clientOrTPI?: { name?: string; designation?: string; signature?: string; idNo?: string; date?: string };
+  };
+}
+
+export interface UTReport extends UTReportPayload {
+  _id: string;
+  reportType: string;
+  createdAt: string;
+}
+
 export const getPTReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
   api.get('/reports/pt', { params });
 
+export const getPTReportById = (id: string) =>
+  api.get(`/reports/pt/${id}`);
+
+export const createPTReport = (data: PTReportPayload) =>
+  api.post('/reports/pt', data);
+
+export const updatePTReport = (id: string, data: Partial<PTReportPayload>) =>
+  api.put(`/reports/pt/${id}`, data);
+
+export const deletePTReport = (id: string) =>
+  api.delete(`/reports/pt/${id}`);
+
 export const getUTReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
   api.get('/reports/ut', { params });
+
+export const getUTReportById = (id: string) =>
+  api.get(`/reports/ut/${id}`);
+
+export const createUTReport = (data: UTReportPayload) =>
+  api.post('/reports/ut', data);
+
+export const updateUTReport = (id: string, data: Partial<UTReportPayload>) =>
+  api.put(`/reports/ut/${id}`, data);
+
+export const deleteUTReport = (id: string) =>
+  api.delete(`/reports/ut/${id}`);
 
 export const getVSSCUTReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
   api.get('/reports/vssc-ut', { params });

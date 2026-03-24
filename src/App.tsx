@@ -27,6 +27,10 @@ import { CustomersPage } from './pages/admin/customers/CustomersPage';
 import { CustomerDetailPage } from './pages/admin/customers/CustomerDetailPage';
 import { MPTReportFormPage } from './pages/admin/reports/MPTReportFormPage';
 import { MPTReportPrintPage } from './pages/admin/reports/MPTReportPrintPage';
+import { PTReportFormPage } from './pages/admin/reports/PTReportFormPage';
+import { PTReportPrintPage } from './pages/admin/reports/PTReportPrintPage';
+import { UTReportFormPage } from './pages/admin/reports/UTReportFormPage';
+import { UTReportPrintPage } from './pages/admin/reports/UTReportPrintPage';
 import { AdmissionsPage } from './pages/admin/admissions/AdmissionsPage';
 import { TestsPage } from './pages/admin/tests/TestsPage';
 import { TakeTestPage } from './pages/student/tests/TakeTestPage';
@@ -133,6 +137,8 @@ function App() {
           <Route path="customers" element={<CustomersPage />} />
           <Route path="customers/:id" element={<CustomerDetailPage />} />
           <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
+          <Route path="reports/pt/new" element={<PTReportFormPage />} />
+          <Route path="reports/ut/new" element={<UTReportFormPage />} />
           <Route path="settings" element={<Settings />} />
           <Route
             path="*"
@@ -180,6 +186,22 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
               <MPTReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reports/pt/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+              <PTReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reports/ut/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+              <UTReportPrintPage />
             </ProtectedRoute>
           }
         />
