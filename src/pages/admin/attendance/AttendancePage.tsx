@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import {
     CheckCircle2, XCircle, Coffee,
-    FileWarning, Search, Calendar as CalendarIcon, Filter,
-    Download, LayoutGrid, List, Clock, Loader2
+    FileWarning, Search, Calendar as CalendarIcon,
+    Download, LayoutGrid, List, Loader2
 } from 'lucide-react';
 import {
     getAttendanceByDate,
@@ -24,7 +24,7 @@ interface AttendanceRecord {
     _id: string;
     employeeId: User;
     date: string;
-    status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'HALF_DAY';
+    status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT';
 }
 
 export const AttendancePage = () => {
@@ -122,32 +122,34 @@ export const AttendancePage = () => {
     const handleExportCSV = async () => {
         setExportLoading(true);
         try {
-            const monthStr = selectedDate.substring(0, 7); // YYYY-MM
-            const response: any = await api.get(`/admin/attendance/export?month=${monthStr}`, { 
+            const params = viewMode === 'daily' 
+                ? `date=${selectedDate}` 
+                : `month=${selectedDate.substring(0, 7)}`;
+            
+            const response: any = await api.get(`/admin/attendance/export?${params}`, { 
                 responseType: 'blob' 
             });
             
-            // Note: Axios interceptor unwraps response.data, so 'response' IS the Blob
             const responseData = response instanceof Blob ? response : response.data;
             const blob = new Blob([responseData], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `NIIT_Attendance_${monthStr}.csv`);
+            link.setAttribute('download', `NIIT_Attendance_${params.split('=')[1]}.csv`);
             document.body.appendChild(link);
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
             toast.success("CSV Report downloaded");
-        } catch (err) {
-            toast.error("Failed to export attendance");
+        } catch (error: any) {
+            toast.error(error.message || error || "Failed to export attendance");
         } finally {
             setExportLoading(false);
         }
     };
 
     // Handle single attendance marking/updating
-    const handleStatusChange = async (employeeId: string, status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'HALF_DAY') => {
+    const handleStatusChange = async (employeeId: string, status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT') => {
         const existingRecord = attendanceRecords.find(r => r.employeeId._id === employeeId);
 
         try {
@@ -164,7 +166,7 @@ export const AttendancePage = () => {
             fetchAttendance();
             fetchMonthlyData(); // Refresh stats on card too
         } catch (error: any) {
-            toast.error(error.message || 'Failed to update attendance');
+            toast.error(error.message || error || 'Failed to update attendance');
         }
     };
 
@@ -179,8 +181,7 @@ export const AttendancePage = () => {
         const eMonthlyRecords = monthlyData[emp._id] || [];
         const stats = {
             P: eMonthlyRecords.filter(r => r.status === 'PRESENT').length,
-            A: eMonthlyRecords.filter(r => r.status === 'ABSENT').length,
-            H: eMonthlyRecords.filter(r => r.status === 'HALF_DAY').length
+            A: eMonthlyRecords.filter(r => r.status === 'ABSENT').length
         };
 
         return {
@@ -205,7 +206,6 @@ export const AttendancePage = () => {
             case 'PRESENT': return 'bg-emerald-500 text-white border-emerald-600';
             case 'ABSENT': return 'bg-red-500 text-white border-red-600';
             case 'LEAVE': return 'bg-amber-500 text-white border-amber-600';
-            case 'HALF_DAY': return 'bg-orange-500 text-white border-orange-600';
             case 'HOLIDAY': return 'bg-blue-500 text-white border-blue-600';
             default: return 'bg-gray-100 text-gray-400 border-gray-200';
         }
@@ -216,7 +216,6 @@ export const AttendancePage = () => {
             case 'PRESENT': return 'bg-emerald-500';
             case 'ABSENT': return 'bg-red-500';
             case 'LEAVE': return 'bg-amber-500';
-            case 'HALF_DAY': return 'bg-orange-500';
             case 'HOLIDAY': return 'bg-blue-500';
             default: return 'bg-gray-100';
         }
@@ -286,7 +285,7 @@ export const AttendancePage = () => {
                         <div key={row.employee._id} className={"bg-white rounded-2xl border p-4 transition-all duration-300 " + (row.status ? 'border-gray-100 shadow-sm' : 'border-dashed border-primary-200 bg-primary-50/10')}>
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-black border border-primary-200 text-xs uppercase">
+                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center text-primary-700 font-black border border-primary-200 shadow-sm text-sm transform transition-transform hover:scale-105">
                                         {row.employee.name.charAt(0)}
                                     </div>
                                     <div className="min-w-0">
@@ -297,7 +296,6 @@ export const AttendancePage = () => {
                                             <div className="flex items-center gap-1">
                                                 <span className="bg-emerald-50 text-emerald-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-emerald-100">P:{row.stats.P}</span>
                                                 <span className="bg-red-50 text-red-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-red-100">A:{row.stats.A}</span>
-                                                <span className="bg-orange-50 text-orange-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-orange-100">H:{row.stats.H}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -307,23 +305,21 @@ export const AttendancePage = () => {
                                 </span>
                             </div>
 
-                            <div className="grid grid-cols-5 gap-1.5 mt-4">
+                            <div className="grid grid-cols-4 gap-1.5 mt-4">
                                 {[
                                     { s: 'PRESENT', icon: CheckCircle2, label: 'P' },
                                     { s: 'ABSENT', icon: XCircle, label: 'A' },
-                                    { s: 'HALF_DAY', icon: Clock, label: 'H' },
                                     { s: 'LEAVE', icon: FileWarning, label: 'L' },
                                     { s: 'HOLIDAY', icon: Coffee, label: 'O' }
                                 ].map((opt) => (
                                     <button
-                                        key={opt.s}
                                         onClick={() => handleStatusChange(row.employee._id, opt.s as any)}
-                                        className={"flex flex-col items-center justify-center py-2.5 rounded-xl border transition-all " + (row.status === opt.s
-                                            ? 'bg-primary-600 border-primary-600 text-white shadow-md ring-2 ring-primary-100'
-                                            : 'bg-white border-gray-100 text-gray-400 hover:bg-gray-50 hover:border-gray-200')}
+                                        className={"flex flex-col items-center justify-center py-3 rounded-2xl border transition-all duration-300 transform active:scale-95 " + (row.status === opt.s
+                                            ? 'bg-primary-600 border-primary-600 text-white shadow-lg shadow-primary-200 ring-2 ring-primary-100'
+                                            : 'bg-white border-gray-100 text-gray-400 hover:bg-gray-50 hover:border-primary-200 hover:text-primary-600')}
                                     >
-                                        <opt.icon size={16} className="mb-1" />
-                                        <span className="text-[10px] font-black">{opt.label}</span>
+                                        <opt.icon size={18} className="mb-1" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest">{opt.label}</span>
                                     </button>
                                 ))}
                             </div>
@@ -331,30 +327,30 @@ export const AttendancePage = () => {
                     ))}
                 </div>
             ) : (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden backdrop-blur-sm bg-white/80">
                     <div className="overflow-x-auto">
-                        <table className="w-full">
+                        <table className="w-full border-collapse">
                             <thead>
-                                <tr className="bg-gray-50 border-b border-gray-100">
-                                    <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400 min-w-[200px] sticky left-0 bg-gray-50 z-10">Employee</th>
+                                <tr className="bg-gray-50/80 border-b border-gray-100">
+                                    <th className="px-6 py-5 text-left text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 min-w-[240px] sticky left-0 bg-gray-50/95 backdrop-blur-md z-20 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">Employee Details</th>
                                     {dayLabels.map(d => (
-                                        <th key={d} className="px-1 py-3 text-center text-[10px] font-black text-gray-400 w-8">{d}</th>
+                                        <th key={d} className="px-1 py-5 text-center text-[10px] font-black text-gray-400 w-10">{d}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
                                 {isLoading ? (
-                                    <tr><td colSpan={daysInMonth + 1} className="py-20 text-center"><Loader2 className="animate-spin inline-block text-primary-500" /></td></tr>
+                                    <tr><td colSpan={daysInMonth + 1} className="py-24 text-center"><Loader2 className="animate-spin inline-block text-primary-500" size={40} /></td></tr>
                                 ) : employees.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase())).map(emp => (
-                                    <tr key={emp._id} className="hover:bg-gray-50/50 transition-colors">
-                                        <td className="px-4 py-3 sticky left-0 bg-white/95 backdrop-blur-sm z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-7 h-7 rounded-full bg-primary-50 flex items-center justify-center text-[10px] font-bold text-primary-600">
+                                    <tr key={emp._id} className="group hover:bg-primary-50/30 transition-all duration-300">
+                                        <td className="px-6 py-4 sticky left-0 bg-white/90 backdrop-blur-md z-10 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.1)] group-hover:bg-primary-50/40">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary-100 to-white flex items-center justify-center text-xs font-black text-primary-700 border border-primary-200 shadow-sm transition-transform group-hover:scale-110">
                                                     {emp.name.charAt(0).toUpperCase()}
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className="text-xs font-bold text-gray-900 truncate">{emp.name}</p>
-                                                    <p className="text-[9px] text-gray-400 font-medium">{emp.empId}</p>
+                                                    <p className="text-sm font-black text-gray-900 truncate tracking-tight">{emp.name}</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{emp.empId}</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -362,10 +358,10 @@ export const AttendancePage = () => {
                                             const dateStr = `${year}-${String(monthVal).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                                             const att = monthlyData[emp._id]?.find(a => a.date.startsWith(dateStr));
                                             return (
-                                                <td key={day} className="p-1">
+                                                <td key={day} className="p-1 px-1.5 focus-within:z-10">
                                                     <div 
                                                         title={att ? `${dateStr}: ${att.status}` : dateStr}
-                                                        className={`w-6 h-6 mx-auto rounded-md ${getMiniStatusColor(att?.status)} shadow-sm transition-transform hover:scale-110`} 
+                                                        className={`w-7 h-7 mx-auto rounded-lg ${getMiniStatusColor(att?.status)} shadow-sm transition-all duration-300 hover:ring-2 hover:ring-offset-2 hover:ring-primary-400 cursor-help transform hover:scale-125`} 
                                                     />
                                                 </td>
                                             );
@@ -379,7 +375,6 @@ export const AttendancePage = () => {
                         {[
                             { s: 'PRESENT', c: 'bg-emerald-500', l: 'Present' },
                             { s: 'ABSENT', c: 'bg-red-500', l: 'Absent' },
-                            { s: 'HALF_DAY', c: 'bg-orange-500', l: 'Half Day' },
                             { s: 'LEAVE', c: 'bg-amber-500', l: 'Leave' },
                             { s: 'HOLIDAY', c: 'bg-blue-500', l: 'Holiday' }
                         ].map(legend => (
