@@ -5,14 +5,14 @@ import api from './axios';
 export interface AttendancePayload {
     employeeId: string;
     date: string; // YYYY-MM-DD
-    status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'HALF_DAY';
+    status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT';
 }
 
 export interface BulkAttendancePayload {
     date: string; // YYYY-MM-DD
     attendances: {
         employeeId: string;
-        status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'HALF_DAY';
+        status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT';
     }[];
 }
 
@@ -39,6 +39,7 @@ export interface AdvancePayload {
 export interface GenerateSalaryPayload {
     employeeId: string;
     month: string; // YYYY-MM
+    note?: string;
 }
 
 // --- Attendance Endpoints ---
@@ -48,7 +49,7 @@ export const markAttendance = (data: AttendancePayload) =>
 export const bulkMarkAttendance = (data: BulkAttendancePayload) =>
     api.post('/admin/attendance/bulk', data);
 
-export const updateAttendance = (id: string, status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'HALF_DAY') =>
+export const updateAttendance = (id: string, status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT') =>
     api.put(`/admin/attendance/${id}`, { status });
 
 export const getAttendanceByDate = (date: string) =>
@@ -111,3 +112,6 @@ export const getEmployeeSalaryRecord = (employeeId: string, month: string) =>
 
 export const getAllSalaryRecordsForMonth = (month: string) =>
     api.get(`/admin/salary-record?month=${month}`);
+
+export const deleteSalaryRecord = (id: string) =>
+    api.delete(`/admin/salary-record/remove/${id}`);
