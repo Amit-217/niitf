@@ -23,6 +23,10 @@ import { SalaryRecordsPage } from './pages/admin/payroll/SalaryRecordsPage';
 import { AdminTasksPage } from './pages/admin/tasks/AdminTasksPage';
 import { EmployeeTasksPage } from './pages/employee/tasks/EmployeeTasksPage';
 import { StudentsPage } from './pages/admin/students/StudentsPage';
+import { CustomersPage } from './pages/admin/customers/CustomersPage';
+import { CustomerDetailPage } from './pages/admin/customers/CustomerDetailPage';
+import { MPTReportFormPage } from './pages/admin/reports/MPTReportFormPage';
+import { MPTReportPrintPage } from './pages/admin/reports/MPTReportPrintPage';
 import { AdmissionsPage } from './pages/admin/admissions/AdmissionsPage';
 import { TestsPage } from './pages/admin/tests/TestsPage';
 import { TakeTestPage } from './pages/student/tests/TakeTestPage';
@@ -126,6 +130,9 @@ function App() {
           <Route path="admissions" element={<AdmissionsPage />} />
           <Route path="tests" element={<TestsPage />} />
           <Route path="enquiries" element={<EnquiriesPage />} />
+          <Route path="customers" element={<CustomersPage />} />
+          <Route path="customers/:id" element={<CustomerDetailPage />} />
+          <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
           <Route path="settings" element={<Settings />} />
           <Route
             path="*"
@@ -166,6 +173,16 @@ function App() {
           <Route path="dashboard" element={<StudentDashboard />} />
           <Route path="*" element={<Navigate to="/student/dashboard" replace />} />
         </Route>
+
+        {/* Report Print Routes (standalone, no DashboardLayout) */}
+        <Route
+          path="/admin/reports/mpt/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+              <MPTReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Login />} />

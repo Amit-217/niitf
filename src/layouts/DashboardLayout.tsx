@@ -4,7 +4,7 @@ import {
     Menu, X, Bell, User, LogOut, LayoutDashboard,
     Users, BookOpen, Clock, CircleHelp, Briefcase,
     ChevronLeft, ChevronRight, ListTodo, FileText, GraduationCap, Search,
-    ChevronDown, ChevronUp
+    ChevronDown, ChevronUp, Building2
 } from 'lucide-react';
 
 import { toast } from 'react-toastify';
@@ -95,6 +95,7 @@ export const DashboardLayout: React.FC = () => {
                 { name: 'Admissions', path: `/${basePath}/admissions`, icon: GraduationCap },
                 { name: 'CBT Tests', path: `/${basePath}/tests`, icon: FileText },
                 { name: 'Enquiries', path: `/${basePath}/enquiries`, icon: CircleHelp },
+                { name: 'Customers', path: `/${basePath}/customers`, icon: Building2 },
                 { name: 'Test Login Portal', path: '/student-login', icon: BookOpen },
             ]
         }
