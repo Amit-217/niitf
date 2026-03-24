@@ -17,6 +17,7 @@ import {
   Save,
   Loader2,
   Printer,
+  Eye,
   Magnet,
   Droplets,
   Waves,
@@ -258,7 +259,7 @@ export const CustomerDetailPage = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("quotations");
 
   // Report sub-type selection
-  const [reportSubType, setReportSubType] = useState<ReportSubType | null>(null);
+  const [reportSubType, setReportSubType] = useState<ReportSubType | null>("mpt");
 
   // Per-type report data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -749,13 +750,22 @@ export const CustomerDetailPage = () => {
                             </span>
                           </td>
                           <td className="px-4 py-3">
-                            <button
-                              onClick={() => navigate(`/admin/reports/${reportSubType}/${r._id}/print`)}
-                              className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
-                              title="Print / Download PDF"
-                            >
-                              <Printer size={12} /> Print
-                            </button>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                onClick={() => navigate(`/admin/reports/${reportSubType}/${r._id}/print`)}
+                                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors"
+                                title="View Report"
+                              >
+                                <Eye size={12} /> View
+                              </button>
+                              <button
+                                onClick={() => window.open(`/admin/reports/${reportSubType}/${r._id}/print?autoprint=true`, '_blank')}
+                                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                                title="Print / Download PDF"
+                              >
+                                <Printer size={12} /> Print
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}

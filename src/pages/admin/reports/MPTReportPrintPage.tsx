@@ -1,21 +1,24 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getMPTReportById, MPTReport } from '../../../api/customerApi';
 
 // ─── Print Styles ─────────────────────────────────────────────────────────────
 
 const PRINT_STYLES = `
-  @page { size: A4 portrait; margin: 12mm 10mm; }
+  @page { size: A4 portrait; margin: 6mm 8mm; }
+  @media screen { body.autoprint-mode { opacity: 0; } }
   @media print {
+    body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
     body { margin: 0; background: white; }
-    #report-root { padding: 0; }
+    #report-root { padding: 0 !important; background: white !important; }
+    #report-root > div { box-shadow: none !important; padding: 0 !important; width: 100% !important; min-height: auto !important; }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 9pt; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 7.5pt; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .report-table td, .report-table th {
     border: 1px solid #444;
-    padding: 3px 5px;
+    padding: 2px 4px;
     vertical-align: middle;
     word-break: break-word;
   }
@@ -23,34 +26,34 @@ const PRINT_STYLES = `
     background: #2d3748;
     color: #fff;
     font-weight: bold;
-    font-size: 8.5pt;
+    font-size: 7.5pt;
     text-align: center;
     letter-spacing: 1px;
-    padding: 4px 6px;
+    padding: 2px 4px;
   }
   .col-hdr {
     background: #edf2f7;
     font-weight: bold;
-    font-size: 8pt;
+    font-size: 7pt;
     text-align: center;
   }
   .lbl {
     background: #f7fafc;
     font-weight: 600;
-    font-size: 8.5pt;
+    font-size: 7.5pt;
     white-space: nowrap;
     width: 18%;
   }
-  .val { font-size: 9pt; }
+  .val { font-size: 7.5pt; }
   .report-title-table { width: 100%; border-collapse: collapse; }
-  .report-title-table td { border: 1px solid #444; padding: 4px 8px; }
-  .company-name { font-size: 11pt; font-weight: bold; text-transform: uppercase; text-align: center; }
-  .report-title { font-size: 13pt; font-weight: bold; text-align: center; letter-spacing: 1px; text-transform: uppercase; }
+  .report-title-table td { border: 1px solid #444; padding: 2px 6px; }
+  .company-name { font-size: 9.5pt; font-weight: bold; text-transform: uppercase; text-align: center; }
+  .report-title { font-size: 11pt; font-weight: bold; text-align: center; letter-spacing: 1px; text-transform: uppercase; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .obs-table td, .obs-table th { border: 1px solid #444; padding: 3px 4px; font-size: 8.5pt; vertical-align: top; word-break: break-word; }
+  .obs-table td, .obs-table th { border: 1px solid #444; padding: 2px 3px; font-size: 7.5pt; vertical-align: top; word-break: break-word; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: -1px; }
-  .sign-table td { border: 1px solid #444; padding: 3px 5px; font-size: 8.5pt; vertical-align: top; min-height: 18px; }
-  .sign-lbl { font-weight: 600; font-size: 8pt; }
+  .sign-table td { border: 1px solid #444; padding: 2px 4px; font-size: 7.5pt; vertical-align: top; min-height: 14px; }
+  .sign-lbl { font-weight: 600; font-size: 7pt; }
   .mt-n1 { margin-top: -1px; }
 `;
 
@@ -70,6 +73,8 @@ const v = (val?: string | null) => val || '';
 export const MPTReportPrintPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const autoPrint = searchParams.get('autoprint') === 'true';
   const [report, setReport] = useState<MPTReport | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -84,6 +89,22 @@ export const MPTReportPrintPage = () => {
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (autoPrint) {
+      document.body.classList.add('autoprint-mode');
+      return () => document.body.classList.remove('autoprint-mode');
+    }
+  }, [autoPrint]);
+
+  useEffect(() => {
+    if (!loading && report && autoPrint) {
+      setTimeout(() => {
+        window.print();
+        window.close();
+      }, 300);
+    }
+  }, [loading, report, autoPrint]);
 
   if (loading) {
     return (
@@ -115,7 +136,7 @@ export const MPTReportPrintPage = () => {
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
       {/* ── No-Print Action Bar ── */}
-      <div className="no-print" style={{ background: '#1e293b', padding: '10px 16px', display: 'flex', gap: 10, alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
+      <div className="no-print" style={{ background: '#1e293b', padding: '10px 16px', display: autoPrint ? 'none' : 'flex', gap: 10, alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
         <button
           onClick={() => navigate(-1)}
           style={{ padding: '6px 14px', background: '#334155', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13 }}
@@ -135,7 +156,7 @@ export const MPTReportPrintPage = () => {
 
       {/* ── Report Content ── */}
       <div id="report-root" style={{ background: '#f1f5f9', minHeight: '100vh', padding: '24px 16px' }}>
-        <div style={{ width: '210mm', minHeight: '297mm', background: '#fff', margin: '0 auto', padding: '8mm', boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
+        <div style={{ width: '210mm', minHeight: '297mm', background: '#fff', margin: '0 auto', padding: '5mm', boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
 
           {/* ── HEADER TABLE ── */}
           <table className="report-title-table" style={{ marginBottom: -1 }}>
