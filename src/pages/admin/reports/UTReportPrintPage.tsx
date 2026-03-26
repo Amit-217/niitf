@@ -10,17 +10,29 @@ import { getUTReportById, UTReport } from "../../../api/customerApi";
 // ─── Print Styles ─────────────────────────────────────────────────────────────
 
 const PRINT_STYLES = `
-  @page { size: A4 portrait; margin: 6mm 8mm; }
+  @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
   @media screen { body.autoprint-mode { opacity: 0; } }
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
-    body { margin: 0; background: white; }
-    #report-root { padding: 0 !important; background: white !important; }
-    #report-root > div { box-shadow: none !important; padding: 0 !important; width: 100% !important; min-height: auto !important; }
+    body { margin: 0; background: #fff; }
+    #report-root { padding: 0 !important; background: #fff !important; }
+    #report-root > div {
+      box-shadow: none !important;
+      margin: 0 auto !important;
+      width: 210mm !important;
+      min-height: 297mm !important;
+      padding: 5mm !important;
+      box-sizing: border-box !important;
+    }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 7.5pt; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 7.5pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .report-table td, .report-table th {
     border: 1px solid #444;
@@ -29,7 +41,7 @@ const PRINT_STYLES = `
     word-break: break-word;
   }
   .section-hdr {
-    background: #2d3748;
+    background: #185FA5;
     color: #fff;
     font-weight: bold;
     font-size: 7.5pt;
@@ -38,7 +50,7 @@ const PRINT_STYLES = `
     padding: 2px 4px;
   }
   .col-hdr {
-    background: #edf2f7;
+    background: #E6F1FB;
     font-weight: bold;
     font-size: 7pt;
     text-align: center;
@@ -177,15 +189,14 @@ export const UTReportPrintPage: React.FC = () => {
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
-      {/* ── No-Print Action Bar ── */}
-      {/* <div
+      <div
         className="no-print"
         style={{
-          padding: "12px 16px",
+          padding: "10px 16px",
           background: "#1e293b",
           display: "flex",
           alignItems: "center",
-          gap: 12,
+          gap: 10,
         }}
       >
         <button
@@ -200,17 +211,35 @@ export const UTReportPrintPage: React.FC = () => {
             fontSize: 13,
           }}
         >
-          ← Back
+          Back
         </button>
-      </div> */}
+        <button
+          onClick={() => window.print()}
+          style={{
+            padding: "6px 14px",
+            background: "#2563eb",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13,
+          }}
+        >
+          Download / Print
+        </button>
+        <span style={{ marginLeft: "auto", color: "#94a3b8", fontSize: 12 }}>
+          Report No: {v(report.reportNo)} &nbsp;|&nbsp; Status:{" "}
+          {v(report.status).toUpperCase()}
+        </span>
+      </div>
 
       {/* ── Report Content ── */}
       <div
         id="report-root"
         style={{
-          background: "#f1f5f9",
+          background: "#e9eef5",
           minHeight: "100vh",
-          padding: "24px 16px",
+          padding: "16px",
         }}
       >
         <div
@@ -221,6 +250,7 @@ export const UTReportPrintPage: React.FC = () => {
             margin: "0 auto",
             padding: "5mm",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+            boxSizing: "border-box",
           }}
         >
           {/* ── HEADER ── */}
@@ -252,7 +282,9 @@ export const UTReportPrintPage: React.FC = () => {
                       textAlign: "center",
                     }}
                   >
-                    niit
+                    NIIT
+                    <br />
+                    LOGO
                   </div>
                 </td>
                 <td
@@ -740,3 +772,13 @@ export const UTReportPrintPage: React.FC = () => {
     </>
   );
 };
+
+
+
+
+
+
+
+
+
+

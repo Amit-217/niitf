@@ -5,17 +5,29 @@ import { getTPIIVRReportById } from "../../../api/customerApi";
 // ─── Print Styles ─────────────────────────────────────────────────────────────
 
 const PRINT_STYLES = `
-  @page { size: A4 portrait; margin: 6mm 8mm; }
+  @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
   @media screen { body.autoprint-mode { opacity: 0; } }
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
-    body { margin: 0; background: white; }
-    #report-root { padding: 0 !important; background: white !important; }
-    #report-root > div { box-shadow: none !important; padding: 0 !important; width: 100% !important; min-height: auto !important; }
+    body { margin: 0; background: #fff; }
+    #report-root { padding: 0 !important; background: #fff !important; }
+    #report-root > div {
+      box-shadow: none !important;
+      margin: 0 auto !important;
+      width: 210mm !important;
+      min-height: 297mm !important;
+      padding: 5mm !important;
+      box-sizing: border-box !important;
+    }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 7.5pt; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 7.5pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .report-table td, .report-table th {
     border: 1px solid #444;
@@ -24,7 +36,7 @@ const PRINT_STYLES = `
     word-break: break-word;
   }
   .section-hdr {
-    background: #2d3748;
+    background: #185FA5;
     color: #fff;
     font-weight: bold;
     font-size: 7.5pt;
@@ -33,7 +45,7 @@ const PRINT_STYLES = `
     padding: 2px 4px;
   }
   .col-hdr {
-    background: #edf2f7;
+    background: #E6F1FB;
     font-weight: bold;
     font-size: 7pt;
     text-align: center;
@@ -145,32 +157,26 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         <button
           onClick={goBack}
           style={{ padding: "6px 14px", background: "#334155", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13 }}
-        >
-          ← Back
-        </button>
+        >Back</button>
         <button
           onClick={() => window.print()}
           style={{ padding: "6px 14px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13 }}
-        >
-          🖨 Print
-        </button>
+        >Download / Print</button>
         <span style={{ marginLeft: "auto", color: "#94a3b8", fontSize: 12 }}>
           I.R. No: {v(report.irNo)} &nbsp;|&nbsp; Status: {v(report.status)?.toUpperCase()}
         </span>
       </div>
 
       {/* ── Report Content ── */}
-      <div id="report-root" style={{ background: "#f1f5f9", minHeight: "100vh", padding: "24px 16px" }}>
-        <div style={{ width: "210mm", minHeight: "297mm", background: "#fff", margin: "0 auto", padding: "5mm", boxShadow: "0 4px 24px rgba(0,0,0,0.12)" }}>
+      <div id="report-root" style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}>
+        <div style={{ width: "210mm", minHeight: "297mm", background: "#fff", margin: "0 auto", padding: "5mm", boxShadow: "0 4px 24px rgba(0,0,0,0.12)", boxSizing: "border-box" }}>
 
           {/* ── HEADER ── */}
           <table className="report-title-table" style={{ marginBottom: -1 }}>
             <tbody>
               <tr>
                 <td rowSpan={3} style={{ width: "14%", textAlign: "center", verticalAlign: "middle", padding: 4 }}>
-                  <div style={{ border: "2px solid #1a3c8f", borderRadius: 4, width: 56, height: 56, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, color: "#1a3c8f", fontWeight: "bold" }}>
-                    niit
-                  </div>
+                  <div style={{ border: "2px solid #1a3c8f", borderRadius: 4, width: 56, height: 56, margin: "0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, color: "#1a3c8f", fontWeight: "bold" }}>NIIT<br />LOGO</div>
                 </td>
                 <td style={{ textAlign: "center", verticalAlign: "middle", padding: "2px 6px" }}>
                   <div className="company-name">National Industrial Inspection &amp; Training</div>
@@ -444,3 +450,9 @@ export const TPIIVRReportPrintPage: React.FC = () => {
     </>
   );
 };
+
+
+
+
+
+

@@ -10,17 +10,29 @@ import { getAWSDReportById } from "../../../api/customerApi";
 // ─── Print Styles ─────────────────────────────────────────────────────────────
 
 const PRINT_STYLES = `
-  @page { size: A4 landscape; margin: 8mm 10mm; }
+  @page { size: A4 landscape; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
   @media screen { body.autoprint-mode { opacity: 0; } }
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
-    body { margin: 0; background: white; }
-    #report-root { padding: 0 !important; background: white !important; }
-    #report-root > div { box-shadow: none !important; padding: 0 !important; width: 100% !important; min-height: auto !important; }
+    body { margin: 0; background: #fff; }
+    #report-root { padding: 0 !important; background: #fff !important; }
+    #report-root > div {
+      box-shadow: none !important;
+      margin: 0 auto !important;
+      width: 297mm !important;
+      min-height: 210mm !important;
+      padding: 5mm !important;
+      box-sizing: border-box !important;
+    }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 7pt; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 7pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
   * { box-sizing: border-box; }
 
   /* ── Main border table ── */
@@ -30,7 +42,7 @@ const PRINT_STYLES = `
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .report-table td, .report-table th { border: 1px solid #555; padding: 2px 3px; vertical-align: middle; word-break: break-word; }
 
-  .section-hdr { background: #2d3748; color: #fff; font-weight: bold; font-size: 7pt; text-align: center; letter-spacing: 0.5px; padding: 2px 3px; }
+  .section-hdr { background: #185FA5; color: #fff; font-weight: bold; font-size: 7pt; text-align: center; letter-spacing: 0.5px; padding: 2px 3px; }
   .col-hdr { background: #e8ecf0; font-weight: bold; font-size: 6.5pt; text-align: center; vertical-align: middle; }
   .col-hdr-db { background: #dbeafe; font-weight: bold; font-size: 6.5pt; text-align: center; vertical-align: middle; }
   .col-hdr-disc { background: #fef3c7; font-weight: bold; font-size: 6.5pt; text-align: center; vertical-align: middle; }
@@ -184,9 +196,7 @@ export const AWSDReportPrintPage: React.FC = () => {
             cursor: "pointer",
             fontSize: 13,
           }}
-        >
-          ← Back
-        </button>
+        >Back</button>
         <button
           onClick={() => window.print()}
           style={{
@@ -198,9 +208,7 @@ export const AWSDReportPrintPage: React.FC = () => {
             cursor: "pointer",
             fontSize: 13,
           }}
-        >
-          🖨 Print
-        </button>
+        >Download / Print</button>
         <span style={{ marginLeft: "auto", color: "#94a3b8", fontSize: 12 }}>
           Report No: {v(report.reportNo)} &nbsp;|&nbsp; Status:{" "}
           {v(report.status)?.toUpperCase()}
@@ -211,18 +219,20 @@ export const AWSDReportPrintPage: React.FC = () => {
       <div
         id="report-root"
         style={{
-          background: "#f1f5f9",
+          background: "#e9eef5",
           minHeight: "100vh",
-          padding: "20px 16px",
+          padding: "16px",
         }}
       >
         <div
           style={{
-            width: "277mm",
+            width: "297mm",
+            minHeight: "210mm",
             background: "#fff",
             margin: "0 auto",
             padding: "5mm",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+            boxSizing: "border-box",
           }}
         >
           {/* ── HEADER ── */}
@@ -261,9 +271,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                       color: "#1a3c8f",
                       fontWeight: "bold",
                     }}
-                  >
-                    niit
-                  </div>
+                  >NIIT<br />LOGO</div>
                 </td>
                 {/* Company info */}
                 <td
@@ -621,3 +629,10 @@ export const AWSDReportPrintPage: React.FC = () => {
     </>
   );
 };
+
+
+
+
+
+
+
