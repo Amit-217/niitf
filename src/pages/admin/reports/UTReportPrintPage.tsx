@@ -319,7 +319,7 @@ export const UTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">Customer</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(jd.customer)}
                 </td>
                 <td className="lbl">Report No.</td>
@@ -327,7 +327,7 @@ export const UTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">Client</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(jd.client)}
                 </td>
                 <td className="lbl">Report Date</td>
@@ -335,7 +335,7 @@ export const UTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">Project</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(jd.project)}
                 </td>
                 <td className="lbl">Inspection Date</td>
@@ -350,7 +350,7 @@ export const UTReportPrintPage: React.FC = () => {
                 <td className="lbl">Reference Std.</td>
                 <td className="val">{v(jd.referenceStd)}</td>
                 <td className="lbl">Inspection Time</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(jd.inspectionTime)}
                 </td>
               </tr>
@@ -358,7 +358,7 @@ export const UTReportPrintPage: React.FC = () => {
                 <td className="lbl">Acceptance Criteria</td>
                 <td className="val">{v(jd.acceptanceCriteria)}</td>
                 <td className="lbl">Material</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(jd.material)}
                 </td>
               </tr>
@@ -366,7 +366,7 @@ export const UTReportPrintPage: React.FC = () => {
                 <td className="lbl">Stage of Inspection</td>
                 <td className="val">{v(jd.stageOfInspection)}</td>
                 <td className="lbl">Thickness</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(jd.thickness)}
                 </td>
               </tr>
@@ -409,7 +409,7 @@ export const UTReportPrintPage: React.FC = () => {
                 <td className="lbl">Equip. Type</td>
                 <td className="val">{v(eq.equipmentType)}</td>
                 <td className="lbl">Sr. no.</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(eq.srNo)}
                 </td>
               </tr>
@@ -417,7 +417,7 @@ export const UTReportPrintPage: React.FC = () => {
                 <td className="lbl">Make</td>
                 <td className="val">{v(eq.make)}</td>
                 <td className="lbl">Calibration Due</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(eq.calibrationDue)}
                 </td>
               </tr>
@@ -473,12 +473,10 @@ export const UTReportPrintPage: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                units.map((u, i) => (
+                units.map((u: any, i: any) => (
                   <tr key={i}>
                     <td
                       style={{
-                        color: "#c00",
-                        fontWeight: 600,
                         textAlign: "center",
                       }}
                     >
@@ -487,8 +485,6 @@ export const UTReportPrintPage: React.FC = () => {
                     <td style={{ textAlign: "center" }}>{v(u.angle)}</td>
                     <td
                       style={{
-                        color: "#c00",
-                        fontWeight: 600,
                         textAlign: "center",
                       }}
                     >
@@ -527,7 +523,7 @@ export const UTReportPrintPage: React.FC = () => {
                 <td className="lbl">UT Calibration Method</td>
                 <td className="val">{v(td.utCalibrationMethod)}</td>
                 <td className="lbl">Scanning dB</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(td.scanningDb)}
                 </td>
               </tr>
@@ -577,7 +573,7 @@ export const UTReportPrintPage: React.FC = () => {
                   {calibAngles.map((a) => (
                     <td
                       key={a.label}
-                      style={{ color: "#c00", fontWeight: 600 }}
+                      style={{ }}
                     >
                       {v(
                         (a.data as Record<string, string> | undefined)?.[
@@ -640,20 +636,18 @@ export const UTReportPrintPage: React.FC = () => {
                 obs.map((o, i) => (
                   <tr key={i}>
                     <td style={{ textAlign: "center" }}>{o.srNo}</td>
-                    <td style={{ color: "#c00", fontWeight: 600 }}>
+                    <td style={{ }}>
                       {v(o.jobDescription)}
                     </td>
-                    <td style={{ color: "#c00", fontWeight: 600 }}>
+                    <td style={{ }}>
                       {v(o.drawingOrJointNo)}
                     </td>
-                    <td style={{ color: "#c00", fontWeight: 600 }}>
+                    <td style={{ }}>
                       {v(o.size)}
                     </td>
                     <td
                       style={{
                         textAlign: "center",
-                        color: "#c00",
-                        fontWeight: 600,
                       }}
                     >
                       {o.quantity ?? ""}
@@ -680,11 +674,11 @@ export const UTReportPrintPage: React.FC = () => {
                 </td>
                 <td style={{ fontWeight: 600, fontSize: "7pt" }}>
                   CUSTOMER:{" "}
-                  <span style={{ color: "#c00" }}>{v(fs.customer?.name)}</span>
+                  <span>{v(fs.customer?.name)}</span>
                 </td>
                 <td style={{ fontWeight: 600, fontSize: "7pt" }}>
                   CLIENT / TPI:{" "}
-                  <span style={{ color: "#c00" }}>
+                  <span>
                     {v(fs.clientOrTPI?.name)}
                   </span>
                 </td>

@@ -33,6 +33,7 @@ import { UTReportFormPage } from './pages/admin/reports/UTReportFormPage';
 import { UTReportPrintPage } from './pages/admin/reports/UTReportPrintPage';
 import { VSSCUTReportFormPage } from './pages/admin/reports/VSSCUTReportFormPage';
 import { VSSCUTReportPrintPage } from './pages/admin/reports/VSSCUTReportPrintPage';
+import { ReportsListPage } from './pages/admin/reports/ReportsListPage';
 import { AdmissionsPage } from './pages/admin/admissions/AdmissionsPage';
 import { TestsPage } from './pages/admin/tests/TestsPage';
 import { TakeTestPage } from './pages/student/tests/TakeTestPage';
@@ -138,6 +139,7 @@ function App() {
           <Route path="enquiries" element={<EnquiriesPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="customers/:id" element={<CustomerDetailPage />} />
+          <Route path="reports" element={<ReportsListPage />} />
           <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
           <Route path="reports/pt/new" element={<PTReportFormPage />} />
           <Route path="reports/ut/new" element={<UTReportFormPage />} />

@@ -27,9 +27,7 @@ const PRINT_STYLES = `
     font-size: 7.5pt; text-align: center; letter-spacing: 1px; padding: 2px 4px;
   }
   .col-hdr { background: #edf2f7; font-weight: bold; font-size: 7pt; text-align: center; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 7.5pt; white-space: nowrap; width: 22%; }
   .val { font-size: 7.5pt; }
-  .val-red { font-size: 7.5pt; color: #c53030; font-weight: 500; }
   .report-title-table { width: 100%; border-collapse: collapse; }
   .report-title-table td { border: 1px solid #444; padding: 2px 6px; }
   .company-name { font-size: 9.5pt; font-weight: bold; text-transform: uppercase; text-align: center; color: #1a3c8f; }
@@ -160,7 +158,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 <td style={{ width: "22%", verticalAlign: "top", fontSize: "7pt", paddingLeft: 4 }}>
                   <div>Format No: FMT-NDT-VSSC-UT-01</div>
                   <div>Rev. No: 00</div>
-                  <div>Page No: <span className="val-red">{v(report.pageNo) || "1/1"}</span></div>
+                  <div>Page No: <span className="val">{v(report.pageNo) || "1/1"}</span></div>
                 </td>
               </tr>
             </tbody>
@@ -173,9 +171,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
             <tbody>
               <tr>
                 <td className="lbl" style={{ width: "15%" }}>Report No.</td>
-                <td className="val-red" style={{ width: "35%" }}>{v(report.reportNo)}</td>
+                <td className="val" style={{ width: "35%" }}>{v(report.reportNo)}</td>
                 <td className="lbl" style={{ width: "20%" }}>Report Date</td>
-                <td className="val-red">{fmtDate(report.reportDate)}</td>
+                <td className="val">{fmtDate(report.reportDate)}</td>
               </tr>
             </tbody>
           </table>
@@ -186,31 +184,31 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               <tr><td className="section-hdr" colSpan={4}>JOB DETAILS</td></tr>
               <tr>
                 <td className="lbl">Job Description</td>
-                <td className="val-red" colSpan={3}>{v(report.jobDescription)}</td>
+                <td className="val" colSpan={3}>{v(report.jobDescription)}</td>
               </tr>
               <tr>
                 <td className="lbl">Weld Joint No.</td>
-                <td className="val-red">{v(report.weldJointNo)}</td>
+                <td className="val">{v(report.weldJointNo)}</td>
                 <td className="lbl">Thickness of Job</td>
-                <td className="val-red">{v(report.thicknessOfJob)}</td>
+                <td className="val">{v(report.thicknessOfJob)}</td>
               </tr>
               <tr>
                 <td className="lbl">Surface Condition</td>
                 <td className="val">{v(report.surfaceCondition)}</td>
                 <td className="lbl">Customer</td>
-                <td className="val-red">{v(report.customer)}</td>
+                <td className="val">{v(report.customer)}</td>
               </tr>
               <tr>
                 <td className="lbl">Period of Inspection</td>
-                <td className="val-red">{v(report.periodOfInspection)}</td>
+                <td className="val">{v(report.periodOfInspection)}</td>
                 <td className="lbl">Material</td>
-                <td className="val-red">{v(report.material)}</td>
+                <td className="val">{v(report.material)}</td>
               </tr>
               <tr>
                 <td className="lbl">Scanning Technique</td>
                 <td className="val">{v(report.scanningTechnique)}</td>
                 <td className="lbl">Stage of Inspection</td>
-                <td className="val-red">{v(report.stageOfInspection)}</td>
+                <td className="val">{v(report.stageOfInspection)}</td>
               </tr>
               <tr>
                 <td className="lbl">Equipment Used</td>
@@ -224,9 +222,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">Acceptance Standard</td>
-                <td className="val-red">{v(report.acceptanceStandard)}</td>
+                <td className="val">{v(report.acceptanceStandard)}</td>
                 <td className="lbl">Reference Datum</td>
-                <td className="val-red">{v(report.referenceDatum)}</td>
+                <td className="val">{v(report.referenceDatum)}</td>
               </tr>
             </tbody>
           </table>
@@ -237,21 +235,21 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               <tr><td className="section-hdr" colSpan={4}>TEST SETUP</td></tr>
               <tr>
                 <td className="lbl">For Angle — Range</td>
-                <td className="val-red">{v(ts.angleRange)}</td>
+                <td className="val">{v(ts.angleRange)}</td>
                 <td className="lbl">For Normal — Range</td>
-                <td className="val-red">{v(ts.normalRange)}</td>
+                <td className="val">{v(ts.normalRange)}</td>
               </tr>
               <tr>
                 <td className="lbl">Std Cal Block (Angle)</td>
-                <td className="val-red">{v(ts.standardCalBlock?.angle)}</td>
+                <td className="val">{v(ts.standardCalBlock?.angle)}</td>
                 <td className="lbl">Std Cal Block (Normal)</td>
-                <td className="val-red">{v(ts.standardCalBlock?.normal)}</td>
+                <td className="val">{v(ts.standardCalBlock?.normal)}</td>
               </tr>
               <tr>
                 <td className="lbl">Idtn. Ref Block (Angle)</td>
-                <td className="val-red">{v(ts.identificationNoOfRefBlock?.angle)}</td>
+                <td className="val">{v(ts.identificationNoOfRefBlock?.angle)}</td>
                 <td className="lbl">Idtn. Ref Block (Normal)</td>
-                <td className="val-red">{v(ts.identificationNoOfRefBlock?.normal)}</td>
+                <td className="val">{v(ts.identificationNoOfRefBlock?.normal)}</td>
               </tr>
             </tbody>
           </table>
@@ -270,7 +268,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 <td className="lbl">Type</td>
                 <td className="val">{v(apc.type)}</td>
                 <td className="lbl">Sr. Nos. of Probes</td>
-                <td className="val-red">
+                <td className="val">
                   {apc.probe45SerialNo ? `45 – ${apc.probe45SerialNo}` : ""}
                   {apc.probe60SerialNo ? `  60 – ${apc.probe60SerialNo}` : ""}
                   {apc.probe70SerialNo ? `  70 – ${apc.probe70SerialNo}` : ""}
@@ -308,9 +306,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                     const cell = (ct[pm] as any)?.[key] ?? {};
                     return (
                       <>
-                        <td key={pm + "bp"} style={{ color: "#c53030" }}>{v(cell.bp)}</td>
-                        <td key={pm + "mm"} style={{ color: "#c53030" }}>{v(cell.mm)}</td>
-                        <td key={pm + "fsh"} style={{ color: "#c53030" }}>{v(cell.fsh)}</td>
+                        <td key={pm + "bp"}>{v(cell.bp)}</td>
+                        <td key={pm + "mm"}>{v(cell.mm)}</td>
+                        <td key={pm + "fsh"}>{v(cell.fsh)}</td>
                       </>
                     );
                   })}
@@ -319,7 +317,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               <tr style={{ background: "#fffbeb" }}>
                 <td style={{ fontWeight: 700, textAlign: "center", fontSize: "7pt" }}>DAC dB</td>
                 {PROBE_MODES.map(pm => (
-                  <td key={pm} colSpan={3} style={{ color: "#c53030", fontWeight: 500 }}>
+                  <td key={pm} colSpan={3} style={{ fontWeight: 500 }}>
                     {v((ct[pm] as any)?.dacDb)}
                   </td>
                 ))}
@@ -327,7 +325,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               <tr style={{ background: "#fffbeb" }}>
                 <td style={{ fontWeight: 700, textAlign: "center", fontSize: "7pt" }}>Scan dB</td>
                 {PROBE_MODES.map(pm => (
-                  <td key={pm} colSpan={3} style={{ color: "#c53030", fontWeight: 500 }}>
+                  <td key={pm} colSpan={3} style={{ fontWeight: 500 }}>
                     {v((ct[pm] as any)?.scanningDb)}
                   </td>
                 ))}
@@ -341,25 +339,25 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               <tr><td className="section-hdr" colSpan={4}>NORMAL PROBE CALIBRATION</td></tr>
               <tr>
                 <td className="lbl">Probe S. No / Type</td>
-                <td className="val-red">{v(npc.probeType)}</td>
+                <td className="val">{v(npc.probeType)}</td>
                 <td className="lbl">Frequency</td>
                 <td className="val">{v(npc.frequency)}</td>
               </tr>
               <tr>
                 <td className="lbl">Size</td>
-                <td className="val-red">{v(npc.size)}</td>
+                <td className="val">{v(npc.size)}</td>
                 <td className="lbl">Skip</td>
-                <td className="val-red">{v(npc.skip)}</td>
+                <td className="val">{v(npc.skip)}</td>
               </tr>
               <tr>
                 <td className="lbl">BP – %FSH</td>
-                <td className="val-red">{v(npc.bp)}</td>
+                <td className="val">{v(npc.bp)}</td>
                 <td className="lbl">DAC dB</td>
-                <td className="val-red">{v(npc.dacDb)}</td>
+                <td className="val">{v(npc.dacDb)}</td>
               </tr>
               <tr>
                 <td className="lbl">Scanning dB</td>
-                <td className="val-red">{v(npc.scanningDb)}</td>
+                <td className="val">{v(npc.scanningDb)}</td>
                 <td></td><td></td>
               </tr>
             </tbody>
@@ -370,14 +368,14 @@ export const VSSCUTReportPrintPage: React.FC = () => {
             <tbody>
               <tr>
                 <td className="lbl" style={{ width: "20%" }}>Disposition</td>
-                <td style={{ fontWeight: 700, color: report.disposition === "ACCEPTED" ? "#276749" : "#c53030" }}>
+                <td style={{ fontWeight: 700, color: report.disposition === "ACCEPTED" ? "#276749" : "#000" }}>
                   {v(report.disposition)}
                 </td>
               </tr>
               {report.remarks && (
                 <tr>
                   <td className="lbl">Remarks</td>
-                  <td className="val-red">{v(report.remarks)}</td>
+                  <td className="val">{v(report.remarks)}</td>
                 </tr>
               )}
             </tbody>
@@ -403,9 +401,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 <td style={{ verticalAlign: "bottom", paddingBottom: 2, fontSize: "7pt" }}>Signature:</td>
               </tr>
               <tr>
-                <td style={{ fontSize: "7pt" }}>Name: <span style={{ color: "#c53030" }}>{v(inspector.name)}</span></td>
-                <td style={{ fontSize: "7pt" }}>Name: <span style={{ color: "#c53030" }}>{v(fs.qc?.name)}</span></td>
-                <td style={{ fontSize: "7pt" }}>Name: <span style={{ color: "#c53030" }}>{v(fs.rqs?.name)}</span></td>
+                <td style={{ fontSize: "7pt" }}>Name: <span>{v(inspector.name)}</span></td>
+                <td style={{ fontSize: "7pt" }}>Name: <span>{v(fs.qc?.name)}</span></td>
+                <td style={{ fontSize: "7pt" }}>Name: <span>{v(fs.rqs?.name)}</span></td>
               </tr>
               {inspector.qualification && (
                 <tr>
@@ -414,9 +412,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 </tr>
               )}
               <tr>
-                <td style={{ fontSize: "7pt" }}>Date: <span style={{ color: "#c53030" }}>{fmtDate(inspector.date)}</span></td>
-                <td style={{ fontSize: "7pt" }}>Date: <span style={{ color: "#c53030" }}>{fmtDate(fs.qc?.date)}</span></td>
-                <td style={{ fontSize: "7pt" }}>Date: <span style={{ color: "#c53030" }}>{fmtDate(fs.rqs?.date)}</span></td>
+                <td style={{ fontSize: "7pt" }}>Date: <span>{fmtDate(inspector.date)}</span></td>
+                <td style={{ fontSize: "7pt" }}>Date: <span>{fmtDate(fs.qc?.date)}</span></td>
+                <td style={{ fontSize: "7pt" }}>Date: <span>{fmtDate(fs.rqs?.date)}</span></td>
               </tr>
             </tbody>
           </table>

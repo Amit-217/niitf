@@ -286,7 +286,7 @@ export const PTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">Customer</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(jd.customer)}
                 </td>
                 <td className="lbl">Report No.</td>
@@ -294,7 +294,7 @@ export const PTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">Client</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(jd.client)}
                 </td>
                 <td className="lbl">Report Date</td>
@@ -302,7 +302,7 @@ export const PTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">Project</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(jd.project)}
                 </td>
                 <td className="lbl">Inspection Date</td>
@@ -317,7 +317,7 @@ export const PTReportPrintPage: React.FC = () => {
                 <td className="lbl">Reference Standard</td>
                 <td className="val">{v(jd.referenceStandard)}</td>
                 <td className="lbl">Inspection Time</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(jd.inspectionTime)}
                 </td>
               </tr>
@@ -325,7 +325,7 @@ export const PTReportPrintPage: React.FC = () => {
                 <td className="lbl">Acceptance Criteria</td>
                 <td className="val">{v(jd.acceptanceCriteria)}</td>
                 <td className="lbl">Material</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(jd.material)}
                 </td>
               </tr>
@@ -333,7 +333,7 @@ export const PTReportPrintPage: React.FC = () => {
                 <td className="lbl">Stage of Inspection</td>
                 <td className="val">{v(jd.stageOfInspection)}</td>
                 <td className="lbl">Thickness</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(jd.thickness)}
                 </td>
               </tr>
@@ -411,13 +411,11 @@ export const PTReportPrintPage: React.FC = () => {
                   <td className="val">{v(row.data?.manufacturer)}</td>
                   <td
                     className="val"
-                    style={{ color: "#c00", fontWeight: 600 }}
                   >
                     {v(row.data?.batch)}
                   </td>
                   <td
                     className="val"
-                    style={{ color: "#c00", fontWeight: 600 }}
                   >
                     {v(row.data?.expiryDate)}
                   </td>
@@ -442,21 +440,21 @@ export const PTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">Dwell Time</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(desc.dwellTime)}
                 </td>
                 <td className="lbl">Light Intensity</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(desc.lightIntensity)}
                 </td>
               </tr>
               <tr>
                 <td className="lbl">Developing Time</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(desc.developingTime)}
                 </td>
                 <td className="lbl">Light Equip. Used</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(desc.lightEquipmentUsed)}
                 </td>
               </tr>
@@ -464,7 +462,7 @@ export const PTReportPrintPage: React.FC = () => {
                 <td className="lbl">Post Cleaning</td>
                 <td className="val">{v(desc.postCleaning)}</td>
                 <td className="lbl">Drying Time</td>
-                <td className="val" style={{ color: "#c00", fontWeight: 600 }}>
+                <td className="val">
                   {v(desc.dryingTime)}
                 </td>
               </tr>
@@ -520,20 +518,18 @@ export const PTReportPrintPage: React.FC = () => {
                 obs.map((o, i) => (
                   <tr key={i}>
                     <td style={{ textAlign: "center" }}>{o.srNo}</td>
-                    <td style={{ color: "#c00", fontWeight: 600 }}>
+                    <td style={{ }}>
                       {v(o.jobDescription)}
                     </td>
-                    <td style={{ color: "#c00", fontWeight: 600 }}>
+                    <td style={{ }}>
                       {v(o.drawingOrJointNo)}
                     </td>
-                    <td style={{ color: "#c00", fontWeight: 600 }}>
+                    <td style={{ }}>
                       {v(o.size)}
                     </td>
                     <td
                       style={{
                         textAlign: "center",
-                        color: "#c00",
-                        fontWeight: 600,
                       }}
                     >
                       {o.quantity ?? ""}
@@ -560,11 +556,11 @@ export const PTReportPrintPage: React.FC = () => {
                 </td>
                 <td style={{ fontWeight: 600, fontSize: "7pt" }}>
                   CUSTOMER:{" "}
-                  <span style={{ color: "#c00" }}>{v(fs.customer?.name)}</span>
+                  <span>{v(fs.customer?.name)}</span>
                 </td>
                 <td style={{ fontWeight: 600, fontSize: "7pt" }}>
                   CLIENT / TPI:{" "}
-                  <span style={{ color: "#c00" }}>
+                  <span>
                     {v(fs.clientOrTPI?.name)}
                   </span>
                 </td>
