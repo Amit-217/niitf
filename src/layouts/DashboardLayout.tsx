@@ -4,7 +4,7 @@ import {
     Menu, X, Bell, User, LogOut, LayoutDashboard,
     Users, BookOpen, Clock, CircleHelp, Briefcase,
     ChevronLeft, ChevronRight, ListTodo, FileText, GraduationCap, Search,
-    ChevronDown, ChevronUp
+    ChevronDown, ChevronUp, Building2, Magnet, Droplets, Waves, Satellite, FileBarChart2, Ruler, ClipboardList, GitBranch
 } from 'lucide-react';
 
 import { toast } from 'react-toastify';
@@ -21,12 +21,22 @@ export const DashboardLayout: React.FC = () => {
     // Sub-menu states
     const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({
         userManagement: true,
-        studentManagement: true
+        studentManagement: true,
+        customerManagement: true
     });
 
     const toggleMenu = (menuKey: string) => {
         setOpenMenus(prev => ({ ...prev, [menuKey]: !prev[menuKey] }));
     };
+
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 1024);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const sidebarCollapsed = isCollapsed && !isMobile;
 
     const navigate = useNavigate();
     const profileRef = useRef<HTMLDivElement>(null);
@@ -97,6 +107,22 @@ export const DashboardLayout: React.FC = () => {
                 { name: 'Enquiries', path: `/${basePath}/enquiries`, icon: CircleHelp },
                 { name: 'Test Login Portal', path: '/student-login', icon: BookOpen },
             ]
+        },
+        {
+            name: 'Customer Management',
+            key: 'customerManagement',
+            icon: Building2,
+            links: [
+                { name: 'All Reports', path: `/${basePath}/reports`, icon: FileBarChart2 },
+                { name: 'Customer', path: `/${basePath}/customers`, icon: Users },
+                { name: 'MPT Report', path: `/${basePath}/reports/mpt/new`, icon: Magnet },
+                { name: 'PT Report', path: `/${basePath}/reports/pt/new`, icon: Droplets },
+                { name: 'UT Report', path: `/${basePath}/reports/ut/new`, icon: Waves },
+                { name: 'VSSC-UT Report', path: `/${basePath}/reports/vssc-ut/new`, icon: Satellite },
+                { name: 'UTG Report', path: `/${basePath}/reports/utg/new`, icon: Ruler },
+                { name: 'TPI IVR Report', path: `/${basePath}/reports/tpi-ivr/new`, icon: ClipboardList },
+                { name: 'AWS D1.1 Report', path: `/${basePath}/reports/awsd/new`, icon: GitBranch },
+            ]
         }
     ];
 
@@ -110,8 +136,8 @@ export const DashboardLayout: React.FC = () => {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             {/* ── Top Navbar ─────────────────────────────────────────────────── */}
-            <header className="bg-white border border-gray-200 shadow-sm z-30 fixed w-full top-0 h-16 flex items-center justify-between px-4 lg:px-6 rounded-b-2xl">
-                <div className="flex items-center gap-3">
+            <header className="bg-white border border-gray-200 shadow-sm z-30 fixed w-full top-0 h-16 flex items-center justify-between px-2 sm:px-4 lg:px-6 rounded-b-2xl">
+                <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
                     {/* Mobile Menu Toggle */}
                     <button
                         onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
@@ -133,10 +159,10 @@ export const DashboardLayout: React.FC = () => {
                 </div>
 
                 {/* Right Header */}
-                <div className="flex items-center gap-3">
-                    <button className="text-gray-500 hover:text-primary-600 relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                        <Bell size={20} />
-                        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
+                <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+                    <button className="text-gray-500 hover:text-primary-600 relative p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        <Bell size={18} />
+                        <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
                     </button>
 
                     {/* Profile Dropdown */}
@@ -192,11 +218,11 @@ export const DashboardLayout: React.FC = () => {
                         shadow-lg z-20 flex flex-col
                         transition-all duration-300 ease-in-out
                         ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-                        ${isCollapsed ? 'w-16' : 'w-64'}
+                        ${sidebarCollapsed ? 'lg:w-16 w-64' : 'w-64'}
                     `}
                 >
                     {/* Sidebar Search - only desktop & expanded */}
-                    {!isCollapsed && (
+                    {!sidebarCollapsed && (
                         <div className="px-4 pt-4 mb-2">
                             <div className="relative group">
                                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
@@ -218,7 +244,7 @@ export const DashboardLayout: React.FC = () => {
                             to={standaloneLinks[0].path}
                             className={({ isActive }) => `
                                 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group
-                                ${isCollapsed ? 'justify-center' : ''}
+                                ${sidebarCollapsed ? 'justify-center' : ''}
                                 ${isActive
                                     ? 'bg-primary-50 text-primary-700 shadow-sm'
                                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
@@ -232,7 +258,7 @@ export const DashboardLayout: React.FC = () => {
                                         <div className={`p-1 rounded-lg transition-colors ${isActive ? 'bg-white shadow-sm' : 'group-hover:bg-white'}`}>
                                             <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
                                         </div>
-                                        {!isCollapsed && <span className="truncate flex-1">{standaloneLinks[0].name}</span>}
+                                        {!sidebarCollapsed && <span className="truncate flex-1">{standaloneLinks[0].name}</span>}
                                     </>
                                 );
                             }}
@@ -241,7 +267,7 @@ export const DashboardLayout: React.FC = () => {
                         {/* Grouped Menus */}
                         {groups.map((group) => (
                             <div key={group.key} className="mt-2">
-                                {!isCollapsed && (
+                                {!sidebarCollapsed && (
                                     <button
                                         onClick={() => toggleMenu(group.key)}
                                         className="w-full flex items-center justify-between px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-gray-600 transition-colors"
@@ -250,8 +276,8 @@ export const DashboardLayout: React.FC = () => {
                                         {openMenus[group.key] ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
                                     </button>
                                 )}
-                                {(openMenus[group.key] || isCollapsed) && (
-                                    <div className={`space-y-0.5 ${!isCollapsed ? 'ml-2 border-l border-gray-100 pl-1' : ''}`}>
+                                {(openMenus[group.key] || sidebarCollapsed) && (
+                                    <div className={`space-y-0.5 ${!sidebarCollapsed ? 'ml-2 border-l border-gray-100 pl-1' : ''}`}>
                                         {group.links
                                             .filter(link => link.name.toLowerCase().includes(searchTerm.toLowerCase()))
                                             .map((link) => {
@@ -260,10 +286,10 @@ export const DashboardLayout: React.FC = () => {
                                                     <NavLink
                                                         key={link.name}
                                                         to={link.path}
-                                                        title={isCollapsed ? link.name : undefined}
+                                                        title={sidebarCollapsed ? link.name : undefined}
                                                         className={({ isActive }) => `
                                                             flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group
-                                                            ${isCollapsed ? 'justify-center' : ''}
+                                                            ${sidebarCollapsed ? 'justify-center' : ''}
                                                             ${isActive
                                                                 ? 'bg-primary-50 text-primary-700 shadow-sm'
                                                                 : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
@@ -275,8 +301,8 @@ export const DashboardLayout: React.FC = () => {
                                                                 <div className={`p-1 rounded-lg transition-colors ${isActive ? 'bg-white shadow-sm' : 'group-hover:bg-white'}`}>
                                                                     <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
                                                                 </div>
-                                                                {!isCollapsed && <span className="truncate flex-1">{link.name}</span>}
-                                                                {isActive && !isCollapsed && <div className="w-1 h-4 bg-primary-600 rounded-full" />}
+                                                                {!sidebarCollapsed && <span className="truncate flex-1">{link.name}</span>}
+                                                                {isActive && !sidebarCollapsed && <div className="w-1 h-4 bg-primary-600 rounded-full" />}
                                                             </>
                                                         )}
                                                     </NavLink>
@@ -293,7 +319,7 @@ export const DashboardLayout: React.FC = () => {
                                 to={standaloneLinks[1].path}
                                 className={({ isActive }) => `
                                     flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group mt-2
-                                    ${isCollapsed ? 'justify-center' : ''}
+                                    ${sidebarCollapsed ? 'justify-center' : ''}
                                     ${isActive
                                         ? 'bg-primary-50 text-primary-700 shadow-sm'
                                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
@@ -307,7 +333,7 @@ export const DashboardLayout: React.FC = () => {
                                             <div className={`p-1 rounded-lg transition-colors ${isActive ? 'bg-white shadow-sm' : 'group-hover:bg-white'}`}>
                                                 <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
                                             </div>
-                                            {!isCollapsed && <span className="truncate flex-1">{standaloneLinks[1].name}</span>}
+                                            {!sidebarCollapsed && <span className="truncate flex-1">{standaloneLinks[1].name}</span>}
                                         </>
                                     );
                                 }}
@@ -317,7 +343,7 @@ export const DashboardLayout: React.FC = () => {
 
                     {/* Simple Branding Footer */}
                     <div className="p-4 border-t border-gray-50 flex flex-col items-center justify-center">
-                        {!isCollapsed ? (
+                        {!sidebarCollapsed ? (
                             <div className="text-center group cursor-default">
                                 <p className="text-[10px] font-medium text-gray-400 tracking-wider uppercase">
                                     Powered by
@@ -335,10 +361,10 @@ export const DashboardLayout: React.FC = () => {
 
                     {/* Floating collapse button — only desktop */}
                     <button
-                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        onClick={() => setIsCollapsed(!sidebarCollapsed)}
                         className="hidden lg:flex absolute top-6 -right-4 w-8 h-8 bg-white border border-gray-200 rounded-full shadow-md items-center justify-center text-gray-500 hover:text-gray-800 hover:shadow-lg transition-all z-30"
                     >
-                        {isCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
+                        {sidebarCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
                     </button>
                 </aside>
 
