@@ -10,31 +10,58 @@ import {
     Droplets,
     Waves,
     Satellite,
+    Ruler,
+    ClipboardList,
+    GitBranch,
     Plus,
     Loader2,
     Calendar,
     User,
     ChevronRight,
-    Filter
 } from "lucide-react";
 import {
     getMPTReports,
     getPTReports,
     getUTReports,
     getVSSCUTReports,
+    getUTGReports,
+    getTPIIVRReports,
+    getAWSDReports,
 } from "../../../api/customerApi";
 
-type ReportType = "mpt" | "pt" | "ut" | "vssc-ut";
+type ReportType = "mpt" | "pt" | "ut" | "vssc-ut" | "utg" | "tpi-ivr" | "awsd";
 
-const REPORT_TYPES: { key: ReportType; label: string; fullLabel: string; icon: any; color: string; textColor: string; borderColor: string }[] = [
-    { key: "mpt", label: "MPT", fullLabel: "Magnetic Particle Testing", icon: Magnet, color: "bg-rose-50", textColor: "text-rose-600", borderColor: "border-rose-100" },
-    { key: "pt", label: "PT", fullLabel: "Liquid Penetrant Testing", icon: Droplets, color: "bg-blue-50", textColor: "text-blue-600", borderColor: "border-blue-100" },
-    { key: "ut", label: "UT", fullLabel: "Ultrasonic Testing", icon: Waves, color: "bg-violet-50", textColor: "text-violet-600", borderColor: "border-violet-100" },
-    { key: "vssc-ut", label: "VSSC-UT", fullLabel: "VSSC Ultrasonic Testing", icon: Satellite, color: "bg-amber-50", textColor: "text-amber-600", borderColor: "border-amber-100" },
+const REPORT_TYPES: { key: ReportType; label: string; fullLabel: string; icon: any; color: string; textColor: string; borderColor: string; bgNum: string }[] = [
+    { key: "mpt", label: "MPT", fullLabel: "Magnetic Particle Testing", icon: Magnet, color: "bg-rose-50", textColor: "text-rose-600", borderColor: "border-rose-200", bgNum: "bg-rose-100" },
+    { key: "pt", label: "PT", fullLabel: "Liquid Penetrant Testing", icon: Droplets, color: "bg-blue-50", textColor: "text-blue-600", borderColor: "border-blue-200", bgNum: "bg-blue-100" },
+    { key: "ut", label: "UT", fullLabel: "Ultrasonic Testing", icon: Waves, color: "bg-violet-50", textColor: "text-violet-600", borderColor: "border-violet-200", bgNum: "bg-violet-100" },
+    { key: "vssc-ut", label: "VSSC-UT", fullLabel: "VSSC Ultrasonic Testing", icon: Satellite, color: "bg-amber-50", textColor: "text-amber-600", borderColor: "border-amber-200", bgNum: "bg-amber-100" },
+    { key: "utg", label: "UTG", fullLabel: "UT Thickness Gauging", icon: Ruler, color: "bg-teal-50", textColor: "text-teal-600", borderColor: "border-teal-200", bgNum: "bg-teal-100" },
+    { key: "tpi-ivr", label: "TPI IVR", fullLabel: "Inspection Visit Report", icon: ClipboardList, color: "bg-cyan-50", textColor: "text-cyan-600", borderColor: "border-cyan-200", bgNum: "bg-cyan-100" },
+    { key: "awsd", label: "AWS D1.1", fullLabel: "UT of Welds (AWS D1.1)", icon: GitBranch, color: "bg-orange-50", textColor: "text-orange-600", borderColor: "border-orange-200", bgNum: "bg-orange-100" },
 ];
 
 const fmt = (d?: string | null) =>
     d ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+
+const fetchCount = async (type: ReportType) => {
+    try {
+        let res: any;
+        switch (type) {
+            case "mpt": res = await getMPTReports({ page: 1, limit: 1 }); break;
+            case "pt": res = await getPTReports({ page: 1, limit: 1 }); break;
+            case "ut": res = await getUTReports({ page: 1, limit: 1 }); break;
+            case "vssc-ut": res = await getVSSCUTReports({ page: 1, limit: 1 }); break;
+            case "utg": res = await getUTGReports({ page: 1, limit: 1 }); break;
+            case "tpi-ivr": res = await getTPIIVRReports({ page: 1, limit: 1 }); break;
+            case "awsd": res = await getAWSDReports({ page: 1, limit: 1 }); break;
+        }
+        const items = res?.data || res?.reports || [];
+        return res?.pagination?.total ?? (Array.isArray(items) ? items.length : 0);
+    } catch {
+        return 0;
+    }
+};
 
 export const ReportsListPage = () => {
     const [activeTab, setActiveTab] = useState<ReportType>("mpt");
@@ -44,9 +71,21 @@ export const ReportsListPage = () => {
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState<string>("");
     const [page, setPage] = useState(1);
+    const [counts, setCounts] = useState<Record<ReportType, number>>({ mpt: 0, pt: 0, ut: 0, "vssc-ut": 0, utg: 0, "tpi-ivr": 0, awsd: 0 });
     const navigate = useNavigate();
 
     const LIMIT = 10;
+
+    // Fetch counts for all report types on mount
+    useEffect(() => {
+        const loadCounts = async () => {
+            const entries = await Promise.all(
+                REPORT_TYPES.map(async (rt) => [rt.key, await fetchCount(rt.key)] as [ReportType, number])
+            );
+            setCounts(Object.fromEntries(entries) as Record<ReportType, number>);
+        };
+        loadCounts();
+    }, []);
 
     const fetchReports = useCallback(async () => {
         setIsLoading(true);
@@ -59,6 +98,9 @@ export const ReportsListPage = () => {
                 case "pt": res = await getPTReports(params); break;
                 case "ut": res = await getUTReports(params); break;
                 case "vssc-ut": res = await getVSSCUTReports(params); break;
+                case "utg": res = await getUTGReports(params); break;
+                case "tpi-ivr": res = await getTPIIVRReports(params); break;
+                case "awsd": res = await getAWSDReports(params); break;
             }
 
             const items = res?.data || res?.reports || [];
@@ -116,8 +158,8 @@ export const ReportsListPage = () => {
                 </div>
             </div>
 
-            {/* Quick Stats / Tabs */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Report Type Cards with Counts */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 gap-3">
                 {REPORT_TYPES.map((rt) => {
                     const Icon = rt.icon;
                     const isActive = activeTab === rt.key;
@@ -125,27 +167,30 @@ export const ReportsListPage = () => {
                         <button
                             key={rt.key}
                             onClick={() => { setActiveTab(rt.key); setPage(1); setStatus(""); }}
-                            className={`group relative p-4 rounded-2xl border-2 transition-all flex flex-col items-start gap-4 text-left ${
-                                isActive 
-                                ? `${rt.borderColor} bg-white shadow-xl shadow-gray-200/50 ring-4 ring-gray-950/5` 
-                                : 'border-gray-100 bg-white/50 hover:border-gray-200 hover:bg-white'
+                            className={`group relative p-4 rounded-2xl border-2 transition-all flex flex-col items-start gap-2 text-left ${
+                                isActive
+                                ? `${rt.borderColor} bg-white shadow-xl shadow-gray-200/50 ring-4 ring-gray-950/5`
+                                : 'border-gray-100 bg-white/60 hover:border-gray-200 hover:bg-white'
                             }`}
                         >
-                            <div className={`p-3 rounded-xl transition-all group-hover:scale-110 duration-300 ${rt.color} ${rt.textColor}`}>
-                                <Icon size={20} />
+                            <div className={`p-2.5 rounded-xl transition-all group-hover:scale-110 duration-300 ${rt.color} ${rt.textColor}`}>
+                                <Icon size={18} />
                             </div>
-                            <div>
-                                <h3 className={`text-xs font-black uppercase tracking-widest ${isActive ? 'text-gray-900' : 'text-gray-400'}`}>
+                            <div className="w-full">
+                                <p className={`text-[10px] font-black uppercase tracking-widest leading-tight ${isActive ? rt.textColor : 'text-gray-400'}`}>
                                     {rt.label}
-                                </h3>
-                                <p className={`text-[10px] sm:text-xs font-medium mt-0.5 line-clamp-1 ${isActive ? rt.textColor : 'text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity'}`}>
+                                </p>
+                                <p className="text-[9px] font-medium text-gray-400 mt-0.5 line-clamp-1 leading-tight">
                                     {rt.fullLabel}
+                                </p>
+                                <p className={`text-2xl font-extrabold mt-1 leading-none ${isActive ? 'text-gray-900' : 'text-gray-600'}`}>
+                                    {counts[rt.key]}
                                 </p>
                             </div>
                             {isActive && (
-                                <div className="absolute top-4 right-4 flex h-2 w-2">
+                                <div className="absolute top-3 right-3 flex h-2 w-2">
                                     <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${rt.textColor} opacity-75`}></span>
-                                    <span className={`relative inline-flex rounded-full h-2 w-2 ${rt.textColor.replace('text', 'bg')}`}></span>
+                                    <span className={`relative inline-flex rounded-full h-2 w-2 ${rt.textColor.replace('text-', 'bg-')}`}></span>
                                 </div>
                             )}
                         </button>

@@ -4,7 +4,7 @@ import {
     Menu, X, Bell, User, LogOut, LayoutDashboard,
     Users, BookOpen, Clock, CircleHelp, Briefcase,
     ChevronLeft, ChevronRight, ListTodo, FileText, GraduationCap, Search,
-    ChevronDown, ChevronUp, Building2, Magnet, Droplets, Waves, Satellite, FileBarChart2
+    ChevronDown, ChevronUp, Building2, Magnet, Droplets, Waves, Satellite, FileBarChart2, Ruler, ClipboardList, GitBranch
 } from 'lucide-react';
 
 import { toast } from 'react-toastify';
@@ -119,6 +119,9 @@ export const DashboardLayout: React.FC = () => {
                 { name: 'PT Report', path: `/${basePath}/reports/pt/new`, icon: Droplets },
                 { name: 'UT Report', path: `/${basePath}/reports/ut/new`, icon: Waves },
                 { name: 'VSSC-UT Report', path: `/${basePath}/reports/vssc-ut/new`, icon: Satellite },
+                { name: 'UTG Report', path: `/${basePath}/reports/utg/new`, icon: Ruler },
+                { name: 'TPI IVR Report', path: `/${basePath}/reports/tpi-ivr/new`, icon: ClipboardList },
+                { name: 'AWS D1.1 Report', path: `/${basePath}/reports/awsd/new`, icon: GitBranch },
             ]
         }
     ];

@@ -97,7 +97,7 @@ export const AWSDReportFormPage: React.FC = () => {
 
   // ── Observations ──
   const [observations, setObservations] = useState<ObsRow[]>(
-    Array.from({ length: 5 }, (_, i) => emptyObs(i + 1))
+    Array.from({ length: 3 }, (_, i) => emptyObs(i + 1))
   );
 
   // ── Footer / Certification ──
@@ -299,7 +299,7 @@ export const AWSDReportFormPage: React.FC = () => {
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
-                    <select value={row.fromFace} onChange={e => updateObs(idx, 'fromFace', e.target.value)} className={inputClass}>
+                    <select value={row.fromFace} onChange={e => updateObs(idx, 'fromFace', e.target.value)} className="w-full border border-gray-300 rounded px-1 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
                       <option value="">-</option>
                       <option>A</option>
                       <option>B</option>
@@ -308,7 +308,7 @@ export const AWSDReportFormPage: React.FC = () => {
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
-                    <select value={row.leg} onChange={e => updateObs(idx, 'leg', e.target.value)} className={inputClass}>
+                    <select value={row.leg} onChange={e => updateObs(idx, 'leg', e.target.value)} className="w-full border border-gray-300 rounded px-1 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
                       <option value="">-</option>
                       <option>1</option>
                       <option>2</option>
@@ -343,7 +343,7 @@ export const AWSDReportFormPage: React.FC = () => {
                     <input type="text" value={row.distanceFromY} onChange={e => updateObs(idx, 'distanceFromY', e.target.value)} className={inputClass} />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
-                    <select value={row.evaluation} onChange={e => updateObs(idx, 'evaluation', e.target.value)} className={inputClass}>
+                    <select value={row.evaluation} onChange={e => updateObs(idx, 'evaluation', e.target.value)} className="w-full border border-gray-300 rounded px-1 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
                       <option value="">-</option>
                       <option>Accept</option>
                       <option>Reject</option>

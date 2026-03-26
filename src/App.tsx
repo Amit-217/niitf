@@ -41,8 +41,11 @@ import { VSSCUTReportFormPage } from "./pages/admin/reports/VSSCUTReportFormPage
 import { VSSCUTReportPrintPage } from "./pages/admin/reports/VSSCUTReportPrintPage";
 import { ReportsListPage } from "./pages/admin/reports/ReportsListPage";
 import { UTGReportFormPage } from "./pages/admin/reports/UTGReportFormPage";
+import { UTGReportPrintPage } from "./pages/admin/reports/UTGReportPrintPage";
 import { TPIIVRFormPage } from "./pages/admin/reports/TPIIVRFormPage";
+import { TPIIVRReportPrintPage } from "./pages/admin/reports/TPIIVRReportPrintPage";
 import { AWSDReportFormPage } from "./pages/admin/reports/AWSDReportFormPage";
+import { AWSDReportPrintPage } from "./pages/admin/reports/AWSDReportPrintPage";
 import { AdmissionsPage } from "./pages/admin/admissions/AdmissionsPage";
 import { TestsPage } from "./pages/admin/tests/TestsPage";
 import { TakeTestPage } from "./pages/student/tests/TakeTestPage";
@@ -233,6 +236,30 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
               <VSSCUTReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reports/utg/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+              <UTGReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reports/tpi-ivr/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+              <TPIIVRReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reports/awsd/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+              <AWSDReportPrintPage />
             </ProtectedRoute>
           }
         />
