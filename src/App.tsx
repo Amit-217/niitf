@@ -33,6 +33,9 @@ import { UTReportFormPage } from './pages/admin/reports/UTReportFormPage';
 import { UTReportPrintPage } from './pages/admin/reports/UTReportPrintPage';
 import { VSSCUTReportFormPage } from './pages/admin/reports/VSSCUTReportFormPage';
 import { VSSCUTReportPrintPage } from './pages/admin/reports/VSSCUTReportPrintPage';
+import { UTGReportFormPage } from './pages/admin/reports/UTGReportFormPage';
+import { TPIIVRFormPage } from './pages/admin/reports/TPIIVRFormPage';
+import { AWSDReportFormPage } from './pages/admin/reports/AWSDReportFormPage';
 import { AdmissionsPage } from './pages/admin/admissions/AdmissionsPage';
 import { TestsPage } from './pages/admin/tests/TestsPage';
 import { TakeTestPage } from './pages/student/tests/TakeTestPage';
@@ -142,6 +145,9 @@ function App() {
           <Route path="reports/pt/new" element={<PTReportFormPage />} />
           <Route path="reports/ut/new" element={<UTReportFormPage />} />
           <Route path="reports/vssc-ut/new" element={<VSSCUTReportFormPage />} />
+          <Route path="reports/utg/new" element={<UTGReportFormPage />} />
+          <Route path="reports/tpi-ivr/new" element={<TPIIVRFormPage />} />
+          <Route path="reports/awsd/new" element={<AWSDReportFormPage />} />
           <Route path="settings" element={<Settings />} />
           <Route
             path="*"

@@ -22,6 +22,9 @@ import {
   Droplets,
   Waves,
   Satellite,
+  Ruler,
+  ClipboardList,
+  GitBranch,
 } from "lucide-react";
 import {
   getCustomerById,
@@ -37,6 +40,9 @@ import {
   getPTReports,
   getUTReports,
   getVSSCUTReports,
+  getUTGReports,
+  getTPIIVRReports,
+  getAWSDReports,
   Customer,
   Quotation,
   QuotationPayload,
@@ -240,13 +246,16 @@ const TotalsBlock = ({
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 type ActiveTab = "reports" | "quotations" | "invoices";
-type ReportSubType = "mpt" | "pt" | "ut" | "vssc-ut";
+type ReportSubType = "mpt" | "pt" | "ut" | "vssc-ut" | "utg" | "tpi-ivr" | "awsd";
 
 const REPORT_TYPES: { key: ReportSubType; label: string; fullLabel: string; icon: React.ElementType; color: string; textColor: string }[] = [
   { key: "mpt", label: "MPT", fullLabel: "Magnetic Particle Testing", icon: Magnet, color: "bg-rose-50", textColor: "text-rose-600" },
   { key: "pt", label: "PT", fullLabel: "Liquid Penetrant Testing", icon: Droplets, color: "bg-blue-50", textColor: "text-blue-600" },
   { key: "ut", label: "UT", fullLabel: "Ultrasonic Testing", icon: Waves, color: "bg-violet-50", textColor: "text-violet-600" },
   { key: "vssc-ut", label: "VSSC-UT", fullLabel: "VSSC Ultrasonic Testing", icon: Satellite, color: "bg-amber-50", textColor: "text-amber-600" },
+  { key: "utg", label: "UTG", fullLabel: "UT Thickness Gauging", icon: Ruler, color: "bg-teal-50", textColor: "text-teal-600" },
+  { key: "tpi-ivr", label: "TPI IVR", fullLabel: "Inspection Visit Report", icon: ClipboardList, color: "bg-cyan-50", textColor: "text-cyan-600" },
+  { key: "awsd", label: "AWS D1.1", fullLabel: "UT of Welds (AWS D1.1)", icon: GitBranch, color: "bg-orange-50", textColor: "text-orange-600" },
 ];
 
 const INIT_QUO_ITEMS: LineItem[] = [{ ...EMPTY_ITEM }];
@@ -272,10 +281,19 @@ export const CustomerDetailPage = () => {
   const [utReports, setUtReports] = useState<any[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [vsscUtReports, setVsscUtReports] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [utgReports, setUtgReports] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [tpiIvrReports, setTpiIvrReports] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [awsdReports, setAwsdReports] = useState<any[]>([]);
   const [mptTotal, setMptTotal] = useState(0);
   const [ptTotal, setPtTotal] = useState(0);
   const [utTotal, setUtTotal] = useState(0);
   const [vsscUtTotal, setVsscUtTotal] = useState(0);
+  const [utgTotal, setUtgTotal] = useState(0);
+  const [tpiIvrTotal, setTpiIvrTotal] = useState(0);
+  const [awsdTotal, setAwsdTotal] = useState(0);
 
   // Quotations
   const [quotations, setQuotations] = useState<Quotation[]>([]);
@@ -370,6 +388,33 @@ export const CustomerDetailPage = () => {
     } catch { /* silent */ }
   }, [id]);
 
+  const fetchUTGReports = useCallback(async () => {
+    if (!id) return;
+    try {
+      const res: any = await getUTGReports({ customerId: id, limit: 100 });
+      const { items, total } = extractReports(res);
+      setUtgReports(items); setUtgTotal(total);
+    } catch { /* silent */ }
+  }, [id]);
+
+  const fetchTPIIVRReports = useCallback(async () => {
+    if (!id) return;
+    try {
+      const res: any = await getTPIIVRReports({ customerId: id, limit: 100 });
+      const { items, total } = extractReports(res);
+      setTpiIvrReports(items); setTpiIvrTotal(total);
+    } catch { /* silent */ }
+  }, [id]);
+
+  const fetchAWSDReports = useCallback(async () => {
+    if (!id) return;
+    try {
+      const res: any = await getAWSDReports({ customerId: id, limit: 100 });
+      const { items, total } = extractReports(res);
+      setAwsdReports(items); setAwsdTotal(total);
+    } catch { /* silent */ }
+  }, [id]);
+
   const fetchQuotations = useCallback(async () => {
     if (!id) return;
     try {
@@ -393,8 +438,9 @@ export const CustomerDetailPage = () => {
   useEffect(() => { fetchCustomer(); }, [fetchCustomer]);
   useEffect(() => {
     fetchMPTReports(); fetchPTReports(); fetchUTReports(); fetchVSSCUTReports();
+    fetchUTGReports(); fetchTPIIVRReports(); fetchAWSDReports();
     fetchQuotations(); fetchInvoices();
-  }, [fetchMPTReports, fetchPTReports, fetchUTReports, fetchVSSCUTReports, fetchQuotations, fetchInvoices]);
+  }, [fetchMPTReports, fetchPTReports, fetchUTReports, fetchVSSCUTReports, fetchUTGReports, fetchTPIIVRReports, fetchAWSDReports, fetchQuotations, fetchInvoices]);
 
   // Keep history state in sync so browser back button restores the correct tab/inspection
   useEffect(() => {
@@ -546,14 +592,16 @@ export const CustomerDetailPage = () => {
     );
   }
 
-  const reportsTotal = mptTotal + ptTotal + utTotal + vsscUtTotal;
+  const reportsTotal = mptTotal + ptTotal + utTotal + vsscUtTotal + utgTotal + tpiIvrTotal + awsdTotal;
 
   const reportCountByType: Record<ReportSubType, number> = {
     mpt: mptTotal, pt: ptTotal, ut: utTotal, "vssc-ut": vsscUtTotal,
+    utg: utgTotal, "tpi-ivr": tpiIvrTotal, awsd: awsdTotal,
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const reportListByType: Record<ReportSubType, any[]> = {
     mpt: mptReports, pt: ptReports, ut: utReports, "vssc-ut": vsscUtReports,
+    utg: utgReports, "tpi-ivr": tpiIvrReports, awsd: awsdReports,
   };
 
   const tabs = [
@@ -671,7 +719,7 @@ export const CustomerDetailPage = () => {
         {activeTab === "reports" && (
           <div>
             {/* 4 sub-type selector cards */}
-            <div className="p-5 grid grid-cols-2 sm:grid-cols-4 gap-3 border-b border-gray-100">
+            <div className="p-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 border-b border-gray-100">
               {REPORT_TYPES.map((rt) => {
                 const Icon = rt.icon;
                 const isSelected = reportSubType === rt.key;

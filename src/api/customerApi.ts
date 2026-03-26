@@ -513,3 +513,242 @@ export const updateVSSCUTReport = (id: string, data: Partial<VSSCUTReportPayload
 
 export const deleteVSSCUTReport = (id: string) =>
   api.delete(`/reports/vssc-ut/${id}`);
+
+// ─── UTG Report Types ──────────────────────────────────────────────────────────
+
+export interface UTGSearchUnitRow {
+  searchUnit?: string;
+  model?: string;
+  angle?: string;
+  srNo?: string;
+  crystalSize?: string;
+  waveMode?: string;
+  frequency?: string;
+}
+
+export interface UTGTechniqueRow {
+  searchUnit?: string;
+  angle?: string;
+  srNo?: string;
+  crystalSize?: string;
+  waveMode?: string;
+  frequency?: string;
+}
+
+export interface UTGObservation {
+  srNo: number;
+  itemName: string;
+  measuredThickness: string;
+  remark: string;
+}
+
+export interface UTGReportPayload {
+  customerId: string;
+  reportNo: string;
+  status?: 'draft' | 'final';
+  jobDetails?: {
+    customer?: string;
+    client?: string;
+    reportDate?: string;
+    project?: string;
+    inspectionDate?: string;
+    referenceStd?: string;
+    inspectionTime?: string;
+    acceptanceCriteria?: string;
+    material?: string;
+    stageOfInspection?: string;
+    surfaceCondition?: string;
+    extentOfExamination?: string;
+    surfaceTemperature?: string;
+  };
+  equipmentDetails?: {
+    equipmentType?: string;
+    srNo?: string;
+    make?: string;
+    calibrationDue?: string;
+    couplant?: string;
+    basicCalibrationBlock?: string;
+  };
+  searchUnitDetails?: UTGSearchUnitRow[];
+  techniqueDetails?: {
+    utMethod?: string;
+    techniques?: UTGTechniqueRow[];
+  };
+  observations?: UTGObservation[];
+  finalSection?: {
+    examinedBy?: string;
+    inspector?: { name?: string; qualification?: string; signature?: string; idNo?: string; date?: string }[];
+    customer?: { name?: string; designation?: string; signature?: string; idNo?: string; date?: string };
+    clientOrTPI?: { name?: string; designation?: string; signature?: string; idNo?: string; date?: string };
+  };
+}
+
+export interface UTGReport extends UTGReportPayload {
+  _id: string;
+  reportType: string;
+  createdAt: string;
+}
+
+export const getUTGReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
+  api.get('/reports/utg', { params });
+
+export const getUTGReportById = (id: string) =>
+  api.get(`/reports/utg/${id}`);
+
+export const createUTGReport = (data: UTGReportPayload) =>
+  api.post('/reports/utg', data);
+
+export const updateUTGReport = (id: string, data: Partial<UTGReportPayload>) =>
+  api.put(`/reports/utg/${id}`, data);
+
+export const deleteUTGReport = (id: string) =>
+  api.delete(`/reports/utg/${id}`);
+
+// ─── TPI IVR Types ────────────────────────────────────────────────────────────
+
+export interface TPIIVRInspectionItem {
+  poLineNo?: string;
+  description: string;
+  drgOrHeatNo?: string;
+  qtyOffered?: number;
+  qtyInspected?: number;
+  qtyAccepted?: number;
+  qtyHold?: number;
+  qtyReject?: number;
+  inspectionType?: string;
+}
+
+export interface TPIIVRReportPayload {
+  customerId: string;
+  irNo: string;
+  status?: 'draft' | 'final';
+  irRev?: string;
+  dtOfInspection?: string;
+  client?: string;
+  inspectionLocation?: string;
+  project?: string;
+  appdQapNo?: string;
+  clientPoNo?: string;
+  appdQapDt?: string;
+  poAmedNo?: string;
+  partName?: string;
+  poDate?: string;
+  inspectionStage?: string;
+  clientDetails?: {
+    ref?: string;
+    contact?: string;
+    callDate?: string;
+    inspectionAttDt?: string;
+  };
+  vendorDetails?: {
+    vendor?: string;
+    subVendor?: string;
+    contact?: string;
+    phone?: string;
+  };
+  extraVisit?: { date?: string; comment?: string };
+  inspectionItems?: TPIIVRInspectionItem[];
+  inspectionActivities?: string;
+  conclusion?: string;
+  referenceDocuments?: { document?: string; referenceNumber?: string; revNo?: string }[];
+  calibrationStatus?: {
+    equipment?: string;
+    idNumber?: string;
+    calibrationDate?: string;
+    dueDate?: string;
+    nablCertified?: string;
+  }[];
+  signatures?: {
+    vendor?: { name?: string; date?: string };
+    niit?: { name?: string; date?: string };
+  };
+}
+
+export interface TPIIVRReport extends TPIIVRReportPayload {
+  _id: string;
+  reportType: string;
+  createdAt: string;
+}
+
+export const getTPIIVRReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
+  api.get('/reports/tpi-ivr', { params });
+
+export const getTPIIVRReportById = (id: string) =>
+  api.get(`/reports/tpi-ivr/${id}`);
+
+export const createTPIIVRReport = (data: TPIIVRReportPayload) =>
+  api.post('/reports/tpi-ivr', data);
+
+export const updateTPIIVRReport = (id: string, data: Partial<TPIIVRReportPayload>) =>
+  api.put(`/reports/tpi-ivr/${id}`, data);
+
+export const deleteTPIIVRReport = (id: string) =>
+  api.delete(`/reports/tpi-ivr/${id}`);
+
+// ─── AWS D1.1 UT Report Types ─────────────────────────────────────────────────
+
+export interface AWSDObservation {
+  lineNo: number;
+  indicationNo?: string;
+  transducerAngle?: string;
+  fromFace?: string;
+  leg?: string;
+  decibels?: {
+    indicationLevel?: string;
+    referenceLevel?: string;
+    attenuationFactor?: string;
+    indicationRating?: string;
+  };
+  discontinuity?: {
+    length?: string;
+    angularDistance?: string;
+    depthFromA?: string;
+    distanceFromX?: string;
+    distanceFromY?: string;
+  };
+  evaluation?: string;
+  remarks?: string;
+}
+
+export interface AWSDReportPayload {
+  customerId: string;
+  reportNo: string;
+  status?: 'draft' | 'final';
+  project?: string;
+  weldIdentification?: string;
+  materialThickness?: string;
+  weldJointAWS?: string;
+  weldingProcess?: string;
+  qualityRequirementsSection?: string;
+  remarks?: string;
+  observations?: AWSDObservation[];
+  certification?: {
+    testDate?: string;
+    inspectedBy?: string;
+    year?: string;
+    manufacturerOrContractor?: string;
+    authorizedBy?: string;
+    date?: string;
+  };
+}
+
+export interface AWSDReport extends AWSDReportPayload {
+  _id: string;
+  reportType: string;
+  createdAt: string;
+}
+
+export const getAWSDReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
+  api.get('/reports/awsd', { params });
+
+export const getAWSDReportById = (id: string) =>
+  api.get(`/reports/awsd/${id}`);
+
+export const createAWSDReport = (data: AWSDReportPayload) =>
+  api.post('/reports/awsd', data);
+
+export const updateAWSDReport = (id: string, data: Partial<AWSDReportPayload>) =>
+  api.put(`/reports/awsd/${id}`, data);
+
+export const deleteAWSDReport = (id: string) =>
+  api.delete(`/reports/awsd/${id}`);
