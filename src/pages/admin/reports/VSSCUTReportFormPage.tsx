@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, AlertCircle, Users } from 'lucide-react';
 import { createVSSCUTReport, VSSCUTProbeModeData, VSSCUTCalibTable } from '../../../api/customerApi';
+import { getApiErrorMessage } from '../../../api/error';
+import { CustomerPickerBanner } from '../../../components/CustomerPickerBanner';
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 const inputClass =
@@ -69,9 +71,9 @@ export const VSSCUTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as { customerId?: string; customerName?: string } | null;
-  const customerId = state?.customerId ?? '';
-  const customerName = state?.customerName ?? '';
   const [saving, setSaving] = useState(false);
+  const [customerId, setCustomerId] = useState(state?.customerId ?? '');
+  const [customerName, setCustomerName] = useState(state?.customerName ?? '');
 
   // ── Job Details ──
   const [reportNo, setReportNo] = useState('');
@@ -225,7 +227,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
           dacDb: npDacDb,
           scanningDb: npScanningDb,
         },
-        disposition,
+        disposition: disposition || undefined,
         remarks: resolve(remarks, remarksCustom),
         finalSection: {
           inspector: [{ name: inspectorName, qualification: inspectorQual, idNo: inspectorIdNo, date: inspectorDate || undefined }],
@@ -235,8 +237,8 @@ export const VSSCUTReportFormPage: React.FC = () => {
       });
       toast.success(`VSSC-UT Report saved as ${status}.`);
       navigate(`/admin/customers/${customerId}`, { state: { activeTab: 'reports', reportSubType: 'vssc-ut' } });
-    } catch {
-      toast.error('Failed to save report. Please try again.');
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Failed to save report. Please try again.'));
     } finally {
       setSaving(false);
     }
@@ -255,6 +257,16 @@ export const VSSCUTReportFormPage: React.FC = () => {
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
       </div>
+
+      {/* ── Missing Customer Banner ── */}
+      {!customerId && (
+        <CustomerPickerBanner
+          onCustomerSelected={(id, name) => {
+            setCustomerId(id);
+            setCustomerName(name);
+          }}
+        />
+      )}
 
       {/* Report No & Page No */}
       <div className={sectionClass}>

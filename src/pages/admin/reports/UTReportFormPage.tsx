@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, AlertCircle, Users } from 'lucide-react';
 import { createUTReport, UTSearchUnit } from '../../../api/customerApi';
+import { getApiErrorMessage } from '../../../api/error';
+import { CustomerPickerBanner } from '../../../components/CustomerPickerBanner';
 
 // â”€â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -69,11 +71,11 @@ export const UTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as { customerId?: string; customerName?: string } | null;
-  const customerId = state?.customerId ?? '';
-  const customerName = state?.customerName ?? '';
   const [saving, setSaving] = useState(false);
+  const [customerId, setCustomerId] = useState(state?.customerId ?? '');
+  const [customerName, setCustomerName] = useState(state?.customerName ?? '');
 
-  // â”€â”€ Job Details â”€â”€
+  // — Job Details —
   const [reportNo, setReportNo] = useState('');
   const jobCustomer = customerName;
   const [jobClient, setJobClient] = useState('');
@@ -180,13 +182,13 @@ export const UTReportFormPage: React.FC = () => {
           inspectionTime: jobInspectionTime,
           referenceStd: resolve(jobRefStd, jobRefStdCustom),
           acceptanceCriteria: resolve(jobAcceptance, jobAcceptanceCustom),
-          material: jobMaterial, stageOfInspection: jobStage, thickness: jobThickness,
+          material: jobMaterial, stageOfInspection: jobStage || undefined, thickness: jobThickness,
           extentOfExamination: resolve(jobExtent, jobExtentCustom),
-          surfaceCondition: jobSurface, typeOfJoint: jobJointType,
-          surfaceTemperature: jobSurfaceTemp, weldingProcess: jobWeldingProcess,
+          surfaceCondition: jobSurface, typeOfJoint: jobJointType || undefined,
+          surfaceTemperature: jobSurfaceTemp, weldingProcess: jobWeldingProcess || undefined,
         },
         equipmentDetails: {
-          equipmentType: resolve(eqType, eqTypeCustom),
+          equipmentType: resolve(eqType, eqTypeCustom) || undefined,
           srNo: eqSrNo,
           make: resolve(eqMake, eqMakeCustom),
           calibrationDue: eqCalibDue,
@@ -195,7 +197,7 @@ export const UTReportFormPage: React.FC = () => {
         },
         searchUnitDetails: searchUnits,
         techniqueDetails: {
-          utMethod,
+          utMethod: utMethod || undefined,
           referenceCalibrationBlock: resolve(refCalibBlock, refCalibBlockCustom),
           utCalibrationMethod: utCalibMethod,
           scanningDb,
@@ -211,7 +213,7 @@ export const UTReportFormPage: React.FC = () => {
           .filter(o => o.jobDescription.trim())
           .map(o => ({
             srNo: o.srNo, jobDescription: o.jobDescription, drawingOrJointNo: o.drawingOrJointNo,
-            size: o.size, quantity: Number(o.quantity) || 0, evaluation: o.evaluation, remark: o.remark,
+            size: o.size, quantity: Number(o.quantity) || 0, evaluation: o.evaluation || undefined, remark: o.remark,
           })),
         finalSection: {
           examinedBy: 'National Industrial Inspection And Training',
@@ -220,10 +222,11 @@ export const UTReportFormPage: React.FC = () => {
           clientOrTPI: { name: clientName, designation: clientDesig, idNo: clientIdNo, date: clientDate || undefined },
         },
       });
+
       toast.success(`UT Report saved as ${status}.`);
       navigate(`/admin/customers/${customerId}`, { state: { activeTab: 'reports', reportSubType: 'ut' } });
-    } catch {
-      toast.error('Failed to save report. Please try again.');
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Failed to save report. Please try again.'));
     } finally {
       setSaving(false);
     }
@@ -248,6 +251,16 @@ export const UTReportFormPage: React.FC = () => {
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
       </div>
+
+      {/* ── Missing Customer Banner ── */}
+      {!customerId && (
+        <CustomerPickerBanner
+          onCustomerSelected={(id, name) => {
+            setCustomerId(id);
+            setCustomerName(name);
+          }}
+        />
+      )}
 
       {/* Report No. */}
       <div className={sectionClass}>
