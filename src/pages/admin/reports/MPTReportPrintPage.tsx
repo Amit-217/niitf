@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  useParams,
+  useNavigate,
+  useSearchParams,
+  useLocation,
+} from "react-router-dom";
 import { getMPTReportById, MPTReport } from "../../../api/customerApi";
 
 // ─── Print Styles ─────────────────────────────────────────────────────────────
@@ -77,8 +82,26 @@ const v = (val?: string | null) => val || "";
 export const MPTReportPrintPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const locState = location.state as {
+    customerId?: string;
+    reportSubType?: string;
+  } | null;
   const [searchParams] = useSearchParams();
   const autoPrint = searchParams.get("autoprint") === "true";
+
+  const goBack = () => {
+    if (locState?.customerId) {
+      navigate(`/admin/customers/${locState.customerId}`, {
+        state: {
+          activeTab: "reports",
+          reportSubType: locState.reportSubType ?? "mpt",
+        },
+      });
+    } else {
+      navigate(-1);
+    }
+  };
   const [report, setReport] = useState<MPTReport | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -141,7 +164,7 @@ export const MPTReportPrintPage = () => {
       >
         <p>Report not found.</p>
         <button
-          onClick={() => navigate(-1)}
+          onClick={goBack}
           style={{ padding: "8px 16px", cursor: "pointer" }}
         >
           Go Back
@@ -293,7 +316,12 @@ export const MPTReportPrintPage = () => {
                 <td className="lbl">Reference Std.</td>
                 <td className="val">{v(jd.referenceStd)}</td>
                 <td className="lbl">Inspection Date</td>
-                <td className="val">{fmtDate(jd.inspectionDate)}{jd.inspectionEndDate ? ` to ${fmtDate(jd.inspectionEndDate)}` : ''}</td>
+                <td className="val">
+                  {fmtDate(jd.inspectionDate)}
+                  {jd.inspectionEndDate
+                    ? ` to ${fmtDate(jd.inspectionEndDate)}`
+                    : ""}
+                </td>
               </tr>
               <tr>
                 <td className="lbl">Acceptance Criteria</td>

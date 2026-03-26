@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   ArrowLeft,
@@ -254,12 +254,14 @@ const INIT_QUO_ITEMS: LineItem[] = [{ ...EMPTY_ITEM }];
 export const CustomerDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const locationState = location.state as { activeTab?: ActiveTab; reportSubType?: ReportSubType } | null;
 
   const [customer, setCustomer] = useState<Customer | null>(null);
-  const [activeTab, setActiveTab] = useState<ActiveTab>("quotations");
+  const [activeTab, setActiveTab] = useState<ActiveTab | null>(locationState?.activeTab ?? null);
 
   // Report sub-type selection
-  const [reportSubType, setReportSubType] = useState<ReportSubType | null>("mpt");
+  const [reportSubType, setReportSubType] = useState<ReportSubType | null>(locationState?.reportSubType ?? null);
 
   // Per-type report data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -393,6 +395,11 @@ export const CustomerDetailPage = () => {
     fetchMPTReports(); fetchPTReports(); fetchUTReports(); fetchVSSCUTReports();
     fetchQuotations(); fetchInvoices();
   }, [fetchMPTReports, fetchPTReports, fetchUTReports, fetchVSSCUTReports, fetchQuotations, fetchInvoices]);
+
+  // Keep history state in sync so browser back button restores the correct tab/inspection
+  useEffect(() => {
+    navigate('.', { replace: true, state: { activeTab, reportSubType } });
+  }, [activeTab, reportSubType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Modal helpers ──────────────────────────────────────────────────────────
 
@@ -620,7 +627,7 @@ export const CustomerDetailPage = () => {
           return (
             <button
               key={tab.key}
-              onClick={() => { setActiveTab(tab.key); if (tab.key !== "reports") setReportSubType(null); }}
+              onClick={() => { const newTab = activeTab === tab.key ? null : tab.key; setActiveTab(newTab); if (newTab !== "reports") setReportSubType(null); }}
               className={`relative flex flex-col items-start p-5 rounded-2xl border-2 transition-all text-left shadow-sm hover:shadow-md ${
                 isActive
                   ? "border-violet-400 bg-violet-50/60 shadow-violet-100"
@@ -645,7 +652,7 @@ export const CustomerDetailPage = () => {
       </div>
 
       {/* Tab Content */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      {activeTab !== null && <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <h2 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
             {tabs.find((t) => t.key === activeTab)?.label}
@@ -752,7 +759,7 @@ export const CustomerDetailPage = () => {
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-1.5">
                               <button
-                                onClick={() => navigate(`/admin/reports/${reportSubType}/${r._id}/print`)}
+                                onClick={() => navigate(`/admin/reports/${reportSubType}/${r._id}/print`, { state: { customerId: id, reportSubType } })}
                                 className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors"
                                 title="View Report"
                               >
@@ -865,7 +872,7 @@ export const CustomerDetailPage = () => {
             </table>
           </div>
         )}
-      </div>
+      </div>}
 
       {/* Add/Edit Modal */}
       {isModalOpen && activeTab !== "reports" && (
