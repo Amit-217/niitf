@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ArrowLeft, Plus, Trash2, Save } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save, AlertCircle, Users } from "lucide-react";
 import { createPTReport } from "../../../api/customerApi";
+import { getApiErrorMessage } from "../../../api/error";
+import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 
 // â”€â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -91,9 +93,9 @@ export const PTReportFormPage: React.FC = () => {
     customerId?: string;
     customerName?: string;
   } | null;
-  const customerId = state?.customerId ?? "";
-  const customerName = state?.customerName ?? "";
   const [saving, setSaving] = useState(false);
+  const [customerId, setCustomerId] = useState(state?.customerId ?? '');
+  const [customerName, setCustomerName] = useState(state?.customerName ?? '');
 
   // â”€â”€ Job Details â”€â”€
   const [reportNo, setReportNo] = useState("");
@@ -213,17 +215,17 @@ export const PTReportFormPage: React.FC = () => {
           referenceStandard: resolve(jobRefStd, jobRefStdCustom),
           acceptanceCriteria: resolve(jobAcceptance, jobAcceptanceCustom),
           material: jobMaterial,
-          stageOfInspection: jobStage,
+          stageOfInspection: jobStage || undefined,
           thickness: jobThickness,
           extentOfExamination: resolve(jobExtent, jobExtentCustom),
           surfaceCondition: jobSurface,
-          typeOfJoint: jobJointType,
+          typeOfJoint: jobJointType || undefined,
           surfaceTemperature: jobSurfaceTemp,
-          weldingProcess: jobWeldingProcess,
+          weldingProcess: jobWeldingProcess || undefined,
         },
         methodDetails: {
-          penetrantMethod,
-          excessPenetrantRemovalMethod: removalMethod,
+          penetrantMethod: penetrantMethod || undefined,
+          excessPenetrantRemovalMethod: removalMethod || undefined,
         },
         consumablesDetails: {
           penetrant: {
@@ -258,7 +260,7 @@ export const PTReportFormPage: React.FC = () => {
             drawingOrJointNo: o.drawingOrJointNo,
             size: o.size,
             quantity: Number(o.quantity) || 0,
-            evaluation: o.evaluation,
+            evaluation: o.evaluation || undefined,
             result: o.remark,
           })),
         finalSection: {
@@ -285,12 +287,15 @@ export const PTReportFormPage: React.FC = () => {
           },
         },
       });
+
       toast.success(`PT Report saved as ${status}.`);
       navigate(`/admin/customers/${customerId}`, {
         state: { activeTab: "reports", reportSubType: "pt" },
       });
-    } catch {
-      toast.error("Failed to save report. Please try again.");
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(error, "Failed to save report. Please try again.")
+      );
     } finally {
       setSaving(false);
     }
@@ -322,6 +327,16 @@ export const PTReportFormPage: React.FC = () => {
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
       </div>
+
+      {/* ── Missing Customer Banner ── */}
+      {!customerId && (
+        <CustomerPickerBanner
+          onCustomerSelected={(id, name) => {
+            setCustomerId(id);
+            setCustomerName(name);
+          }}
+        />
+      )}
 
       {/* Report No. */}
       <div className={sectionClass}>

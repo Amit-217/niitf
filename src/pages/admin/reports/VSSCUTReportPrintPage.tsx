@@ -32,9 +32,7 @@ const PRINT_STYLES = `
     font-size: 7.5pt; text-align: center; letter-spacing: 1px; padding: 2px 4px;
   }
   .col-hdr { background: #edf2f7; font-weight: bold; font-size: 7pt; text-align: center; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 7.5pt; white-space: nowrap; width: 22%; }
   .val { font-size: 7.5pt; }
-  .val-red { font-size: 7.5pt; color: #c53030; font-weight: 500; }
   .report-title-table { width: 100%; border-collapse: collapse; }
   .report-title-table td { border: 1px solid #444; padding: 2px 6px; }
   .company-name { font-size: 9.5pt; font-weight: bold; text-transform: uppercase; text-align: center; color: #1a3c8f; }
@@ -278,27 +276,27 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">Weld Joint No.</td>
-                <td className="val-red">{v(report.weldJointNo)}</td>
+                <td className="val">{v(report.weldJointNo)}</td>
                 <td className="lbl">Thickness of Job</td>
-                <td className="val-red">{v(report.thicknessOfJob)}</td>
+                <td className="val">{v(report.thicknessOfJob)}</td>
               </tr>
               <tr>
                 <td className="lbl">Surface Condition</td>
                 <td className="val">{v(report.surfaceCondition)}</td>
                 <td className="lbl">Customer</td>
-                <td className="val-red">{v(report.customer)}</td>
+                <td className="val">{v(report.customer)}</td>
               </tr>
               <tr>
                 <td className="lbl">Period of Inspection</td>
-                <td className="val-red">{v(report.periodOfInspection)}</td>
+                <td className="val">{v(report.periodOfInspection)}</td>
                 <td className="lbl">Material</td>
-                <td className="val-red">{v(report.material)}</td>
+                <td className="val">{v(report.material)}</td>
               </tr>
               <tr>
                 <td className="lbl">Scanning Technique</td>
                 <td className="val">{v(report.scanningTechnique)}</td>
                 <td className="lbl">Stage of Inspection</td>
-                <td className="val-red">{v(report.stageOfInspection)}</td>
+                <td className="val">{v(report.stageOfInspection)}</td>
               </tr>
               <tr>
                 <td className="lbl">Equipment Used</td>
@@ -314,9 +312,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">Acceptance Standard</td>
-                <td className="val-red">{v(report.acceptanceStandard)}</td>
+                <td className="val">{v(report.acceptanceStandard)}</td>
                 <td className="lbl">Reference Datum</td>
-                <td className="val-red">{v(report.referenceDatum)}</td>
+                <td className="val">{v(report.referenceDatum)}</td>
               </tr>
             </tbody>
           </table>
@@ -331,15 +329,15 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">For Angle — Range</td>
-                <td className="val-red">{v(ts.angleRange)}</td>
+                <td className="val">{v(ts.angleRange)}</td>
                 <td className="lbl">For Normal — Range</td>
-                <td className="val-red">{v(ts.normalRange)}</td>
+                <td className="val">{v(ts.normalRange)}</td>
               </tr>
               <tr>
                 <td className="lbl">Std Cal Block (Angle)</td>
-                <td className="val-red">{v(ts.standardCalBlock?.angle)}</td>
+                <td className="val">{v(ts.standardCalBlock?.angle)}</td>
                 <td className="lbl">Std Cal Block (Normal)</td>
-                <td className="val-red">{v(ts.standardCalBlock?.normal)}</td>
+                <td className="val">{v(ts.standardCalBlock?.normal)}</td>
               </tr>
               <tr>
                 <td className="lbl">Idtn. Ref Block (Angle)</td>
@@ -372,7 +370,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 <td className="lbl">Type</td>
                 <td className="val">{v(apc.type)}</td>
                 <td className="lbl">Sr. Nos. of Probes</td>
-                <td className="val-red">
+                <td className="val">
                   {apc.probe45SerialNo ? `45 – ${apc.probe45SerialNo}` : ""}
                   {apc.probe60SerialNo ? `  60 – ${apc.probe60SerialNo}` : ""}
                   {apc.probe70SerialNo ? `  70 – ${apc.probe70SerialNo}` : ""}
@@ -493,21 +491,21 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">Probe S. No / Type</td>
-                <td className="val-red">{v(npc.probeType)}</td>
+                <td className="val">{v(npc.probeType)}</td>
                 <td className="lbl">Frequency</td>
                 <td className="val">{v(npc.frequency)}</td>
               </tr>
               <tr>
                 <td className="lbl">Size</td>
-                <td className="val-red">{v(npc.size)}</td>
+                <td className="val">{v(npc.size)}</td>
                 <td className="lbl">Skip</td>
-                <td className="val-red">{v(npc.skip)}</td>
+                <td className="val">{v(npc.skip)}</td>
               </tr>
               <tr>
                 <td className="lbl">BP – %FSH</td>
-                <td className="val-red">{v(npc.bp)}</td>
+                <td className="val">{v(npc.bp)}</td>
                 <td className="lbl">DAC dB</td>
-                <td className="val-red">{v(npc.dacDb)}</td>
+                <td className="val">{v(npc.dacDb)}</td>
               </tr>
               <tr>
                 <td className="lbl">Scanning dB</td>
@@ -538,7 +536,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               {report.remarks && (
                 <tr>
                   <td className="lbl">Remarks</td>
-                  <td className="val-red">{v(report.remarks)}</td>
+                  <td className="val">{v(report.remarks)}</td>
                 </tr>
               )}
             </tbody>

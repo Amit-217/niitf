@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, AlertCircle, Users } from 'lucide-react';
 import { createMPTReport, MPTObservation, MPTInspector } from '../../../api/customerApi';
+import { getApiErrorMessage } from '../../../api/error';
+import { CustomerPickerBanner } from '../../../components/CustomerPickerBanner';
 
 // â"€â"€â"€ Styles â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
@@ -71,10 +73,10 @@ export const MPTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as { customerId?: string; customerName?: string } | null;
-  const customerId = state?.customerId ?? '';
-  const customerName = state?.customerName ?? '';
 
   const [saving, setSaving] = useState(false);
+  const [customerId, setCustomerId] = useState(state?.customerId ?? '');
+  const [customerName, setCustomerName] = useState(state?.customerName ?? '');
 
   // â"€â"€ Job Details â"€â"€
   const [reportNo, setReportNo] = useState('');
@@ -200,21 +202,21 @@ export const MPTReportFormPage: React.FC = () => {
           referenceStd: jobReferenceStd,
           acceptanceCriteria: jobAcceptanceCriteria,
           inspectionTime: jobInspectionTime,
-          stageOfInspection: jobStageOfInspection,
+          stageOfInspection: jobStageOfInspection || undefined,
           material: jobMaterial,
           extentOfExamination: resolveCustom(jobExtentOfExamination, jobExtentOther),
           thickness: jobThickness,
-          typeOfJoint: jobTypeOfJoint,
+          typeOfJoint: jobTypeOfJoint || undefined,
           surfaceCondition: jobSurfaceCondition,
-          weldingProcess: jobWeldingProcess,
+          weldingProcess: jobWeldingProcess || undefined,
         },
         equipmentDetails: {
-          equipmentType: eqType,
+          equipmentType: eqType || undefined,
           srNo: eqSrNo,
           make: resolveCustom(eqMake, eqMakeOther),
           calibrationDue: eqCalibrationDue || undefined,
           yokeSpacing: eqYokeSpacing,
-          pieGaugeCalibration: eqPieGauge,
+          pieGaugeCalibration: eqPieGauge || undefined,
         },
         mediumDetails: {
           blackInk: {
@@ -229,18 +231,18 @@ export const MPTReportFormPage: React.FC = () => {
           },
         },
         methodDescription: {
-          method,
+          method: method || undefined,
           lightIntensity,
-          magnetizationType,
-          lightEquipmentUsed: lightEquipUsed,
-          magnetizingMethod,
+          magnetizationType: magnetizationType || undefined,
+          lightEquipmentUsed: lightEquipUsed || undefined,
+          magnetizingMethod: magnetizingMethod || undefined,
           bathConcentration: resolveCustom(bathConcentration, bathConcentrationOther),
-          demagnetization,
-          magneticFieldDirectionVerifiedBy: magFieldVerifiedBy,
+          demagnetization: demagnetization || undefined,
+          magneticFieldDirectionVerifiedBy: magFieldVerifiedBy || undefined,
           gaussMeterReading,
           current,
           currentType: resolveCustom(currentType, currentTypeOther),
-          postCleaning,
+          postCleaning: postCleaning || undefined,
         },
         observations: observations
           .filter(o => o.jobDescription.trim())
@@ -250,8 +252,8 @@ export const MPTReportFormPage: React.FC = () => {
             drawingOrJointNo: o.drawingOrJointNo,
             size: o.size,
             quantity: Number(o.quantity) || 0,
-            evaluation: o.evaluation,
-            result: o.result,
+            evaluation: o.evaluation || undefined,
+            result: o.result || undefined,
             remark: o.remark,
           })),
         finalSection: {
@@ -264,10 +266,11 @@ export const MPTReportFormPage: React.FC = () => {
         },
       });
 
+
       toast.success(`MPT Report saved as ${status}.`);
       navigate(`/admin/customers/${customerId}`, { state: { activeTab: 'reports', reportSubType: 'mpt' } });
-    } catch {
-      toast.error('Failed to save report. Please try again.');
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Failed to save report. Please try again.'));
     } finally {
       setSaving(false);
     }
@@ -293,7 +296,15 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Report No. + Status row */}
+      {/* ── Missing Customer Banner ── */}
+      {!customerId && (
+        <CustomerPickerBanner
+          onCustomerSelected={(id, name) => {
+            setCustomerId(id);
+            setCustomerName(name);
+          }}
+        />
+      )}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>

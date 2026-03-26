@@ -1,45 +1,52 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import { Login } from './pages/auth/Login';
-import { ForgotPassword } from './pages/auth/ForgotPassword';
-import { VerifyOtp } from './pages/auth/VerifyOtp';
-import { ResetPassword } from './pages/auth/ResetPassword';
-import { StudentLogin } from './pages/student/auth/StudentLogin';
-import { DashboardLayout } from './layouts/DashboardLayout';
-import { AdminDashboard } from './pages/dashboard/AdminDashboard';
-import { EmployeeDashboard } from './pages/dashboard/EmployeeDashboard';
-import { Settings } from './pages/settings/Settings';
-import { StudentDashboard } from './pages/student/dashboard/StudentDashboard';
-import { UsersPage } from './pages/users/UsersPage';
-import { CoursesPage } from './pages/courses/CoursesPage';
-import { BatchesPage } from './pages/batches/BatchesPage';
-import { EnquiriesPage } from './pages/enquiries/EnquiriesPage';
-import { AttendancePage } from './pages/admin/attendance/AttendancePage';
-import { SalaryConfigPage } from './pages/admin/payroll/SalaryConfigPage';
-import { OvertimePage } from './pages/admin/payroll/OvertimePage';
-import { AdvancesPage } from './pages/admin/payroll/AdvancesPage';
-import { SalaryRecordsPage } from './pages/admin/payroll/SalaryRecordsPage';
-import { AdminTasksPage } from './pages/admin/tasks/AdminTasksPage';
-import { EmployeeTasksPage } from './pages/employee/tasks/EmployeeTasksPage';
-import { StudentsPage } from './pages/admin/students/StudentsPage';
-import { CustomersPage } from './pages/admin/customers/CustomersPage';
-import { CustomerDetailPage } from './pages/admin/customers/CustomerDetailPage';
-import { MPTReportFormPage } from './pages/admin/reports/MPTReportFormPage';
-import { MPTReportPrintPage } from './pages/admin/reports/MPTReportPrintPage';
-import { PTReportFormPage } from './pages/admin/reports/PTReportFormPage';
-import { PTReportPrintPage } from './pages/admin/reports/PTReportPrintPage';
-import { UTReportFormPage } from './pages/admin/reports/UTReportFormPage';
-import { UTReportPrintPage } from './pages/admin/reports/UTReportPrintPage';
-import { VSSCUTReportFormPage } from './pages/admin/reports/VSSCUTReportFormPage';
-import { VSSCUTReportPrintPage } from './pages/admin/reports/VSSCUTReportPrintPage';
-import { UTGReportFormPage } from './pages/admin/reports/UTGReportFormPage';
-import { TPIIVRFormPage } from './pages/admin/reports/TPIIVRFormPage';
-import { AWSDReportFormPage } from './pages/admin/reports/AWSDReportFormPage';
-import { AdmissionsPage } from './pages/admin/admissions/AdmissionsPage';
-import { TestsPage } from './pages/admin/tests/TestsPage';
-import { TakeTestPage } from './pages/student/tests/TakeTestPage';
-import { StudentExamAccessPage } from './pages/student/tests/StudentExamAccessPage';
+import React from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import { Login } from "./pages/auth/Login";
+import { ForgotPassword } from "./pages/auth/ForgotPassword";
+import { VerifyOtp } from "./pages/auth/VerifyOtp";
+import { ResetPassword } from "./pages/auth/ResetPassword";
+import { StudentLogin } from "./pages/student/auth/StudentLogin";
+import { DashboardLayout } from "./layouts/DashboardLayout";
+import { AdminDashboard } from "./pages/dashboard/AdminDashboard";
+import { EmployeeDashboard } from "./pages/dashboard/EmployeeDashboard";
+import { Settings } from "./pages/settings/Settings";
+import { StudentDashboard } from "./pages/student/dashboard/StudentDashboard";
+import { UsersPage } from "./pages/users/UsersPage";
+import { CoursesPage } from "./pages/courses/CoursesPage";
+import { BatchesPage } from "./pages/batches/BatchesPage";
+import { EnquiriesPage } from "./pages/enquiries/EnquiriesPage";
+import { AttendancePage } from "./pages/admin/attendance/AttendancePage";
+import { SalaryConfigPage } from "./pages/admin/payroll/SalaryConfigPage";
+import { OvertimePage } from "./pages/admin/payroll/OvertimePage";
+import { AdvancesPage } from "./pages/admin/payroll/AdvancesPage";
+import { SalaryRecordsPage } from "./pages/admin/payroll/SalaryRecordsPage";
+import { AdminTasksPage } from "./pages/admin/tasks/AdminTasksPage";
+import { EmployeeTasksPage } from "./pages/employee/tasks/EmployeeTasksPage";
+import { StudentsPage } from "./pages/admin/students/StudentsPage";
+import { CustomersPage } from "./pages/admin/customers/CustomersPage";
+import { CustomerDetailPage } from "./pages/admin/customers/CustomerDetailPage";
+import { MPTReportFormPage } from "./pages/admin/reports/MPTReportFormPage";
+import { MPTReportPrintPage } from "./pages/admin/reports/MPTReportPrintPage";
+import { PTReportFormPage } from "./pages/admin/reports/PTReportFormPage";
+import { PTReportPrintPage } from "./pages/admin/reports/PTReportPrintPage";
+import { UTReportFormPage } from "./pages/admin/reports/UTReportFormPage";
+import { UTReportPrintPage } from "./pages/admin/reports/UTReportPrintPage";
+import { VSSCUTReportFormPage } from "./pages/admin/reports/VSSCUTReportFormPage";
+import { VSSCUTReportPrintPage } from "./pages/admin/reports/VSSCUTReportPrintPage";
+import { ReportsListPage } from "./pages/admin/reports/ReportsListPage";
+import { UTGReportFormPage } from "./pages/admin/reports/UTGReportFormPage";
+import { TPIIVRFormPage } from "./pages/admin/reports/TPIIVRFormPage";
+import { AWSDReportFormPage } from "./pages/admin/reports/AWSDReportFormPage";
+import { AdmissionsPage } from "./pages/admin/admissions/AdmissionsPage";
+import { TestsPage } from "./pages/admin/tests/TestsPage";
+import { TakeTestPage } from "./pages/student/tests/TakeTestPage";
+import { StudentExamAccessPage } from "./pages/student/tests/StudentExamAccessPage";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -141,10 +148,14 @@ function App() {
           <Route path="enquiries" element={<EnquiriesPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="customers/:id" element={<CustomerDetailPage />} />
+          <Route path="reports" element={<ReportsListPage />} />
           <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
           <Route path="reports/pt/new" element={<PTReportFormPage />} />
           <Route path="reports/ut/new" element={<UTReportFormPage />} />
-          <Route path="reports/vssc-ut/new" element={<VSSCUTReportFormPage />} />
+          <Route
+            path="reports/vssc-ut/new"
+            element={<VSSCUTReportFormPage />}
+          />
           <Route path="reports/utg/new" element={<UTGReportFormPage />} />
           <Route path="reports/tpi-ivr/new" element={<TPIIVRFormPage />} />
           <Route path="reports/awsd/new" element={<AWSDReportFormPage />} />
@@ -180,13 +191,16 @@ function App() {
         <Route
           path="/student"
           element={
-            <ProtectedRoute allowedRoles={['STUDENT']}>
+            <ProtectedRoute allowedRoles={["STUDENT"]}>
               <DashboardLayout />
             </ProtectedRoute>
           }
         >
           <Route path="dashboard" element={<StudentDashboard />} />
-          <Route path="*" element={<Navigate to="/student/dashboard" replace />} />
+          <Route
+            path="*"
+            element={<Navigate to="/student/dashboard" replace />}
+          />
         </Route>
 
         {/* Report Print Routes (standalone, no DashboardLayout) */}

@@ -7,6 +7,7 @@ import {
   VSSCUTProbeModeData,
   VSSCUTCalibTable,
 } from "../../../api/customerApi";
+import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 const inputClass =
@@ -112,9 +113,9 @@ export const VSSCUTReportFormPage: React.FC = () => {
     customerId?: string;
     customerName?: string;
   } | null;
-  const customerId = state?.customerId ?? "";
-  const customerName = state?.customerName ?? "";
   const [saving, setSaving] = useState(false);
+  const [customerId, setCustomerId] = useState(state?.customerId ?? "");
+  const [customerName, setCustomerName] = useState(state?.customerName ?? "");
 
   // ── Job Details ──
   const [reportNo, setReportNo] = useState("");
@@ -289,7 +290,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
           dacDb: npDacDb,
           scanningDb: npScanningDb,
         },
-        disposition,
+        disposition: disposition || undefined,
         remarks: resolve(remarks, remarksCustom),
         finalSection: {
           inspector: [
@@ -332,6 +333,16 @@ export const VSSCUTReportFormPage: React.FC = () => {
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
       </div>
+
+      {/* ── Missing Customer Banner ── */}
+      {!customerId && (
+        <CustomerPickerBanner
+          onCustomerSelected={(id, name) => {
+            setCustomerId(id);
+            setCustomerName(name);
+          }}
+        />
+      )}
 
       {/* Report No & Page No */}
       <div className={sectionClass}>
