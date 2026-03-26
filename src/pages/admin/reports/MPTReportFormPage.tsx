@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
 import { createMPTReport, MPTObservation, MPTInspector } from '../../../api/customerApi';
 
-// â”€â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Styles â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 const inputClass =
   'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500';
@@ -12,7 +12,7 @@ const labelClass = 'block text-xs font-medium text-gray-700 mb-1';
 const sectionClass = 'bg-white rounded-xl border border-gray-200 p-5 mb-5';
 const sectionTitleClass = 'text-sm font-semibold text-indigo-700 uppercase tracking-wide mb-4 pb-2 border-b border-gray-100';
 
-// â”€â”€â”€ SelectWithOther â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ SelectWithOther â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 interface SelectWithOtherProps {
   id: string;
@@ -46,7 +46,7 @@ const SelectWithOther: React.FC<SelectWithOtherProps> = ({
   </div>
 );
 
-// â”€â”€â”€ Form State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Form State â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 interface ObsRow extends Omit<MPTObservation, 'quantity'> {
   quantity: string;
@@ -65,7 +65,7 @@ const emptyInspector = (): InspRow => ({
   name: '', qualification: '', designation: '', signature: '', idNo: '', date: '',
 });
 
-// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Page â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 export const MPTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
@@ -76,7 +76,7 @@ export const MPTReportFormPage: React.FC = () => {
 
   const [saving, setSaving] = useState(false);
 
-  // â”€â”€ Job Details â”€â”€
+  // â"€â"€ Job Details â"€â"€
   const [reportNo, setReportNo] = useState('');
   const jobCustomer = customerName;
   const [jobClient, setJobClient] = useState('');
@@ -95,7 +95,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [jobSurfaceCondition, setJobSurfaceCondition] = useState('');
   const [jobWeldingProcess, setJobWeldingProcess] = useState('');
 
-  // â”€â”€ Equipment Details â”€â”€
+  // â"€â"€ Equipment Details â"€â"€
   const [eqType, setEqType] = useState('');
   const [eqSrNo, setEqSrNo] = useState('');
   const [eqMake, setEqMake] = useState('');
@@ -104,7 +104,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [eqYokeSpacing, setEqYokeSpacing] = useState('');
   const [eqPieGauge, setEqPieGauge] = useState('');
 
-  // â”€â”€ Medium Details â”€â”€
+  // â"€â"€ Medium Details â"€â"€
   const [biManufacturer, setBiManufacturer] = useState('');
   const [biManufacturerOther, setBiManufacturerOther] = useState('');
   const [biBatchNo, setBiBatchNo] = useState('');
@@ -114,7 +114,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [wcBatchNo, setWcBatchNo] = useState('');
   const [wcExpiryDate, setWcExpiryDate] = useState('');
 
-  // â”€â”€ Method Description â”€â”€
+  // â"€â"€ Method Description â"€â"€
   const [method, setMethod] = useState('');
   const [lightIntensity, setLightIntensity] = useState('');
   const [magnetizationType, setMagnetizationType] = useState('');
@@ -130,22 +130,23 @@ export const MPTReportFormPage: React.FC = () => {
   const [currentTypeOther, setCurrentTypeOther] = useState('');
   const [postCleaning, setPostCleaning] = useState('');
 
-  // â”€â”€ Observations â”€â”€
+  // â"€â"€ Observations â"€â"€
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
-  // â”€â”€ Final Section â”€â”€
-  const [examinedBy, setExaminedBy] = useState('');
+  // â"€â"€ Final Section â"€â"€
   const [custName, setCustName] = useState('');
+  const [custDesig, setCustDesig] = useState('');
   const [custSig, setCustSig] = useState('');
   const [custIdNo, setCustIdNo] = useState('');
   const [custDate, setCustDate] = useState('');
   const [clientName, setClientName] = useState('');
+  const [clientDesig, setClientDesig] = useState('');
   const [clientSig, setClientSig] = useState('');
   const [clientIdNo, setClientIdNo] = useState('');
   const [clientDate, setClientDate] = useState('');
   const [inspectors, setInspectors] = useState<InspRow[]>([emptyInspector()]);
 
-  // â”€â”€ Helpers â”€â”€
+  // â"€â"€ Helpers â"€â"€
   const resolveCustom = (val: string, other: string) =>
     val === 'Other' && other.trim() ? other.trim() : val;
 
@@ -173,7 +174,7 @@ export const MPTReportFormPage: React.FC = () => {
   const removeInspector = (idx: number) =>
     setInspectors(prev => prev.filter((_, i) => i !== idx));
 
-  // â”€â”€ Submit â”€â”€
+  // â"€â"€ Submit â"€â"€
   const handleSubmit = async (status: 'draft' | 'final') => {
     if (!customerId) {
       toast.error('Customer ID is missing. Go back and try again.');
@@ -254,9 +255,9 @@ export const MPTReportFormPage: React.FC = () => {
             remark: o.remark,
           })),
         finalSection: {
-          examinedBy,
-          customer: { name: custName, signature: custSig, idNo: custIdNo, date: custDate || undefined },
-          clientOrTPI: { name: clientName, signature: clientSig, idNo: clientIdNo, date: clientDate || undefined },
+          examinedBy: 'National Industrial Inspection And Training',
+          customer: { name: custName, designation: custDesig, signature: custSig, idNo: custIdNo, date: custDate || undefined },
+          clientOrTPI: { name: clientName, designation: clientDesig, signature: clientSig, idNo: clientIdNo, date: clientDate || undefined },
           inspector: inspectors
             .filter(i => i.name.trim())
             .map(i => ({ ...i, date: i.date || undefined })),
@@ -272,12 +273,12 @@ export const MPTReportFormPage: React.FC = () => {
     }
   };
 
-  // â”€â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€â"€ Render â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
   const manufacturerOptions = ['Pradeep', 'Dyeglo', 'Ferrochem', 'MR Chem', 'Magnaflux', 'Other'];
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
+    <div className="max-w-6xl mx-auto px-4 py-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <button
@@ -313,7 +314,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Job Details â”€â”€ */}
+      {/* â"€â"€ Job Details â"€â"€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -335,7 +336,7 @@ export const MPTReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass} htmlFor="jobReferenceStd">Reference Std.</label>
-            <input id="jobReferenceStd" type="text" value={jobReferenceStd} onChange={e => setJobReferenceStd(e.target.value)} className={inputClass} />
+            <input id="jobReferenceStd" type="text" value={jobReferenceStd} onChange={e => setJobReferenceStd(e.target.value)} className={inputClass} placeholder="e.g. ASME Sec. V, Article VII" />
           </div>
           <div>
             <label className={labelClass} htmlFor="jobInspectionDate">Inspection Start Date</label>
@@ -410,7 +411,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Equipment Details â”€â”€ */}
+      {/* â"€â"€ Equipment Details â"€â"€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Equipment Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -454,7 +455,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Medium Details â”€â”€ */}
+      {/* â"€â"€ Medium Details â"€â"€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Medium Details</h2>
         <div className="overflow-x-auto">
@@ -511,7 +512,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Method Description â”€â”€ */}
+      {/* â"€â"€ Method Description â"€â"€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Description</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -581,11 +582,11 @@ export const MPTReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass} htmlFor="gaussMeter">Gauss Meter Reading</label>
-            <input id="gaussMeter" type="text" value={gaussMeterReading} onChange={e => setGaussMeterReading(e.target.value)} className={inputClass} placeholder="Enter reading" />
+            <input id="gaussMeter" type="text" value={gaussMeterReading} onChange={e => setGaussMeterReading(e.target.value)} className={inputClass} placeholder="e.g. 35 Gauss" />
           </div>
           <div>
             <label className={labelClass} htmlFor="current">Current</label>
-            <input id="current" type="text" value={current} onChange={e => setCurrent(e.target.value)} className={inputClass} placeholder="Enter current value" />
+            <input id="current" type="text" value={current} onChange={e => setCurrent(e.target.value)} className={inputClass} placeholder="e.g. 1.0 Amp" />
           </div>
           <div>
             <label className={labelClass} htmlFor="currentType">Current Type</label>
@@ -608,10 +609,10 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Observations â”€â”€ */}
+      {/* â"€â"€ Observations â"€â"€ */}
       <div className={sectionClass}>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className={sectionTitleClass.replace(' mb-4 pb-2 border-b border-gray-100', '')}>Observations</h2>
+        <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+          <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">Observations</h2>
           <button
             type="button"
             onClick={addObs}
@@ -682,23 +683,80 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Final Section â”€â”€ */}
+      {/* â"€â"€ Examined By â"€â"€ */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Final Section</h2>
+        <h2 className={sectionTitleClass}>Examined By</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
 
-        <div className="mb-4">
-          <label className={labelClass} htmlFor="examinedBy">Examined By</label>
-          <input id="examinedBy" type="text" value={examinedBy} onChange={e => setExaminedBy(e.target.value)} className={inputClass + ' max-w-sm'} placeholder="Organization / Person name" />
-        </div>
+          {/* NIIT Inspector(s) */}
+          <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-semibold text-gray-600 uppercase">National Ind. Insp. &amp; Training</p>
+              <button
+                type="button"
+                onClick={addInspector}
+                className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 rounded-lg px-2 py-1 hover:bg-indigo-50 transition-colors"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              {inspectors.map((insp, idx) => (
+                <div key={idx} className="relative">
+                  {inspectors.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => removeInspector(idx)}
+                        className="absolute top-0 right-0 text-red-400 hover:text-red-600"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                      <p className="text-xs text-gray-400 mb-2">Inspector {idx + 1}</p>
+                    </>
+                  )}
+                  <div className="space-y-2">
+                    <div>
+                      <label className={labelClass}>Name</label>
+                      <input type="text" value={insp.name} onChange={e => updateInsp(idx, 'name', e.target.value)} className={inputClass} placeholder="e.g. Mr. Mayur Bankar" />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Qualification</label>
+                      <input type="text" value={insp.qualification} onChange={e => updateInsp(idx, 'qualification', e.target.value)} className={inputClass} placeholder="e.g. MT NDE Level II" />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Designation</label>
+                      <input type="text" value={insp.designation} onChange={e => updateInsp(idx, 'designation', e.target.value)} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Signature</label>
+                      <input type="text" value={insp.signature} onChange={e => updateInsp(idx, 'signature', e.target.value)} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className={labelClass}>I.D. No.</label>
+                      <input type="text" value={insp.idNo} onChange={e => updateInsp(idx, 'idNo', e.target.value)} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Date</label>
+                      <input type="date" value={insp.date} onChange={e => updateInsp(idx, 'date', e.target.value)} className={inputClass} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
           {/* Customer */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-xs font-semibold text-gray-600 uppercase mb-3">Customer</p>
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <input type="text" value={custName} onChange={e => setCustName(e.target.value)} className={inputClass} />
+                <input type="text" value={custName} onChange={e => setCustName(e.target.value)} className={inputClass} placeholder="e.g. Customer Name" />
+              </div>
+              <div>
+                <label className={labelClass}>Designation</label>
+                <input type="text" value={custDesig} onChange={e => setCustDesig(e.target.value)} className={inputClass} />
               </div>
               <div>
                 <label className={labelClass}>Signature</label>
@@ -721,7 +779,11 @@ export const MPTReportFormPage: React.FC = () => {
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} className={inputClass} />
+                <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} className={inputClass} placeholder="e.g. Client Name" />
+              </div>
+              <div>
+                <label className={labelClass}>Designation</label>
+                <input type="text" value={clientDesig} onChange={e => setClientDesig(e.target.value)} className={inputClass} />
               </div>
               <div>
                 <label className={labelClass}>Signature</label>
@@ -737,66 +799,11 @@ export const MPTReportFormPage: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Inspectors */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-semibold text-gray-600 uppercase">Inspector(s)</p>
-            <button
-              type="button"
-              onClick={addInspector}
-              className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 rounded-lg px-3 py-1.5 hover:bg-indigo-50 transition-colors"
-            >
-              <Plus className="w-3 h-3" /> Add Inspector
-            </button>
-          </div>
-          <div className="space-y-3">
-            {inspectors.map((insp, idx) => (
-              <div key={idx} className="border border-gray-100 rounded-lg p-4 bg-gray-50 relative">
-                {inspectors.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeInspector(idx)}
-                    className="absolute top-3 right-3 text-red-400 hover:text-red-600"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                )}
-                <p className="text-xs text-gray-400 mb-3">Inspector {idx + 1}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className={labelClass}>Name</label>
-                    <input type="text" value={insp.name} onChange={e => updateInsp(idx, 'name', e.target.value)} className={inputClass} />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Qualification</label>
-                    <input type="text" value={insp.qualification} onChange={e => updateInsp(idx, 'qualification', e.target.value)} className={inputClass} placeholder="e.g. MT NDE Level II" />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Designation</label>
-                    <input type="text" value={insp.designation} onChange={e => updateInsp(idx, 'designation', e.target.value)} className={inputClass} />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Signature</label>
-                    <input type="text" value={insp.signature} onChange={e => updateInsp(idx, 'signature', e.target.value)} className={inputClass} />
-                  </div>
-                  <div>
-                    <label className={labelClass}>I.D. No.</label>
-                    <input type="text" value={insp.idNo} onChange={e => updateInsp(idx, 'idNo', e.target.value)} className={inputClass} />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Date</label>
-                    <input type="date" value={insp.date} onChange={e => updateInsp(idx, 'date', e.target.value)} className={inputClass} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
-      {/* â”€â”€ Action Buttons â”€â”€ */}
+      {/* â"€â"€ Action Buttons â"€â"€ */}
       <div className="flex items-center justify-end gap-3 pb-8">
         <button
           type="button"

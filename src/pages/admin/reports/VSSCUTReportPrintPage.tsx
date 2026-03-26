@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import {
+  useParams,
+  useNavigate,
+  useSearchParams,
+  useLocation,
+} from "react-router-dom";
 import { getVSSCUTReportById, VSSCUTReport } from "../../../api/customerApi";
 
 // ─── Print Styles ─────────────────────────────────────────────────────────────
@@ -62,7 +67,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const locState = location.state as { customerId?: string; reportSubType?: string } | null;
+  const locState = location.state as {
+    customerId?: string;
+    reportSubType?: string;
+  } | null;
   const [searchParams] = useSearchParams();
   const autoPrint = searchParams.get("autoprint") === "true";
 
@@ -91,7 +99,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
   const goBack = () => {
     if (locState?.customerId) {
       navigate(`/admin/customers/${locState.customerId}`, {
-        state: { activeTab: "reports", reportSubType: locState.reportSubType ?? "vssc-ut" },
+        state: {
+          activeTab: "reports",
+          reportSubType: locState.reportSubType ?? "vssc-ut",
+        },
       });
     } else {
       navigate(-1);
@@ -100,16 +111,39 @@ export const VSSCUTReportPrintPage: React.FC = () => {
 
   if (loading)
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "Arial" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          fontFamily: "Arial",
+        }}
+      >
         Loading...
       </div>
     );
 
   if (!report)
     return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "Arial", gap: 12 }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          fontFamily: "Arial",
+          gap: 12,
+        }}
+      >
         <p>Report not found.</p>
-        <button onClick={goBack} style={{ padding: "8px 16px", cursor: "pointer" }}>Go Back</button>
+        <button
+          onClick={goBack}
+          style={{ padding: "8px 16px", cursor: "pointer" }}
+        >
+          Go Back
+        </button>
       </div>
     );
 
@@ -129,38 +163,80 @@ export const VSSCUTReportPrintPage: React.FC = () => {
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
       {/* Back button */}
-      <div className="no-print" style={{ padding: "12px 16px", background: "#1e293b", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={goBack} style={{ padding: "6px 14px", background: "#334155", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13 }}>
-          ← Back
-        </button>
-        <button onClick={() => window.print()} style={{ padding: "6px 14px", background: "#1d4ed8", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13 }}>
-          Print / Save PDF
-        </button>
-      </div>
 
       {/* Report Content */}
-      <div id="report-root" style={{ background: "#f1f5f9", minHeight: "100vh", padding: "24px 16px" }}>
-        <div style={{ width: "210mm", minHeight: "297mm", background: "#fff", margin: "0 auto", padding: "5mm", boxShadow: "0 4px 24px rgba(0,0,0,0.12)" }}>
-
+      <div
+        id="report-root"
+        style={{
+          background: "#f1f5f9",
+          minHeight: "100vh",
+          padding: "24px 16px",
+        }}
+      >
+        <div
+          style={{
+            width: "210mm",
+            minHeight: "297mm",
+            background: "#fff",
+            margin: "0 auto",
+            padding: "5mm",
+            boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+          }}
+        >
           {/* Company Header */}
           <table className="report-title-table" style={{ marginBottom: 4 }}>
             <tbody>
               <tr>
-                <td style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>
-                  <div style={{ width: 60, height: 60, border: "1px solid #999", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "8pt", color: "#555" }}>LOGO</div>
+                <td
+                  style={{
+                    width: "15%",
+                    textAlign: "center",
+                    verticalAlign: "middle",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 60,
+                      height: 60,
+                      border: "1px solid #999",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "8pt",
+                      color: "#555",
+                    }}
+                  >
+                    LOGO
+                  </div>
                 </td>
                 <td style={{ textAlign: "center" }}>
-                  <div className="company-name">National Industrial Inspection &amp; Training</div>
-                  <div className="company-sub">
-                    THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING | NDT CONSULTANCY | PHYSICAL CALIBRATION |<br />
-                    FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY MANAGEMENT SYSTEM TRAINING
+                  <div className="company-name">
+                    National Industrial Inspection &amp; Training
                   </div>
-                  <div className="company-iso">(AN ISO 9001:2015 CERTIFIED ORGANIZATION)</div>
+                  <div className="company-sub">
+                    THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING | NDT
+                    CONSULTANCY | PHYSICAL CALIBRATION |<br />
+                    FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY
+                    MANAGEMENT SYSTEM TRAINING
+                  </div>
+                  <div className="company-iso">
+                    (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
+                  </div>
                 </td>
-                <td style={{ width: "22%", verticalAlign: "top", fontSize: "7pt", paddingLeft: 4 }}>
+                <td
+                  style={{
+                    width: "22%",
+                    verticalAlign: "top",
+                    fontSize: "7pt",
+                    paddingLeft: 4,
+                  }}
+                >
                   <div>Format No: FMT-NDT-VSSC-UT-01</div>
                   <div>Rev. No: 00</div>
-                  <div>Page No: <span className="val-red">{v(report.pageNo) || "1/1"}</span></div>
+                  <div>
+                    Page No:{" "}
+                    <span className="val-red">{v(report.pageNo) || "1/1"}</span>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -172,9 +248,15 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           <table className="report-table" style={{ marginBottom: 3 }}>
             <tbody>
               <tr>
-                <td className="lbl" style={{ width: "15%" }}>Report No.</td>
-                <td className="val-red" style={{ width: "35%" }}>{v(report.reportNo)}</td>
-                <td className="lbl" style={{ width: "20%" }}>Report Date</td>
+                <td className="lbl" style={{ width: "15%" }}>
+                  Report No.
+                </td>
+                <td className="val-red" style={{ width: "35%" }}>
+                  {v(report.reportNo)}
+                </td>
+                <td className="lbl" style={{ width: "20%" }}>
+                  Report Date
+                </td>
                 <td className="val-red">{fmtDate(report.reportDate)}</td>
               </tr>
             </tbody>
@@ -183,10 +265,16 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           {/* Job Details */}
           <table className="report-table" style={{ marginBottom: 3 }}>
             <tbody>
-              <tr><td className="section-hdr" colSpan={4}>JOB DETAILS</td></tr>
+              <tr>
+                <td className="section-hdr" colSpan={4}>
+                  JOB DETAILS
+                </td>
+              </tr>
               <tr>
                 <td className="lbl">Job Description</td>
-                <td className="val-red" colSpan={3}>{v(report.jobDescription)}</td>
+                <td className="val-red" colSpan={3}>
+                  {v(report.jobDescription)}
+                </td>
               </tr>
               <tr>
                 <td className="lbl">Weld Joint No.</td>
@@ -220,7 +308,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">Area Scanned</td>
-                <td className="val" colSpan={3}>{v(report.areaScanned)}</td>
+                <td className="val" colSpan={3}>
+                  {v(report.areaScanned)}
+                </td>
               </tr>
               <tr>
                 <td className="lbl">Acceptance Standard</td>
@@ -234,7 +324,11 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           {/* Test Setup */}
           <table className="report-table" style={{ marginBottom: 3 }}>
             <tbody>
-              <tr><td className="section-hdr" colSpan={4}>TEST SETUP</td></tr>
+              <tr>
+                <td className="section-hdr" colSpan={4}>
+                  TEST SETUP
+                </td>
+              </tr>
               <tr>
                 <td className="lbl">For Angle — Range</td>
                 <td className="val-red">{v(ts.angleRange)}</td>
@@ -249,9 +343,13 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="lbl">Idtn. Ref Block (Angle)</td>
-                <td className="val-red">{v(ts.identificationNoOfRefBlock?.angle)}</td>
+                <td className="val-red">
+                  {v(ts.identificationNoOfRefBlock?.angle)}
+                </td>
                 <td className="lbl">Idtn. Ref Block (Normal)</td>
-                <td className="val-red">{v(ts.identificationNoOfRefBlock?.normal)}</td>
+                <td className="val-red">
+                  {v(ts.identificationNoOfRefBlock?.normal)}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -259,7 +357,11 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           {/* Angle Probe Calibration */}
           <table className="report-table" style={{ marginBottom: 2 }}>
             <tbody>
-              <tr><td className="section-hdr" colSpan={4}>ANGLE PROBE CALIBRATION</td></tr>
+              <tr>
+                <td className="section-hdr" colSpan={4}>
+                  ANGLE PROBE CALIBRATION
+                </td>
+              </tr>
               <tr>
                 <td className="lbl">Frequency</td>
                 <td className="val">{v(apc.frequency)}</td>
@@ -284,17 +386,25 @@ export const VSSCUTReportPrintPage: React.FC = () => {
             <thead>
               <tr style={{ background: "#2d3748", color: "#fff" }}>
                 <th style={{ width: "6%" }}>Skip</th>
-                {PROBE_MODES.map(pm => (
-                  <th key={pm} colSpan={3} style={{ fontSize: "7pt" }}>{pm}</th>
+                {PROBE_MODES.map((pm) => (
+                  <th key={pm} colSpan={3} style={{ fontSize: "7pt" }}>
+                    {pm}
+                  </th>
                 ))}
               </tr>
               <tr style={{ background: "#edf2f7" }}>
                 <th></th>
-                {PROBE_MODES.map(pm => (
+                {PROBE_MODES.map((pm) => (
                   <>
-                    <th key={pm + "bp"} style={{ fontSize: "6.5pt" }}>BP</th>
-                    <th key={pm + "mm"} style={{ fontSize: "6.5pt" }}>mm</th>
-                    <th key={pm + "fsh"} style={{ fontSize: "6.5pt" }}>%FSH</th>
+                    <th key={pm + "bp"} style={{ fontSize: "6.5pt" }}>
+                      BP
+                    </th>
+                    <th key={pm + "mm"} style={{ fontSize: "6.5pt" }}>
+                      mm
+                    </th>
+                    <th key={pm + "fsh"} style={{ fontSize: "6.5pt" }}>
+                      %FSH
+                    </th>
                   </>
                 ))}
               </tr>
@@ -302,32 +412,70 @@ export const VSSCUTReportPrintPage: React.FC = () => {
             <tbody>
               {SKIPS.map(({ key, label }) => (
                 <tr key={key}>
-                  <td style={{ background: "#f7fafc", fontWeight: 600, textAlign: "center" }}>{label}</td>
-                  {PROBE_MODES.map(pm => {
+                  <td
+                    style={{
+                      background: "#f7fafc",
+                      fontWeight: 600,
+                      textAlign: "center",
+                    }}
+                  >
+                    {label}
+                  </td>
+                  {PROBE_MODES.map((pm) => {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const cell = (ct[pm] as any)?.[key] ?? {};
                     return (
                       <>
-                        <td key={pm + "bp"} style={{ color: "#c53030" }}>{v(cell.bp)}</td>
-                        <td key={pm + "mm"} style={{ color: "#c53030" }}>{v(cell.mm)}</td>
-                        <td key={pm + "fsh"} style={{ color: "#c53030" }}>{v(cell.fsh)}</td>
+                        <td key={pm + "bp"} style={{ color: "#c53030" }}>
+                          {v(cell.bp)}
+                        </td>
+                        <td key={pm + "mm"} style={{ color: "#c53030" }}>
+                          {v(cell.mm)}
+                        </td>
+                        <td key={pm + "fsh"} style={{ color: "#c53030" }}>
+                          {v(cell.fsh)}
+                        </td>
                       </>
                     );
                   })}
                 </tr>
               ))}
               <tr style={{ background: "#fffbeb" }}>
-                <td style={{ fontWeight: 700, textAlign: "center", fontSize: "7pt" }}>DAC dB</td>
-                {PROBE_MODES.map(pm => (
-                  <td key={pm} colSpan={3} style={{ color: "#c53030", fontWeight: 500 }}>
+                <td
+                  style={{
+                    fontWeight: 700,
+                    textAlign: "center",
+                    fontSize: "7pt",
+                  }}
+                >
+                  DAC dB
+                </td>
+                {PROBE_MODES.map((pm) => (
+                  <td
+                    key={pm}
+                    colSpan={3}
+                    style={{ color: "#c53030", fontWeight: 500 }}
+                  >
                     {v((ct[pm] as any)?.dacDb)}
                   </td>
                 ))}
               </tr>
               <tr style={{ background: "#fffbeb" }}>
-                <td style={{ fontWeight: 700, textAlign: "center", fontSize: "7pt" }}>Scan dB</td>
-                {PROBE_MODES.map(pm => (
-                  <td key={pm} colSpan={3} style={{ color: "#c53030", fontWeight: 500 }}>
+                <td
+                  style={{
+                    fontWeight: 700,
+                    textAlign: "center",
+                    fontSize: "7pt",
+                  }}
+                >
+                  Scan dB
+                </td>
+                {PROBE_MODES.map((pm) => (
+                  <td
+                    key={pm}
+                    colSpan={3}
+                    style={{ color: "#c53030", fontWeight: 500 }}
+                  >
                     {v((ct[pm] as any)?.scanningDb)}
                   </td>
                 ))}
@@ -338,7 +486,11 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           {/* Normal Probe Calibration */}
           <table className="report-table" style={{ marginBottom: 3 }}>
             <tbody>
-              <tr><td className="section-hdr" colSpan={4}>NORMAL PROBE CALIBRATION</td></tr>
+              <tr>
+                <td className="section-hdr" colSpan={4}>
+                  NORMAL PROBE CALIBRATION
+                </td>
+              </tr>
               <tr>
                 <td className="lbl">Probe S. No / Type</td>
                 <td className="val-red">{v(npc.probeType)}</td>
@@ -360,7 +512,8 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               <tr>
                 <td className="lbl">Scanning dB</td>
                 <td className="val-red">{v(npc.scanningDb)}</td>
-                <td></td><td></td>
+                <td></td>
+                <td></td>
               </tr>
             </tbody>
           </table>
@@ -369,8 +522,16 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           <table className="report-table" style={{ marginBottom: 3 }}>
             <tbody>
               <tr>
-                <td className="lbl" style={{ width: "20%" }}>Disposition</td>
-                <td style={{ fontWeight: 700, color: report.disposition === "ACCEPTED" ? "#276749" : "#c53030" }}>
+                <td className="lbl" style={{ width: "20%" }}>
+                  Disposition
+                </td>
+                <td
+                  style={{
+                    fontWeight: 700,
+                    color:
+                      report.disposition === "ACCEPTED" ? "#276749" : "#c53030",
+                  }}
+                >
                   {v(report.disposition)}
                 </td>
               </tr>
@@ -387,40 +548,117 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           <table className="report-table">
             <tbody>
               <tr>
-                <td style={{ width: "33%", textAlign: "center", fontWeight: 700, fontSize: "7pt", background: "#edf2f7", padding: "3px 4px" }}>
+                <td
+                  style={{
+                    width: "33%",
+                    textAlign: "center",
+                    fontWeight: 700,
+                    fontSize: "7pt",
+                    background: "#edf2f7",
+                    padding: "3px 4px",
+                  }}
+                >
                   National Ind. Insp. &amp; Training
                 </td>
-                <td style={{ width: "33%", textAlign: "center", fontWeight: 700, fontSize: "7pt", background: "#edf2f7", padding: "3px 4px" }}>
+                <td
+                  style={{
+                    width: "33%",
+                    textAlign: "center",
+                    fontWeight: 700,
+                    fontSize: "7pt",
+                    background: "#edf2f7",
+                    padding: "3px 4px",
+                  }}
+                >
                   QC / WIL
                 </td>
-                <td style={{ width: "34%", textAlign: "center", fontWeight: 700, fontSize: "7pt", background: "#edf2f7", padding: "3px 4px" }}>
+                <td
+                  style={{
+                    width: "34%",
+                    textAlign: "center",
+                    fontWeight: 700,
+                    fontSize: "7pt",
+                    background: "#edf2f7",
+                    padding: "3px 4px",
+                  }}
+                >
                   RQS / VSSC
                 </td>
               </tr>
               <tr style={{ height: 30 }}>
-                <td style={{ verticalAlign: "bottom", paddingBottom: 2, fontSize: "7pt" }}>Signature:</td>
-                <td style={{ verticalAlign: "bottom", paddingBottom: 2, fontSize: "7pt" }}>Signature:</td>
-                <td style={{ verticalAlign: "bottom", paddingBottom: 2, fontSize: "7pt" }}>Signature:</td>
+                <td
+                  style={{
+                    verticalAlign: "bottom",
+                    paddingBottom: 2,
+                    fontSize: "7pt",
+                  }}
+                >
+                  Signature:
+                </td>
+                <td
+                  style={{
+                    verticalAlign: "bottom",
+                    paddingBottom: 2,
+                    fontSize: "7pt",
+                  }}
+                >
+                  Signature:
+                </td>
+                <td
+                  style={{
+                    verticalAlign: "bottom",
+                    paddingBottom: 2,
+                    fontSize: "7pt",
+                  }}
+                >
+                  Signature:
+                </td>
               </tr>
               <tr>
-                <td style={{ fontSize: "7pt" }}>Name: <span style={{ color: "#c53030" }}>{v(inspector.name)}</span></td>
-                <td style={{ fontSize: "7pt" }}>Name: <span style={{ color: "#c53030" }}>{v(fs.qc?.name)}</span></td>
-                <td style={{ fontSize: "7pt" }}>Name: <span style={{ color: "#c53030" }}>{v(fs.rqs?.name)}</span></td>
+                <td style={{ fontSize: "7pt" }}>
+                  Name:{" "}
+                  <span style={{ color: "#c53030" }}>{v(inspector.name)}</span>
+                </td>
+                <td style={{ fontSize: "7pt" }}>
+                  Name:{" "}
+                  <span style={{ color: "#c53030" }}>{v(fs.qc?.name)}</span>
+                </td>
+                <td style={{ fontSize: "7pt" }}>
+                  Name:{" "}
+                  <span style={{ color: "#c53030" }}>{v(fs.rqs?.name)}</span>
+                </td>
               </tr>
               {inspector.qualification && (
                 <tr>
-                  <td style={{ fontSize: "7pt" }}>{v(inspector.qualification)}</td>
-                  <td></td><td></td>
+                  <td style={{ fontSize: "7pt" }}>
+                    {v(inspector.qualification)}
+                  </td>
+                  <td></td>
+                  <td></td>
                 </tr>
               )}
               <tr>
-                <td style={{ fontSize: "7pt" }}>Date: <span style={{ color: "#c53030" }}>{fmtDate(inspector.date)}</span></td>
-                <td style={{ fontSize: "7pt" }}>Date: <span style={{ color: "#c53030" }}>{fmtDate(fs.qc?.date)}</span></td>
-                <td style={{ fontSize: "7pt" }}>Date: <span style={{ color: "#c53030" }}>{fmtDate(fs.rqs?.date)}</span></td>
+                <td style={{ fontSize: "7pt" }}>
+                  Date:{" "}
+                  <span style={{ color: "#c53030" }}>
+                    {fmtDate(inspector.date)}
+                  </span>
+                </td>
+                <td style={{ fontSize: "7pt" }}>
+                  Date:{" "}
+                  <span style={{ color: "#c53030" }}>
+                    {fmtDate(fs.qc?.date)}
+                  </span>
+                </td>
+                <td style={{ fontSize: "7pt" }}>
+                  Date:{" "}
+                  <span style={{ color: "#c53030" }}>
+                    {fmtDate(fs.rqs?.date)}
+                  </span>
+                </td>
               </tr>
             </tbody>
           </table>
-
         </div>
       </div>
     </>

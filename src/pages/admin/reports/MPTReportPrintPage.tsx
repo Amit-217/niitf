@@ -11,6 +11,7 @@ import { getMPTReportById, MPTReport } from "../../../api/customerApi";
 
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 6mm 8mm; }
+  #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
   @media screen { body.autoprint-mode { opacity: 0; } }
   @media print {
     body.autoprint-mode { opacity: 1; }
@@ -42,24 +43,21 @@ const PRINT_STYLES = `
     font-size: 7pt;
     text-align: center;
   }
-  .lbl {
-    background: #f7fafc;
-    font-weight: 600;
-    font-size: 7.5pt;
-    white-space: nowrap;
-    width: 18%;
-  }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 7.5pt; white-space: nowrap; width: 22%; }
   .val { font-size: 7.5pt; }
   .report-title-table { width: 100%; border-collapse: collapse; }
   .report-title-table td { border: 1px solid #444; padding: 2px 6px; }
-  .company-name { font-size: 9.5pt; font-weight: bold; text-transform: uppercase; text-align: center; }
-  .report-title { font-size: 11pt; font-weight: bold; text-align: center; letter-spacing: 1px; text-transform: uppercase; }
+  .company-name { font-size: 9.5pt; font-weight: bold; text-transform: uppercase; text-align: center; color: #1a3c8f; }
+  .company-sub { font-size: 6.5pt; text-align: center; color: #333; line-height: 1.5; }
+  .company-iso { font-size: 6.5pt; text-align: center; font-weight: bold; color: #333; }
+  .report-title { font-size: 10pt; font-weight: bold; text-align: center; letter-spacing: 1px; text-transform: uppercase; text-decoration: underline; margin: 4px 0; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .obs-table td, .obs-table th { border: 1px solid #444; padding: 2px 3px; font-size: 7.5pt; vertical-align: top; word-break: break-word; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: -1px; }
   .sign-table td { border: 1px solid #444; padding: 2px 4px; font-size: 7.5pt; vertical-align: top; min-height: 14px; }
   .sign-lbl { font-weight: 600; font-size: 7pt; }
   .mt-n1 { margin-top: -1px; }
+  .footer-text { font-size: 6pt; text-align: center; color: #555; margin-top: 4px; }
 `;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -68,11 +66,7 @@ const fmtDate = (d?: string | null) => {
   if (!d) return "";
   const dt = new Date(d);
   if (isNaN(dt.getTime())) return d;
-  return dt.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+  return `${String(dt.getDate()).padStart(2, "0")}.${String(dt.getMonth() + 1).padStart(2, "0")}.${dt.getFullYear()}`;
 };
 
 const v = (val?: string | null) => val || "";
@@ -213,24 +207,25 @@ export const MPTReportPrintPage = () => {
                 <td
                   rowSpan={2}
                   style={{
-                    width: "18%",
+                    width: "14%",
                     textAlign: "center",
                     verticalAlign: "middle",
-                    padding: 6,
+                    padding: 4,
                   }}
                 >
-                  {/* Company Logo placeholder */}
                   <div
                     style={{
-                      border: "1px solid #ccc",
-                      width: 60,
-                      height: 60,
+                      border: "2px solid #1a3c8f",
+                      borderRadius: 4,
+                      width: 56,
+                      height: 56,
                       margin: "0 auto",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       fontSize: 7,
-                      color: "#888",
+                      color: "#1a3c8f",
+                      fontWeight: "bold",
                       textAlign: "center",
                     }}
                   >
@@ -242,20 +237,29 @@ export const MPTReportPrintPage = () => {
                 <td
                   style={{
                     textAlign: "center",
-                    verticalAlign: "bottom",
-                    paddingBottom: 2,
+                    verticalAlign: "middle",
+                    padding: "2px 6px",
                   }}
                 >
                   <div className="company-name">
-                    National Industrial Inspection And Training
+                    National Industrial Inspection &amp; Training
+                  </div>
+                  <div className="company-sub">
+                    THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING | NDT
+                    CONSULTANCY | PHYSICAL CALIBRATION |<br />
+                    FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY
+                    MANAGEMENT SYSTEM TRAINING
+                  </div>
+                  <div className="company-iso">
+                    (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
                   </div>
                 </td>
                 <td
                   rowSpan={2}
                   style={{
-                    width: "22%",
+                    width: "20%",
                     verticalAlign: "middle",
-                    fontSize: "8pt",
+                    fontSize: "7.5pt",
                     lineHeight: 1.6,
                   }}
                 >
@@ -271,13 +275,7 @@ export const MPTReportPrintPage = () => {
                 </td>
               </tr>
               <tr>
-                <td
-                  style={{
-                    textAlign: "center",
-                    paddingTop: 2,
-                    paddingBottom: 4,
-                  }}
-                >
+                <td style={{ textAlign: "center", padding: "3px 6px" }}>
                   <div className="report-title">
                     Magnetic Particle Examination Report
                   </div>
@@ -711,6 +709,15 @@ export const MPTReportPrintPage = () => {
               ))}
             </tbody>
           </table>
+          {/* ── Footer ── */}
+          <div className="footer-text">
+            Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
+            Baramati, Dist-Pune 413133 Ph. +91 9860186056, +91 7875154431
+            <br />
+            Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 |
+            Website: www.niitindt.com | Email: niit04@gmail.com |
+            info@niitindt.com
+          </div>
         </div>
       </div>
     </>
