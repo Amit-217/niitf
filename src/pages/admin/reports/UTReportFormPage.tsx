@@ -211,7 +211,7 @@ export const UTReportFormPage: React.FC = () => {
           .filter(o => o.jobDescription.trim())
           .map(o => ({
             srNo: o.srNo, jobDescription: o.jobDescription, drawingOrJointNo: o.drawingOrJointNo,
-            size: o.size, quantity: Number(o.quantity) || 0, evaluation: o.evaluation, result: o.remark,
+            size: o.size, quantity: Number(o.quantity) || 0, evaluation: o.evaluation, remark: o.remark,
           })),
         finalSection: {
           examinedBy: 'National Industrial Inspection And Training',
@@ -221,7 +221,7 @@ export const UTReportFormPage: React.FC = () => {
         },
       });
       toast.success(`UT Report saved as ${status}.`);
-      navigate(-1);
+      navigate(`/admin/customers/${customerId}`, { state: { activeTab: 'reports', reportSubType: 'ut' } });
     } catch {
       toast.error('Failed to save report. Please try again.');
     } finally {

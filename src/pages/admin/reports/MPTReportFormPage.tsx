@@ -264,7 +264,7 @@ export const MPTReportFormPage: React.FC = () => {
       });
 
       toast.success(`MPT Report saved as ${status}.`);
-      navigate(-1);
+      navigate(`/admin/customers/${customerId}`, { state: { activeTab: 'reports', reportSubType: 'mpt' } });
     } catch {
       toast.error('Failed to save report. Please try again.');
     } finally {

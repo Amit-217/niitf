@@ -447,3 +447,69 @@ export const deleteUTReport = (id: string) =>
 
 export const getVSSCUTReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
   api.get('/reports/vssc-ut', { params });
+
+export interface VSSCUTSkipRow { bp?: string; mm?: string; fsh?: string; }
+export interface VSSCUTProbeModeData {
+  half?: VSSCUTSkipRow; one?: VSSCUTSkipRow; oneHalf?: VSSCUTSkipRow; two?: VSSCUTSkipRow;
+  dacDb?: string; scanningDb?: string;
+}
+export type VSSCUTCalibTable = Record<string, VSSCUTProbeModeData>;
+
+export interface VSSCUTReportPayload {
+  customerId: string;
+  reportNo: string;
+  pageNo?: string;
+  status?: 'draft' | 'final';
+  jobDescription?: string;
+  reportDate?: string;
+  weldJointNo?: string;
+  thicknessOfJob?: string;
+  surfaceCondition?: string;
+  customer?: string;
+  periodOfInspection?: string;
+  material?: string;
+  scanningTechnique?: string;
+  stageOfInspection?: string;
+  equipmentUsed?: string;
+  couplant?: string;
+  areaScanned?: string;
+  acceptanceStandard?: string;
+  referenceDatum?: string;
+  testSetup?: {
+    angleRange?: string; normalRange?: string;
+    standardCalBlock?: { angle?: string; normal?: string };
+    identificationNoOfRefBlock?: { angle?: string; normal?: string };
+  };
+  angleProbeCalibration?: {
+    frequency?: string; size?: string; type?: string;
+    probe45SerialNo?: string; probe60SerialNo?: string; probe70SerialNo?: string;
+    calibTable?: VSSCUTCalibTable;
+  };
+  normalProbeCalibration?: {
+    probeType?: string; frequency?: string; size?: string;
+    skip?: string; bp?: string; dacDb?: string; scanningDb?: string;
+  };
+  disposition?: string;
+  remarks?: string;
+  finalSection?: {
+    inspector?: { name?: string; qualification?: string; idNo?: string; date?: string }[];
+    qc?: { name?: string; idNo?: string; date?: string };
+    rqs?: { name?: string; idNo?: string; date?: string };
+  };
+}
+
+export interface VSSCUTReport extends VSSCUTReportPayload {
+  _id: string; reportType: string; createdAt: string;
+}
+
+export const getVSSCUTReportById = (id: string) =>
+  api.get(`/reports/vssc-ut/${id}`);
+
+export const createVSSCUTReport = (data: VSSCUTReportPayload) =>
+  api.post('/reports/vssc-ut', data);
+
+export const updateVSSCUTReport = (id: string, data: Partial<VSSCUTReportPayload>) =>
+  api.put(`/reports/vssc-ut/${id}`, data);
+
+export const deleteVSSCUTReport = (id: string) =>
+  api.delete(`/reports/vssc-ut/${id}`);
