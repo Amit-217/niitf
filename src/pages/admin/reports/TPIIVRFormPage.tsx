@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
-import { createTPIIVRReport } from '../../../api/customerApi';
+import { createTPIIVRReport, updateTPIIVRReport, getTPIIVRReportById } from '../../../api/customerApi';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -88,9 +88,10 @@ const emptyCalib = (): CalibRow => ({
 export const TPIIVRFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams<{ id?: string }>();
   const state = location.state as { customerId?: string; customerName?: string } | null;
-  const customerId = state?.customerId ?? '';
-  const customerName = state?.customerName ?? '';
+  const [customerId, setCustomerId] = useState(state?.customerId ?? '');
+  const [customerName, setCustomerName] = useState(state?.customerName ?? '');
 
   const [saving, setSaving] = useState(false);
 
@@ -147,6 +148,59 @@ export const TPIIVRFormPage: React.FC = () => {
   const [niitSignName, setNiitSignName] = useState('');
   const [niitSignDate, setNiitSignDate] = useState('');
 
+  // ── Load in edit mode ──
+  useEffect(() => {
+    if (!id) return;
+    const toDate = (d?: string | null) => d ? d.split('T')[0] : '';
+    const fromOther = (val: string | undefined, opts: string[]): [string, string] => {
+      if (!val) return ['', ''];
+      return opts.includes(val) ? [val, ''] : ['Other', val];
+    };
+    getTPIIVRReportById(id).then((res: any) => {
+      const r = (res as any).data ?? res;
+      if (r.customerId) setCustomerId(r.customerId);
+      setIrNo(r.irNo ?? ''); setIrRev(r.irRev ?? '');
+      setDtOfInspection(toDate(r.dtOfInspection));
+      setClient(r.client ?? ''); setInspectionLocation(r.inspectionLocation ?? '');
+      setProject(r.project ?? ''); setAppdQapNo(r.appdQapNo ?? '');
+      setClientPoNo(r.clientPoNo ?? ''); setAppdQapDt(toDate(r.appdQapDt));
+      setPoAmedNo(r.poAmedNo ?? ''); setPartName(r.partName ?? ''); setPoDate(toDate(r.poDate));
+      const [is_, isO] = fromOther(r.inspectionStage, ['UT IN P/M CONDITION', 'STAGE', 'FINAL', 'STAGE & FINAL', 'INCOMING', 'IN-PROCESS', 'DISPATCH', 'Other']);
+      setInspectionStage(is_); setInspectionStageOther(isO);
+      const cd = r.clientDetails ?? {};
+      const [cr, crO] = fromOther(cd.ref, ['By Mail', 'By Phone', 'By Email', 'By Fax', 'Other']);
+      setClientRef(cr); setClientRefOther(crO);
+      setClientContact(cd.contact ?? ''); setCallDate(toDate(cd.callDate)); setInspAttDt(toDate(cd.inspectionAttDt));
+      const vd = r.vendorDetails ?? {};
+      setVendor(vd.vendor ?? ''); setSubVendor(vd.subVendor ?? '');
+      setVendorContact(vd.contact ?? ''); setVendorPhone(vd.phone ?? '');
+      const ev = r.extraVisit ?? {};
+      setExtraVisitDate(ev.date ?? ''); setExtraVisitComment(ev.comment ?? '');
+      if (r.inspectionItems?.length) {
+        setItems(r.inspectionItems.map((i: any) => ({
+          poLineNo: i.poLineNo ?? '', description: i.description ?? '', drgOrHeatNo: i.drgOrHeatNo ?? '',
+          qtyOffered: String(i.qtyOffered ?? ''), qtyInspected: String(i.qtyInspected ?? ''),
+          qtyAccepted: String(i.qtyAccepted ?? ''), qtyHold: String(i.qtyHold ?? ''),
+          qtyReject: String(i.qtyReject ?? ''), inspectionType: i.inspectionType ?? '',
+        })));
+      }
+      setInspectionActivities(r.inspectionActivities ?? '');
+      const conclusionOpts = ['Ultrasonic Testing witness done & found accepted.', 'Dimensional Inspection done & found accepted.', 'Visual Inspection done & found accepted.', 'Inspection done & found accepted.', 'Inspection done & found rejected.', 'On Hold - pending clarification.', 'Other'];
+      const [con, conO] = fromOther(r.conclusion, conclusionOpts);
+      setConclusion(con); setConclusionOther(conO);
+      if (r.referenceDocuments?.length) setRefDocs(r.referenceDocuments);
+      if (r.calibrationStatus?.length) {
+        setCalibRows(r.calibrationStatus.map((c: any) => ({
+          equipment: c.equipment ?? '', idNumber: c.idNumber ?? '',
+          calibrationDate: toDate(c.calibrationDate), dueDate: toDate(c.dueDate), nablCertified: c.nablCertified ?? '',
+        })));
+      }
+      const sigs = r.signatures ?? {};
+      setVendorSignName(sigs.vendor?.name ?? ''); setVendorSignDate(toDate(sigs.vendor?.date));
+      setNiitSignName(sigs.niit?.name ?? ''); setNiitSignDate(toDate(sigs.niit?.date));
+    }).catch(() => toast.error('Failed to load report.'));
+  }, [id]);
+
   // ── Helpers ──
   const resolve = (val: string, other: string) =>
     val === 'Other' && other.trim() ? other.trim() : val;
@@ -171,7 +225,7 @@ export const TPIIVRFormPage: React.FC = () => {
 
     setSaving(true);
     try {
-      await createTPIIVRReport({
+      const payload = {
         customerId,
         irNo: irNo.trim(),
         status,
@@ -232,7 +286,12 @@ export const TPIIVRFormPage: React.FC = () => {
           vendor: { name: vendorSignName, date: vendorSignDate || undefined },
           niit: { name: niitSignName, date: niitSignDate || undefined },
         },
-      });
+      };
+      if (id) {
+        await updateTPIIVRReport(id, payload);
+      } else {
+        await createTPIIVRReport(payload);
+      }
       toast.success(`IVR saved as ${status}.`);
       navigate(`/admin/customers/${customerId}`, { state: { activeTab: 'reports', reportSubType: 'tpi-ivr' } });
     } catch {

@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ArrowLeft, Save } from "lucide-react";
 import {
   createVSSCUTReport,
+  updateVSSCUTReport,
+  getVSSCUTReportById,
   VSSCUTProbeModeData,
   VSSCUTCalibTable,
 } from "../../../api/customerApi";
@@ -109,6 +111,7 @@ const SKIPS: Array<{
 export const VSSCUTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams<{ id?: string }>();
   const state = location.state as {
     customerId?: string;
     customerName?: string;
@@ -192,6 +195,79 @@ export const VSSCUTReportFormPage: React.FC = () => {
   const [rqsIdNo, setRqsIdNo] = useState("");
   const [rqsDate, setRqsDate] = useState("");
 
+  // ── Load in edit mode ──
+  useEffect(() => {
+    if (!id) return;
+    const toDate = (d?: string | null) => d ? d.split('T')[0] : '';
+    const fromOther = (val: string | undefined, opts: string[]): [string, string] => {
+      if (!val) return ['', ''];
+      return opts.includes(val) ? [val, ''] : ['Other', val];
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getVSSCUTReportById(id).then((res: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const r = (res as any).data ?? res;
+      if (r.customerId) setCustomerId(r.customerId);
+      if (r.customer) setCustomerName(r.customer);
+      setReportNo(r.reportNo ?? ''); setPageNo(r.pageNo ?? '');
+      setJobDescription(r.jobDescription ?? ''); setReportDate(toDate(r.reportDate));
+      setWeldJointNo(r.weldJointNo ?? ''); setThicknessOfJob(r.thicknessOfJob ?? '');
+      const [sc, scC] = fromOther(r.surfaceCondition, ['Ground and polished', 'Smooth', 'Rough', 'Other']);
+      setSurfaceCondition(sc); setSurfaceConditionCustom(scC);
+      const period = r.periodOfInspection ?? '';
+      if (period.includes(' To ')) {
+        const parts = period.split(' To ');
+        setPeriodFrom(toDate(parts[0])); setPeriodTo(toDate(parts[1]));
+      } else { setPeriodFrom(toDate(period)); }
+      setMaterial(r.material ?? '');
+      const [st, stC] = fromOther(r.scanningTechnique, ['Contact manual', 'Other']);
+      setScanningTechnique(st); setScanningTechniqueCustom(stC);
+      const [si, siC] = fromOther(r.stageOfInspection, ['Before HT', 'AA Periodic UT', 'After Ageing', 'After PPT', 'Other']);
+      setStageOfInspection(si); setStageOfInspectionCustom(siC);
+      const [eu, euC] = fromOther(r.equipmentUsed, ['USM-36', 'Other']);
+      setEquipmentUsed(eu); setEquipmentUsedCustom(euC);
+      const [co, coC] = fromOther(r.couplant, ['Oil', 'Grease', 'Oil + Grease', 'Other']);
+      setCouplant(co); setCouplantCustom(coC);
+      const [as_, asC] = fromOther(r.areaScanned, ['Weld + HAZ (Longitudinal & Transverse – 2 Directions)', 'Weld Only', 'Other']);
+      setAreaScanned(as_); setAreaScannedCustom(asC);
+      const [acc, accC] = fromOther(r.acceptanceStandard, ['MME/QC-HTW/M250/001 REV.0', 'CUSTOMER', 'Other']);
+      setAcceptanceStandard(acc); setAcceptanceStandardCustom(accC);
+      const [rd, rdC] = fromOther(r.referenceDatum, ['RT Location', 'Other']);
+      setReferenceDatum(rd); setReferenceDatumCustom(rdC);
+      const ts = r.testSetup ?? {};
+      setTsAngleRange(ts.angleRange ?? ''); setTsNormalRange(ts.normalRange ?? '');
+      setTsCalBlockAngle(ts.standardCalBlock?.angle ?? ''); setTsCalBlockNormal(ts.standardCalBlock?.normal ?? '');
+      setTsRefBlockAngle(ts.identificationNoOfRefBlock?.angle ?? '');
+      const [rbn, rbnC] = fromOther(ts.identificationNoOfRefBlock?.normal, ['2mmFBH (PJS-01-2007/4)', 'CUSTOM', 'Other']);
+      setTsRefBlockNormal(rbn); setTsRefBlockNormalCustom(rbnC);
+      const apc = r.angleProbeCalibration ?? {};
+      const [apcF, apcFC] = fromOther(apc.frequency, ['4 MHz', '2 MHz', '5 MHz', 'Other']);
+      setApcFrequency(apcF); setApcFrequencyCustom(apcFC);
+      const [apcSz, apcSzC] = fromOther(apc.size, ['8x9 mm', '10x10 mm', 'Other']);
+      setApcSize(apcSz); setApcSizeCustom(apcSzC);
+      const [apcTp, apcTpC] = fromOther(apc.type, ['MWB', 'SW', 'Other']);
+      setApcType(apcTp); setApcTypeCustom(apcTpC);
+      setProbe45Sr(apc.probe45SerialNo ?? ''); setProbe60Sr(apc.probe60SerialNo ?? ''); setProbe70Sr(apc.probe70SerialNo ?? '');
+      if (apc.calibTable) setCalibTable(apc.calibTable);
+      const npc = r.normalProbeCalibration ?? {};
+      setNpProbeType(npc.probeType ?? '');
+      const [npF, npFC] = fromOther(npc.frequency, ['4 MHz', '2 MHz', '5 MHz', 'Other']);
+      setNpFrequency(npF); setNpFrequencyCustom(npFC);
+      setNpSize(npc.size ?? ''); setNpSkip(npc.skip ?? ''); setNpBp(npc.bp ?? '');
+      setNpDacDb(npc.dacDb ?? ''); setNpScanningDb(npc.scanningDb ?? '');
+      setDisposition(r.disposition ?? '');
+      const [rm, rmC] = fromOther(r.remarks, ['RECORDABLE INDICATIONS WAS OBSERVED - REFER ANNEXURE– I', 'NO RECORDABLE INDICATIONS WAS OBSERVED', 'Other']);
+      setRemarks(rm); setRemarksCustom(rmC);
+      const fs = r.finalSection ?? {};
+      const insp = fs.inspector?.[0] ?? {};
+      setInspectorName(insp.name ?? ''); setInspectorIdNo(insp.idNo ?? ''); setInspectorDate(toDate(insp.date));
+      const qc = fs.qc ?? {};
+      setQcName(qc.name ?? ''); setQcIdNo(qc.idNo ?? ''); setQcDate(toDate(qc.date));
+      const rqs = fs.rqs ?? {};
+      setRqsName(rqs.name ?? ''); setRqsIdNo(rqs.idNo ?? ''); setRqsDate(toDate(rqs.date));
+    }).catch(() => toast.error('Failed to load report.'));
+  }, [id]);
+
   // ── Helpers ──
   const resolve = (val: string, custom: string) =>
     val === "Other" && custom.trim() ? custom.trim() : val;
@@ -234,7 +310,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
         ct[pm] = calibTable[pm] as VSSCUTProbeModeData;
       });
 
-      await createVSSCUTReport({
+      const payload = {
         customerId,
         reportNo: reportNo.trim(),
         pageNo,
@@ -303,7 +379,12 @@ export const VSSCUTReportFormPage: React.FC = () => {
           qc: { name: qcName, idNo: qcIdNo, date: qcDate || undefined },
           rqs: { name: rqsName, idNo: rqsIdNo, date: rqsDate || undefined },
         },
-      });
+      };
+      if (id) {
+        await updateVSSCUTReport(id, payload);
+      } else {
+        await createVSSCUTReport(payload);
+      }
       toast.success(`VSSC-UT Report saved as ${status}.`);
       navigate(`/admin/customers/${customerId}`, {
         state: { activeTab: "reports", reportSubType: "vssc-ut" },

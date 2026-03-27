@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ArrowLeft, Plus, Trash2, Save, AlertCircle, Users } from "lucide-react";
-import { createPTReport } from "../../../api/customerApi";
+import { createPTReport, updatePTReport, getPTReportById } from "../../../api/customerApi";
 import { getApiErrorMessage } from "../../../api/error";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 
-// â”€â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Styles â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
@@ -15,7 +15,7 @@ const sectionClass = "bg-white rounded-xl border border-gray-200 p-5 mb-5";
 const sectionTitleClass =
   "text-sm font-semibold text-indigo-700 uppercase tracking-wide mb-4 pb-2 border-b border-gray-100";
 
-// â”€â”€â”€ SelectWithCustom â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ SelectWithCustom â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 interface SelectWithCustomProps {
   id?: string;
@@ -62,7 +62,7 @@ const SelectWithCustom: React.FC<SelectWithCustomProps> = ({
   </div>
 );
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Types â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 interface ObsRow {
   srNo: number;
@@ -84,11 +84,13 @@ const emptyObs = (): ObsRow => ({
   remark: "",
 });
 
-// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Page â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 export const PTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams<{ id?: string }>();
+  const isEditMode = Boolean(id);
   const state = location.state as {
     customerId?: string;
     customerName?: string;
@@ -97,7 +99,7 @@ export const PTReportFormPage: React.FC = () => {
   const [customerId, setCustomerId] = useState(state?.customerId ?? '');
   const [customerName, setCustomerName] = useState(state?.customerName ?? '');
 
-  // â”€â”€ Job Details â”€â”€
+  // â"€â"€ Job Details â"€â"€
   const [reportNo, setReportNo] = useState("");
   const jobCustomer = customerName;
   const [jobClient, setJobClient] = useState("");
@@ -120,11 +122,11 @@ export const PTReportFormPage: React.FC = () => {
   const [jobSurfaceTemp, setJobSurfaceTemp] = useState("");
   const [jobWeldingProcess, setJobWeldingProcess] = useState("");
 
-  // â”€â”€ Method Details â”€â”€
+  // â"€â"€ Method Details â"€â"€
   const [penetrantMethod, setPenetrantMethod] = useState("");
   const [removalMethod, setRemovalMethod] = useState("");
 
-  // â”€â”€ Consumables â”€â”€
+  // â"€â"€ Consumables â"€â"€
   const [penMfr, setPenMfr] = useState("");
   const [penMfrCustom, setPenMfrCustom] = useState("");
   const [penBatch, setPenBatch] = useState("");
@@ -140,7 +142,7 @@ export const PTReportFormPage: React.FC = () => {
   const [cleanBatch, setCleanBatch] = useState("");
   const [cleanExpiry, setCleanExpiry] = useState("");
 
-  // â”€â”€ Method Description â”€â”€
+  // â"€â"€ Method Description â"€â"€
   const [dwellTime, setDwellTime] = useState("");
   const [lightIntensity, setLightIntensity] = useState("");
   const [developingTime, setDevelopingTime] = useState("");
@@ -149,10 +151,10 @@ export const PTReportFormPage: React.FC = () => {
   const [postCleaning, setPostCleaning] = useState("");
   const [dryingTime, setDryingTime] = useState("");
 
-  // â”€â”€ Observations â”€â”€
+  // â"€â"€ Observations â"€â"€
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
-  // â”€â”€ Final Section â”€â”€
+  // â"€â"€ Final Section â"€â"€
   const [inspectorName, setInspectorName] = useState("");
   const [inspectorQual, setInspectorQual] = useState("");
   const [inspectorIdNo, setInspectorIdNo] = useState("");
@@ -166,7 +168,85 @@ export const PTReportFormPage: React.FC = () => {
   const [clientIdNo, setClientIdNo] = useState("");
   const [clientDate, setClientDate] = useState("");
 
-  // â”€â”€ Helpers â”€â”€
+  useEffect(() => {
+    if (!id) return;
+    const toDate = (d?: string | null) => d ? d.split('T')[0] : '';
+    const fromOther = (val: string | undefined, opts: string[]): [string, string] => {
+      if (!val) return ['', ''];
+      return opts.includes(val) ? [val, ''] : ['Other', val];
+    };
+    getPTReportById(id).then((res: any) => {
+      const r = (res as any).data ?? res;
+      setCustomerId(r.customerId ?? '');
+      setCustomerName(r.jobDetails?.customer ?? '');
+      setReportNo(r.reportNo ?? '');
+      const jd = r.jobDetails ?? {};
+      setJobClient(jd.client ?? '');
+      setJobProject(jd.project ?? '');
+      setJobReportDate(toDate(jd.reportDate));
+      setJobInspectionDate(toDate(jd.inspectionDate));
+      setJobInspectionEndDate(toDate(jd.inspectionEndDate));
+      setJobInspectionTime(jd.inspectionTime ?? '');
+      const refStdOpts = ['ASME Sec. V, Article VI', 'ASTM E 165', 'Other'];
+      const [rs, rsC] = fromOther(jd.referenceStandard, refStdOpts);
+      setJobRefStd(rs); setJobRefStdCustom(rsC);
+      const accOpts = ['ASME Sec. VIII Div. 1, Appendix 7', 'Appendix 8', 'Other'];
+      const [acc, accC] = fromOther(jd.acceptanceCriteria, accOpts);
+      setJobAcceptance(acc); setJobAcceptanceCustom(accC);
+      setJobMaterial(jd.material ?? '');
+      setJobStage(jd.stageOfInspection ?? '');
+      setJobThickness(jd.thickness ?? '');
+      const extOpts = ['10%', '100%', 'To the maximum extent possible', 'Other'];
+      const [ext, extC] = fromOther(jd.extentOfExamination, extOpts);
+      setJobExtent(ext); setJobExtentCustom(extC);
+      setJobSurface(jd.surfaceCondition ?? '');
+      setJobJointType(jd.typeOfJoint ?? '');
+      setJobSurfaceTemp(jd.surfaceTemperature ?? '');
+      setJobWeldingProcess(jd.weldingProcess ?? '');
+      const met = r.methodDetails ?? {};
+      setPenetrantMethod(met.penetrantMethod ?? '');
+      setRemovalMethod(met.excessPenetrantRemovalMethod ?? '');
+      const mfrOpts = ['Pradeep', 'Dyeglo', 'Ferrochem', 'MR Chem', 'Magnaflux', 'Other'];
+      const con = r.consumablesDetails ?? {};
+      const pen = con.penetrant ?? {};
+      const [pMfr, pMfrC] = fromOther(pen.manufacturer, mfrOpts);
+      setPenMfr(pMfr); setPenMfrCustom(pMfrC); setPenBatch(pen.batch ?? ''); setPenExpiry(pen.expiryDate ?? '');
+      const dev = con.developer ?? {};
+      const [dMfr, dMfrC] = fromOther(dev.manufacturer, mfrOpts);
+      setDevMfr(dMfr); setDevMfrCustom(dMfrC); setDevBatch(dev.batch ?? ''); setDevExpiry(dev.expiryDate ?? '');
+      const cln = con.cleaner ?? {};
+      const [cMfr, cMfrC] = fromOther(cln.manufacturer, mfrOpts);
+      setCleanMfr(cMfr); setCleanMfrCustom(cMfrC); setCleanBatch(cln.batch ?? ''); setCleanExpiry(cln.expiryDate ?? '');
+      const mdesc = r.methodDescription ?? {};
+      setDwellTime(mdesc.dwellTime ?? '');
+      setLightIntensity(mdesc.lightIntensity ?? '');
+      setDevelopingTime(mdesc.developingTime ?? '');
+      const leOpts = ['60 W Bulb', 'NA', 'Other'];
+      const [le, leC] = fromOther(mdesc.lightEquipmentUsed, leOpts);
+      setLightEquip(le); setLightEquipCustom(leC);
+      setPostCleaning(mdesc.postCleaning ?? '');
+      setDryingTime(mdesc.dryingTime ?? '');
+      if (r.observations?.length) {
+        setObservations(r.observations.map((o: any) => ({
+          srNo: o.srNo, jobDescription: o.jobDescription ?? '',
+          drawingOrJointNo: o.drawingOrJointNo ?? '', size: o.size ?? '',
+          quantity: String(o.quantity ?? ''), evaluation: o.evaluation ?? '', remark: o.remark ?? o.result ?? '',
+        })));
+      }
+      const fs = r.finalSection ?? {};
+      const insp0 = fs.inspector?.[0] ?? {};
+      setInspectorName(insp0.name ?? ''); setInspectorQual(insp0.qualification ?? '');
+      setInspectorIdNo(insp0.idNo ?? ''); setInspectorDate(toDate(insp0.date));
+      const cust = fs.customer ?? {};
+      setCustName(cust.name ?? ''); setCustDesig(cust.designation ?? '');
+      setCustIdNo(cust.idNo ?? ''); setCustDate(toDate(cust.date));
+      const cli = fs.clientOrTPI ?? {};
+      setClientName(cli.name ?? ''); setClientDesig(cli.designation ?? '');
+      setClientIdNo(cli.idNo ?? ''); setClientDate(toDate(cli.date));
+    }).catch(() => toast.error('Failed to load report.'));
+  }, [id]);
+
+  // -- Helpers --
   const resolve = (val: string, custom: string) =>
     val === "Other" && custom.trim() ? custom.trim() : val;
 
@@ -188,7 +268,7 @@ export const PTReportFormPage: React.FC = () => {
         .map((row, i) => ({ ...row, srNo: i + 1 })),
     );
 
-  // â”€â”€ Submit â”€â”€
+  // â"€â"€ Submit â"€â"€
   const handleSubmit = async (status: "draft" | "final") => {
     if (!customerId) {
       toast.error("Customer ID is missing.");
@@ -200,7 +280,7 @@ export const PTReportFormPage: React.FC = () => {
     }
     setSaving(true);
     try {
-      await createPTReport({
+      const payload = {
         customerId,
         reportNo: reportNo.trim(),
         status,
@@ -286,7 +366,12 @@ export const PTReportFormPage: React.FC = () => {
             date: clientDate || undefined,
           },
         },
-      });
+      };
+      if (id) {
+        await updatePTReport(id, payload);
+      } else {
+        await createPTReport(payload);
+      }
 
       toast.success(`PT Report saved as ${status}.`);
       navigate(`/admin/customers/${customerId}`, {
@@ -363,7 +448,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Job Details â”€â”€ */}
+      {/* â"€â"€ Job Details â"€â"€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -448,7 +533,7 @@ export const PTReportFormPage: React.FC = () => {
               value={jobInspectionTime}
               onChange={(e) => setJobInspectionTime(e.target.value)}
               className={inputClass}
-              placeholder="e.g. 10:00 AM â€“ 03:30 PM"
+              placeholder="e.g. 10:00 AM - 03:30 PM"
             />
           </div>
           <div>
@@ -571,7 +656,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Method Details â”€â”€ */}
+      {/* â"€â"€ Method Details â"€â"€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -606,7 +691,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Consumables Details â”€â”€ */}
+      {/* â"€â"€ Consumables Details â"€â"€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Consumables Details</h2>
         <div className="overflow-x-auto">
@@ -701,7 +786,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Method Description â”€â”€ */}
+      {/* â"€â"€ Method Description â"€â"€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Description</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -770,7 +855,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Observations â”€â”€ */}
+      {/* â"€â"€ Observations â"€â"€ */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4">
           <h2
@@ -904,7 +989,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Examined By â”€â”€ */}
+      {/* â"€â"€ Examined By â"€â"€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Examined By</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -1044,7 +1129,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Action Buttons â”€â”€ */}
+      {/* â"€â"€ Action Buttons â"€â"€ */}
       <div className="flex items-center justify-end gap-3 pb-8">
         <button
           type="button"

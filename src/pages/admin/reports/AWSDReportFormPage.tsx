@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
-import { createAWSDReport } from '../../../api/customerApi';
+import { createAWSDReport, updateAWSDReport, getAWSDReportById } from '../../../api/customerApi';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -76,9 +76,10 @@ const emptyObs = (lineNo: number): ObsRow => ({
 export const AWSDReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams<{ id?: string }>();
   const state = location.state as { customerId?: string; customerName?: string } | null;
-  const customerId = state?.customerId ?? '';
-  const customerName = state?.customerName ?? '';
+  const [customerId, setCustomerId] = useState(state?.customerId ?? '');
+  const [customerName, setCustomerName] = useState(state?.customerName ?? '');
 
   const [saving, setSaving] = useState(false);
 
@@ -108,6 +109,48 @@ export const AWSDReportFormPage: React.FC = () => {
   const [authorizedBy, setAuthorizedBy] = useState('');
   const [footerDate, setFooterDate] = useState('');
 
+  // ── Load in edit mode ──
+  useEffect(() => {
+    if (!id) return;
+    const toDate = (d?: string | null) => d ? d.split('T')[0] : '';
+    const fromOther = (val: string | undefined, opts: string[]): [string, string] => {
+      if (!val) return ['', ''];
+      return opts.includes(val) ? [val, ''] : ['Other', val];
+    };
+    getAWSDReportById(id).then((res: any) => {
+      const r = (res as any).data ?? res;
+      if (r.customerId) setCustomerId(r.customerId);
+      setReportNo(r.reportNo ?? ''); setProject(r.project ?? '');
+      setWeldIdentification(r.weldIdentification ?? ''); setMaterialThickness(r.materialThickness ?? '');
+      setWeldJointAWS(r.weldJointAWS ?? '');
+      const [wp, wpO] = fromOther(r.weldingProcess, ['SMAW', 'GMAW', 'FCAW', 'SAW', 'GTAW', 'MAG', 'Other']);
+      setWeldingProcess(wp); setWeldingProcessOther(wpO);
+      setQualityRequirementsSection(r.qualityRequirementsSection ?? ''); setJobRemarks(r.remarks ?? '');
+      if (r.observations?.length) {
+        setObservations(r.observations.map((o: any) => {
+          const [ta, taO] = fromOther(o.transducerAngle, ['45°', '60°', '70°', 'Normal (0°)', 'Other']);
+          return {
+            lineNo: o.lineNo,
+            indicationNo: o.indicationNo ?? '', transducerAngle: ta, transducerAngleOther: taO,
+            fromFace: o.fromFace ?? '', leg: o.leg ?? '',
+            dbIndicationLevel: o.decibels?.indicationLevel ?? '',
+            dbReferenceLevel: o.decibels?.referenceLevel ?? '',
+            dbAttenuationFactor: o.decibels?.attenuationFactor ?? '',
+            dbIndicationRating: o.decibels?.indicationRating ?? '',
+            length: o.discontinuity?.length ?? '', angularDistance: o.discontinuity?.angularDistance ?? '',
+            depthFromA: o.discontinuity?.depthFromA ?? '', distanceFromX: o.discontinuity?.distanceFromX ?? '',
+            distanceFromY: o.discontinuity?.distanceFromY ?? '',
+            evaluation: o.evaluation ?? '', remarks: o.remarks ?? '',
+          };
+        }));
+      }
+      const cert = r.certification ?? {};
+      setTestDate(toDate(cert.testDate)); setInspectedBy(cert.inspectedBy ?? '');
+      setCertYear(cert.year ?? ''); setManufacturerOrContractor(cert.manufacturerOrContractor ?? '');
+      setAuthorizedBy(cert.authorizedBy ?? ''); setFooterDate(toDate(cert.date));
+    }).catch(() => toast.error('Failed to load report.'));
+  }, [id]);
+
   // ── Helpers ──
   const resolve = (val: string, other: string) =>
     val === 'Other' && other.trim() ? other.trim() : val;
@@ -130,7 +173,7 @@ export const AWSDReportFormPage: React.FC = () => {
 
     setSaving(true);
     try {
-      await createAWSDReport({
+      const payload = {
         customerId,
         reportNo: reportNo.trim(),
         status,
@@ -173,7 +216,12 @@ export const AWSDReportFormPage: React.FC = () => {
           authorizedBy,
           date: footerDate || undefined,
         },
-      });
+      };
+      if (id) {
+        await updateAWSDReport(id, payload);
+      } else {
+        await createAWSDReport(payload);
+      }
       toast.success(`AWS D1.1 UT Report saved as ${status}.`);
       navigate(`/admin/customers/${customerId}`, { state: { activeTab: 'reports', reportSubType: 'awsd' } });
     } catch {
