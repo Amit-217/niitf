@@ -326,32 +326,34 @@ export const ReportsListPage = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-5">
-                                            <div className="flex items-center gap-2 scale-90 origin-left">
+                                            <div className="flex items-center gap-1">
                                                 <button
                                                     onClick={() => navigate(`/admin/reports/${activeTab}/${r._id}/print`)}
-                                                    className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-gray-700 bg-white border-2 border-gray-100 rounded-xl hover:border-primary-400 hover:text-primary-700 transition-all shadow-sm active:scale-95"
+                                                    className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                                                    title="View"
                                                 >
-                                                    <Eye size={14} /> View
+                                                    <Eye size={14} />
                                                 </button>
                                                 <button
                                                     onClick={() => window.open(`/admin/reports/${activeTab}/${r._id}/print?autoprint=true`, '_blank')}
-                                                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 bg-white border-2 border-gray-100 rounded-xl transition-all active:scale-95"
+                                                    className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    title="Print"
                                                 >
-                                                    <Printer size={16} />
+                                                    <Printer size={14} />
                                                 </button>
                                                 <button
                                                     onClick={() => navigate(`/admin/reports/${activeTab}/${r._id}/edit`)}
-                                                    className="p-2 text-gray-400 hover:text-teal-600 hover:bg-teal-50 bg-white border-2 border-gray-100 rounded-xl transition-all active:scale-95"
+                                                    className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
                                                     title="Edit"
                                                 >
-                                                    <Pencil size={16} />
+                                                    <Pencil size={14} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeleteReport(r._id)}
-                                                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 bg-white border-2 border-gray-100 rounded-xl transition-all active:scale-95"
+                                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                                                     title="Delete"
                                                 >
-                                                    <Trash2 size={16} />
+                                                    <Trash2 size={14} />
                                                 </button>
                                             </div>
                                         </td>

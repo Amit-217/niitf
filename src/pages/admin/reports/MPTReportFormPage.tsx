@@ -5,6 +5,7 @@ import { ArrowLeft, Plus, Trash2, Save, AlertCircle, Users } from 'lucide-react'
 import { createMPTReport, updateMPTReport, getMPTReportById, MPTObservation, MPTInspector } from '../../../api/customerApi';
 import { getApiErrorMessage } from '../../../api/error';
 import { CustomerPickerBanner } from '../../../components/CustomerPickerBanner';
+import api from '../../../api/axios';
 
 // â"€â"€â"€ Styles â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
@@ -149,6 +150,11 @@ export const MPTReportFormPage: React.FC = () => {
   const [clientIdNo, setClientIdNo] = useState('');
   const [clientDate, setClientDate] = useState('');
   const [inspectors, setInspectors] = useState<InspRow[]>([emptyInspector()]);
+
+  const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
+  useEffect(() => {
+    api.get('/users?status=active&limit=100').then((res: any) => setUsers(res.data ?? res ?? [])).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -786,13 +792,13 @@ export const MPTReportFormPage: React.FC = () => {
 
       {/* â"€â"€ Examined By â"€â"€ */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Examined By</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
 
           {/* NIIT Inspector(s) */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
+            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">Examined By</p>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-semibold text-gray-600 uppercase">National Ind. Insp. &amp; Training</p>
+              <p className="text-xs font-semibold text-gray-700 uppercase">National Ind. Insp. &amp; Training</p>
               <button
                 type="button"
                 onClick={addInspector}
@@ -819,7 +825,12 @@ export const MPTReportFormPage: React.FC = () => {
                   <div className="space-y-2">
                     <div>
                       <label className={labelClass}>Name</label>
-                      <input type="text" value={insp.name} onChange={e => updateInsp(idx, 'name', e.target.value)} className={inputClass} placeholder="e.g. Mr. Mayur Bankar" />
+                      <select value={insp.name} onChange={e => updateInsp(idx, 'name', e.target.value)} className={`${inputClass} bg-white`}>
+                        <option value="">— Select Inspector —</option>
+                        {users.map((u) => (
+                          <option key={u._id} value={u.name}>{u.name}</option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className={labelClass}>Qualification</label>
@@ -849,11 +860,15 @@ export const MPTReportFormPage: React.FC = () => {
 
           {/* Customer */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-xs font-semibold text-gray-600 uppercase mb-3">Customer</p>
+            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">Customer</p>
+            <p className="text-xs font-semibold text-gray-700 uppercase mb-3">{customerName || "—"}</p>
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <input type="text" value={custName} onChange={e => setCustName(e.target.value)} className={inputClass} placeholder="e.g. Customer Name" />
+                <select value={custName} onChange={e => setCustName(e.target.value)} className={`${inputClass} bg-white`}>
+                  <option value="">— Select —</option>
+                  {users.map((u) => (<option key={u._id} value={u.name}>{u.name}</option>))}
+                </select>
               </div>
               <div>
                 <label className={labelClass}>Designation</label>
@@ -876,11 +891,15 @@ export const MPTReportFormPage: React.FC = () => {
 
           {/* Client / TPI */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-xs font-semibold text-gray-600 uppercase mb-3">Client / TPI</p>
+            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">Client / TPI</p>
+            <p className="text-xs font-semibold text-gray-700 uppercase mb-3">{jobClient || "—"}</p>
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} className={inputClass} placeholder="e.g. Client Name" />
+                <select value={clientName} onChange={e => setClientName(e.target.value)} className={`${inputClass} bg-white`}>
+                  <option value="">— Select —</option>
+                  {users.map((u) => (<option key={u._id} value={u.name}>{u.name}</option>))}
+                </select>
               </div>
               <div>
                 <label className={labelClass}>Designation</label>

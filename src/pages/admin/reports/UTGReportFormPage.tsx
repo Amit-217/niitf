@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
 import { createUTGReport, updateUTGReport, getUTGReportById } from '../../../api/customerApi';
 import { CustomerPickerBanner } from '../../../components/CustomerPickerBanner';
+import api from '../../../api/axios';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -145,6 +146,12 @@ export const UTGReportFormPage: React.FC = () => {
 
   // ── Observations ──
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
+
+  // ── Users for inspector dropdown ──
+  const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
+  useEffect(() => {
+    api.get('/users?status=active&limit=100').then((res: any) => setUsers(res.data ?? res ?? [])).catch(() => {});
+  }, []);
 
   // ── Examined By ──
   const [inspectorName, setInspectorName] = useState('');
@@ -738,15 +745,20 @@ export const UTGReportFormPage: React.FC = () => {
 
       {/* ── Examined By ── */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Examined By</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* NIIT Inspector */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-xs font-semibold text-gray-600 uppercase mb-3">National Ind. Insp. &amp; Training</p>
+            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">Examined By</p>
+            <p className="text-xs font-semibold text-gray-700 uppercase mb-3">National Ind. Insp. &amp; Training</p>
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <input type="text" value={inspectorName} onChange={e => setInspectorName(e.target.value)} className={inputClass} placeholder="e.g. Mr. Mayur Bankar" />
+                <select value={inspectorName} onChange={e => setInspectorName(e.target.value)} className={`${inputClass} bg-white`}>
+                  <option value="">— Select Inspector —</option>
+                  {users.map((u) => (
+                    <option key={u._id} value={u.name}>{u.name}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className={labelClass}>Qualification</label>
@@ -768,11 +780,15 @@ export const UTGReportFormPage: React.FC = () => {
           </div>
           {/* Customer */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-xs font-semibold text-gray-600 uppercase mb-3">Customer</p>
+            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">Customer</p>
+            <p className="text-xs font-semibold text-gray-700 uppercase mb-3">{customerName || "—"}</p>
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <input type="text" value={custName} onChange={e => setCustName(e.target.value)} className={inputClass} placeholder="e.g. Customer Name" />
+                <select value={custName} onChange={e => setCustName(e.target.value)} className={`${inputClass} bg-white`}>
+                  <option value="">— Select —</option>
+                  {users.map((u) => (<option key={u._id} value={u.name}>{u.name}</option>))}
+                </select>
               </div>
               <div>
                 <label className={labelClass}>Designation</label>
@@ -794,11 +810,15 @@ export const UTGReportFormPage: React.FC = () => {
           </div>
           {/* Client / TPI */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-xs font-semibold text-gray-600 uppercase mb-3">Client / TPI</p>
+            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">Client / TPI</p>
+            <p className="text-xs font-semibold text-gray-700 uppercase mb-3">{jobClient || "—"}</p>
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} className={inputClass} placeholder="e.g. Client Name" />
+                <select value={clientName} onChange={e => setClientName(e.target.value)} className={`${inputClass} bg-white`}>
+                  <option value="">— Select —</option>
+                  {users.map((u) => (<option key={u._id} value={u.name}>{u.name}</option>))}
+                </select>
               </div>
               <div>
                 <label className={labelClass}>Designation</label>

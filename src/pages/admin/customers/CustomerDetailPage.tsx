@@ -834,34 +834,34 @@ export const CustomerDetailPage = () => {
                             </span>
                           </td>
                           <td className="px-4 py-3">
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1">
                               <button
                                 onClick={() => navigate(`/admin/reports/${reportSubType}/${r._id}/print`, { state: { customerId: id, reportSubType } })}
-                                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors"
+                                className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                                 title="View Report"
                               >
-                                <Eye size={12} /> View
+                                <Eye size={14} />
                               </button>
                               <button
                                 onClick={() => window.open(`/admin/reports/${reportSubType}/${r._id}/print?autoprint=true`, '_blank')}
-                                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                                className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                 title="Print / Download PDF"
                               >
-                                <Printer size={12} /> Print
+                                <Printer size={14} />
                               </button>
                               <button
                                 onClick={() => navigate(`/admin/reports/${reportSubType}/${r._id}/edit`, { state: { customerId: id, reportSubType, customerName: customer?.name } })}
-                                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-teal-600 bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors"
+                                className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
                                 title="Edit Report"
                               >
-                                <Pencil size={12} /> Edit
+                                <Pencil size={14} />
                               </button>
                               <button
                                 onClick={() => handleDeleteReport(r._id)}
-                                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
+                                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                                 title="Delete Report"
                               >
-                                <Trash2 size={12} /> Delete
+                                <Trash2 size={14} />
                               </button>
                             </div>
                           </td>
