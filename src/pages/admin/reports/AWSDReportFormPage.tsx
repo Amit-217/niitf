@@ -3,6 +3,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
 import { createAWSDReport, updateAWSDReport, getAWSDReportById } from '../../../api/customerApi';
+import { CustomerPickerBanner } from '../../../components/CustomerPickerBanner';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -119,7 +120,15 @@ export const AWSDReportFormPage: React.FC = () => {
     };
     getAWSDReportById(id).then((res: any) => {
       const r = (res as any).data ?? res;
-      if (r.customerId) setCustomerId(r.customerId);
+      if (r.customerId) {
+        // Handle populated customer object or string ID
+        if (typeof r.customerId === 'object' && r.customerId._id) {
+          setCustomerId(r.customerId._id);
+          setCustomerName(r.customerId.companyName || '');
+        } else {
+          setCustomerId(r.customerId);
+        }
+      }
       setReportNo(r.reportNo ?? ''); setProject(r.project ?? '');
       setWeldIdentification(r.weldIdentification ?? ''); setMaterialThickness(r.materialThickness ?? '');
       setWeldJointAWS(r.weldJointAWS ?? '');
@@ -243,6 +252,16 @@ export const AWSDReportFormPage: React.FC = () => {
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
       </div>
+
+      {/* ── Missing Customer Banner ── */}
+      {!customerId && (
+        <CustomerPickerBanner
+          onCustomerSelected={(id, name) => {
+            setCustomerId(id);
+            setCustomerName(name);
+          }}
+        />
+      )}
 
       {/* Report No. + Project */}
       <div className={sectionClass}>

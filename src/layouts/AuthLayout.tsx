@@ -21,7 +21,12 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
                     <div className="flex justify-center mb-8">
                         <div className="bg-white p-4 rounded-2xl shadow-lg">
                             {/* Placeholder for Logo Note: user mentioned niitndt.com */}
-                            <h1 className="text-4xl font-extrabold text-primary-600 tracking-tight">NIIT NDT</h1>
+                            <div className="flex flex-col items-center">
+                                <img src="/logo.png" alt="NIIT" className="w-24 h-24 object-contain mx-auto" />
+                                <span className="text-3xl font-black text-primary-950 tracking-tighter uppercase mt-2">
+                                    NIIT <span className="text-primary-600">NDT</span>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <h2 className="text-3xl font-bold mb-4">Enterprise Management System</h2>
@@ -35,7 +40,12 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
             <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 relative bg-white">
                 <div className="w-full max-w-md">
                     <div className="md:hidden text-center mb-10">
-                        <h1 className="text-3xl font-bold text-primary-600 tracking-tight">NIIT NDT</h1>
+                        <div className="flex flex-col items-center">
+                            <img src="/logo.png" alt="NIIT" className="w-16 h-16 object-contain mx-auto" />
+                            <span className="text-xl font-black text-primary-950 tracking-tighter uppercase mt-1">
+                                NIIT <span className="text-primary-600">NDT</span>
+                            </span>
+                        </div>
                     </div>
 
                     <div className="text-center mb-8">

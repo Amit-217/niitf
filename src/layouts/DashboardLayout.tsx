@@ -151,10 +151,10 @@ export const DashboardLayout: React.FC = () => {
                         onClick={() => navigate(`/${basePath}/dashboard`)}
                         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                     >
-                        <div className="bg-primary-600 text-white font-bold text-sm w-8 h-8 flex items-center justify-center rounded-lg">
-                            NN
-                        </div>
-                        <span className="hidden sm:block text-lg font-extrabold text-primary-900 tracking-tight">NIIT NDT</span>
+                        <img src="/logo.png" alt="NIIT" className="w-12 h-12 object-contain" />
+                        <span className="hidden sm:block text-2xl font-black text-primary-950 tracking-tighter uppercase italic">
+                            NIIT <span className="text-primary-600 not-italic">NDT</span>
+                        </span>
                     </button>
                 </div>
 
