@@ -3,6 +3,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
 import { createUTGReport, updateUTGReport, getUTGReportById } from '../../../api/customerApi';
+import { CustomerPickerBanner } from '../../../components/CustomerPickerBanner';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -197,8 +198,15 @@ export const UTGReportFormPage: React.FC = () => {
     };
     getUTGReportById(id).then((res: any) => {
       const r = (res as any).data ?? res;
-      if (r.customerId) setCustomerId(r.customerId);
-      if (r.jobDetails?.customer) setCustomerName(r.jobDetails.customer);
+      if (r.customerId) {
+        if (typeof r.customerId === 'object' && r.customerId._id) {
+          setCustomerId(r.customerId._id);
+          setCustomerName(r.customerId.companyName || '');
+        } else {
+          setCustomerId(r.customerId);
+        }
+      }
+      if (r.jobDetails?.customer && !customerName) setCustomerName(r.jobDetails.customer);
       setReportNo(r.reportNo ?? '');
       const jd = r.jobDetails ?? {};
       setJobClient(jd.client ?? '');
@@ -357,6 +365,16 @@ export const UTGReportFormPage: React.FC = () => {
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
       </div>
+
+      {/* ── Missing Customer Banner ── */}
+      {!customerId && (
+        <CustomerPickerBanner
+          onCustomerSelected={(id, name) => {
+            setCustomerId(id);
+            setCustomerName(name);
+          }}
+        />
+      )}
 
       {/* Report No. */}
       <div className={sectionClass}>
