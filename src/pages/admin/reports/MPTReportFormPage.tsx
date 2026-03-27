@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Plus, Trash2, Save, AlertCircle, Users } from 'lucide-react';
-import { createMPTReport, MPTObservation, MPTInspector } from '../../../api/customerApi';
+import { createMPTReport, updateMPTReport, getMPTReportById, MPTObservation, MPTInspector } from '../../../api/customerApi';
 import { getApiErrorMessage } from '../../../api/error';
 import { CustomerPickerBanner } from '../../../components/CustomerPickerBanner';
 
@@ -72,6 +72,8 @@ const emptyInspector = (): InspRow => ({
 export const MPTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams<{ id?: string }>();
+  const isEditMode = Boolean(id);
   const state = location.state as { customerId?: string; customerName?: string } | null;
 
   const [saving, setSaving] = useState(false);
@@ -148,6 +150,89 @@ export const MPTReportFormPage: React.FC = () => {
   const [clientDate, setClientDate] = useState('');
   const [inspectors, setInspectors] = useState<InspRow[]>([emptyInspector()]);
 
+  useEffect(() => {
+    if (!id) return;
+    const toDate = (d?: string | null) => d ? d.split('T')[0] : '';
+    const fromOther = (val: string | undefined, opts: string[]): [string, string] => {
+      if (!val) return ['', ''];
+      return opts.includes(val) ? [val, ''] : ['Other', val];
+    };
+    getMPTReportById(id).then((res: any) => {
+      const r = (res as any).data ?? res;
+      setCustomerId(r.customerId ?? '');
+      setCustomerName(r.jobDetails?.customer ?? '');
+      setReportNo(r.reportNo ?? '');
+      const jd = r.jobDetails ?? {};
+      setJobClient(jd.client ?? '');
+      setJobReportDate(toDate(jd.reportDate));
+      setJobInspectionDate(toDate(jd.inspectionDate));
+      setJobInspectionEndDate(toDate(jd.inspectionEndDate));
+      setJobReferenceStd(jd.referenceStd ?? '');
+      setJobAcceptanceCriteria(jd.acceptanceCriteria ?? '');
+      setJobInspectionTime(jd.inspectionTime ?? '');
+      setJobStageOfInspection(jd.stageOfInspection ?? '');
+      setJobMaterial(jd.material ?? '');
+      const [ext, extO] = fromOther(jd.extentOfExamination, ['10%', '100%', 'To the maximum extent possible', 'Other']);
+      setJobExtentOfExamination(ext); setJobExtentOther(extO);
+      setJobThickness(jd.thickness ?? '');
+      setJobTypeOfJoint(jd.typeOfJoint ?? '');
+      setJobSurfaceCondition(jd.surfaceCondition ?? '');
+      setJobWeldingProcess(jd.weldingProcess ?? '');
+      const eq = r.equipmentDetails ?? {};
+      setEqType(eq.equipmentType ?? '');
+      setEqSrNo(eq.srNo ?? '');
+      const [make, makeO] = fromOther(eq.make, ['EECI', 'Ferrochem', 'Other']);
+      setEqMake(make); setEqMakeOther(makeO);
+      setEqCalibrationDue(toDate(eq.calibrationDue));
+      setEqYokeSpacing(eq.yokeSpacing ?? '');
+      setEqPieGauge(eq.pieGaugeCalibration ?? '');
+      const md = r.mediumDetails ?? {};
+      const bi = md.blackInk ?? {};
+      const [biMfr, biMfrO] = fromOther(bi.manufacturer, ['Pradeep', 'Dyeglo', 'Ferrochem', 'MR Chem', 'Magnaflux', 'Other']);
+      setBiManufacturer(biMfr); setBiManufacturerOther(biMfrO);
+      setBiBatchNo(bi.batchNo ?? '');
+      setBiExpiryDate(bi.expiryDate ?? '');
+      const wc = md.whiteContrast ?? {};
+      const [wcMfr, wcMfrO] = fromOther(wc.manufacturer, ['Pradeep', 'Dyeglo', 'Ferrochem', 'MR Chem', 'Magnaflux', 'Other']);
+      setWcManufacturer(wcMfr); setWcManufacturerOther(wcMfrO);
+      setWcBatchNo(wc.batchNo ?? '');
+      setWcExpiryDate(wc.expiryDate ?? '');
+      const method = r.methodDescription ?? {};
+      setMethod(method.method ?? '');
+      setLightIntensity(method.lightIntensity ?? '');
+      setMagnetizationType(method.magnetizationType ?? '');
+      setLightEquipUsed(method.lightEquipmentUsed ?? '');
+      setMagnetizingMethod(method.magnetizingMethod ?? '');
+      const [bath, bathO] = fromOther(method.bathConcentration, ['Ready Bath', 'Other']);
+      setBathConcentration(bath); setBathConcentrationOther(bathO);
+      setDemagnetization(method.demagnetization ?? '');
+      setMagFieldVerifiedBy(method.magneticFieldDirectionVerifiedBy ?? '');
+      setGaussMeterReading(method.gaussMeterReading ?? '');
+      setCurrent(method.current ?? '');
+      const [ct, ctO] = fromOther(method.currentType, ['AC', 'DC', 'HWDC', 'Other']);
+      setCurrentType(ct); setCurrentTypeOther(ctO);
+      setPostCleaning(method.postCleaning ?? '');
+      if (r.observations?.length) {
+        setObservations(r.observations.map((o: any) => ({
+          srNo: o.srNo, jobDescription: o.jobDescription ?? '', drawingOrJointNo: o.drawingOrJointNo ?? '',
+          size: o.size ?? '', quantity: String(o.quantity ?? ''), evaluation: o.evaluation ?? '',
+          result: o.result ?? '', remark: o.remark ?? '',
+        })));
+      }
+      const fs = r.finalSection ?? {};
+      setInspectors(fs.inspector?.length ? fs.inspector.map((i: any) => ({
+        name: i.name ?? '', qualification: i.qualification ?? '', designation: i.designation ?? '',
+        signature: i.signature ?? '', idNo: i.idNo ?? '', date: toDate(i.date),
+      })) : [emptyInspector()]);
+      const cust = fs.customer ?? {};
+      setCustName(cust.name ?? ''); setCustDesig(cust.designation ?? '');
+      setCustSig(cust.signature ?? ''); setCustIdNo(cust.idNo ?? ''); setCustDate(toDate(cust.date));
+      const cli = fs.clientOrTPI ?? {};
+      setClientName(cli.name ?? ''); setClientDesig(cli.designation ?? '');
+      setClientSig(cli.signature ?? ''); setClientIdNo(cli.idNo ?? ''); setClientDate(toDate(cli.date));
+    }).catch(() => toast.error('Failed to load report.'));
+  }, [id]);
+
   // â"€â"€ Helpers â"€â"€
   const resolveCustom = (val: string, other: string) =>
     val === 'Other' && other.trim() ? other.trim() : val;
@@ -178,7 +263,7 @@ export const MPTReportFormPage: React.FC = () => {
 
   // â"€â"€ Submit â"€â"€
   const handleSubmit = async (status: 'draft' | 'final') => {
-    if (!customerId) {
+    if (!customerId && !id) {
       toast.error('Customer ID is missing. Go back and try again.');
       return;
     }
@@ -189,7 +274,7 @@ export const MPTReportFormPage: React.FC = () => {
 
     setSaving(true);
     try {
-      await createMPTReport({
+      const payload = {
         customerId,
         reportNo: reportNo.trim(),
         status,
@@ -264,10 +349,15 @@ export const MPTReportFormPage: React.FC = () => {
             .filter(i => i.name.trim())
             .map(i => ({ ...i, date: i.date || undefined })),
         },
-      });
+      };
 
+      if (id) {
+        await updateMPTReport(id, payload);
+      } else {
+        await createMPTReport(payload);
+      }
 
-      toast.success(`MPT Report saved as ${status}.`);
+      toast.success(`MPT Report ${id ? 'updated' : 'saved'} as ${status}.`);
       navigate(`/admin/customers/${customerId}`, { state: { activeTab: 'reports', reportSubType: 'mpt' } });
     } catch (error) {
       toast.error(getApiErrorMessage(error, 'Failed to save report. Please try again.'));
@@ -291,7 +381,7 @@ export const MPTReportFormPage: React.FC = () => {
           <ArrowLeft className="w-4 h-4 text-gray-600" />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Magnetic Particle Examination Report</h1>
+          <h1 className="text-xl font-bold text-gray-900">{isEditMode ? 'Edit' : 'New'} Magnetic Particle Examination Report</h1>
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
       </div>

@@ -37,12 +37,19 @@ import {
   updateInvoice,
   deleteInvoice,
   getMPTReports,
+  deleteMPTReport,
   getPTReports,
+  deletePTReport,
   getUTReports,
+  deleteUTReport,
   getVSSCUTReports,
+  deleteVSSCUTReport,
   getUTGReports,
+  deleteUTGReport,
   getTPIIVRReports,
+  deleteTPIIVRReport,
   getAWSDReports,
+  deleteAWSDReport,
   Customer,
   Quotation,
   QuotationPayload,
@@ -584,6 +591,28 @@ export const CustomerDetailPage = () => {
     }
   };
 
+  const handleDeleteReport = async (reportId: string) => {
+    if (!reportSubType) return;
+    if (!window.confirm("Delete this report? This action cannot be undone.")) return;
+    try {
+      const deleteFns: Record<string, (id: string) => Promise<any>> = {
+        mpt: deleteMPTReport, pt: deletePTReport, ut: deleteUTReport,
+        "vssc-ut": deleteVSSCUTReport, utg: deleteUTGReport,
+        "tpi-ivr": deleteTPIIVRReport, awsd: deleteAWSDReport,
+      };
+      await deleteFns[reportSubType](reportId);
+      toast.success("Report deleted");
+      const refreshFns: Record<string, () => void> = {
+        mpt: fetchMPTReports, pt: fetchPTReports, ut: fetchUTReports,
+        "vssc-ut": fetchVSSCUTReports, utg: fetchUTGReports,
+        "tpi-ivr": fetchTPIIVRReports, awsd: fetchAWSDReports,
+      };
+      refreshFns[reportSubType]?.();
+    } catch {
+      toast.error("Failed to delete report");
+    }
+  };
+
   if (!customer) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-400">
@@ -819,6 +848,20 @@ export const CustomerDetailPage = () => {
                                 title="Print / Download PDF"
                               >
                                 <Printer size={12} /> Print
+                              </button>
+                              <button
+                                onClick={() => navigate(`/admin/reports/${reportSubType}/${r._id}/edit`, { state: { customerId: id, reportSubType, customerName: customer?.name } })}
+                                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-teal-600 bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors"
+                                title="Edit Report"
+                              >
+                                <Pencil size={12} /> Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteReport(r._id)}
+                                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
+                                title="Delete Report"
+                              >
+                                <Trash2 size={12} /> Delete
                               </button>
                             </div>
                           </td>

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Plus, Trash2, Save, AlertCircle, Users } from 'lucide-react';
-import { createUTReport, UTSearchUnit } from '../../../api/customerApi';
+import { createUTReport, updateUTReport, getUTReportById, UTSearchUnit } from '../../../api/customerApi';
 import { getApiErrorMessage } from '../../../api/error';
 import { CustomerPickerBanner } from '../../../components/CustomerPickerBanner';
 
@@ -70,6 +70,8 @@ const emptyCalib = (): CalibRow => ({ range: '', point1: '', point2: '', point3:
 export const UTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams<{ id?: string }>();
+  const isEditMode = Boolean(id);
   const state = location.state as { customerId?: string; customerName?: string } | null;
   const [saving, setSaving] = useState(false);
   const [customerId, setCustomerId] = useState(state?.customerId ?? '');
@@ -165,13 +167,103 @@ export const UTReportFormPage: React.FC = () => {
   const updateCalib = (setter: React.Dispatch<React.SetStateAction<CalibRow>>, key: keyof CalibRow, val: string) =>
     setter(prev => ({ ...prev, [key]: val }));
 
+  // â”€â”€ Load existing report in edit mode â”€â”€
+  useEffect(() => {
+    if (!id) return;
+    const toDate = (d?: string | null) => d ? d.split('T')[0] : '';
+    const fromOther = (val: string | undefined, opts: string[]): [string, string] => {
+      if (!val) return ['', ''];
+      return opts.includes(val) ? [val, ''] : ['Other', val];
+    };
+    getUTReportById(id).then((res: any) => {
+      const r = (res as any).data ?? res;
+      if (r.customerId) setCustomerId(r.customerId);
+      if (r.jobDetails?.customer) setCustomerName(r.jobDetails.customer);
+      setReportNo(r.reportNo ?? '');
+
+      const jd = r.jobDetails ?? {};
+      setJobClient(jd.client ?? '');
+      setJobProject(jd.project ?? '');
+      setJobReportDate(toDate(jd.reportDate));
+      setJobInspectionDate(toDate(jd.inspectionDate));
+      setJobInspectionEndDate(toDate(jd.inspectionEndDate));
+      setJobInspectionTime(jd.inspectionTime ?? '');
+      const [refStd, refStdC] = fromOther(jd.referenceStd, ['ASME Sec V Article 4', 'ASTM SA 609', 'ASTM SA 435', 'ASTM 578', 'ASTM SA 388', 'Other']);
+      setJobRefStd(refStd); setJobRefStdCustom(refStdC);
+      const [acc, accC] = fromOther(jd.acceptanceCriteria, ['ASME SEC VIII Div. 1 Appendix 12', 'ASTM SA 609', 'ASTM SA 435', 'ASTM 578', 'ASTM SA 388', 'Other']);
+      setJobAcceptance(acc); setJobAcceptanceCustom(accC);
+      setJobMaterial(jd.material ?? '');
+      setJobStage(jd.stageOfInspection ?? '');
+      setJobThickness(jd.thickness ?? '');
+      const [ext, extC] = fromOther(jd.extentOfExamination, ['10%', '100%', 'To the maximum extent possible', 'Other']);
+      setJobExtent(ext); setJobExtentCustom(extC);
+      setJobSurface(jd.surfaceCondition ?? '');
+      setJobJointType(jd.typeOfJoint ?? '');
+      setJobSurfaceTemp(jd.surfaceTemperature ?? '');
+      setJobWeldingProcess(jd.weldingProcess ?? '');
+
+      const eq = r.equipmentDetails ?? {};
+      const [eqT, eqTC] = fromOther(eq.equipmentType, ['Einstein-II DGS', 'USM 36', 'Kappawave', 'USM 100', 'Other']);
+      setEqType(eqT); setEqTypeCustom(eqTC);
+      setEqSrNo(eq.srNo ?? '');
+      const [eqMk, eqMkC] = fromOther(eq.make, ['Modsonic', 'Waygate', 'Kappawave', 'Other']);
+      setEqMake(eqMk); setEqMakeCustom(eqMkC);
+      setEqCalibDue(eq.calibrationDue ?? '');
+      setEqCouplant(eq.couplant ?? '');
+      setEqBasicCalib(eq.basicCalibrationBlock ?? '');
+
+      if (r.searchUnitDetails?.length) setSearchUnits(r.searchUnitDetails);
+
+      const td = r.techniqueDetails ?? {};
+      setUtMethod(td.utMethod ?? '');
+      const [rcb, rcbC] = fromOther(td.referenceCalibrationBlock, ['19 mm', '38 mm', 'Job itself', 'Other']);
+      setRefCalibBlock(rcb); setRefCalibBlockCustom(rcbC);
+      setUtCalibMethod(td.utCalibrationMethod ?? '');
+      setScanningDb(td.scanningDb ?? '');
+      const scanningSensOpts = ['Ø 2.5 mm SDH', 'Ø 3mm SDH', '1” BWE set @ 80% of FSH on Job', 'Other'];
+      const [ss, ssC] = fromOther(td.scanningSensitivity, scanningSensOpts);
+      setScanningSens(ss); setScanningSensCustom(ssC);
+
+      const apc = r.angleProbeCalibration ?? {};
+      if (apc.deg0) setCalib0(apc.deg0);
+      if (apc.deg45) setCalib45(apc.deg45);
+      if (apc.deg60) setCalib60(apc.deg60);
+      if (apc.deg70) setCalib70(apc.deg70);
+
+      if (r.observations?.length) {
+        setObservations(r.observations.map((o: any) => ({
+          srNo: o.srNo, jobDescription: o.jobDescription ?? '',
+          drawingOrJointNo: o.drawingOrJointNo ?? '', size: o.size ?? '',
+          quantity: String(o.quantity ?? ''), evaluation: o.evaluation ?? '', remark: o.remark ?? '',
+        })));
+      }
+
+      const fs = r.finalSection ?? {};
+      const insp = fs.inspector?.[0] ?? {};
+      setInspectorName(insp.name ?? '');
+      setInspectorQual(insp.qualification ?? '');
+      setInspectorIdNo(insp.idNo ?? '');
+      setInspectorDate(toDate(insp.date));
+      const custRep = fs.customer ?? {};
+      setCustName(custRep.name ?? '');
+      setCustDesig(custRep.designation ?? '');
+      setCustIdNo(custRep.idNo ?? '');
+      setCustDate(toDate(custRep.date));
+      const clientRep = fs.clientOrTPI ?? {};
+      setClientName(clientRep.name ?? '');
+      setClientDesig(clientRep.designation ?? '');
+      setClientIdNo(clientRep.idNo ?? '');
+      setClientDate(toDate(clientRep.date));
+    }).catch(() => toast.error('Failed to load report.'));
+  }, [id]);
+
   // â”€â”€ Submit â”€â”€
   const handleSubmit = async (status: 'draft' | 'final') => {
     if (!customerId) { toast.error('Customer ID is missing.'); return; }
     if (!reportNo.trim()) { toast.error('Report No. is required.'); return; }
     setSaving(true);
     try {
-      await createUTReport({
+      const payload = {
         customerId,
         reportNo: reportNo.trim(),
         status,
@@ -221,7 +313,12 @@ export const UTReportFormPage: React.FC = () => {
           customer: { name: custName, designation: custDesig, idNo: custIdNo, date: custDate || undefined },
           clientOrTPI: { name: clientName, designation: clientDesig, idNo: clientIdNo, date: clientDate || undefined },
         },
-      });
+      };
+      if (id) {
+        await updateUTReport(id, payload);
+      } else {
+        await createUTReport(payload);
+      }
 
       toast.success(`UT Report saved as ${status}.`);
       navigate(`/admin/customers/${customerId}`, { state: { activeTab: 'reports', reportSubType: 'ut' } });

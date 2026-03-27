@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
-import { createUTGReport } from '../../../api/customerApi';
+import { createUTGReport, updateUTGReport, getUTGReportById } from '../../../api/customerApi';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -94,9 +94,10 @@ const emptyObs = (): ObsRow => ({ srNo: 1, itemName: '', measuredThickness: '', 
 export const UTGReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams<{ id?: string }>();
   const state = location.state as { customerId?: string; customerName?: string } | null;
-  const customerId = state?.customerId ?? '';
-  const customerName = state?.customerName ?? '';
+  const [customerId, setCustomerId] = useState(state?.customerId ?? '');
+  const [customerName, setCustomerName] = useState(state?.customerName ?? '');
 
   const [saving, setSaving] = useState(false);
 
@@ -186,6 +187,83 @@ export const UTGReportFormPage: React.FC = () => {
       prev.filter((_, i) => i !== idx).map((r, i) => ({ ...r, srNo: i + 1 }))
     );
 
+  // ── Load in edit mode ──
+  useEffect(() => {
+    if (!id) return;
+    const toDate = (d?: string | null) => d ? d.split('T')[0] : '';
+    const fromOther = (val: string | undefined, opts: string[]): [string, string] => {
+      if (!val) return ['', ''];
+      return opts.includes(val) ? [val, ''] : ['Other', val];
+    };
+    getUTGReportById(id).then((res: any) => {
+      const r = (res as any).data ?? res;
+      if (r.customerId) setCustomerId(r.customerId);
+      if (r.jobDetails?.customer) setCustomerName(r.jobDetails.customer);
+      setReportNo(r.reportNo ?? '');
+      const jd = r.jobDetails ?? {};
+      setJobClient(jd.client ?? '');
+      setJobReportDate(toDate(jd.reportDate));
+      setJobProject(jd.project ?? '');
+      setJobInspectionDate(toDate(jd.inspectionDate));
+      const [refStd, refStdO] = fromOther(jd.referenceStd, ['ASME Sec V Article 4', 'ASME Sec V Article 5', 'Other']);
+      setJobRefStd(refStd); setJobRefStdOther(refStdO);
+      setJobInspectionTime(jd.inspectionTime ?? '');
+      setJobAcceptanceCriteria(jd.acceptanceCriteria ?? '');
+      setJobMaterial(jd.material ?? '');
+      const [stage, stageO] = fromOther(jd.stageOfInspection, ['After welding', 'As Casting', 'As Rolled', 'As Forged', 'In-service', 'Other']);
+      setJobStage(stage); setJobStageOther(stageO);
+      const [surf, surfO] = fromOther(jd.surfaceCondition, ['Smooth', 'Rough', 'Ground and polished', 'Other']);
+      setJobSurfaceCondition(surf); setJobSurfaceConditionOther(surfO);
+      const [ext, extO] = fromOther(jd.extentOfExamination, ['10%', '100%', 'Random', 'Other']);
+      setJobExtent(ext); setJobExtentOther(extO);
+      const [temp, tempO] = fromOther(jd.surfaceTemperature, ['Room Temperature', 'Other']);
+      setJobSurfaceTemp(temp); setJobSurfaceTempOther(tempO);
+      const eq = r.equipmentDetails ?? {};
+      const [eqT, eqTO] = fromOther(eq.equipmentType, ['Modsonic', 'EEC', 'Waygate', 'Other']);
+      setEqType(eqT); setEqTypeOther(eqTO);
+      setEqSrNo(eq.srNo ?? '');
+      const [eqMk, eqMkO] = fromOther(eq.make, ['Modsonic', 'Waygate', 'Kappawave', 'Other']);
+      setEqMake(eqMk); setEqMakeOther(eqMkO);
+      setEqCalibrationDue(toDate(eq.calibrationDue));
+      const [coup, coupO] = fromOther(eq.couplant, ['Oil', 'Oil + Grease', 'Grease', 'Other']);
+      setEqCouplant(coup); setEqCouplantOther(coupO);
+      const [calb, calbO] = fromOther(eq.basicCalibrationBlock, ['Step Block', 'IIW V1', 'IIW V2', 'Other']);
+      setEqCalibBlock(calb); setEqCalibBlockOther(calbO);
+      if (r.searchUnitDetails?.length) {
+        setSearchUnits(r.searchUnitDetails.map((u: any) => {
+          const [cs, csO] = fromOther(u.crystalSize, ['Ø5mm', 'Ø10mm', '8x9 mm', '20x22 mm', 'Other']);
+          const [fr, frO] = fromOther(u.frequency, ['2 MHz', '4 MHz', '5 MHz', 'Other']);
+          return { searchUnit: u.searchUnit ?? '', model: u.model ?? '', angle: u.angle ?? '', srNo: u.srNo ?? '', crystalSize: cs, crystalSizeOther: csO, waveMode: u.waveMode ?? '', frequency: fr, frequencyOther: frO };
+        }));
+      }
+      const td = r.techniqueDetails ?? {};
+      const [utm, utmO] = fromOther(td.utMethod, ['Pulse Echo – Contact', 'Through Transmission', 'Immersion', 'Other']);
+      setUtMethod(utm); setUtMethodOther(utmO);
+      if (td.techniques?.length) {
+        setTechniques(td.techniques.map((t: any) => {
+          const [cs, csO] = fromOther(t.crystalSize, ['Ø5mm', 'Ø10mm', '8x9 mm', '20x22 mm', 'Other']);
+          const [fr, frO] = fromOther(t.frequency, ['2 MHz', '4 MHz', '5 MHz', 'Other']);
+          return { searchUnit: t.searchUnit ?? '', angle: t.angle ?? '', srNo: t.srNo ?? '', crystalSize: cs, crystalSizeOther: csO, waveMode: t.waveMode ?? '', frequency: fr, frequencyOther: frO };
+        }));
+      }
+      if (r.observations?.length) {
+        setObservations(r.observations.map((o: any) => ({
+          srNo: o.srNo, itemName: o.itemName ?? '', measuredThickness: o.measuredThickness ?? '', remark: o.remark ?? '',
+        })));
+      }
+      const fs = r.finalSection ?? {};
+      const insp = fs.inspector?.[0] ?? {};
+      setInspectorName(insp.name ?? ''); setInspectorQual(insp.qualification ?? '');
+      setInspectorSig(insp.signature ?? ''); setInspectorIdNo(insp.idNo ?? ''); setInspectorDate(toDate(insp.date));
+      const cust = fs.customer ?? {};
+      setCustName(cust.name ?? ''); setCustDesig(cust.designation ?? '');
+      setCustSig(cust.signature ?? ''); setCustIdNo(cust.idNo ?? ''); setCustDate(toDate(cust.date));
+      const clientRep = fs.clientOrTPI ?? {};
+      setClientName(clientRep.name ?? ''); setClientDesig(clientRep.designation ?? '');
+      setClientSig(clientRep.signature ?? ''); setClientIdNo(clientRep.idNo ?? ''); setClientDate(toDate(clientRep.date));
+    }).catch(() => toast.error('Failed to load report.'));
+  }, [id]);
+
   // ── Submit ──
   const handleSubmit = async (status: 'draft' | 'final') => {
     if (!customerId) { toast.error('Customer ID is missing.'); return; }
@@ -193,7 +271,7 @@ export const UTGReportFormPage: React.FC = () => {
 
     setSaving(true);
     try {
-      await createUTGReport({
+      const payload = {
         customerId,
         reportNo: reportNo.trim(),
         status,
@@ -252,7 +330,12 @@ export const UTGReportFormPage: React.FC = () => {
           customer: { name: custName, designation: custDesig, signature: custSig, idNo: custIdNo, date: custDate || undefined },
           clientOrTPI: { name: clientName, designation: clientDesig, signature: clientSig, idNo: clientIdNo, date: clientDate || undefined },
         },
-      });
+      };
+      if (id) {
+        await updateUTGReport(id, payload);
+      } else {
+        await createUTGReport(payload);
+      }
       toast.success(`UTG Report saved as ${status}.`);
       navigate(`/admin/customers/${customerId}`, { state: { activeTab: 'reports', reportSubType: 'utg' } });
     } catch {

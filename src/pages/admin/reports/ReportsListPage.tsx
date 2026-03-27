@@ -6,6 +6,8 @@ import {
     Search,
     Eye,
     Printer,
+    Pencil,
+    Trash2,
     Magnet,
     Droplets,
     Waves,
@@ -20,13 +22,13 @@ import {
     ChevronRight,
 } from "lucide-react";
 import {
-    getMPTReports,
-    getPTReports,
-    getUTReports,
-    getVSSCUTReports,
-    getUTGReports,
-    getTPIIVRReports,
-    getAWSDReports,
+    getMPTReports, deleteMPTReport,
+    getPTReports, deletePTReport,
+    getUTReports, deleteUTReport,
+    getVSSCUTReports, deleteVSSCUTReport,
+    getUTGReports, deleteUTGReport,
+    getTPIIVRReports, deleteTPIIVRReport,
+    getAWSDReports, deleteAWSDReport,
 } from "../../../api/customerApi";
 
 type ReportType = "mpt" | "pt" | "ut" | "vssc-ut" | "utg" | "tpi-ivr" | "awsd";
@@ -119,6 +121,22 @@ export const ReportsListPage = () => {
     }, [fetchReports]);
 
     const totalPages = Math.ceil(total / LIMIT);
+
+    const handleDeleteReport = async (reportId: string) => {
+        if (!window.confirm("Delete this report? This action cannot be undone.")) return;
+        try {
+            const deleteFns: Record<ReportType, (id: string) => Promise<any>> = {
+                mpt: deleteMPTReport, pt: deletePTReport, ut: deleteUTReport,
+                "vssc-ut": deleteVSSCUTReport, utg: deleteUTGReport,
+                "tpi-ivr": deleteTPIIVRReport, awsd: deleteAWSDReport,
+            };
+            await deleteFns[activeTab](reportId);
+            toast.success("Report deleted");
+            fetchReports();
+        } catch {
+            toast.error("Failed to delete report");
+        }
+    };
 
     const clearFilters = () => {
         setSearch("");
@@ -320,6 +338,20 @@ export const ReportsListPage = () => {
                                                     className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 bg-white border-2 border-gray-100 rounded-xl transition-all active:scale-95"
                                                 >
                                                     <Printer size={16} />
+                                                </button>
+                                                <button
+                                                    onClick={() => navigate(`/admin/reports/${activeTab}/${r._id}/edit`)}
+                                                    className="p-2 text-gray-400 hover:text-teal-600 hover:bg-teal-50 bg-white border-2 border-gray-100 rounded-xl transition-all active:scale-95"
+                                                    title="Edit"
+                                                >
+                                                    <Pencil size={16} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteReport(r._id)}
+                                                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 bg-white border-2 border-gray-100 rounded-xl transition-all active:scale-95"
+                                                    title="Delete"
+                                                >
+                                                    <Trash2 size={16} />
                                                 </button>
                                             </div>
                                         </td>
