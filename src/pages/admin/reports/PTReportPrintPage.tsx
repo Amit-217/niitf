@@ -5,6 +5,7 @@ import {
   useSearchParams,
   useLocation,
 } from "react-router-dom";
+import { QRCodeSVG } from "qrcode.react";
 import { getPTReportById, PTReport } from "../../../api/customerApi";
 
 // ─── Print Styles ─────────────────────────────────────────────────────────────
@@ -17,59 +18,98 @@ const PRINT_STYLES = `
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; }
-    #report-root { padding: 0 !important; background: #fff !important; }
+    #report-root { background: #fff !important; padding: 0 !important; }
     #report-root > div {
-      box-shadow: none !important;
-      margin: 0 auto !important;
       width: 210mm !important;
       min-height: 297mm !important;
-      padding: 5mm !important;
+      height: 297mm !important;
+      margin: 0 auto !important;
+      padding: 3mm !important;
       box-sizing: border-box !important;
+      box-shadow: none !important;
+      overflow: hidden !important;
     }
+    .report {
+      margin: 0 !important;
+      box-shadow: none !important;
+      width: calc(100% / 0.92) !important;
+      transform: scale(0.92);
+      transform-origin: top left;
+    }
+    .rpt-header { padding: 8px 10px !important; }
+    .rpt-title { padding: 5px !important; font-size: 11px !important; }
+    .section-hdr { padding: 4px 7px !important; font-size: 8.5px !important; }
+    .footer { padding: 4px 8px !important; font-size: 7px !important; line-height: 1.25 !important; }
   }
   body {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 7.5pt;
+    font-size: 12px;
+    color: #0f172a;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .report-table td, .report-table th {
+  * { box-sizing: border-box; }
+
+  .report {
+    background: #fff;
     border: 1px solid #444;
-    padding: 2px 4px;
-    vertical-align: middle;
-    word-break: break-word;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .rpt-header {
+    background: #185FA5;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-box {
+    width: 50px; height: 50px;
+    background: #fff; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 700; color: #185FA5;
+    text-align: center; line-height: 1.2; flex-shrink: 0;
+  }
+  .hdr-center { flex: 1; text-align: center; color: #fff; }
+  .hdr-center .org { font-size: 14px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .sub { font-size: 8px; color: #d7e8fb; margin-top: 2px; line-height: 1.4; }
+  .hdr-center .iso { font-size: 8px; color: #eef6ff; font-weight: 700; margin-top: 2px; }
+  .hdr-right {
+    text-align: left; font-size: 8px; color: #d7e8fb; line-height: 1.45;
+    min-width: 128px; border: 1px solid rgba(255,255,255,0.35);
+    padding: 5px 6px; border-radius: 4px; background: rgba(0,0,0,0.1);
+  }
+  .hdr-right span { color: #fff; font-weight: 700; }
+  .rpt-title {
+    background: #E6F1FB; text-align: center; padding: 7px;
+    font-size: 13px; font-weight: 700; color: #0C447C;
+    text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7;
   }
   .section-hdr {
-    background: #185FA5;
-    color: #fff;
-    font-weight: bold;
-    font-size: 7.5pt;
-    text-align: center;
-    letter-spacing: 1px;
-    padding: 2px 4px;
+    background: #185FA5; color: #fff; font-size: 10px; font-weight: 700;
+    padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase;
   }
-  .col-hdr {
-    background: #E6F1FB;
-    font-weight: bold;
-    font-size: 7pt;
-    text-align: center;
+  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .report-table td, .report-table th {
+    border: 1px solid #d9e1ea; padding: 4px 6px;
+    vertical-align: middle; word-break: break-word; font-size: 10px;
   }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 7.5pt; white-space: nowrap; width: 22%; }
-  .val { font-size: 7.5pt; }
-  .report-title-table { width: 100%; border-collapse: collapse; }
-  .report-title-table td { border: 1px solid #444; padding: 2px 6px; }
-  .company-name { font-size: 9.5pt; font-weight: bold; text-transform: uppercase; text-align: center; color: #1a3c8f; }
-  .company-sub { font-size: 6.5pt; text-align: center; color: #333; line-height: 1.5; }
-  .company-iso { font-size: 6.5pt; text-align: center; font-weight: bold; color: #333; }
-  .report-title { font-size: 10pt; font-weight: bold; text-align: center; letter-spacing: 1px; text-transform: uppercase; text-decoration: underline; margin: 4px 0; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 9px; text-align: center; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 9px; white-space: nowrap; width: 22%; }
+  .val { font-size: 10px; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .obs-table td, .obs-table th { border: 1px solid #444; padding: 2px 3px; font-size: 7.5pt; vertical-align: top; word-break: break-word; }
-  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: -1px; }
-  .sign-table td { border: 1px solid #444; padding: 2px 4px; font-size: 7.5pt; vertical-align: top; min-height: 14px; }
-  .sign-lbl { font-weight: 600; font-size: 7pt; }
+  .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 4px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9px; font-weight: 700; }
+  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .sign-table td { border: 1px solid #d9e1ea; padding: 4px 6px; font-size: 10px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
-  .footer-text { font-size: 6pt; text-align: center; color: #555; margin-top: 4px; }
+  .footer {
+    background: #f8fafc; padding: 6px 10px; font-size: 8px; color: #4b5563;
+    border-top: 1px solid #d9e1ea; line-height: 1.4;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .footer-text-block { flex: 1; text-align: center; }
+  .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 `;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -167,6 +207,8 @@ export const PTReportPrintPage: React.FC = () => {
       </div>
     );
 
+  const qrUrl = window.location.href.replace(/[?&]autoprint=true/, "").replace(/[?&]$/, "");
+
   const jd = report.jobDetails ?? {};
   const md = report.methodDetails ?? {};
   const cons = (report as any).consumablesDetails ?? {};
@@ -238,96 +280,32 @@ export const PTReportPrintPage: React.FC = () => {
           style={{
             width: "210mm",
             minHeight: "297mm",
-            background: "#fff",
             margin: "0 auto",
             padding: "5mm",
+            background: "#fff",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
           }}
         >
-          {/* ── HEADER ── */}
-          <table className="report-title-table" style={{ marginBottom: -1 }}>
-            <tbody>
-              <tr>
-                <td
-                  rowSpan={2}
-                  style={{
-                    width: "14%",
-                    textAlign: "center",
-                    verticalAlign: "middle",
-                    padding: 4,
-                  }}
-                >
-                  <div
-                    style={{
-                      border: "2px solid #1a3c8f",
-                      borderRadius: 4,
-                      width: 56,
-                      height: 56,
-                      margin: "0 auto",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 7,
-                      color: "#1a3c8f",
-                      fontWeight: "bold",
-                      textAlign: "center",
-                    }}
-                  >
-                    NIIT
-                    <br />
-                    LOGO
-                  </div>
-                </td>
-                <td
-                  style={{
-                    textAlign: "center",
-                    verticalAlign: "middle",
-                    padding: "2px 6px",
-                  }}
-                >
-                  <div className="company-name">
-                    National Industrial Inspection &amp; Training
-                  </div>
-                  <div className="company-sub">
-                    THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING | NDT
-                    CONSULTANCY | PHYSICAL CALIBRATION |<br />
-                    FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY
-                    MANAGEMENT SYSTEM TRAINING
-                  </div>
-                  <div className="company-iso">
-                    (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
-                  </div>
-                </td>
-                <td
-                  rowSpan={2}
-                  style={{
-                    width: "20%",
-                    verticalAlign: "middle",
-                    fontSize: "7.5pt",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  <div>
-                    <strong>Format No:</strong> FMT-NDT-PT-01
-                  </div>
-                  <div>
-                    <strong>Rev. No:</strong> 00
-                  </div>
-                  <div>
-                    <strong>Page No:</strong> 1/1
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td style={{ textAlign: "center", padding: "3px 6px" }}>
-                  <div className="report-title">
-                    Liquid Penetrant Test Report
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="report">
+            <div className="rpt-header">
+              <div className="logo-box">NIIT<br />LOGO</div>
+              <div className="hdr-center">
+                <div className="org">National Industrial Inspection &amp; Training</div>
+                <div className="sub">
+                  THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING | NDT CONSULTANCY | PHYSICAL CALIBRATION |
+                  FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY MANAGEMENT SYSTEM TRAINING
+                </div>
+                <div className="iso">(AN ISO 9001:2015 CERTIFIED ORGANIZATION)</div>
+              </div>
+              <div className="hdr-right">
+                Format No: <span>FMT-NDT-PT-01</span><br />
+                Rev. No: <span>00</span><br />
+                Report Date: <span>{fmtDate(jd.reportDate)}</span><br />
+                Page: <span>1 of 1</span>
+              </div>
+            </div>
+            <div className="rpt-title">Liquid Penetrant Test Report</div>
 
           {/* ── JOB DETAILS ── */}
           <table className="report-table mt-n1">
@@ -667,14 +645,18 @@ export const PTReportPrintPage: React.FC = () => {
             </tbody>
           </table>
 
-          {/* ── Footer ── */}
-          <div className="footer-text">
-            Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
-            Baramati, Dist-Pune 413133 Ph. +91 9860186056, +91 7875154431
-            <br />
-            Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 |
-            Website: www.niitindt.com | Email: niit04@gmail.com |
-            info@niitindt.com
+            <div className="footer">
+              <div className="footer-text-block">
+                Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
+                Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
+                <br />
+                Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 |
+                Website: www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
+              </div>
+              <div className="qr-wrap">
+                <QRCodeSVG value={qrUrl} size={48} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
