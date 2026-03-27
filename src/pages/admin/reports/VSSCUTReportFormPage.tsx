@@ -10,6 +10,7 @@ import {
   VSSCUTCalibTable,
 } from "../../../api/customerApi";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
+import api from "../../../api/axios";
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 const inputClass =
@@ -183,6 +184,12 @@ export const VSSCUTReportFormPage: React.FC = () => {
   const [disposition, setDisposition] = useState("");
   const [remarks, setRemarks] = useState("");
   const [remarksCustom, setRemarksCustom] = useState("");
+
+  // ── Users for inspector dropdown ──
+  const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
+  useEffect(() => {
+    api.get("/users?status=active&limit=100").then((res: any) => setUsers(res.data ?? res ?? [])).catch(() => {});
+  }, []);
 
   // ── Final Section ──
   const [inspectorName, setInspectorName] = useState("");
@@ -985,22 +992,26 @@ export const VSSCUTReportFormPage: React.FC = () => {
 
       {/* Final Section */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Examined By</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* Inspector */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-xs font-semibold text-gray-600 uppercase mb-3">
+            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">Examined By</p>
+            <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               National Ind. Insp. & Training
             </p>
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <input
-                  type="text"
+                <select
                   value={inspectorName}
                   onChange={(e) => setInspectorName(e.target.value)}
-                  className={inputClass}
-                />
+                  className={`${inputClass} bg-white`}
+                >
+                  <option value="">— Select Inspector —</option>
+                  {users.map((u) => (
+                    <option key={u._id} value={u.name}>{u.name}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className={labelClass}>I.D. No.</label>
@@ -1024,7 +1035,8 @@ export const VSSCUTReportFormPage: React.FC = () => {
           </div>
           {/* QC */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-xs font-semibold text-gray-600 uppercase mb-3">
+            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">Customer</p>
+            <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               QC / WIL
             </p>
             <div className="space-y-2">
@@ -1059,7 +1071,8 @@ export const VSSCUTReportFormPage: React.FC = () => {
           </div>
           {/* RQS */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-xs font-semibold text-gray-600 uppercase mb-3">
+            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">Client / TPI</p>
+            <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               RQS / VSSC
             </p>
             <div className="space-y-2">

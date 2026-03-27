@@ -334,7 +334,6 @@ export const AWSDReportFormPage: React.FC = () => {
                 <th colSpan={4} className="border border-gray-200 px-2 py-2 text-center bg-indigo-50 text-indigo-700">Decibels</th>
                 <th colSpan={5} className="border border-gray-200 px-2 py-2 text-center bg-orange-50 text-orange-700">Discontinuity</th>
                 <th rowSpan={2} className="border border-gray-200 px-2 py-2 text-center">Evaluation</th>
-                <th rowSpan={2} className="border border-gray-200 px-2 py-2 text-left">Remarks</th>
                 <th rowSpan={2} className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
               <tr className="bg-gray-50 text-gray-600">
@@ -415,9 +414,6 @@ export const AWSDReportFormPage: React.FC = () => {
                       <option>Accept</option>
                       <option>Reject</option>
                     </select>
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <input type="text" value={row.remarks} onChange={e => updateObs(idx, 'remarks', e.target.value)} className={inputClass} />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
                     {observations.length > 1 && (

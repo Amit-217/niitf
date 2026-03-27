@@ -430,9 +430,6 @@ export const AWSDReportPrintPage: React.FC = () => {
                 <td className="col-hdr" rowSpan={2} style={{ width: "6%" }}>
                   Evaluation
                 </td>
-                <td className="col-hdr" rowSpan={2} style={{ width: "8%" }}>
-                  Remarks
-                </td>
               </tr>
               {/* Header row 2 */}
               <tr>
@@ -557,7 +554,6 @@ export const AWSDReportPrintPage: React.FC = () => {
                       >
                         {v(o.evaluation)}
                       </td>
-                      <td className="tl">{v(o.remarks)}</td>
                     </tr>
                   ))}
             </tbody>
