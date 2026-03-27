@@ -140,7 +140,7 @@ export const UTReportFormPage: React.FC = () => {
 
   // â”€â”€ Final Section â”€â”€
   const [inspectorName, setInspectorName] = useState('');
-  const [inspectorQual, setInspectorQual] = useState('');
+  const [inspectorQual, setInspectorQual] = useState('UT NDE Level II');
   const [inspectorIdNo, setInspectorIdNo] = useState('');
   const [inspectorDate, setInspectorDate] = useState('');
   const [custName, setCustName] = useState('');
@@ -248,7 +248,7 @@ export const UTReportFormPage: React.FC = () => {
       const fs = r.finalSection ?? {};
       const insp = fs.inspector?.[0] ?? {};
       setInspectorName(insp.name ?? '');
-      setInspectorQual(insp.qualification ?? '');
+      setInspectorQual(insp.qualification || 'UT NDE Level II');
       setInspectorIdNo(insp.idNo ?? '');
       setInspectorDate(toDate(insp.date));
       const custRep = fs.customer ?? {};
@@ -729,7 +729,6 @@ export const UTReportFormPage: React.FC = () => {
                 <th className="border border-gray-200 px-2 py-2 text-left">Size</th>
                 <th className="border border-gray-200 px-2 py-2 text-center w-16">Qty</th>
                 <th className="border border-gray-200 px-2 py-2 text-left">Evaluation</th>
-                <th className="border border-gray-200 px-2 py-2 text-left">Remark</th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
             </thead>
@@ -754,13 +753,6 @@ export const UTReportFormPage: React.FC = () => {
                       <option value="">Select...</option>
                       <option>No relevant Indication Found</option>
                       <option>Relevant Indication Found</option>
-                    </select>
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select value={row.remark} onChange={e => updateObs(idx, 'remark', e.target.value)} className={inputClass}>
-                      <option value="">Select...</option>
-                      <option>Accepted</option>
-                      <option>Not Accepted</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1 text-center">

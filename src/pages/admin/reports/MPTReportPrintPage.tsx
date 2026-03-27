@@ -540,12 +540,11 @@ export const MPTReportPrintPage = () => {
                   <th style={{ width: "7%" }}>Qty</th>
                   <th>Evaluation</th>
                   <th style={{ width: "13%" }}>Result</th>
-                  <th>Remarks</th>
                 </tr>
                 {obs.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={8}
+                      colSpan={7}
                       style={{
                         textAlign: "center",
                         color: "#6b7280",
@@ -577,7 +576,6 @@ export const MPTReportPrintPage = () => {
                           {v(o.result) || "N/A"}
                         </span>
                       </td>
-                      <td>{v(o.remark) || "-"}</td>
                     </tr>
                   ))
                 )}

@@ -449,14 +449,11 @@ export const UTGReportPrintPage: React.FC = () => {
                   <td className="col-hdr" style={{ width: "24%" }}>
                     Measured Thickness (mm)
                   </td>
-                  <td className="col-hdr" style={{ width: "22%" }}>
-                    Remark
-                  </td>
                 </tr>
                 {obs.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={4}
+                      colSpan={3}
                       style={{
                         textAlign: "center",
                         padding: "6px",
@@ -475,7 +472,6 @@ export const UTGReportPrintPage: React.FC = () => {
                       <td style={{ textAlign: "center" }}>
                         {v(o.measuredThickness)}
                       </td>
-                      <td>{v(o.remark)}</td>
                     </tr>
                   ))
                 )}

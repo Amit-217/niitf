@@ -526,14 +526,11 @@ export const UTReportPrintPage: React.FC = () => {
                   <td className="col-hdr" style={{ width: "22%" }}>
                     Evaluation
                   </td>
-                  <td className="col-hdr" style={{ width: "14%" }}>
-                    Remark
-                  </td>
                 </tr>
                 {obs.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={7}
+                      colSpan={6}
                       style={{
                         textAlign: "center",
                         padding: "6px",
@@ -559,7 +556,6 @@ export const UTReportPrintPage: React.FC = () => {
                         {o.quantity ?? ""}
                       </td>
                       <td>{v(o.evaluation)}</td>
-                      <td>{v((o as any).result ?? o.remark)}</td>
                     </tr>
                   ))
                 )}
