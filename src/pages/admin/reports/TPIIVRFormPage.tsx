@@ -3,6 +3,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
 import { createTPIIVRReport, updateTPIIVRReport, getTPIIVRReportById } from '../../../api/customerApi';
+import { CustomerPickerBanner } from '../../../components/CustomerPickerBanner';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -158,7 +159,14 @@ export const TPIIVRFormPage: React.FC = () => {
     };
     getTPIIVRReportById(id).then((res: any) => {
       const r = (res as any).data ?? res;
-      if (r.customerId) setCustomerId(r.customerId);
+      if (r.customerId) {
+        if (typeof r.customerId === 'object' && r.customerId._id) {
+          setCustomerId(r.customerId._id);
+          setCustomerName(r.customerId.companyName || '');
+        } else {
+          setCustomerId(r.customerId);
+        }
+      }
       setIrNo(r.irNo ?? ''); setIrRev(r.irRev ?? '');
       setDtOfInspection(toDate(r.dtOfInspection));
       setClient(r.client ?? ''); setInspectionLocation(r.inspectionLocation ?? '');
@@ -313,6 +321,16 @@ export const TPIIVRFormPage: React.FC = () => {
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
       </div>
+
+      {/* ── Missing Customer Banner ── */}
+      {!customerId && (
+        <CustomerPickerBanner
+          onCustomerSelected={(id, name) => {
+            setCustomerId(id);
+            setCustomerName(name);
+          }}
+        />
+      )}
 
       {/* ── I.R. No. ── */}
       <div className={sectionClass}>
