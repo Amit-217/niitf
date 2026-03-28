@@ -1208,10 +1208,10 @@ export const MPTReportFormPage: React.FC = () => {
                   Qty
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Evaluation
+                  Interpretation
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Result
+                  Evaluation
                 </th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>

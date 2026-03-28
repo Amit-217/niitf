@@ -63,19 +63,29 @@ const PRINT_STYLES = `
     align-items: center;
     gap: 12px;
   }
-  .logo-box {
-    width: 50px; height: 50px;
-    background: #fff; border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 8px; font-weight: 700; color: #185FA5;
-    text-align: center; line-height: 1.2; flex-shrink: 0;
-  }
+  .logo-box { width: 60px; height: 60px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 3px; }
+  .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #fff; }
   .hdr-center .org { font-size: 14px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
   .hdr-center .sub { font-size: 8px; color: #d7e8fb; margin-top: 2px; line-height: 1.4; }
   .hdr-center .iso { font-size: 8px; color: #eef6ff; font-weight: 700; margin-top: 2px; }
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 8px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
+  /* B&W mode */
+  .bw .rpt-header { background: #fff !important; border-bottom: 2px solid #111 !important; }
+  .bw .hdr-center .org { color: #111 !important; }
+  .bw .hdr-center .sub { color: #444 !important; }
+  .bw .hdr-center .iso { color: #111 !important; }
+  .bw .logo-box { color: #111 !important; background: #f0f0f0 !important; border: 1px solid #aaa !important; }
+  .bw .section-hdr { background: #d0d0d0 !important; color: #000 !important; border-left: 3px solid #000 !important; }
+  .bw .col-hdr { background: #e8e8e8 !important; color: #000 !important; }
+  .bw .rpt-title { background: #e8e8e8 !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
+  .bw .footer-meta { background: #d0d0d0 !important; color: #000 !important; }
+  .bw .footer-meta span { color: #000 !important; }
+  .bw .std-tag { background: #e0e0e0 !important; color: #000 !important; border: 1px solid #999 !important; }
+  .bw .accept-badge { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #888 !important; }
+  .bw .reject-badge { background: #d8d8d8 !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
+  .bw .neutral-badge { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #999 !important; }
   .rpt-title {
     background: #E6F1FB; text-align: center; padding: 7px;
     font-size: 13px; font-weight: 700; color: #0C447C;
@@ -146,6 +156,7 @@ export const PTReportPrintPage: React.FC = () => {
 
   const [report, setReport] = useState<PTReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [bwMode, setBwMode] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -224,7 +235,20 @@ export const PTReportPrintPage: React.FC = () => {
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
-      {/* ── No-Print Action Bar ── */}
+      <div className="no-print" style={{ position: 'fixed', top: 12, right: 16, zIndex: 100, display: 'flex', gap: 8 }}>
+        <button
+          onClick={() => setBwMode(b => !b)}
+          style={{ padding: '7px 16px', background: bwMode ? '#374151' : '#185FA5', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
+        >
+          {bwMode ? 'Color Mode' : 'B&W Mode'}
+        </button>
+        <button
+          onClick={() => window.print()}
+          style={{ padding: '7px 16px', background: '#16a34a', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
+        >
+          Print
+        </button>
+      </div>
 
       {/* ── Report Content ── */}
       <div
@@ -246,12 +270,10 @@ export const PTReportPrintPage: React.FC = () => {
             boxSizing: "border-box",
           }}
         >
-          <div className="report">
+          <div className={`report${bwMode ? ' bw' : ''}`}>
             <div className="rpt-header">
               <div className="logo-box">
-                NIIT
-                <br />
-                LOGO
+                <img src="/logo.png" alt="NIIT Logo" />
               </div>
               <div className="hdr-center">
                 <div className="org">
@@ -442,7 +464,7 @@ export const PTReportPrintPage: React.FC = () => {
             <table className="obs-table mt-n1">
               <tbody>
                 <tr>
-                  <td colSpan={7} className="section-hdr">
+                  <td colSpan={6} className="section-hdr">
                     OBSERVATIONS
                   </td>
                 </tr>
