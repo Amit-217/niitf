@@ -1,4 +1,5 @@
 import api from './axios';
+import publicApi from './publicApi';
 
 // ─── Customer Types ───────────────────────────────────────────────────────────
 
@@ -755,3 +756,19 @@ export const updateAWSDReport = (id: string, data: Partial<AWSDReportPayload>) =
 
 export const deleteAWSDReport = (id: string) =>
   api.delete(`/reports/awsd/${id}`);
+
+// ─── Public (unauthenticated) report fetch functions ─────────────────────────
+export const getPublicMPTReportById = (id: string) =>
+  publicApi.get(`/public/reports/mpt/${id}`);
+export const getPublicPTReportById = (id: string) =>
+  publicApi.get(`/public/reports/pt/${id}`);
+export const getPublicUTReportById = (id: string) =>
+  publicApi.get(`/public/reports/ut/${id}`);
+export const getPublicVSSCUTReportById = (id: string) =>
+  publicApi.get(`/public/reports/vssc-ut/${id}`);
+export const getPublicUTGReportById = (id: string) =>
+  publicApi.get(`/public/reports/utg/${id}`);
+export const getPublicTPIIVRReportById = (id: string) =>
+  publicApi.get(`/public/reports/tpi-ivr/${id}`);
+export const getPublicAWSDReportById = (id: string) =>
+  publicApi.get(`/public/reports/awsd/${id}`);

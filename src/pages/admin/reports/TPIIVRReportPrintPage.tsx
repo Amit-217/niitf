@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { getTPIIVRReportById } from "../../../api/customerApi";
+import { getTPIIVRReportById, getPublicTPIIVRReportById } from "../../../api/customerApi";
 
 // ─── Print Styles ─────────────────────────────────────────────────────────────
 
@@ -115,13 +115,16 @@ export const TPIIVRReportPrintPage: React.FC = () => {
     }
   };
 
+  const isPublic = location.pathname.startsWith("/reports/public/");
+
   useEffect(() => {
     if (!id) return;
-    getTPIIVRReportById(id)
+    const fetcher = isPublic ? getPublicTPIIVRReportById : getTPIIVRReportById;
+    fetcher(id)
       .then((res: any) => setReport((res as any).data ?? res))
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, isPublic]);
 
   useEffect(() => {
     if (!loading && report && autoPrint) {
@@ -172,9 +175,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = window.location.href
-    .replace(/[?&]autoprint=true/, "")
-    .replace(/[?&]$/, "");
+  const qrUrl = `${window.location.origin}/reports/public/tpi-ivr/${id}`;
 
   const cd = report.clientDetails ?? {};
   const vd = report.vendorDetails ?? {};

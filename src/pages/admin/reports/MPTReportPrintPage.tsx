@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { getMPTReportById, MPTReport } from "../../../api/customerApi";
+import { getMPTReportById, getPublicMPTReportById, MPTReport } from "../../../api/customerApi";
 
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
@@ -147,9 +147,12 @@ export const MPTReportPrintPage = () => {
   const [loading, setLoading] = useState(true);
   const [bwMode, setBwMode] = useState(false);
 
+  const isPublic = location.pathname.startsWith("/reports/public/");
+
   useEffect(() => {
     if (!id) return;
-    getMPTReportById(id)
+    const fetcher = isPublic ? getPublicMPTReportById : getMPTReportById;
+    fetcher(id)
       .then((res) => {
         const data =
           (res as { report?: MPTReport; data?: { data?: MPTReport } }).report ||
@@ -160,7 +163,7 @@ export const MPTReportPrintPage = () => {
       })
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, isPublic]);
 
   useEffect(() => {
     if (autoPrint) {
@@ -218,9 +221,7 @@ export const MPTReportPrintPage = () => {
     );
   }
 
-  const qrUrl = window.location.href
-    .replace(/[?&]autoprint=true/, "")
-    .replace(/[?&]$/, "");
+  const qrUrl = `${window.location.origin}/reports/public/mpt/${id}`;
 
   const jd = report.jobDetails ?? {};
   const eq = report.equipmentDetails ?? {};

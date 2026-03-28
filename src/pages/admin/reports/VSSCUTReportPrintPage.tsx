@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { getVSSCUTReportById, VSSCUTReport } from "../../../api/customerApi";
+import { getVSSCUTReportById, getPublicVSSCUTReportById, VSSCUTReport } from "../../../api/customerApi";
 
 // ─── Print Styles ─────────────────────────────────────────────────────────────
 const PRINT_STYLES = `
@@ -101,13 +101,16 @@ export const VSSCUTReportPrintPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [bwMode, setBwMode] = useState(false);
 
+  const isPublic = location.pathname.startsWith("/reports/public/");
+
   useEffect(() => {
     if (!id) return;
-    getVSSCUTReportById(id)
+    const fetcher = isPublic ? getPublicVSSCUTReportById : getVSSCUTReportById;
+    fetcher(id)
       .then((res) => setReport(res.data?.data ?? res.data))
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, isPublic]);
 
   useEffect(() => {
     if (!loading && report && autoPrint) {
@@ -171,9 +174,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = window.location.href
-    .replace(/[?&]autoprint=true/, "")
-    .replace(/[?&]$/, "");
+  const qrUrl = `${window.location.origin}/reports/public/vssc-ut/${id}`;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const apc = (report as any).angleProbeCalibration ?? {};

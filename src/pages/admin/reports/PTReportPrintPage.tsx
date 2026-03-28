@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { getPTReportById, PTReport } from "../../../api/customerApi";
+import { getPTReportById, getPublicPTReportById, PTReport } from "../../../api/customerApi";
 
 // ─── Print Styles ─────────────────────────────────────────────────────────────
 
@@ -158,13 +158,16 @@ export const PTReportPrintPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [bwMode, setBwMode] = useState(false);
 
+  const isPublic = location.pathname.startsWith("/reports/public/");
+
   useEffect(() => {
     if (!id) return;
-    getPTReportById(id)
+    const fetcher = isPublic ? getPublicPTReportById : getPTReportById;
+    fetcher(id)
       .then((res) => setReport(res.data?.data ?? res.data))
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, isPublic]);
 
   useEffect(() => {
     if (autoPrint) {
@@ -219,9 +222,7 @@ export const PTReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = window.location.href
-    .replace(/[?&]autoprint=true/, "")
-    .replace(/[?&]$/, "");
+  const qrUrl = `${window.location.origin}/reports/public/pt/${id}`;
 
   const jd = report.jobDetails ?? {};
   const md = report.methodDetails ?? {};

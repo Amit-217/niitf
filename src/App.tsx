@@ -268,6 +268,15 @@ function App() {
           }
         />
 
+        {/* Public Report View Routes — no auth required */}
+        <Route path="/reports/public/mpt/:id" element={<MPTReportPrintPage />} />
+        <Route path="/reports/public/pt/:id" element={<PTReportPrintPage />} />
+        <Route path="/reports/public/ut/:id" element={<UTReportPrintPage />} />
+        <Route path="/reports/public/vssc-ut/:id" element={<VSSCUTReportPrintPage />} />
+        <Route path="/reports/public/utg/:id" element={<UTGReportPrintPage />} />
+        <Route path="/reports/public/tpi-ivr/:id" element={<TPIIVRReportPrintPage />} />
+        <Route path="/reports/public/awsd/:id" element={<AWSDReportPrintPage />} />
+
         {/* Fallback */}
         <Route path="*" element={<Login />} />
       </Routes>

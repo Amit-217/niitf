@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { getUTGReportById } from "../../../api/customerApi";
+import { getUTGReportById, getPublicUTGReportById } from "../../../api/customerApi";
 
 // ─── Print Styles ─────────────────────────────────────────────────────────────
 
@@ -113,13 +113,16 @@ export const UTGReportPrintPage: React.FC = () => {
     }
   };
 
+  const isPublic = location.pathname.startsWith("/reports/public/");
+
   useEffect(() => {
     if (!id) return;
-    getUTGReportById(id)
+    const fetcher = isPublic ? getPublicUTGReportById : getUTGReportById;
+    fetcher(id)
       .then((res: any) => setReport((res as any).data ?? res))
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, isPublic]);
 
   useEffect(() => {
     if (autoPrint) {
@@ -175,9 +178,7 @@ export const UTGReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = window.location.href
-    .replace(/[?&]autoprint=true/, "")
-    .replace(/[?&]$/, "");
+  const qrUrl = `${window.location.origin}/reports/public/utg/${id}`;
 
   const jd = report.jobDetails ?? {};
   const eq = report.equipmentDetails ?? {};

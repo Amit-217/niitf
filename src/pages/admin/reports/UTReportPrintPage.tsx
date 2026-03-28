@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { getUTReportById, UTReport } from "../../../api/customerApi";
+import { getUTReportById, getPublicUTReportById, UTReport } from "../../../api/customerApi";
 
 // ─── Print Styles ─────────────────────────────────────────────────────────────
 
@@ -119,13 +119,16 @@ export const UTReportPrintPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [bwMode, setBwMode] = useState(false);
 
+  const isPublic = location.pathname.startsWith("/reports/public/");
+
   useEffect(() => {
     if (!id) return;
-    getUTReportById(id)
+    const fetcher = isPublic ? getPublicUTReportById : getUTReportById;
+    fetcher(id)
       .then((res) => setReport(res.data?.data ?? res.data))
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, isPublic]);
 
   useEffect(() => {
     if (autoPrint) {
@@ -180,9 +183,7 @@ export const UTReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = window.location.href
-    .replace(/[?&]autoprint=true/, "")
-    .replace(/[?&]$/, "");
+  const qrUrl = `${window.location.origin}/reports/public/ut/${id}`;
 
   const jd = report.jobDetails ?? {};
   const eq = report.equipmentDetails ?? {};
