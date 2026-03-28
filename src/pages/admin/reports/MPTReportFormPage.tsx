@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import {
-  ArrowLeft,
-  Plus,
-  Trash2,
-  Save,
-} from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save } from "lucide-react";
 import {
   createMPTReport,
   updateMPTReport,
@@ -126,7 +121,10 @@ export const MPTReportFormPage: React.FC = () => {
   const [jobInspectionDate, setJobInspectionDate] = useState("");
   const [jobInspectionEndDate, setJobInspectionEndDate] = useState("");
   const [jobReferenceStd, setJobReferenceStd] = useState("");
+  const [jobReferenceStdOther, setJobReferenceStdOther] = useState("");
   const [jobAcceptanceCriteria, setJobAcceptanceCriteria] = useState("");
+  const [jobAcceptanceCriteriaOther, setJobAcceptanceCriteriaOther] =
+    useState("");
   const [jobInspectionTime, setJobInspectionTime] = useState("");
   const [jobStageOfInspection, setJobStageOfInspection] = useState("");
   const [jobMaterial, setJobMaterial] = useState("");
@@ -217,8 +215,21 @@ export const MPTReportFormPage: React.FC = () => {
         setJobReportDate(toDate(jd.reportDate));
         setJobInspectionDate(toDate(jd.inspectionDate));
         setJobInspectionEndDate(toDate(jd.inspectionEndDate));
-        setJobReferenceStd(jd.referenceStd ?? "");
-        setJobAcceptanceCriteria(jd.acceptanceCriteria ?? "");
+        const [refStd, refStdO] = fromOther(jd.referenceStd, [
+          "ASME SEC V Article 7",
+          "ASTM E 709",
+          "Other",
+        ]);
+        setJobReferenceStd(refStd);
+        setJobReferenceStdOther(refStdO);
+        const [acc, accO] = fromOther(jd.acceptanceCriteria, [
+          "ASME SEC VIII Appendix 6",
+          "ASME SEC VIII Appendix 7",
+          "ASME B 16.34",
+          "Other",
+        ]);
+        setJobAcceptanceCriteria(acc);
+        setJobAcceptanceCriteriaOther(accO);
         setJobInspectionTime(jd.inspectionTime ?? "");
         setJobStageOfInspection(jd.stageOfInspection ?? "");
         setJobMaterial(jd.material ?? "");
@@ -383,8 +394,8 @@ export const MPTReportFormPage: React.FC = () => {
       return;
     }
     if (!isEditMode && !customerId) {
-        toast.error("Please select a customer first.");
-        return;
+      toast.error("Please select a customer first.");
+      return;
     }
 
     setSaving(true);
@@ -399,8 +410,11 @@ export const MPTReportFormPage: React.FC = () => {
           reportDate: jobReportDate || undefined,
           inspectionDate: jobInspectionDate || undefined,
           inspectionEndDate: jobInspectionEndDate || undefined,
-          referenceStd: jobReferenceStd,
-          acceptanceCriteria: jobAcceptanceCriteria,
+          referenceStd: resolveCustom(jobReferenceStd, jobReferenceStdOther),
+          acceptanceCriteria: resolveCustom(
+            jobAcceptanceCriteria,
+            jobAcceptanceCriteriaOther,
+          ),
           inspectionTime: jobInspectionTime,
           stageOfInspection: jobStageOfInspection || undefined,
           material: jobMaterial,
@@ -552,7 +566,9 @@ export const MPTReportFormPage: React.FC = () => {
               type="text"
               value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
               readOnly
-              className={inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"}
+              className={
+                inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"
+              }
               placeholder="Auto-generated on save"
             />
           </div>
@@ -621,19 +637,6 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobReferenceStd">
-              Reference Std.
-            </label>
-            <input
-              id="jobReferenceStd"
-              type="text"
-              value={jobReferenceStd}
-              onChange={(e) => setJobReferenceStd(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. ASME Sec. V, Article VII"
-            />
-          </div>
-          <div>
             <label className={labelClass} htmlFor="jobInspectionDate">
               Inspection Start Date
             </label>
@@ -658,16 +661,36 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
+            <label className={labelClass} htmlFor="jobReferenceStd">
+              Reference Std.
+            </label>
+            <SelectWithOther
+              id="jobReferenceStd"
+              value={jobReferenceStd}
+              onChange={setJobReferenceStd}
+              otherValue={jobReferenceStdOther}
+              onOtherChange={setJobReferenceStdOther}
+              options={["ASME SEC V Article 7", "ASTM E 709", "Other"]}
+              placeholder="Select...."
+            />
+          </div>
+          <div>
             <label className={labelClass} htmlFor="jobAcceptanceCriteria">
               Acceptance Criteria
             </label>
-            <input
+            <SelectWithOther
               id="jobAcceptanceCriteria"
-              type="text"
               value={jobAcceptanceCriteria}
-              onChange={(e) => setJobAcceptanceCriteria(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. ASME SEC VIII Appendix 6"
+              onChange={setJobAcceptanceCriteria}
+              otherValue={jobAcceptanceCriteriaOther}
+              onOtherChange={setJobAcceptanceCriteriaOther}
+              options={[
+                "ASME SEC VIII Appendix 6",
+                "ASME SEC VIII Appendix 7",
+                "ASME B 16.34",
+                "Other",
+              ]}
+              placeholder="Select...."
             />
           </div>
           <div>
@@ -1327,7 +1350,7 @@ export const MPTReportFormPage: React.FC = () => {
                         }
                         className={`${inputClass} bg-white`}
                       >
-                        <option value="">— Select Inspector —</option>
+                        <option value="">Select....</option>
                         {users.map((u) => (
                           <option key={u._id} value={u.name}>
                             {u.name}
@@ -1408,18 +1431,12 @@ export const MPTReportFormPage: React.FC = () => {
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <select
+                <input
+                  type="text"
                   value={custName}
                   onChange={(e) => setCustName(e.target.value)}
-                  className={`${inputClass} bg-white`}
-                >
-                  <option value="">— Select —</option>
-                  {users.map((u) => (
-                    <option key={u._id} value={u.name}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
+                  className={inputClass}
+                />
               </div>
               <div>
                 <label className={labelClass}>Designation</label>
@@ -1471,18 +1488,12 @@ export const MPTReportFormPage: React.FC = () => {
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <select
+                <input
+                  type="text"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
-                  className={`${inputClass} bg-white`}
-                >
-                  <option value="">— Select —</option>
-                  {users.map((u) => (
-                    <option key={u._id} value={u.name}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
+                  className={inputClass}
+                />
               </div>
               <div>
                 <label className={labelClass}>Designation</label>

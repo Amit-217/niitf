@@ -174,47 +174,6 @@ export const AWSDReportPrintPage: React.FC = () => {
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
-      {/* ── No-Print Action Bar ── */}
-      <div
-        className="no-print"
-        style={{
-          padding: "10px 16px",
-          background: "#1e293b",
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-        }}
-      >
-        <button
-          onClick={goBack}
-          style={{
-            padding: "6px 14px",
-            background: "#334155",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-          }}
-        >Back</button>
-        <button
-          onClick={() => window.print()}
-          style={{
-            padding: "6px 14px",
-            background: "#2563eb",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-          }}
-        >Download / Print</button>
-        <span style={{ marginLeft: "auto", color: "#94a3b8", fontSize: 12 }}>
-          Report No: {v(report.reportNo)} &nbsp;|&nbsp; Status:{" "}
-          {v(report.status)?.toUpperCase()}
-        </span>
-      </div>
-
       {/* ── Report Content ── */}
       <div
         id="report-root"
@@ -271,7 +230,11 @@ export const AWSDReportPrintPage: React.FC = () => {
                       color: "#1a3c8f",
                       fontWeight: "bold",
                     }}
-                  >NIIT<br />LOGO</div>
+                  >
+                    NIIT
+                    <br />
+                    LOGO
+                  </div>
                 </td>
                 {/* Company info */}
                 <td
@@ -625,10 +588,3 @@ export const AWSDReportPrintPage: React.FC = () => {
     </>
   );
 };
-
-
-
-
-
-
-

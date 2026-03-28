@@ -111,13 +111,18 @@ export const UTReportPrintPage: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
-    if (!loading && report && autoPrint) {
+    if (autoPrint) {
       document.body.classList.add("autoprint-mode");
-      const t = setTimeout(() => {
+      return () => document.body.classList.remove("autoprint-mode");
+    }
+  }, [autoPrint]);
+
+  useEffect(() => {
+    if (!loading && report && autoPrint) {
+      setTimeout(() => {
         window.print();
-        document.body.classList.remove("autoprint-mode");
-      }, 600);
-      return () => clearTimeout(t);
+        window.close();
+      }, 300);
     }
   }, [loading, report, autoPrint]);
 

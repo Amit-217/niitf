@@ -105,13 +105,18 @@ export const UTGReportPrintPage: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
-    if (!loading && report && autoPrint) {
+    if (autoPrint) {
       document.body.classList.add("autoprint-mode");
-      const t = setTimeout(() => {
+      return () => document.body.classList.remove("autoprint-mode");
+    }
+  }, [autoPrint]);
+
+  useEffect(() => {
+    if (!loading && report && autoPrint) {
+      setTimeout(() => {
         window.print();
-        document.body.classList.remove("autoprint-mode");
-      }, 600);
-      return () => clearTimeout(t);
+        window.close();
+      }, 300);
     }
   }, [loading, report, autoPrint]);
 
@@ -248,7 +253,10 @@ export const UTGReportPrintPage: React.FC = () => {
                   <td className="lbl">Project</td>
                   <td className="val">{v(jd.project)}</td>
                   <td className="lbl">Inspection Date</td>
-                  <td className="val">{fmtDate(jd.inspectionDate)}</td>
+                  <td className="val">
+                    {fmtDate(jd.inspectionDate)}
+                    {jd.inspectionEndDate ? ` To ${fmtDate(jd.inspectionEndDate)}` : ''}
+                  </td>
                 </tr>
                 <tr>
                   <td className="lbl">Reference Std.</td>

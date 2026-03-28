@@ -554,6 +554,7 @@ export interface UTGReportPayload {
     reportDate?: string;
     project?: string;
     inspectionDate?: string;
+    inspectionEndDate?: string;
     referenceStd?: string;
     inspectionTime?: string;
     acceptanceCriteria?: string;
