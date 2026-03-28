@@ -827,10 +827,10 @@ export const CustomerDetailPage = () => {
                         </tr>
                       ) : reportListByType[reportSubType].map((r) => (
                         <tr key={r._id} className="hover:bg-gray-50 transition-colors">
-                          <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700">{r.reportNo}</td>
-                          <td className="px-4 py-3 text-gray-600">{fmt(r.jobDetails?.reportDate || r.reportDate)}</td>
-                          <td className="px-4 py-3 text-gray-700">{r.jobDetails?.client || r.customer || "—"}</td>
-                          <td className="px-4 py-3 text-gray-500 text-xs">{r.jobDetails?.stageOfInspection || r.stageOfInspection || "—"}</td>
+                          <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700">{r.reportNo || r.irNo}</td>
+                          <td className="px-4 py-3 text-gray-600">{fmt(r.jobDetails?.reportDate || r.dtOfInspection || r.reportDate)}</td>
+                          <td className="px-4 py-3 text-gray-700">{r.jobDetails?.client || r.client || r.customer || "—"}</td>
+                          <td className="px-4 py-3 text-gray-500 text-xs">{r.jobDetails?.stageOfInspection || r.inspectionStage || r.stageOfInspection || "—"}</td>
                           <td className="px-4 py-3">
                             <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${r.status === "final" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
                               {r.status}

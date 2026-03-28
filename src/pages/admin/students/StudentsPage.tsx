@@ -23,6 +23,7 @@ import {
   StudentPayload,
 } from "../../../api/admissionApi";
 import { getEnquiries } from "../../../api/enquiryApi";
+import { Pagination } from "../../../components/Pagination";
 
 const INITIAL_FORM: StudentPayload = {
   fullName: "",
@@ -45,6 +46,7 @@ export const StudentsPage = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -56,7 +58,7 @@ export const StudentsPage = () => {
   const fetchStudents = useCallback(async () => {
     setIsLoading(true);
     try {
-      const res: any = await getStudents({ page, search });
+      const res: any = await getStudents({ page, limit, search });
       // By default res is the unwrapped JSON body (via Axios interceptor).
       // Example successful body: { success: true, message: "...", data: { students: [...], pagination: {...} } }
 
@@ -88,7 +90,7 @@ export const StudentsPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [page, search]);
+  }, [page, limit, search]);
 
   useEffect(() => {
     fetchStudents();
@@ -296,6 +298,14 @@ export const StudentsPage = () => {
             </tbody>
           </table>
         </div>
+        <Pagination
+          page={page}
+          totalPages={Math.ceil(total / limit)}
+          total={total}
+          limit={limit}
+          onPageChange={setPage}
+          onLimitChange={(l) => { setLimit(l); setPage(1); }}
+        />
       </div>
 
       {/* Modal */}

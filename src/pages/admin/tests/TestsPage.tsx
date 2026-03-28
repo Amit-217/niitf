@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { Pagination } from "../../../components/Pagination";
 import { toast } from "react-toastify";
 import {
   FileText,
@@ -55,7 +56,9 @@ const INITIAL_FORM = {
 
 export const TestsPage = () => {
   const [tests, setTests] = useState<Test[]>([]);
-  const [page] = useState(1);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setCreateOpen] = useState(false);
   const [batches, setBatches] = useState<any[]>([]);
@@ -133,18 +136,26 @@ export const TestsPage = () => {
   const fetchTests = useCallback(async () => {
     setIsLoading(true);
     try {
-      const res: any = await getTests({ page });
-      if (Array.isArray(res)) setTests(res);
-      else if (res?.data?.tests) setTests(res.data.tests);
-      else if (res?.data && Array.isArray(res.data)) setTests(res.data);
-      else if (res?.tests) setTests(res.tests);
-      else setTests([]);
+      const res: any = await getTests({ page, limit });
+      if (Array.isArray(res)) {
+        setTests(res); setTotal(res.length);
+      } else if (res?.data?.tests) {
+        setTests(res.data.tests);
+        setTotal(res.data.pagination?.total ?? res.data.tests.length);
+      } else if (res?.data && Array.isArray(res.data)) {
+        setTests(res.data); setTotal(res.pagination?.total ?? res.data.length);
+      } else if (res?.tests) {
+        setTests(res.tests);
+        setTotal(res.pagination?.total ?? res.tests.length);
+      } else {
+        setTests([]);
+      }
     } catch {
       toast.error("Failed to load tests");
     } finally {
       setIsLoading(false);
     }
-  }, [page]);
+  }, [page, limit]);
 
   useEffect(() => {
     fetchTests();
@@ -483,6 +494,14 @@ export const TestsPage = () => {
             )}
           </tbody>
         </table>
+        <Pagination
+          page={page}
+          totalPages={Math.ceil(total / limit)}
+          total={total}
+          limit={limit}
+          onPageChange={setPage}
+          onLimitChange={(l) => { setLimit(l); setPage(1); }}
+        />
       </div>
 
       {isCreateOpen && (

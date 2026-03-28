@@ -505,6 +505,7 @@ export const EnquiriesPage: React.FC = () => {
         search,
         status: statusFilter,
         followUpDue: dueFilter ? "true" : "false",
+        limit: "100",
       });
       const [eRes, cRes]: any[] = await Promise.all([
         api.get(`/enquiries?${params.toString()}`),

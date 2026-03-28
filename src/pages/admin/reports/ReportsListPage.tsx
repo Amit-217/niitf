@@ -19,7 +19,6 @@ import {
     Loader2,
     Calendar,
     User,
-    ChevronRight,
 } from "lucide-react";
 import {
     getMPTReports, deleteMPTReport,
@@ -30,6 +29,7 @@ import {
     getTPIIVRReports, deleteTPIIVRReport,
     getAWSDReports, deleteAWSDReport,
 } from "../../../api/customerApi";
+import { Pagination } from "../../../components/Pagination";
 
 type ReportType = "mpt" | "pt" | "ut" | "vssc-ut" | "utg" | "tpi-ivr" | "awsd";
 
@@ -74,9 +74,8 @@ export const ReportsListPage = () => {
     const [status, setStatus] = useState<string>("");
     const [page, setPage] = useState(1);
     const [counts, setCounts] = useState<Record<ReportType, number>>({ mpt: 0, pt: 0, ut: 0, "vssc-ut": 0, utg: 0, "tpi-ivr": 0, awsd: 0 });
+    const [limit, setLimit] = useState(10);
     const navigate = useNavigate();
-
-    const LIMIT = 10;
 
     // Fetch counts for all report types on mount
     useEffect(() => {
@@ -93,7 +92,7 @@ export const ReportsListPage = () => {
         setIsLoading(true);
         try {
             let res: any;
-            const params = { page, limit: LIMIT, search, status };
+            const params = { page, limit, search, status };
 
             switch (activeTab) {
                 case "mpt": res = await getMPTReports(params); break;
@@ -114,13 +113,13 @@ export const ReportsListPage = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [activeTab, page, search, status]);
+    }, [activeTab, page, limit, search, status]);
 
     useEffect(() => {
         fetchReports();
     }, [fetchReports]);
 
-    const totalPages = Math.ceil(total / LIMIT);
+    const totalPages = Math.ceil(total / limit);
 
     const handleDeleteReport = async (reportId: string) => {
         if (!window.confirm("Delete this report? This action cannot be undone.")) return;
@@ -292,7 +291,7 @@ export const ReportsListPage = () => {
                                     <tr key={r._id} className="group hover:bg-gray-50/80 transition-all duration-300">
                                         <td className="px-6 py-5">
                                             <div className="flex flex-col">
-                                                <span className="font-black text-gray-900 tracking-tight group-hover:text-primary-700 transition-colors uppercase">{r.reportNo}</span>
+                                                <span className="font-black text-gray-900 tracking-tight group-hover:text-primary-700 transition-colors uppercase">{r.reportNo || r.irNo}</span>
                                                 <span className="text-[10px] font-bold text-gray-400 mt-0.5">{fmt(r.createdAt)}</span>
                                             </div>
                                         </td>
@@ -301,18 +300,18 @@ export const ReportsListPage = () => {
                                                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
                                                     <User size={14} />
                                                 </div>
-                                                <span className="font-bold text-gray-700">{r.jobDetails?.customer || r.customer || "Unspecified"}</span>
+                                                <span className="font-bold text-gray-700">{r.jobDetails?.customer || r.jobDetails?.client || r.client || r.customer || "Unspecified"}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-2 text-gray-600 font-medium">
                                                 <Calendar size={14} className="text-gray-400" />
-                                                {fmt(r.jobDetails?.reportDate || r.reportDate)}
+                                                {fmt(r.jobDetails?.reportDate || r.dtOfInspection || r.reportDate)}
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
                                             <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-lg">
-                                                {r.jobDetails?.stageOfInspection || r.stageOfInspection || "Standard"}
+                                                {r.jobDetails?.stageOfInspection || r.inspectionStage || r.stageOfInspection || "Standard"}
                                             </span>
                                         </td>
                                         <td className="px-6 py-5">
@@ -364,32 +363,14 @@ export const ReportsListPage = () => {
                     </table>
                 </div>
 
-                {/* Enhanced Pagination */}
-                {totalPages > 1 && (
-                    <div className="px-6 py-5 bg-gray-50/30 border-t border-gray-50 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                                Page <span className="text-gray-900">{page}</span> of <span className="text-gray-900">{totalPages}</span>
-                            </p>
-                        </div>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                disabled={page === 1}
-                                className="px-5 py-2.5 text-xs font-bold border-2 border-gray-100 rounded-2xl disabled:opacity-30 hover:bg-white hover:border-gray-200 transition-all active:scale-95"
-                            >
-                                Previous
-                            </button>
-                            <button
-                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                                disabled={page === totalPages}
-                                className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold bg-white border-2 border-gray-100 rounded-2xl disabled:opacity-30 hover:border-gray-200 transition-all active:scale-95"
-                            >
-                                Next <ChevronRight size={14} />
-                            </button>
-                        </div>
-                    </div>
-                )}
+                <Pagination
+                    page={page}
+                    totalPages={totalPages}
+                    total={total}
+                    limit={limit}
+                    onPageChange={setPage}
+                    onLimitChange={(l) => { setLimit(l); setPage(1); }}
+                />
             </div>
         </div>
     );

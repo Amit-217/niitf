@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     Users, Plus, Search, Filter, Edit2, Trash2, ShieldOff,
-    ShieldCheck, X, Loader2, Eye, EyeOff, UserCheck, UserX,
+    ShieldCheck, X, Loader2, Eye, EyeOff, UserCheck,
     ChevronDown, AlertTriangle, Crown, Shield, User, RefreshCw,
     Mail, Phone, Hash, Calendar
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../../api/axios';
 import { StaffProfileDrawer } from '../../components/StaffProfileDrawer';
+import { Pagination } from '../../components/Pagination';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Role = 'SUPER_ADMIN' | 'ADMIN' | 'EMPLOYEE';
@@ -274,6 +275,9 @@ export const UsersPage: React.FC = () => {
     const [search, setSearch] = useState('');
     const [roleFilter, setRoleFilter] = useState<'ALL' | Role>('ALL');
     const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(10);
+    const [total, setTotal] = useState(0);
     const [modal, setModal] = useState<{ type: 'create' | 'edit'; user?: UserType } | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<{ user: UserType; type: 'soft' | 'hard' } | null>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
@@ -285,24 +289,23 @@ export const UsersPage: React.FC = () => {
     const fetchUsers = useCallback(async () => {
         setLoading(true);
         try {
-            const res: any = await api.get('/users/');
+            const params: any = { page, limit };
+            if (search) params.search = search;
+            if (roleFilter !== 'ALL') params.role = roleFilter;
+            if (statusFilter !== 'ALL') params.status = statusFilter === 'ACTIVE' ? 'active' : 'inactive';
+            const res: any = await api.get('/users/', { params });
             setUsers(res.data || []);
+            setTotal(res.pagination?.total ?? (res.data || []).length);
         } catch {
             toast.error('Failed to load users.');
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [page, limit, search, roleFilter, statusFilter]);
 
     useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
-    const filtered = users.filter(u => {
-        const q = search.toLowerCase();
-        const matchSearch = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.empId.toLowerCase().includes(q);
-        const matchRole = roleFilter === 'ALL' || u.role === roleFilter;
-        const matchStatus = statusFilter === 'ALL' || (statusFilter === 'ACTIVE' ? u.isActive : !u.isActive);
-        return matchSearch && matchRole && matchStatus;
-    });
+    const filtered = users;
 
     const handleDelete = async () => {
         if (!deleteTarget) return;
@@ -393,14 +396,14 @@ export const UsersPage: React.FC = () => {
                     <input
                         className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 focus:bg-white transition-all"
                         placeholder="Search by name, email or ID…"
-                        value={search} onChange={e => setSearch(e.target.value)}
+                        value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
                     />
                 </div>
                 <div className="relative">
                     <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <select
                         className="pl-8 pr-8 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 appearance-none cursor-pointer"
-                        value={roleFilter} onChange={e => setRoleFilter(e.target.value as any)}
+                        value={roleFilter} onChange={e => { setRoleFilter(e.target.value as any); setPage(1); }}
                     >
                         <option value="ALL">All Roles</option>
                         <option value="SUPER_ADMIN">Super Admin</option>
@@ -412,7 +415,7 @@ export const UsersPage: React.FC = () => {
                 <div className="relative">
                     <select
                         className="px-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 appearance-none cursor-pointer pr-8"
-                        value={statusFilter} onChange={e => setStatusFilter(e.target.value as any)}
+                        value={statusFilter} onChange={e => { setStatusFilter(e.target.value as any); setPage(1); }}
                     >
                         <option value="ALL">All Status</option>
                         <option value="ACTIVE">Active</option>
@@ -548,17 +551,14 @@ export const UsersPage: React.FC = () => {
                     </table>
                 </div>
 
-                {/* Footer */}
-                {!loading && filtered.length > 0 && (
-                    <div className="px-4 py-3 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
-                        <p className="text-xs text-gray-400">
-                            Showing <span className="font-semibold text-gray-600">{filtered.length}</span> of <span className="font-semibold text-gray-600">{users.length}</span> users
-                        </p>
-                        <div className="flex items-center gap-2 text-xs text-gray-400">
-                            <UserX size={12} /> {users.filter(u => !u.isActive).length} inactive
-                        </div>
-                    </div>
-                )}
+                <Pagination
+                    page={page}
+                    totalPages={Math.ceil(total / limit)}
+                    total={total}
+                    limit={limit}
+                    onPageChange={setPage}
+                    onLimitChange={(l) => { setLimit(l); setPage(1); }}
+                />
             </div>
 
             {/* Modals */}

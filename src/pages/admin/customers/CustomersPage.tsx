@@ -20,6 +20,7 @@ import {
   Customer,
   CustomerPayload,
 } from "../../../api/customerApi";
+import { Pagination } from "../../../components/Pagination";
 
 const INITIAL_FORM: CustomerPayload = {
   companyName: "",
@@ -49,13 +50,13 @@ export const CustomersPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const LIMIT = 10;
+  const [limit, setLimit] = useState(10);
 
   const fetchCustomers = useCallback(async () => {
     setIsLoading(true);
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res: any = await getCustomers({ page, limit: LIMIT, search });
+      const res: any = await getCustomers({ page, limit, search });
 
       let items: Customer[] = [];
       let count = 0;
@@ -68,7 +69,7 @@ export const CustomersPage = () => {
         count = res.data.pagination?.total || items.length;
       } else if (res?.data && Array.isArray(res.data)) {
         items = res.data;
-        count = items.length;
+        count = res.pagination?.total ?? items.length;
       } else if (res?.customers) {
         items = res.customers;
         count = res.pagination?.total || items.length;
@@ -82,7 +83,7 @@ export const CustomersPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [page, search]);
+  }, [page, limit, search]);
 
   useEffect(() => {
     fetchCustomers();
@@ -182,7 +183,7 @@ export const CustomersPage = () => {
     }
   };
 
-  const totalPages = Math.ceil(total / LIMIT);
+  const totalPages = Math.ceil(total / limit);
 
   return (
     <div className="space-y-6">
@@ -321,30 +322,14 @@ export const CustomersPage = () => {
           </table>
         </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
-            <p className="text-sm text-gray-500">
-              Page {page} of {totalPages}
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        )}
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          limit={limit}
+          onPageChange={setPage}
+          onLimitChange={(l) => { setLimit(l); setPage(1); }}
+        />
       </div>
 
       {/* Modal */}
@@ -354,7 +339,7 @@ export const CustomersPage = () => {
             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
             onClick={() => setModalOpen(false)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5">
               <div className="flex items-center justify-between">

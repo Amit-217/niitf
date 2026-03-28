@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { Pagination } from "../../../components/Pagination";
 import { toast } from "react-toastify";
 import {
   BookOpen,
@@ -59,7 +60,8 @@ export const AdmissionsPage = () => {
   };
   const [admissions, setAdmissions] = useState<Admission[]>([]);
   const [total, setTotal] = useState(0);
-  const [page] = useState(1);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [filterStatus, setFilterStatus] = useState("");
   const [balanceOnly, setBalanceOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -125,6 +127,7 @@ export const AdmissionsPage = () => {
     try {
       const res: any = await getAdmissions({
         page,
+        limit,
         status: filterStatus || undefined,
         hasBalance: balanceOnly ? "true" : undefined,
         search: debouncedSearch || undefined,
@@ -167,7 +170,7 @@ export const AdmissionsPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [page, filterStatus, balanceOnly, debouncedSearch]);
+  }, [page, limit, filterStatus, balanceOnly, debouncedSearch]);
 
   useEffect(() => {
     fetchAdmissions();
@@ -380,7 +383,7 @@ export const AdmissionsPage = () => {
           <input
             type="text"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search name, mobile, ID…"
             className="pl-9 pr-8 py-2 text-sm border border-gray-200 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition-all w-64"
           />
@@ -399,7 +402,7 @@ export const AdmissionsPage = () => {
           {["", "Active", "Completed", "Cancelled"].map((s) => (
             <button
               key={s}
-              onClick={() => setFilterStatus(s)}
+              onClick={() => { setFilterStatus(s); setPage(1); }}
               className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${filterStatus === s ? "bg-white text-primary-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
             >
               {s || "All Status"}
@@ -408,7 +411,7 @@ export const AdmissionsPage = () => {
         </div>
 
         <button
-          onClick={() => setBalanceOnly(!balanceOnly)}
+          onClick={() => { setBalanceOnly(!balanceOnly); setPage(1); }}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border transition-all ${balanceOnly ? "bg-red-50 border-red-200 text-red-600 shadow-sm" : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"}`}
         >
           <BadgeDollarSign size={14} /> Balance Alert
@@ -527,6 +530,14 @@ export const AdmissionsPage = () => {
             </tbody>
           </table>
         </div>
+        <Pagination
+          page={page}
+          totalPages={Math.ceil(total / limit)}
+          total={total}
+          limit={limit}
+          onPageChange={setPage}
+          onLimitChange={(l) => { setLimit(l); setPage(1); }}
+        />
       </div>
 
       {isCreateOpen && (

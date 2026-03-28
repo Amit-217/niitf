@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ArrowLeft, Plus, Trash2, Save } from "lucide-react";
-import { createPTReport, updatePTReport, getPTReportById } from "../../../api/customerApi";
+import {
+  createPTReport,
+  updatePTReport,
+  getPTReportById,
+} from "../../../api/customerApi";
 import { getApiErrorMessage } from "../../../api/error";
 import api from "../../../api/axios";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
@@ -97,8 +101,8 @@ export const PTReportFormPage: React.FC = () => {
     customerName?: string;
   } | null;
   const [saving, setSaving] = useState(false);
-  const [customerId, setCustomerId] = useState(state?.customerId ?? '');
-  const [customerName, setCustomerName] = useState(state?.customerName ?? '');
+  const [customerId, setCustomerId] = useState(state?.customerId ?? "");
+  const [customerName, setCustomerName] = useState(state?.customerName ?? "");
 
   // â"€â"€ Job Details â"€â"€
   const [reportNo, setReportNo] = useState("");
@@ -158,7 +162,10 @@ export const PTReportFormPage: React.FC = () => {
   // ── Users for inspector dropdown ──
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
   useEffect(() => {
-    api.get("/users?status=active&limit=100").then((res: any) => setUsers(res.data ?? res ?? [])).catch(() => {});
+    api
+      .get("/users?status=active&limit=100")
+      .then((res: any) => setUsers(res.data ?? res ?? []))
+      .catch(() => {});
   }, []);
 
   // â"€â"€ Final Section â"€â"€
@@ -177,80 +184,126 @@ export const PTReportFormPage: React.FC = () => {
 
   useEffect(() => {
     if (!id) return;
-    const toDate = (d?: string | null) => d ? d.split('T')[0] : '';
-    const fromOther = (val: string | undefined, opts: string[]): [string, string] => {
-      if (!val) return ['', ''];
-      return opts.includes(val) ? [val, ''] : ['Other', val];
+    const toDate = (d?: string | null) => (d ? d.split("T")[0] : "");
+    const fromOther = (
+      val: string | undefined,
+      opts: string[],
+    ): [string, string] => {
+      if (!val) return ["", ""];
+      return opts.includes(val) ? [val, ""] : ["Other", val];
     };
-    getPTReportById(id).then((res: any) => {
-      const r = (res as any).data ?? res;
-      setCustomerId(r.customerId ?? '');
-      setCustomerName(r.jobDetails?.customer ?? '');
-      setReportNo(r.reportNo ?? '');
-      const jd = r.jobDetails ?? {};
-      setJobClient(jd.client ?? '');
-      setJobProject(jd.project ?? '');
-      setJobReportDate(toDate(jd.reportDate));
-      setJobInspectionDate(toDate(jd.inspectionDate));
-      setJobInspectionEndDate(toDate(jd.inspectionEndDate));
-      setJobInspectionTime(jd.inspectionTime ?? '');
-      const refStdOpts = ['ASME Sec. V, Article VI', 'ASTM E 165', 'Other'];
-      const [rs, rsC] = fromOther(jd.referenceStandard, refStdOpts);
-      setJobRefStd(rs); setJobRefStdCustom(rsC);
-      const accOpts = ['ASME Sec. VIII Div. 1, Appendix 7', 'Appendix 8', 'Other'];
-      const [acc, accC] = fromOther(jd.acceptanceCriteria, accOpts);
-      setJobAcceptance(acc); setJobAcceptanceCustom(accC);
-      setJobMaterial(jd.material ?? '');
-      setJobStage(jd.stageOfInspection ?? '');
-      setJobThickness(jd.thickness ?? '');
-      const extOpts = ['10%', '100%', 'To the maximum extent possible', 'Other'];
-      const [ext, extC] = fromOther(jd.extentOfExamination, extOpts);
-      setJobExtent(ext); setJobExtentCustom(extC);
-      setJobSurface(jd.surfaceCondition ?? '');
-      setJobJointType(jd.typeOfJoint ?? '');
-      setJobSurfaceTemp(jd.surfaceTemperature ?? '');
-      setJobWeldingProcess(jd.weldingProcess ?? '');
-      const met = r.methodDetails ?? {};
-      setPenetrantMethod(met.penetrantMethod ?? '');
-      setRemovalMethod(met.excessPenetrantRemovalMethod ?? '');
-      const mfrOpts = ['Pradeep', 'Dyeglo', 'Ferrochem', 'MR Chem', 'Magnaflux', 'Other'];
-      const con = r.consumablesDetails ?? {};
-      const pen = con.penetrant ?? {};
-      const [pMfr, pMfrC] = fromOther(pen.manufacturer, mfrOpts);
-      setPenMfr(pMfr); setPenMfrCustom(pMfrC); setPenBatch(pen.batch ?? ''); setPenExpiry(pen.expiryDate ?? '');
-      const dev = con.developer ?? {};
-      const [dMfr, dMfrC] = fromOther(dev.manufacturer, mfrOpts);
-      setDevMfr(dMfr); setDevMfrCustom(dMfrC); setDevBatch(dev.batch ?? ''); setDevExpiry(dev.expiryDate ?? '');
-      const cln = con.cleaner ?? {};
-      const [cMfr, cMfrC] = fromOther(cln.manufacturer, mfrOpts);
-      setCleanMfr(cMfr); setCleanMfrCustom(cMfrC); setCleanBatch(cln.batch ?? ''); setCleanExpiry(cln.expiryDate ?? '');
-      const mdesc = r.methodDescription ?? {};
-      setDwellTime(mdesc.dwellTime ?? '');
-      setLightIntensity(mdesc.lightIntensity ?? '');
-      setDevelopingTime(mdesc.developingTime ?? '');
-      const leOpts = ['60 W Bulb', 'NA', 'Other'];
-      const [le, leC] = fromOther(mdesc.lightEquipmentUsed, leOpts);
-      setLightEquip(le); setLightEquipCustom(leC);
-      setPostCleaning(mdesc.postCleaning ?? '');
-      setDryingTime(mdesc.dryingTime ?? '');
-      if (r.observations?.length) {
-        setObservations(r.observations.map((o: any) => ({
-          srNo: o.srNo, jobDescription: o.jobDescription ?? '',
-          drawingOrJointNo: o.drawingOrJointNo ?? '', size: o.size ?? '',
-          quantity: String(o.quantity ?? ''), evaluation: o.evaluation ?? '', remark: o.remark ?? o.result ?? '',
-        })));
-      }
-      const fs = r.finalSection ?? {};
-      const insp0 = fs.inspector?.[0] ?? {};
-      setInspectorName(insp0.name ?? ''); setInspectorQual(insp0.qualification || 'PT NDE Level II');
-      setInspectorIdNo(insp0.idNo ?? ''); setInspectorDate(toDate(insp0.date));
-      const cust = fs.customer ?? {};
-      setCustName(cust.name ?? ''); setCustDesig(cust.designation ?? '');
-      setCustIdNo(cust.idNo ?? ''); setCustDate(toDate(cust.date));
-      const cli = fs.clientOrTPI ?? {};
-      setClientName(cli.name ?? ''); setClientDesig(cli.designation ?? '');
-      setClientIdNo(cli.idNo ?? ''); setClientDate(toDate(cli.date));
-    }).catch(() => toast.error('Failed to load report.'));
+    getPTReportById(id)
+      .then((res: any) => {
+        const r = (res as any).data ?? res;
+        setCustomerId(r.customerId ?? "");
+        setCustomerName(r.jobDetails?.customer ?? "");
+        setReportNo(r.reportNo ?? "");
+        const jd = r.jobDetails ?? {};
+        setJobClient(jd.client ?? "");
+        setJobProject(jd.project ?? "");
+        setJobReportDate(toDate(jd.reportDate));
+        setJobInspectionDate(toDate(jd.inspectionDate));
+        setJobInspectionEndDate(toDate(jd.inspectionEndDate));
+        setJobInspectionTime(jd.inspectionTime ?? "");
+        const refStdOpts = ["ASME Sec. V, Article VI", "ASTM E 165", "Other"];
+        const [rs, rsC] = fromOther(jd.referenceStandard, refStdOpts);
+        setJobRefStd(rs);
+        setJobRefStdCustom(rsC);
+        const accOpts = [
+          "ASME Sec. VIII Div. 1, Appendix 7",
+          "Appendix 8",
+          "Other",
+        ];
+        const [acc, accC] = fromOther(jd.acceptanceCriteria, accOpts);
+        setJobAcceptance(acc);
+        setJobAcceptanceCustom(accC);
+        setJobMaterial(jd.material ?? "");
+        setJobStage(jd.stageOfInspection ?? "");
+        setJobThickness(jd.thickness ?? "");
+        const extOpts = [
+          "10%",
+          "100%",
+          "To the maximum extent possible",
+          "Other",
+        ];
+        const [ext, extC] = fromOther(jd.extentOfExamination, extOpts);
+        setJobExtent(ext);
+        setJobExtentCustom(extC);
+        setJobSurface(jd.surfaceCondition ?? "");
+        setJobJointType(jd.typeOfJoint ?? "");
+        setJobSurfaceTemp(jd.surfaceTemperature ?? "");
+        setJobWeldingProcess(jd.weldingProcess ?? "");
+        const met = r.methodDetails ?? {};
+        setPenetrantMethod(met.penetrantMethod ?? "");
+        setRemovalMethod(met.excessPenetrantRemovalMethod ?? "");
+        const mfrOpts = [
+          "Pradeep",
+          "Dyeglo",
+          "Ferrochem",
+          "MR Chem",
+          "Magnaflux",
+          "Other",
+        ];
+        const con = r.consumablesDetails ?? {};
+        const pen = con.penetrant ?? {};
+        const [pMfr, pMfrC] = fromOther(pen.manufacturer, mfrOpts);
+        setPenMfr(pMfr);
+        setPenMfrCustom(pMfrC);
+        setPenBatch(pen.batch ?? "");
+        setPenExpiry(pen.expiryDate ?? "");
+        const dev = con.developer ?? {};
+        const [dMfr, dMfrC] = fromOther(dev.manufacturer, mfrOpts);
+        setDevMfr(dMfr);
+        setDevMfrCustom(dMfrC);
+        setDevBatch(dev.batch ?? "");
+        setDevExpiry(dev.expiryDate ?? "");
+        const cln = con.cleaner ?? {};
+        const [cMfr, cMfrC] = fromOther(cln.manufacturer, mfrOpts);
+        setCleanMfr(cMfr);
+        setCleanMfrCustom(cMfrC);
+        setCleanBatch(cln.batch ?? "");
+        setCleanExpiry(cln.expiryDate ?? "");
+        const mdesc = r.methodDescription ?? {};
+        setDwellTime(mdesc.dwellTime ?? "");
+        setLightIntensity(mdesc.lightIntensity ?? "");
+        setDevelopingTime(mdesc.developingTime ?? "");
+        const leOpts = ["60 W Bulb", "NA", "Other"];
+        const [le, leC] = fromOther(mdesc.lightEquipmentUsed, leOpts);
+        setLightEquip(le);
+        setLightEquipCustom(leC);
+        setPostCleaning(mdesc.postCleaning ?? "");
+        setDryingTime(mdesc.dryingTime ?? "");
+        if (r.observations?.length) {
+          setObservations(
+            r.observations.map((o: any) => ({
+              srNo: o.srNo,
+              jobDescription: o.jobDescription ?? "",
+              drawingOrJointNo: o.drawingOrJointNo ?? "",
+              size: o.size ?? "",
+              quantity: String(o.quantity ?? ""),
+              evaluation: o.evaluation ?? "",
+              remark: o.remark ?? o.result ?? "",
+            })),
+          );
+        }
+        const fs = r.finalSection ?? {};
+        const insp0 = fs.inspector?.[0] ?? {};
+        setInspectorName(insp0.name ?? "");
+        setInspectorQual(insp0.qualification || "PT NDE Level II");
+        setInspectorIdNo(insp0.idNo ?? "");
+        setInspectorDate(toDate(insp0.date));
+        const cust = fs.customer ?? {};
+        setCustName(cust.name ?? "");
+        setCustDesig(cust.designation ?? "");
+        setCustIdNo(cust.idNo ?? "");
+        setCustDate(toDate(cust.date));
+        const cli = fs.clientOrTPI ?? {};
+        setClientName(cli.name ?? "");
+        setClientDesig(cli.designation ?? "");
+        setClientIdNo(cli.idNo ?? "");
+        setClientDate(toDate(cli.date));
+      })
+      .catch(() => toast.error("Failed to load report."));
   }, [id]);
 
   // -- Helpers --
@@ -386,7 +439,7 @@ export const PTReportFormPage: React.FC = () => {
       });
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error, "Failed to save report. Please try again.")
+        getApiErrorMessage(error, "Failed to save report. Please try again."),
       );
     } finally {
       setSaving(false);
@@ -434,12 +487,16 @@ export const PTReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Report No. {isEditMode ? "" : "(Auto-generated)"}</label>
+            <label className={labelClass}>
+              Report No. {isEditMode ? "" : "(Auto-generated)"}
+            </label>
             <input
               type="text"
               value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
               readOnly
-              className={inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"}
+              className={
+                inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"
+              }
               placeholder="Auto-generated on save"
             />
           </div>
@@ -534,16 +591,6 @@ export const PTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection Time</label>
-            <input
-              type="text"
-              value={jobInspectionTime}
-              onChange={(e) => setJobInspectionTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 10:00 AM - 03:30 PM"
-            />
-          </div>
-          <div>
             <label className={labelClass}>Acceptance Criteria</label>
             <SelectWithCustom
               value={jobAcceptance}
@@ -555,6 +602,16 @@ export const PTReportFormPage: React.FC = () => {
                 "Appendix 8",
                 "Other",
               ]}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Inspection Time</label>
+            <input
+              type="text"
+              value={jobInspectionTime}
+              onChange={(e) => setJobInspectionTime(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. 10:00 AM - 03:30 PM"
             />
           </div>
           <div>
@@ -987,7 +1044,9 @@ export const PTReportFormPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* NIIT Inspector */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">Examined By</p>
+            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
+              Examined By
+            </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               National Ind. Insp. & Training
             </p>
@@ -999,9 +1058,11 @@ export const PTReportFormPage: React.FC = () => {
                   onChange={(e) => setInspectorName(e.target.value)}
                   className={`${inputClass} bg-white`}
                 >
-                  <option value="">— Select Inspector —</option>
+                  <option value="">Select....</option>
                   {users.map((u) => (
-                    <option key={u._id} value={u.name}>{u.name}</option>
+                    <option key={u._id} value={u.name}>
+                      {u.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -1036,17 +1097,21 @@ export const PTReportFormPage: React.FC = () => {
           </div>
           {/* Customer */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">Customer</p>
+            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
+              Customer
+            </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               {customerName || "—"}
             </p>
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <select value={custName} onChange={(e) => setCustName(e.target.value)} className={`${inputClass} bg-white`}>
-                  <option value="">— Select —</option>
-                  {users.map((u) => (<option key={u._id} value={u.name}>{u.name}</option>))}
-                </select>
+                <input
+                  type="text"
+                  value={custName}
+                  onChange={(e) => setCustName(e.target.value)}
+                  className={inputClass}
+                />
               </div>
               <div>
                 <label className={labelClass}>Designation</label>
@@ -1079,17 +1144,21 @@ export const PTReportFormPage: React.FC = () => {
           </div>
           {/* Client / TPI */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">Client / TPI</p>
+            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
+              Client / TPI
+            </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               {jobClient || "—"}
             </p>
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <select value={clientName} onChange={(e) => setClientName(e.target.value)} className={`${inputClass} bg-white`}>
-                  <option value="">— Select —</option>
-                  {users.map((u) => (<option key={u._id} value={u.name}>{u.name}</option>))}
-                </select>
+                <input
+                  type="text"
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                  className={inputClass}
+                />
               </div>
               <div>
                 <label className={labelClass}>Designation</label>

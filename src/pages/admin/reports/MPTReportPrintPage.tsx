@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { getMPTReportById, MPTReport } from "../../../api/customerApi";
+import { getMPTReportById, getPublicMPTReportById, MPTReport } from "../../../api/customerApi";
 
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
@@ -32,13 +32,29 @@ const PRINT_STYLES = `
   * { box-sizing: border-box; }
   .report { background: #fff; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
   .rpt-header { background: #185FA5; padding: 10px 12px; display: flex; align-items: center; gap: 12px; }
-  .logo-box { width: 50px; height: 50px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #185FA5; text-align: center; line-height: 1.2; flex-shrink: 0; }
+  .logo-box { width: 60px; height: 60px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 3px; }
+  .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #fff; }
   .hdr-center .org { font-size: 15px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
   .hdr-center .sub { font-size: 9px; color: #d7e8fb; margin-top: 2px; line-height: 1.4; }
   .hdr-center .iso { font-size: 9px; color: #eef6ff; font-weight: 700; margin-top: 2px; }
-  .hdr-right { text-align: left; font-size: 9px; color: #d7e8fb; line-height: 1.45; min-width: 128px; border: 1px solid rgba(255,255,255,0.35); padding: 5px 6px; border-radius: 4px; background: rgba(0,0,0,0.1); }
-  .hdr-right span { color: #fff; font-weight: 700; }
+  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 8px; text-align: center; padding: 3px 8px; }
+  .footer-meta span { color: #fff; font-weight: 700; }
+  /* B&W mode */
+  .bw .rpt-header { background: #fff !important; border-bottom: 2px solid #111 !important; }
+  .bw .hdr-center .org { color: #111 !important; }
+  .bw .hdr-center .sub { color: #444 !important; }
+  .bw .hdr-center .iso { color: #111 !important; }
+  .bw .logo-box { color: #111 !important; background: #f0f0f0 !important; border: 1px solid #aaa !important; }
+  .bw .section-hdr { background: #d0d0d0 !important; color: #000 !important; border-left: 3px solid #000 !important; }
+  .bw .col-hdr { background: #e8e8e8 !important; color: #000 !important; }
+  .bw .rpt-title { background: #e8e8e8 !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
+  .bw .footer-meta { background: #d0d0d0 !important; color: #000 !important; }
+  .bw .footer-meta span { color: #000 !important; }
+  .bw .std-tag { background: #e0e0e0 !important; color: #000 !important; border: 1px solid #999 !important; }
+  .bw .accept-badge { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #888 !important; }
+  .bw .reject-badge { background: #d8d8d8 !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
+  .bw .neutral-badge { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #999 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -129,10 +145,14 @@ export const MPTReportPrintPage = () => {
 
   const [report, setReport] = useState<MPTReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [bwMode, setBwMode] = useState(false);
+
+  const isPublic = location.pathname.startsWith("/reports/public/");
 
   useEffect(() => {
     if (!id) return;
-    getMPTReportById(id)
+    const fetcher = isPublic ? getPublicMPTReportById : getMPTReportById;
+    fetcher(id)
       .then((res) => {
         const data =
           (res as { report?: MPTReport; data?: { data?: MPTReport } }).report ||
@@ -143,7 +163,7 @@ export const MPTReportPrintPage = () => {
       })
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, isPublic]);
 
   useEffect(() => {
     if (autoPrint) {
@@ -201,9 +221,7 @@ export const MPTReportPrintPage = () => {
     );
   }
 
-  const qrUrl = window.location.href
-    .replace(/[?&]autoprint=true/, "")
-    .replace(/[?&]$/, "");
+  const qrUrl = `${window.location.origin}/reports/public/mpt/${id}`;
 
   const jd = report.jobDetails ?? {};
   const eq = report.equipmentDetails ?? {};
@@ -234,6 +252,49 @@ export const MPTReportPrintPage = () => {
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
       <div
+        className="no-print"
+        style={{
+          position: "fixed",
+          top: 12,
+          right: 16,
+          zIndex: 100,
+          display: "flex",
+          gap: 8,
+        }}
+      >
+        <button
+          onClick={() => setBwMode((b) => !b)}
+          style={{
+            padding: "7px 16px",
+            background: bwMode ? "#374151" : "#185FA5",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13,
+            fontWeight: 600,
+          }}
+        >
+          {bwMode ? "Color Mode" : "B&W Mode"}
+        </button>
+        <button
+          onClick={() => window.print()}
+          style={{
+            padding: "7px 16px",
+            background: "#16a34a",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13,
+            fontWeight: 600,
+          }}
+        >
+          Print
+        </button>
+      </div>
+
+      <div
         id="report-root"
         style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
       >
@@ -248,13 +309,11 @@ export const MPTReportPrintPage = () => {
             boxSizing: "border-box",
           }}
         >
-          <div className="report">
+          <div className={`report${bwMode ? " bw" : ""}`}>
             {/* ── HEADER ── */}
             <div className="rpt-header">
               <div className="logo-box">
-                NIIT
-                <br />
-                LOGO
+                <img src="/logo.png" alt="NIIT Logo" />
               </div>
               <div className="hdr-center">
                 <div className="org">
@@ -268,15 +327,6 @@ export const MPTReportPrintPage = () => {
                 <div className="iso">
                   (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
                 </div>
-              </div>
-              <div className="hdr-right">
-                Format No: <span>FMT-NDT-01</span>
-                <br />
-                Rev. No: <span>00</span>
-                <br />
-                Report Date: <span>{fmtDate(jd.reportDate)}</span>
-                <br />
-                Page: <span>1 of 1</span>
               </div>
             </div>
             <div className="rpt-title">
@@ -528,7 +578,7 @@ export const MPTReportPrintPage = () => {
             <table className="obs-table mt-n1">
               <tbody>
                 <tr>
-                  <td colSpan={8} className="section-hdr">
+                  <td colSpan={7} className="section-hdr">
                     6. Observations
                   </td>
                 </tr>
@@ -538,8 +588,8 @@ export const MPTReportPrintPage = () => {
                   <th>Drg No. / Joint No.</th>
                   <th style={{ width: "10%" }}>Size</th>
                   <th style={{ width: "7%" }}>Qty</th>
-                  <th>Evaluation</th>
-                  <th style={{ width: "13%" }}>Result</th>
+                  <th>Interpretation</th>
+                  <th style={{ width: "13%" }}>Evaluation</th>
                 </tr>
                 {obs.length === 0 ? (
                   <tr>
@@ -704,6 +754,12 @@ export const MPTReportPrintPage = () => {
               <div className="qr-wrap">
                 <QRCodeSVG value={qrUrl} size={48} />
               </div>
+            </div>
+            <div className="footer-meta">
+              Format No: <span>FMT-NDT-01</span>
+              &nbsp;|&nbsp; Rev. No: <span>00</span>
+              &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
+              &nbsp;|&nbsp; Page: <span>1 of 1</span>
             </div>
           </div>
         </div>

@@ -151,10 +151,13 @@ export const UTGReportFormPage: React.FC = () => {
   const [jobReportDate, setJobReportDate] = useState("");
   const [jobProject, setJobProject] = useState("");
   const [jobInspectionDate, setJobInspectionDate] = useState("");
+  const [jobInspectionEndDate, setJobInspectionEndDate] = useState("");
   const [jobRefStd, setJobRefStd] = useState("");
   const [jobRefStdOther, setJobRefStdOther] = useState("");
   const [jobInspectionTime, setJobInspectionTime] = useState("");
   const [jobAcceptanceCriteria, setJobAcceptanceCriteria] = useState("");
+  const [jobAcceptanceCriteriaOther, setJobAcceptanceCriteriaOther] =
+    useState("");
   const [jobMaterial, setJobMaterial] = useState("");
   const [jobStage, setJobStage] = useState("");
   const [jobStageOther, setJobStageOther] = useState("");
@@ -288,6 +291,7 @@ export const UTGReportFormPage: React.FC = () => {
         setJobReportDate(toDate(jd.reportDate));
         setJobProject(jd.project ?? "");
         setJobInspectionDate(toDate(jd.inspectionDate));
+        setJobInspectionEndDate(toDate(jd.inspectionEndDate));
         const [refStd, refStdO] = fromOther(jd.referenceStd, [
           "ASME Sec V Article 4",
           "ASME Sec V Article 5",
@@ -296,7 +300,14 @@ export const UTGReportFormPage: React.FC = () => {
         setJobRefStd(refStd);
         setJobRefStdOther(refStdO);
         setJobInspectionTime(jd.inspectionTime ?? "");
-        setJobAcceptanceCriteria(jd.acceptanceCriteria ?? "");
+        const [acc, accO] = fromOther(jd.acceptanceCriteria, [
+          "ASME SEC VIII Appendix 4",
+          "ASME SEC VIII Appendix 12",
+          "ASME B 31.3",
+          "Other",
+        ]);
+        setJobAcceptanceCriteria(acc);
+        setJobAcceptanceCriteriaOther(accO);
         setJobMaterial(jd.material ?? "");
         const [stage, stageO] = fromOther(jd.stageOfInspection, [
           "After welding",
@@ -485,9 +496,13 @@ export const UTGReportFormPage: React.FC = () => {
           reportDate: jobReportDate || undefined,
           project: jobProject,
           inspectionDate: jobInspectionDate || undefined,
+          inspectionEndDate: jobInspectionEndDate || undefined,
           referenceStd: resolve(jobRefStd, jobRefStdOther),
           inspectionTime: jobInspectionTime,
-          acceptanceCriteria: jobAcceptanceCriteria,
+          acceptanceCriteria: resolve(
+            jobAcceptanceCriteria,
+            jobAcceptanceCriteriaOther,
+          ),
           material: jobMaterial,
           stageOfInspection: resolve(jobStage, jobStageOther),
           surfaceCondition: resolve(
@@ -612,12 +627,16 @@ export const UTGReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Report No. {isEditMode ? "" : "(Auto-generated)"}</label>
+            <label className={labelClass}>
+              Report No. {isEditMode ? "" : "(Auto-generated)"}
+            </label>
             <input
               type="text"
               value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
               readOnly
-              className={inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"}
+              className={
+                inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"
+              }
               placeholder="Auto-generated on save"
             />
           </div>
@@ -685,11 +704,20 @@ export const UTGReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection Date</label>
+            <label className={labelClass}>Inspection Start Date</label>
             <input
               type="date"
               value={jobInspectionDate}
               onChange={(e) => setJobInspectionDate(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Inspection End Date</label>
+            <input
+              type="date"
+              value={jobInspectionEndDate}
+              onChange={(e) => setJobInspectionEndDate(e.target.value)}
               className={inputClass}
             />
           </div>
@@ -708,6 +736,22 @@ export const UTGReportFormPage: React.FC = () => {
             />
           </div>
           <div>
+            <label className={labelClass}>Acceptance Criteria</label>
+            <SelectWithOther
+              value={jobAcceptanceCriteria}
+              onChange={setJobAcceptanceCriteria}
+              otherValue={jobAcceptanceCriteriaOther}
+              onOtherChange={setJobAcceptanceCriteriaOther}
+              options={[
+                "ASME SEC VIII Appendix 4",
+                "ASME SEC VIII Appendix 12",
+                "ASME B 31.3",
+                "Other",
+              ]}
+              placeholder="Select Acceptance Criteria"
+            />
+          </div>
+          <div>
             <label className={labelClass}>Inspection Time</label>
             <input
               type="text"
@@ -715,16 +759,6 @@ export const UTGReportFormPage: React.FC = () => {
               onChange={(e) => setJobInspectionTime(e.target.value)}
               className={inputClass}
               placeholder="e.g. 02:00 PM to 05:00 PM"
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Acceptance Criteria</label>
-            <input
-              type="text"
-              value={jobAcceptanceCriteria}
-              onChange={(e) => setJobAcceptanceCriteria(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. ASME SEC VIII Appendix"
             />
           </div>
           <div>
@@ -1243,7 +1277,7 @@ export const UTGReportFormPage: React.FC = () => {
                   onChange={(e) => setInspectorName(e.target.value)}
                   className={`${inputClass} bg-white`}
                 >
-                  <option value="">— Select Inspector —</option>
+                  <option value="">Select....</option>
                   {users.map((u) => (
                     <option key={u._id} value={u.name}>
                       {u.name}
@@ -1302,18 +1336,12 @@ export const UTGReportFormPage: React.FC = () => {
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <select
+                <input
+                  type="text"
                   value={custName}
                   onChange={(e) => setCustName(e.target.value)}
-                  className={`${inputClass} bg-white`}
-                >
-                  <option value="">— Select —</option>
-                  {users.map((u) => (
-                    <option key={u._id} value={u.name}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
+                  className={inputClass}
+                />
               </div>
               <div>
                 <label className={labelClass}>Designation</label>
@@ -1364,18 +1392,12 @@ export const UTGReportFormPage: React.FC = () => {
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <select
+                <input
+                  type="text"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
-                  className={`${inputClass} bg-white`}
-                >
-                  <option value="">— Select —</option>
-                  {users.map((u) => (
-                    <option key={u._id} value={u.name}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
+                  className={inputClass}
+                />
               </div>
               <div>
                 <label className={labelClass}>Designation</label>
