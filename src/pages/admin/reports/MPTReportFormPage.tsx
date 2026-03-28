@@ -6,8 +6,6 @@ import {
   Plus,
   Trash2,
   Save,
-  AlertCircle,
-  Users,
 } from "lucide-react";
 import {
   createMPTReport,
@@ -384,9 +382,9 @@ export const MPTReportFormPage: React.FC = () => {
       toast.error("Customer ID is missing. Go back and try again.");
       return;
     }
-    if (!reportNo.trim()) {
-      toast.error("Report No. is required.");
-      return;
+    if (!isEditMode && !customerId) {
+        toast.error("Please select a customer first.");
+        return;
     }
 
     setSaving(true);
@@ -460,9 +458,9 @@ export const MPTReportFormPage: React.FC = () => {
             drawingOrJointNo: o.drawingOrJointNo,
             size: o.size,
             quantity: Number(o.quantity) || 0,
-            evaluation: o.evaluation || undefined,
-            result: o.result || undefined,
-            remark: o.remark,
+            evaluation: o.evaluation || "",
+            result: o.result || "",
+            remark: o.remark || "",
           })),
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
@@ -547,15 +545,15 @@ export const MPTReportFormPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={labelClass} htmlFor="reportNo">
-              Report No. *
+              Report No. {isEditMode ? "" : "(Auto-generated)"}
             </label>
             <input
               id="reportNo"
               type="text"
-              value={reportNo}
-              onChange={(e) => setReportNo(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. NIIT/JF/MT/25-26/01"
+              value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
+              readOnly
+              className={inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"}
+              placeholder="Auto-generated on save"
             />
           </div>
           <div>
@@ -593,9 +591,9 @@ export const MPTReportFormPage: React.FC = () => {
             <input
               id="reportNo2"
               type="text"
-              value={reportNo}
+              value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
               readOnly
-              className={inputClass + " bg-gray-50"}
+              className={inputClass + " bg-gray-50 font-mono text-indigo-700"}
             />
           </div>
           <div>

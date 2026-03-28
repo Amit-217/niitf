@@ -4,6 +4,7 @@ import api from './axios';
 
 export interface CustomerPayload {
   companyName: string;
+  shortCode: string;
   contactPerson: string;
   mobile: string;
   email?: string | null;
@@ -15,6 +16,7 @@ export interface CustomerPayload {
 export interface Customer {
   _id: string;
   companyName: string;
+  shortCode: string;
   contactPerson: string;
   mobile: string;
   email?: string;

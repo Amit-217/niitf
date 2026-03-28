@@ -78,6 +78,7 @@ export const AWSDReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams<{ id?: string }>();
+  const isEditMode = Boolean(id);
   const state = location.state as { customerId?: string; customerName?: string } | null;
   const [customerId, setCustomerId] = useState(state?.customerId ?? '');
   const [customerName, setCustomerName] = useState(state?.customerName ?? '');
@@ -177,8 +178,10 @@ export const AWSDReportFormPage: React.FC = () => {
 
   // ── Submit ──
   const handleSubmit = async (status: 'draft' | 'final') => {
-    if (!customerId) { toast.error('Customer ID is missing.'); return; }
-    if (!reportNo.trim()) { toast.error('Report No. is required.'); return; }
+    if (!isEditMode && !customerId) {
+        toast.error("Please select a customer first.");
+        return;
+    }
 
     setSaving(true);
     try {
@@ -267,8 +270,14 @@ export const AWSDReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Report No. *</label>
-            <input type="text" value={reportNo} onChange={e => setReportNo(e.target.value)} className={inputClass} placeholder="e.g. NIIT/JF/UT/25-26/01" />
+            <label className={labelClass}>Report No. {isEditMode ? "" : "(Auto-generated)"}</label>
+            <input
+              type="text"
+              value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
+              readOnly
+              className={inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"}
+              placeholder="Auto-generated on save"
+            />
           </div>
           <div>
             <label className={labelClass}>Project</label>

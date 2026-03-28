@@ -90,6 +90,7 @@ export const TPIIVRFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams<{ id?: string }>();
+  const isEditMode = Boolean(id);
   const state = location.state as { customerId?: string; customerName?: string } | null;
   const [customerId, setCustomerId] = useState(state?.customerId ?? '');
   const [customerName, setCustomerName] = useState(state?.customerName ?? '');
@@ -228,8 +229,10 @@ export const TPIIVRFormPage: React.FC = () => {
 
   // ── Submit ──
   const handleSubmit = async (status: 'draft' | 'final') => {
-    if (!customerId) { toast.error('Customer ID is missing.'); return; }
-    if (!irNo.trim()) { toast.error('I.R No. is required.'); return; }
+    if (!isEditMode && !customerId) {
+        toast.error("Please select a customer first.");
+        return;
+    }
 
     setSaving(true);
     try {
@@ -336,8 +339,14 @@ export const TPIIVRFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className={labelClass}>I.R No. *</label>
-            <input type="text" value={irNo} onChange={e => setIrNo(e.target.value)} className={inputClass} placeholder="e.g. NIIT/MTESO/BFL/26/03" />
+            <label className={labelClass}>I.R No. {isEditMode ? "" : "(Auto-generated)"}</label>
+            <input
+              type="text"
+              value={isEditMode ? irNo : "NIIT/... (Auto-generated)"}
+              readOnly
+              className={inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"}
+              placeholder="Auto-generated on save"
+            />
           </div>
           <div>
             <label className={labelClass}>IR Rev.</label>
