@@ -3,8 +3,9 @@ import { toast } from 'react-toastify';
 import {
     CheckCircle2, XCircle, Coffee,
     FileWarning, Search, Calendar as CalendarIcon,
-    Download, LayoutGrid, List, Loader2
+    Download, LayoutGrid, List, Loader2, History
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import {
     getAttendanceByDate,
     bulkMarkAttendance,
@@ -28,6 +29,7 @@ interface AttendanceRecord {
 }
 
 export const AttendancePage = () => {
+    const navigate = useNavigate();
     const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
     const [employees, setEmployees] = useState<User[]>([]);
     const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
@@ -100,24 +102,37 @@ export const AttendancePage = () => {
         }
     }, [selectedDate.substring(0, 7), viewMode]);
 
-    const handleBulkMarkAllPresent = async () => {
-        const unmarked = displayData.filter(d => !d.status);
-        if (unmarked.length === 0) {
-            toast.info("All employees already marked for today.");
+    const applyBulkStatus = async (status: 'PRESENT' | 'HOLIDAY') => {
+        const targets = employees;
+
+        if (targets.length === 0) {
+            toast.info('No employees available to update.');
             return;
         }
 
         try {
-            await bulkMarkAttendance({
-                date: selectedDate,
-                attendances: unmarked.map(d => ({ employeeId: d.employee._id, status: 'PRESENT' }))
-            });
-            toast.success(`Marked ${unmarked.length} employees as Present`);
-            fetchAttendance();
+            for (const emp of targets) {
+                const record = attendanceRecords.find(r => r.employeeId._id === emp._id);
+                if (record) {
+                    await updateAttendance(record._id, status);
+                } else {
+                    await bulkMarkAttendance({
+                        date: selectedDate,
+                        attendances: [{ employeeId: emp._id, status }]
+                    });
+                }
+            }
+
+            toast.success(`Marked all employees as ${status === 'PRESENT' ? 'Present' : 'Holiday'}`);
+            await fetchAttendance();
+            await fetchMonthlyData();
         } catch (err: any) {
-            toast.error("Failed to mark all present");
+            toast.error(err?.response?.data?.message || err?.message || `Failed to mark all ${status.toLowerCase()}`);
         }
     };
+
+    const handleBulkMarkAllPresent = () => applyBulkStatus('PRESENT');
+    const handleBulkMarkAllHoliday = () => applyBulkStatus('HOLIDAY');
 
     const handleExportCSV = async () => {
         setExportLoading(true);
@@ -181,7 +196,9 @@ export const AttendancePage = () => {
         const eMonthlyRecords = monthlyData[emp._id] || [];
         const stats = {
             P: eMonthlyRecords.filter(r => r.status === 'PRESENT').length,
-            A: eMonthlyRecords.filter(r => r.status === 'ABSENT').length
+            A: eMonthlyRecords.filter(r => r.status === 'ABSENT').length,
+            L: eMonthlyRecords.filter(r => r.status === 'LEAVE').length,
+            H: eMonthlyRecords.filter(r => r.status === 'HOLIDAY').length
         };
 
         return {
@@ -231,6 +248,12 @@ export const AttendancePage = () => {
 
                 <div className="flex items-center gap-2">
                     <button
+                        onClick={() => navigate('/admin/attendance/history')}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-xs hover:bg-gray-50 transition-all shadow-sm"
+                    >
+                        <History size={14} /> History
+                    </button>
+                    <button
                         onClick={handleExportCSV}
                         disabled={exportLoading}
                         className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-xs hover:bg-gray-50 transition-all shadow-sm"
@@ -268,13 +291,29 @@ export const AttendancePage = () => {
                     />
                 </div>
                 {viewMode === 'daily' && (
-                    <button
-                        onClick={handleBulkMarkAllPresent}
-                        className="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
-                    >
-                        <CheckCircle2 size={18} /> Mark All Present
-                    </button>
+                    <div className="flex w-full sm:w-auto gap-2">
+                        <button
+                            onClick={handleBulkMarkAllHoliday}
+                            className="w-full sm:w-auto px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+                        >
+                            <Coffee size={18} /> Mark All Holiday
+                        </button>
+                        <button
+                            onClick={handleBulkMarkAllPresent}
+                            className="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
+                        >
+                            <CheckCircle2 size={18} /> Mark All Present
+                        </button>
+                    </div>
                 )}
+            </div>
+
+            <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex items-start gap-3">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 font-black text-sm">22</div>
+                <div>
+                    <p className="text-sm font-bold text-amber-900">Leave cap reminder</p>
+                    <p className="text-xs text-amber-700 mt-1">Each employee can use up to 22 leave days per year. Extra leave requests should not be marked as leave.</p>
+                </div>
             </div>
 
             {viewMode === 'daily' ? (
@@ -296,6 +335,8 @@ export const AttendancePage = () => {
                                             <div className="flex items-center gap-1">
                                                 <span className="bg-emerald-50 text-emerald-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-emerald-100">P:{row.stats.P}</span>
                                                 <span className="bg-red-50 text-red-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-red-100">A:{row.stats.A}</span>
+                                                <span className="bg-amber-50 text-amber-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-amber-100">L:{row.stats.L}</span>
+                                                <span className="bg-blue-50 text-blue-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-blue-100">H:{row.stats.H}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -341,16 +382,23 @@ export const AttendancePage = () => {
                             <tbody className="divide-y divide-gray-50">
                                 {isLoading ? (
                                     <tr><td colSpan={daysInMonth + 1} className="py-24 text-center"><Loader2 className="animate-spin inline-block text-primary-500" size={40} /></td></tr>
-                                ) : employees.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase())).map(emp => (
+                                ) : employees.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase())).map(emp => {
+                                    const employeeMonthRecords = monthlyData[emp._id] || [];
+                                    const leaveCount = employeeMonthRecords.filter((record) => record.status === 'LEAVE').length;
+
+                                    return (
                                     <tr key={emp._id} className="group hover:bg-primary-50/30 transition-all duration-300">
                                         <td className="px-6 py-4 sticky left-0 bg-white/90 backdrop-blur-md z-10 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.1)] group-hover:bg-primary-50/40">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary-100 to-white flex items-center justify-center text-xs font-black text-primary-700 border border-primary-200 shadow-sm transition-transform group-hover:scale-110">
-                                                    {emp.name.charAt(0).toUpperCase()}
+                                    {emp.name.charAt(0).toUpperCase()}
                                                 </div>
                                                 <div className="min-w-0">
                                                     <p className="text-sm font-black text-gray-900 truncate tracking-tight">{emp.name}</p>
                                                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{emp.empId}</p>
+                                                    <p className="text-[10px] text-amber-600 font-black uppercase tracking-wider mt-0.5">
+                                                        Leave {leaveCount}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </td>
@@ -367,7 +415,8 @@ export const AttendancePage = () => {
                                             );
                                         })}
                                     </tr>
-                                ))}
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>

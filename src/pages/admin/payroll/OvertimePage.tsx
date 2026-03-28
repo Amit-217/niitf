@@ -76,8 +76,8 @@ export const OvertimePage = () => {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedUser || units <= 0) {
-            toast.error('Please select an employee and valid units');
+        if (!selectedUser || units <= 0 || units > 3) {
+            toast.error('Please select an employee and enter up to 3 overtime units');
             return;
         }
 
@@ -151,8 +151,8 @@ export const OvertimePage = () => {
                     <p className="font-semibold">Important Overtime Rules:</p>
                     <ul className="list-disc pl-4 mt-1 space-y-0.5 text-blue-700/80">
                         <li>Employee MUST have their attendance marked for the date first.</li>
-                        <li>Overtime on a 'PRESENT' day maxes out at 2.5 units.</li>
-                        <li>Overtime on a 'HOLIDAY' maxes out at 2.5 units.</li>
+                        <li>Overtime on a 'PRESENT' day maxes out at 3 units.</li>
+                        <li>Overtime on a 'HOLIDAY' day maxes out at 3 units.</li>
                     </ul>
                 </div>
             </div>
@@ -188,6 +188,7 @@ export const OvertimePage = () => {
                         <input
                             type="number"
                             min="0.5"
+                            max="3"
                             step="0.5"
                             value={units || ''}
                             onChange={(e) => setUnits(parseFloat(e.target.value))}

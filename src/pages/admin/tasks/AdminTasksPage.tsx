@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Plus,
   ListTodo,
@@ -8,12 +9,15 @@ import {
   X,
   Edit2,
   Trash2,
+  MessageSquare,
+  Send,
+  ArrowRight,
 } from "lucide-react";
 import {
   createTask,
   updateTask,
   getAllTasks,
-  updateTaskStatus,
+  submitTaskUpdate,
   getTaskUpdates,
   deleteTask,
 } from "../../../api/taskApi";
@@ -42,6 +46,8 @@ const labelClass =
   "block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide";
 
 export const AdminTasksPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [employees, setEmployees] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,6 +60,15 @@ export const AdminTasksPage = () => {
   const [isViewDrawerOpen, setViewDrawerOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [taskUpdates, setTaskUpdates] = useState<any[]>([]);
+  const [followUpMessage, setFollowUpMessage] = useState("");
+  const [isSendingFollowUp, setIsSendingFollowUp] = useState(false);
+  const [isMyTasksDrawerOpen, setMyTasksDrawerOpen] = useState(false);
+  const [selectedMyTask, setSelectedMyTask] = useState<Task | null>(null);
+  const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+  const currentUserId =
+    currentUser?.userId || currentUser?.id || currentUser?._id || "";
+  const currentUserRole = currentUser?.role || "";
+  const isMyTasksMode = new URLSearchParams(location.search).get("mine") === "1";
 
   // Create/Edit Form states
   const [taskForm, setTaskForm] = useState({
@@ -95,6 +110,24 @@ export const AdminTasksPage = () => {
       fetchEmployees();
     }
   }, [isCreateDrawerOpen]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const shouldOpenAssigned =
+      params.get("mine") === "1" ||
+      (location.state as { openMyTasks?: boolean } | null)?.openMyTasks === true;
+
+    if (shouldOpenAssigned) {
+      setMyTasksDrawerOpen(true);
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.pathname, location.search, location.state, navigate]);
+
+  useEffect(() => {
+    if (!isMyTasksDrawerOpen) {
+      setSelectedMyTask(null);
+    }
+  }, [isMyTasksDrawerOpen]);
 
   const handleOpenCreate = () => {
     setDrawerMode("CREATE");
@@ -163,6 +196,7 @@ export const AdminTasksPage = () => {
     setSelectedTask(task);
     setViewDrawerOpen(true);
     setTaskUpdates([]); // clear old
+    setFollowUpMessage("");
     try {
       const res = await getTaskUpdates(task._id);
       setTaskUpdates(res.data || []);
@@ -171,15 +205,26 @@ export const AdminTasksPage = () => {
     }
   };
 
-  const handleMarkCompleted = async () => {
-    if (!selectedTask) return;
+  const handleSendFollowUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedTask || !followUpMessage.trim()) return;
+
+    setIsSendingFollowUp(true);
     try {
-      await updateTaskStatus(selectedTask._id, "COMPLETED");
-      toast.success("Task marked as completed!");
-      setViewDrawerOpen(false);
+      await submitTaskUpdate(selectedTask._id, {
+        date: new Date().toISOString().split("T")[0],
+        comment: followUpMessage.trim(),
+      });
+      toast.success("Follow-up sent");
+      setFollowUpMessage("");
+      window.dispatchEvent(new Event('notifications:refresh'));
+      const res = await getTaskUpdates(selectedTask._id);
+      setTaskUpdates(res.data || []);
       fetchTasks();
     } catch (error: any) {
-      toast.error("Failed to update status");
+      toast.error(error.message || "Failed to send follow-up");
+    } finally {
+      setIsSendingFollowUp(false);
     }
   };
 
@@ -246,6 +291,17 @@ export const AdminTasksPage = () => {
         emp.name.toLowerCase().includes(searchQuery.toLowerCase()),
       ),
   );
+  const myTasks = tasks.filter((task) => {
+    return task.assignedTo.some((emp) => String(emp?._id || emp) === String(currentUserId));
+  });
+  const visibleTasks = isMyTasksMode
+    ? myTasks.filter(
+        (task) =>
+          task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          task.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          task.assignedTo.some((emp) => emp.name.toLowerCase().includes(searchQuery.toLowerCase())),
+      )
+    : filteredTasks;
 
   const TaskCard = ({
     task,
@@ -265,7 +321,7 @@ export const AdminTasksPage = () => {
 
         <div className="p-5 flex flex-col h-full">
           {/* Header */}
-          <div className="flex justify-between items-start mb-4">
+            <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-2.5">
               <div
                 className={`w-9 h-9 rounded-xl bg-gradient-to-br ${cfg.gradient} flex items-center justify-center text-white shadow-sm`}
@@ -281,21 +337,23 @@ export const AdminTasksPage = () => {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={(e) => handleOpenEdit(task, e)}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors"
-              >
-                <Edit2 size={14} />
-              </button>
-              <button
-                onClick={(e) => handleDeleteTask(task._id, e)}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                title="Delete Task"
-              >
-                <Trash2 size={14} />
-              </button>
-            </div>
+            {!isMyTasksMode && (
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={(e) => handleOpenEdit(task, e)}
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors"
+                >
+                  <Edit2 size={14} />
+                </button>
+                <button
+                  onClick={(e) => handleDeleteTask(task._id, e)}
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                  title="Delete Task"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Progress Badge */}
@@ -364,19 +422,29 @@ export const AdminTasksPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <ListTodo className="text-primary-600" /> Task Master
+            <ListTodo className="text-primary-600" /> {isMyTasksMode ? 'My Tasks' : 'Task Master'}
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Manage, assign, and track employee tasks
+            {isMyTasksMode
+              ? 'Only the tasks assigned to your account are shown here.'
+              : 'Manage, assign, and follow up on employee tasks. Completion is confirmed from the employee workspace.'}
           </p>
         </div>
 
-        <button
-          onClick={handleOpenCreate}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"
-        >
-          <Plus size={17} /> Create New Task
-        </button>
+        {!isMyTasksMode && (
+          <button
+            type="button"
+            onClick={handleOpenCreate}
+            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"
+          >
+            <Plus size={17} /> Create New Task
+          </button>
+        )}
+        {currentUserRole && (
+          <span className="text-xs font-black uppercase tracking-[0.25em] text-gray-400">
+            Signed in as {currentUserRole.replace('_', ' ')}
+          </span>
+        )}
       </div>
 
       {/* Toolbar */}
@@ -393,11 +461,11 @@ export const AdminTasksPage = () => {
         </div>
         <div className="flex items-center gap-2 whitespace-nowrap bg-gray-100/50 p-1.5 rounded-xl border border-gray-100">
           <div className="bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-100 text-xs font-bold text-violet-700">
-            {filteredTasks.length}{" "}
-            {filteredTasks.length === 1 ? "Task" : "Tasks"} Found
+          {visibleTasks.length}{" "}
+          {visibleTasks.length === 1 ? "Task" : "Tasks"} Found
           </div>
           <div className="px-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-            Task Master View
+            {isMyTasksMode ? 'My Tasks View' : 'Task Master View'}
           </div>
         </div>
       </div>
@@ -413,21 +481,29 @@ export const AdminTasksPage = () => {
             Loading Task Data...
           </p>
         </div>
-      ) : filteredTasks.length === 0 ? (
+      ) : visibleTasks.length === 0 ? (
         <div className="text-center p-20 bg-white rounded-3xl border border-gray-100 shadow-sm">
           <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Search className="text-gray-300" size={32} />
           </div>
           <h3 className="text-lg font-bold text-gray-900">No tasks found</h3>
           <p className="text-gray-500 text-sm mt-1 max-w-xs mx-auto">
-            We couldn't find any tasks matching your criteria. Try adjusting
-            your search query.
+            {isMyTasksMode
+              ? 'No tasks are assigned to you yet.'
+              : "We couldn't find any tasks matching your criteria. Try adjusting your search query."}
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTasks.map((task) => (
-            <TaskCard key={task._id} task={task} onClick={openViewDrawer} />
+          {visibleTasks.map((task) => (
+            <TaskCard
+              key={task._id}
+              task={task}
+              onClick={isMyTasksMode ? (t) => {
+                setSelectedMyTask(t);
+                setMyTasksDrawerOpen(true);
+              } : openViewDrawer}
+            />
           ))}
         </div>
       )}
@@ -600,12 +676,12 @@ export const AdminTasksPage = () => {
 
       {/* 2. View/Updates Drawer */}
       {isViewDrawerOpen && selectedTask && (
-        <div className="fixed inset-0 z-50 flex justify-end">
+        <div className="fixed inset-0 z-50 flex justify-end pt-[40px]">
           <div
-            className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
+            className="absolute inset-0 top-[40px] bg-gray-900/40"
             onClick={() => setViewDrawerOpen(false)}
           />
-          <div className="w-full max-w-lg bg-white h-full shadow-2xl relative flex flex-col animate-in slide-in-from-right duration-300">
+          <div className="w-full max-w-lg bg-white h-[calc(100dvh-40px)] shadow-2xl relative flex flex-col animate-in slide-in-from-right duration-300">
             <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-start">
               <div className="pr-4">
                 <span
@@ -676,63 +752,224 @@ export const AdminTasksPage = () => {
                 </div>
               </div>
 
-              {/* Daily Updates Feed */}
               <div className="p-6 bg-gray-50/30 min-h-full">
-                <h4 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  Daily Progress Updates
-                  <span className="bg-gray-200 text-gray-600 py-0.5 px-2 rounded-full text-xs">
-                    {taskUpdates.length}
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                    <MessageSquare size={16} className="text-violet-600" />
+                    Conversation
+                    <span className="bg-gray-200 text-gray-600 py-0.5 px-2 rounded-full text-xs">
+                      {taskUpdates.length}
+                    </span>
+                  </h4>
+                  <span className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">
+                    Follow up thread
                   </span>
-                </h4>
+                </div>
 
                 {taskUpdates.length === 0 ? (
                   <p className="text-sm text-gray-500 text-center py-6 bg-white rounded-xl border border-gray-100 border-dashed">
-                    No updates submitted by employees yet.
+                    No updates yet. Start the conversation below.
                   </p>
                 ) : (
-                  <div className="space-y-4">
-                    {taskUpdates.map((update: any) => (
-                      <div
-                        key={update._id}
-                        className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm relative"
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">
-                              {update.employeeId.name.charAt(0)}
+                  <div className="space-y-3">
+                    {taskUpdates.map((update: any) => {
+                      const isMine = String(update.employeeId?._id || update.employeeId) === String(currentUserId);
+                      return (
+                        <div
+                          key={update._id}
+                          className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div
+                            className={`max-w-[88%] rounded-2xl border px-4 py-3 shadow-sm ${isMine ? 'bg-violet-600 border-violet-500 text-white' : 'bg-white border-gray-200 text-gray-700'}`}
+                          >
+                            <div className="flex items-center justify-between gap-3 mb-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black ${isMine ? 'bg-white/15 text-white' : 'bg-violet-100 text-violet-700'}`}>
+                                  {update.employeeId?.name?.charAt(0) || '?'}
+                                </div>
+                                <span className="text-sm font-bold truncate">
+                                  {isMine ? 'You' : update.employeeId?.name || 'User'}
+                                </span>
+                              </div>
+                              <span className={`text-[10px] font-semibold uppercase tracking-wider ${isMine ? 'text-violet-100' : 'text-gray-400'}`}>
+                                {new Date(update.createdAt || update.date).toLocaleDateString()}
+                              </span>
                             </div>
-                            <span className="text-sm font-bold text-gray-900">
-                              {update.employeeId.name}
-                            </span>
+                            <p className={`text-sm leading-relaxed whitespace-pre-wrap ${isMine ? 'text-violet-50' : 'text-gray-700'}`}>
+                              {update.comment}
+                            </p>
                           </div>
-                          <span className="text-xs font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded">
-                            {new Date(update.date).toLocaleDateString()}
-                          </span>
                         </div>
-                        <p className="text-sm text-gray-700 mt-2 pl-8 border-l-2 border-gray-100">
-                          {update.comment}
-                        </p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
+
+                <form onSubmit={handleSendFollowUp} className="mt-5 bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">
+                    Add follow-up
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={followUpMessage}
+                    onChange={(e) => setFollowUpMessage(e.target.value)}
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-gray-50 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 resize-none"
+                    placeholder="Ask for an update, share a reminder, or add context..."
+                  />
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <p className="text-xs text-gray-400 max-w-[220px]">
+                      This follows the same task update stream employees use, so both sides see one shared thread.
+                    </p>
+                    <button
+                      type="submit"
+                      disabled={isSendingFollowUp || !followUpMessage.trim()}
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {isSendingFollowUp ? 'Sending...' : (
+                        <>
+                          <Send size={15} />
+                          Send
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
+          </div>
+        </div>
+      )}
 
-            {/* Admin Action Footer */}
-            {selectedTask.status !== "COMPLETED" && (
-              <div className="p-4 border-t border-gray-100 bg-white flex justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-                <p className="text-xs text-gray-500 max-w-[200px]">
-                  Only admins can mark a task as completely finished.
+      {isMyTasksDrawerOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end pt-[40px]">
+          <div
+            className="absolute inset-0 top-[40px] bg-gray-900/40"
+            onClick={() => setMyTasksDrawerOpen(false)}
+          />
+          <div className="w-full max-w-md bg-white h-[calc(100dvh-40px)] shadow-2xl relative flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">
+                  My Tasks
                 </p>
-                <button
-                  onClick={handleMarkCompleted}
-                  className="py-2.5 px-6 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-200"
-                >
-                  Verify & Complete Task
-                </button>
+                <h2 className="text-xl font-bold text-gray-900 mt-1">
+                  {selectedMyTask ? selectedMyTask.title : "My Tasks"}
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  {selectedMyTask
+                    ? "Standalone details for the task assigned to you."
+                    : "Only tasks assigned to your account are shown here."}
+                </p>
               </div>
-            )}
+              <button
+                onClick={() => {
+                  if (selectedMyTask) {
+                    setSelectedMyTask(null);
+                    return;
+                  }
+                  setMyTasksDrawerOpen(false);
+                }}
+                className="text-gray-400 hover:text-gray-600 mt-1"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {myTasks.length === 0 ? (
+                <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200 text-gray-500 text-sm">
+                  No tasks assigned to your account right now.
+                </div>
+              ) : selectedMyTask ? (
+                <div className="space-y-4">
+                  <div className="rounded-3xl border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-white p-5 shadow-sm">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-black uppercase tracking-[0.25em] text-violet-500">
+                          Assigned to you
+                        </p>
+                        <h3 className="text-lg font-bold text-gray-900 mt-1">
+                          {selectedMyTask.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-2 whitespace-pre-wrap">
+                          {selectedMyTask.description}
+                        </p>
+                      </div>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black border uppercase ${getStatusConfig(selectedMyTask.status).bg} ${getStatusConfig(selectedMyTask.status).text} ${getStatusConfig(selectedMyTask.status).border}`}>
+                        {selectedMyTask.status.replace("_", " ")}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
+                      <div className="rounded-2xl bg-white border border-gray-100 p-3">
+                        <p className="text-gray-400 font-black uppercase tracking-widest">Start Date</p>
+                        <p className="mt-1 font-semibold text-gray-900">
+                          {new Date(selectedMyTask.startDate).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="rounded-2xl bg-white border border-gray-100 p-3">
+                        <p className="text-gray-400 font-black uppercase tracking-widest">Due Date</p>
+                        <p className="mt-1 font-semibold text-gray-900">
+                          {selectedMyTask.dueDate
+                            ? new Date(selectedMyTask.dueDate).toLocaleDateString()
+                            : "Not set"}
+                        </p>
+                      </div>
+                      <div className="rounded-2xl bg-white border border-gray-100 p-3 col-span-2">
+                        <p className="text-gray-400 font-black uppercase tracking-widest">Assigned Count</p>
+                        <p className="mt-1 font-semibold text-gray-900">
+                          {selectedMyTask.assignedTo.length} assignee{selectedMyTask.assignedTo.length === 1 ? "" : "s"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMyTask(null)}
+                    className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all"
+                  >
+                    Back to My Tasks
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {myTasks.map((task) => {
+                    const cfg = getStatusConfig(task.status);
+                    return (
+                      <button
+                        key={task._id}
+                        type="button"
+                        onClick={() => setSelectedMyTask(task)}
+                        className="w-full text-left rounded-3xl border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-white p-4 shadow-sm hover:shadow-md transition-all"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-violet-500">
+                              Assigned to you
+                            </p>
+                            <p className="font-bold text-gray-900 truncate mt-1">{task.title}</p>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{task.description}</p>
+                          </div>
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black border uppercase ${cfg.bg} ${cfg.text} ${cfg.border}`}>
+                            <ArrowRight size={11} />
+                            View
+                          </span>
+                        </div>
+                        <div className="mt-3 flex items-center justify-between text-xs">
+                          <span className="font-bold text-gray-500">
+                            Task {myTasks.length > 1 ? `${myTasks.indexOf(task) + 1} of ${myTasks.length}` : "Details"}
+                          </span>
+                          <span className={`px-2 py-0.5 rounded-full font-black ${cfg.bg} ${cfg.text}`}>
+                            {task.status.replace("_", " ")}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
