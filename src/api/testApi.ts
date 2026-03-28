@@ -65,7 +65,7 @@ export interface OfflineScorePayload {
 export const createTest = (data: TestPayload) =>
     api.post('/admin/tests', data);
 
-export const getTests = (params?: { page?: number; batchId?: string; mode?: string }) =>
+export const getTests = (params?: { page?: number; limit?: number; batchId?: string; mode?: string }) =>
     api.get('/admin/tests', { params });
 
 export const updateTest = (id: string, data: Partial<TestPayload & { isActive: boolean }>) =>

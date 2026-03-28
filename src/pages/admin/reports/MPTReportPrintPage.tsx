@@ -37,8 +37,8 @@ const PRINT_STYLES = `
   .hdr-center .org { font-size: 15px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
   .hdr-center .sub { font-size: 9px; color: #d7e8fb; margin-top: 2px; line-height: 1.4; }
   .hdr-center .iso { font-size: 9px; color: #eef6ff; font-weight: 700; margin-top: 2px; }
-  .hdr-right { text-align: left; font-size: 9px; color: #d7e8fb; line-height: 1.45; min-width: 128px; border: 1px solid rgba(255,255,255,0.35); padding: 5px 6px; border-radius: 4px; background: rgba(0,0,0,0.1); }
-  .hdr-right span { color: #fff; font-weight: 700; }
+  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 8px; text-align: center; padding: 3px 8px; }
+  .footer-meta span { color: #fff; font-weight: 700; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -268,15 +268,6 @@ export const MPTReportPrintPage = () => {
                 <div className="iso">
                   (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
                 </div>
-              </div>
-              <div className="hdr-right">
-                Format No: <span>FMT-NDT-01</span>
-                <br />
-                Rev. No: <span>00</span>
-                <br />
-                Report Date: <span>{fmtDate(jd.reportDate)}</span>
-                <br />
-                Page: <span>1 of 1</span>
               </div>
             </div>
             <div className="rpt-title">
@@ -704,6 +695,12 @@ export const MPTReportPrintPage = () => {
               <div className="qr-wrap">
                 <QRCodeSVG value={qrUrl} size={48} />
               </div>
+            </div>
+            <div className="footer-meta">
+              Format No: <span>FMT-NDT-01</span>
+              &nbsp;|&nbsp; Rev. No: <span>00</span>
+              &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
+              &nbsp;|&nbsp; Page: <span>1 of 1</span>
             </div>
           </div>
         </div>
