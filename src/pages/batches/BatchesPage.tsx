@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     Layers, Plus, Search, Pencil, Trash2, X, Save, Loader2,
     Calendar, MoreVertical, RefreshCw,
-    CheckCircle2, XCircle, ChevronLeft, ChevronRight, Users, Clock
+    CheckCircle2, XCircle, Users, Clock
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../../api/axios';
@@ -28,13 +28,6 @@ interface Batch {
 
 const inputClass = "w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition-all";
 const labelClass = "block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide";
-
-interface Pagination {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-}
 
 const STATUS_CONFIG = {
     Upcoming: { color: 'bg-sky-100 text-sky-700 border-sky-200', dot: 'bg-sky-50', gradient: 'from-sky-400 to-blue-500' },
@@ -221,12 +214,11 @@ const BatchCard: React.FC<{ batch: Batch; onEdit: (b: Batch) => void; onDelete: 
 
 export const BatchesPage: React.FC = () => {
     const [batches, setBatches] = useState<Batch[]>([]);
-    const [courses, setCourses] = useState<any[]>([]);
+    const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState<'All' | 'Upcoming' | 'Running' | 'Completed'>('All');
-    const [page, setPage] = useState(1);
-    const [pagination, setPagination] = useState<Pagination | null>(null);
+    const [courseFilter, setCourseFilter] = useState('All');
     const [showModal, setShowModal] = useState(false);
     const [editBatch, setEditBatch] = useState<Batch | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<Batch | null>(null);
@@ -235,13 +227,18 @@ export const BatchesPage: React.FC = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const params = new URLSearchParams({ page: String(page), limit: '9', search, status: statusFilter });
-            const [bRes, cRes]: any[] = await Promise.all([api.get(`/batches?${params.toString()}`), api.get('/courses?limit=100')]);
-            setBatches(bRes.data || []); setPagination(bRes.pagination); setCourses(cRes.data || []);
+            const [bRes, cRes]: any[] = await Promise.all([
+                api.get('/batches?limit=1000'),
+                api.get('/courses?limit=100'),
+            ]);
+            setBatches(bRes.data || []);
+            setCourses(cRes.data || []);
         } catch { toast.error('Failed to load.'); } finally { setLoading(false); }
     };
 
-    useEffect(() => { const d = setTimeout(() => fetchData(), search ? 500 : 0); return () => clearTimeout(d); }, [page, search, statusFilter]);
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     const handleToggleActive = async (b: Batch) => {
         try { await api.put(`/batches/${b.batchId}`, { isActive: !b.isActive }); toast.success('Status updated!'); fetchData(); }
@@ -253,6 +250,24 @@ export const BatchesPage: React.FC = () => {
         try { await api.delete(`/batches/${deleteTarget.batchId}`); toast.success('Deleted!'); setDeleteTarget(null); fetchData(); }
         catch { toast.error('Error.'); } finally { setDeleting(false); }
     };
+
+    const filteredBatches = batches.filter((batch) => {
+        const q = search.toLowerCase().trim();
+        const matchesSearch =
+            !q ||
+            batch.batchName.toLowerCase().includes(q) ||
+            batch.batchId.toLowerCase().includes(q) ||
+            batch.courseId?.courseName?.toLowerCase().includes(q) ||
+            batch.courseId?.courseId?.toLowerCase().includes(q);
+
+        const matchesStatus = statusFilter === 'All' || batch.status === statusFilter;
+        const matchesCourse =
+            courseFilter === 'All' ||
+            batch.courseId?.courseId === courseFilter ||
+            batch.courseId?._id === courseFilter;
+
+        return matchesSearch && matchesStatus && matchesCourse;
+    });
 
     return (
         <div className="space-y-6">
@@ -266,29 +281,34 @@ export const BatchesPage: React.FC = () => {
             <div className="flex flex-col md:flex-row gap-3">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                    <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search batches..." className="w-full pl-9 pr-4 py-2.5 border rounded-xl" />
+                    <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search batches..." className="w-full pl-9 pr-4 py-2.5 border rounded-xl" />
                 </div>
-                <div className="flex gap-1.5 bg-gray-100 p-1 rounded-xl overflow-x-auto">
+                <div className="relative min-w-[220px]">
+                    <select
+                        value={courseFilter}
+                        onChange={(e) => setCourseFilter(e.target.value)}
+                        className="w-full h-full px-4 py-2.5 border rounded-xl bg-white text-sm text-gray-700"
+                    >
+                        <option value="All">All Courses</option>
+                        {courses.map((course) => (
+                            <option key={course._id} value={course.courseId}>
+                                {course.courseName}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            <div className="flex gap-1.5 bg-gray-100 p-1 rounded-xl overflow-x-auto">
                     {(['All', 'Upcoming', 'Running', 'Completed'] as const).map(t => (
-                        <button key={t} onClick={() => { setStatusFilter(t); setPage(1); }} className={`px-4 py-1.5 text-xs font-bold rounded-lg ${statusFilter === t ? 'bg-white shadow-sm' : 'text-gray-500'}`}>{t}</button>
+                        <button key={t} onClick={() => setStatusFilter(t)} className={`px-4 py-1.5 text-xs font-bold rounded-lg ${statusFilter === t ? 'bg-white shadow-sm' : 'text-gray-500'}`}>{t}</button>
                     ))}
                 </div>
             </div>
             {loading ? <div className="py-20 text-center"><Loader2 className="animate-spin inline" size={32} /></div> :
-                batches.length === 0 ? <div className="py-20 text-center text-gray-500">No batches found</div> :
+                filteredBatches.length === 0 ? <div className="py-20 text-center text-gray-500">No batches found</div> :
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {batches.map(b => <BatchCard key={b._id} batch={b} onEdit={(batch) => { setEditBatch(batch); setShowModal(true); }} onDelete={setDeleteTarget} onToggleActive={handleToggleActive} />)}
+                        {filteredBatches.map(b => <BatchCard key={b._id} batch={b} onEdit={(batch) => { setEditBatch(batch); setShowModal(true); }} onDelete={setDeleteTarget} onToggleActive={handleToggleActive} />)}
                     </div>
             }
-            {pagination && pagination.totalPages > 1 && (
-                <div className="flex items-center justify-between bg-white px-4 py-3 rounded-2xl border shadow-sm">
-                    <p className="text-sm">Page <strong>{page}</strong> of <strong>{pagination.totalPages}</strong></p>
-                    <div className="flex gap-1">
-                        <button disabled={page === 1} onClick={() => setPage(p => p - 1)} className="p-2 border rounded-lg disabled:opacity-50"><ChevronLeft size={16} /></button>
-                        <button disabled={page === pagination.totalPages} onClick={() => setPage(p => p + 1)} className="p-2 border rounded-lg disabled:opacity-50"><ChevronRight size={16} /></button>
-                    </div>
-                </div>
-            )}
             {showModal && <BatchModal batch={editBatch} courses={courses} onClose={() => { setShowModal(false); setEditBatch(null); }} onSaved={fetchData} />}
             {deleteTarget && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">

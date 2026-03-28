@@ -290,6 +290,34 @@ export const DashboardLayout: React.FC = () => {
         localStorage.setItem(dismissedNotificationsStorageKey, JSON.stringify(nextIds));
     };
 
+    const getTaskIdFromNotification = (notification: any) =>
+        normalizeNotificationId(notification?.taskId?._id || notification?.taskId);
+
+    const dismissNotificationLocally = (notification: any) => {
+        const notificationId = normalizeNotificationId(notification?._id);
+        const taskId = getTaskIdFromNotification(notification);
+        const relatedIds = notifications
+            .filter((item) => {
+                if (normalizeNotificationId(item._id) === notificationId) return true;
+                if (!taskId) return false;
+                return getTaskIdFromNotification(item) === taskId;
+            })
+            .map((item) => normalizeNotificationId(item._id));
+
+        persistDismissedNotificationIds([
+            ...new Set([...dismissedNotificationIds, ...relatedIds]),
+        ]);
+
+        setNotifications((prev) =>
+            prev.filter((item) => {
+                const itemId = normalizeNotificationId(item._id);
+                if (itemId === notificationId) return false;
+                if (!taskId) return true;
+                return getTaskIdFromNotification(item) !== taskId;
+            })
+        );
+    };
+
     const handleMarkAllRead = async () => {
         try {
             await markAllNotificationsRead();
@@ -317,12 +345,7 @@ export const DashboardLayout: React.FC = () => {
             if (!isSyntheticTaskFeed) {
                 await markNotificationRead(notification._id);
             }
-            persistDismissedNotificationIds([
-                ...new Set([...dismissedNotificationIds, normalizeNotificationId(notification._id)]),
-            ]);
-            setNotifications((prev) =>
-                prev.filter((item) => normalizeNotificationId(item._id) !== normalizeNotificationId(notification._id))
-            );
+            dismissNotificationLocally(notification);
             if (notification.taskId?._id || notification.taskId) {
                 navigate(`/${basePath}/my-tasks`, {
                     state: { taskId: notification.taskId?._id || notification.taskId }
@@ -343,10 +366,7 @@ export const DashboardLayout: React.FC = () => {
             // Ignore close failures and still dismiss locally.
         }
 
-        persistDismissedNotificationIds([
-            ...new Set([...dismissedNotificationIds, notificationId]),
-        ]);
-        setNotifications((prev) => prev.filter((item) => normalizeNotificationId(item._id) !== notificationId));
+        dismissNotificationLocally(notification);
     };
 
     const groupedNotifications = notifications.reduce(
