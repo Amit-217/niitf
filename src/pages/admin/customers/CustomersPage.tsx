@@ -69,7 +69,7 @@ export const CustomersPage = () => {
         count = res.data.pagination?.total || items.length;
       } else if (res?.data && Array.isArray(res.data)) {
         items = res.data;
-        count = items.length;
+        count = res.pagination?.total ?? items.length;
       } else if (res?.customers) {
         items = res.customers;
         count = res.pagination?.total || items.length;

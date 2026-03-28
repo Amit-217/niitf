@@ -111,46 +111,44 @@ export const Pagination: React.FC<PaginationProps> = ({
                 of <span className="font-semibold text-gray-700">{total}</span>
             </p>
 
-            {/* Page buttons — only when more than one page */}
-            {totalPages > 1 && (
-                <div className="flex items-center gap-1">
-                    <button
-                        onClick={() => onPageChange(page - 1)}
-                        disabled={page === 1}
-                        className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                        <ChevronLeft size={16} />
-                    </button>
+            {/* Page buttons — always visible, numbered pages only when >1 page */}
+            <div className="flex items-center gap-1">
+                <button
+                    onClick={() => onPageChange(page - 1)}
+                    disabled={page === 1}
+                    className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                    <ChevronLeft size={16} />
+                </button>
 
-                    {pages.map((p, i) =>
-                        p === '…' ? (
-                            <span key={`ell-${i}`} className="px-2 text-gray-400 text-sm select-none">
-                                …
-                            </span>
-                        ) : (
-                            <button
-                                key={p}
-                                onClick={() => onPageChange(p as number)}
-                                className={`min-w-[32px] h-8 px-2 rounded-lg text-sm font-semibold transition-colors ${
-                                    p === page
-                                        ? 'bg-indigo-600 text-white'
-                                        : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
-                                }`}
-                            >
-                                {p}
-                            </button>
-                        )
-                    )}
+                {totalPages > 1 && pages.map((p, i) =>
+                    p === '…' ? (
+                        <span key={`ell-${i}`} className="px-2 text-gray-400 text-sm select-none">
+                            …
+                        </span>
+                    ) : (
+                        <button
+                            key={p}
+                            onClick={() => onPageChange(p as number)}
+                            className={`min-w-[32px] h-8 px-2 rounded-lg text-sm font-semibold transition-colors ${
+                                p === page
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                            }`}
+                        >
+                            {p}
+                        </button>
+                    )
+                )}
 
-                    <button
-                        onClick={() => onPageChange(page + 1)}
-                        disabled={page === totalPages}
-                        className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                        <ChevronRight size={16} />
-                    </button>
-                </div>
-            )}
+                <button
+                    onClick={() => onPageChange(page + 1)}
+                    disabled={page === totalPages}
+                    className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                    <ChevronRight size={16} />
+                </button>
+            </div>
         </div>
     );
 };
