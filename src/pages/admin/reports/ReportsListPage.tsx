@@ -291,7 +291,7 @@ export const ReportsListPage = () => {
                                     <tr key={r._id} className="group hover:bg-gray-50/80 transition-all duration-300">
                                         <td className="px-6 py-5">
                                             <div className="flex flex-col">
-                                                <span className="font-black text-gray-900 tracking-tight group-hover:text-primary-700 transition-colors uppercase">{r.reportNo}</span>
+                                                <span className="font-black text-gray-900 tracking-tight group-hover:text-primary-700 transition-colors uppercase">{r.reportNo || r.irNo}</span>
                                                 <span className="text-[10px] font-bold text-gray-400 mt-0.5">{fmt(r.createdAt)}</span>
                                             </div>
                                         </td>
@@ -300,18 +300,18 @@ export const ReportsListPage = () => {
                                                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
                                                     <User size={14} />
                                                 </div>
-                                                <span className="font-bold text-gray-700">{r.jobDetails?.customer || r.customer || "Unspecified"}</span>
+                                                <span className="font-bold text-gray-700">{r.jobDetails?.customer || r.jobDetails?.client || r.client || r.customer || "Unspecified"}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-2 text-gray-600 font-medium">
                                                 <Calendar size={14} className="text-gray-400" />
-                                                {fmt(r.jobDetails?.reportDate || r.reportDate)}
+                                                {fmt(r.jobDetails?.reportDate || r.dtOfInspection || r.reportDate)}
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
                                             <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-lg">
-                                                {r.jobDetails?.stageOfInspection || r.stageOfInspection || "Standard"}
+                                                {r.jobDetails?.stageOfInspection || r.inspectionStage || r.stageOfInspection || "Standard"}
                                             </span>
                                         </td>
                                         <td className="px-6 py-5">
