@@ -250,16 +250,44 @@ export const MPTReportPrintPage = () => {
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
-      <div className="no-print" style={{ position: 'fixed', top: 12, right: 16, zIndex: 100, display: 'flex', gap: 8 }}>
+      <div
+        className="no-print"
+        style={{
+          position: "fixed",
+          top: 12,
+          right: 16,
+          zIndex: 100,
+          display: "flex",
+          gap: 8,
+        }}
+      >
         <button
-          onClick={() => setBwMode(b => !b)}
-          style={{ padding: '7px 16px', background: bwMode ? '#374151' : '#185FA5', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
+          onClick={() => setBwMode((b) => !b)}
+          style={{
+            padding: "7px 16px",
+            background: bwMode ? "#374151" : "#185FA5",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13,
+            fontWeight: 600,
+          }}
         >
-          {bwMode ? 'Color Mode' : 'B&W Mode'}
+          {bwMode ? "Color Mode" : "B&W Mode"}
         </button>
         <button
           onClick={() => window.print()}
-          style={{ padding: '7px 16px', background: '#16a34a', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
+          style={{
+            padding: "7px 16px",
+            background: "#16a34a",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13,
+            fontWeight: 600,
+          }}
         >
           Print
         </button>
@@ -280,7 +308,7 @@ export const MPTReportPrintPage = () => {
             boxSizing: "border-box",
           }}
         >
-          <div className={`report${bwMode ? ' bw' : ''}`}>
+          <div className={`report${bwMode ? " bw" : ""}`}>
             {/* ── HEADER ── */}
             <div className="rpt-header">
               <div className="logo-box">
