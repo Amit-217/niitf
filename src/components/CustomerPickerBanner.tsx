@@ -41,6 +41,7 @@ export const CustomerPickerBanner: React.FC<Props> = ({ onCustomerSelected }) =>
 
     // ── Create New ──
     const [companyName, setCompanyName] = useState('');
+    const [shortCode, setShortCode] = useState('');
     const [contactPerson, setContactPerson] = useState('');
     const [mobile, setMobile] = useState('');
     const [email, setEmail] = useState('');
@@ -81,14 +82,15 @@ export const CustomerPickerBanner: React.FC<Props> = ({ onCustomerSelected }) =>
     };
 
     const handleCreate = async () => {
-        if (!companyName.trim() || !contactPerson.trim() || !mobile.trim()) {
-            toast.error('Company Name, Contact Person and Mobile are required.');
+        if (!companyName.trim() || !shortCode.trim() || !contactPerson.trim() || !mobile.trim()) {
+            toast.error('Company Name, Short Code, Contact Person and Mobile are required.');
             return;
         }
         setCreating(true);
         try {
             const res = await createCustomer({
                 companyName: companyName.trim(),
+                shortCode: shortCode.trim().toUpperCase(),
                 contactPerson: contactPerson.trim(),
                 mobile: mobile.trim(),
                 email: email.trim() || null,
@@ -254,6 +256,11 @@ export const CustomerPickerBanner: React.FC<Props> = ({ onCustomerSelected }) =>
                                 <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)}
                                     className={inputClass + ' pl-9'} placeholder="e.g. ABC Industries Pvt. Ltd." />
                             </div>
+                        </div>
+                        <div>
+                            <label className={labelClass}>Short Code *</label>
+                            <input type="text" value={shortCode} onChange={e => setShortCode(e.target.value.toUpperCase())}
+                                className={inputClass} placeholder="e.g. ABC" maxLength={10} />
                         </div>
                         <div>
                             <label className={labelClass}>Contact Person *</label>

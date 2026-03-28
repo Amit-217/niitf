@@ -134,6 +134,7 @@ export const UTGReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams<{ id?: string }>();
+  const isEditMode = Boolean(id);
   const state = location.state as {
     customerId?: string;
     customerName?: string;
@@ -467,12 +468,8 @@ export const UTGReportFormPage: React.FC = () => {
 
   // ── Submit ──
   const handleSubmit = async (status: "draft" | "final") => {
-    if (!customerId) {
-      toast.error("Customer ID is missing.");
-      return;
-    }
-    if (!reportNo.trim()) {
-      toast.error("Report No. is required.");
+    if (!isEditMode && !customerId) {
+      toast.error("Please select a customer first.");
       return;
     }
 
@@ -615,13 +612,13 @@ export const UTGReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Report No. *</label>
+            <label className={labelClass}>Report No. {isEditMode ? "" : "(Auto-generated)"}</label>
             <input
               type="text"
-              value={reportNo}
-              onChange={(e) => setReportNo(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. NIIT/VESSPL/UT/25-26/01"
+              value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
+              readOnly
+              className={inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"}
+              placeholder="Auto-generated on save"
             />
           </div>
           <div>
@@ -653,9 +650,9 @@ export const UTGReportFormPage: React.FC = () => {
             <label className={labelClass}>Report No.</label>
             <input
               type="text"
-              value={reportNo}
+              value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
               readOnly
-              className={inputClass + " bg-gray-50"}
+              className={inputClass + " bg-gray-50 font-mono text-indigo-700"}
             />
           </div>
           <div>

@@ -18,6 +18,7 @@ import {
   Loader2,
   Printer,
   Eye,
+  User,
   Magnet,
   Droplets,
   Waves,
@@ -546,7 +547,7 @@ export const CustomerDetailPage = () => {
           date: invForm.date,
           dueDate: invForm.dueDate || null,
           status: invForm.status,
-          paymentMode: (invForm.paymentMode as Invoice["paymentMode"]) || null,
+          paymentMode: invForm.paymentMode as any,
           paidAmount: invForm.paidAmount,
           notes: invForm.notes || null,
           items: invForm.items,
@@ -667,6 +668,13 @@ export const CustomerDetailPage = () => {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
           <div className="flex items-start gap-2">
             <div className="p-1.5 bg-violet-50 rounded-lg mt-0.5"><Building2 size={14} className="text-violet-500" /></div>
+            <div>
+              <p className="text-[10px] font-bold uppercase text-gray-400 tracking-wider">Short Code</p>
+              <p className="font-semibold text-gray-800 mt-0.5 font-mono">{customer.shortCode}</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-2">
+            <div className="p-1.5 bg-indigo-50 rounded-lg mt-0.5"><User size={14} className="text-indigo-500" /></div>
             <div>
               <p className="text-[10px] font-bold uppercase text-gray-400 tracking-wider">Contact Person</p>
               <p className="font-semibold text-gray-800 mt-0.5">{customer.contactPerson}</p>
@@ -850,7 +858,7 @@ export const CustomerDetailPage = () => {
                                 <Printer size={14} />
                               </button>
                               <button
-                                onClick={() => navigate(`/admin/reports/${reportSubType}/${r._id}/edit`, { state: { customerId: id, reportSubType, customerName: customer?.name } })}
+                                onClick={() => navigate(`/admin/reports/${reportSubType}/${r._id}/edit`, { state: { customerId: id, reportSubType, customerName: customer?.companyName } })}
                                 className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
                                 title="Edit Report"
                               >

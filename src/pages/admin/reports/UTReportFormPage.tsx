@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { ArrowLeft, Plus, Trash2, Save, AlertCircle, Users } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
 import { createUTReport, updateUTReport, getUTReportById, UTSearchUnit } from '../../../api/customerApi';
 import { getApiErrorMessage } from '../../../api/error';
 import { CustomerPickerBanner } from '../../../components/CustomerPickerBanner';
@@ -266,8 +266,10 @@ export const UTReportFormPage: React.FC = () => {
 
   // â”€â”€ Submit â”€â”€
   const handleSubmit = async (status: 'draft' | 'final') => {
-    if (!customerId) { toast.error('Customer ID is missing.'); return; }
-    if (!reportNo.trim()) { toast.error('Report No. is required.'); return; }
+    if (!isEditMode && !customerId) {
+        toast.error("Please select a customer first.");
+        return;
+    }
     setSaving(true);
     try {
       const payload = {
@@ -312,7 +314,7 @@ export const UTReportFormPage: React.FC = () => {
           .filter(o => o.jobDescription.trim())
           .map(o => ({
             srNo: o.srNo, jobDescription: o.jobDescription, drawingOrJointNo: o.drawingOrJointNo,
-            size: o.size, quantity: Number(o.quantity) || 0, evaluation: o.evaluation || undefined, remark: o.remark,
+            size: o.size, quantity: Number(o.quantity) || 0, evaluation: o.evaluation || "", remark: o.remark || "",
           })),
         finalSection: {
           examinedBy: 'National Industrial Inspection And Training',
@@ -370,9 +372,11 @@ export const UTReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Report No. *</label>
-            <input type="text" value={reportNo} onChange={e => setReportNo(e.target.value)}
-              className={inputClass} placeholder="e.g. NIIT/VESP/L/UT/25-26/29" />
+            <label className={labelClass}>Report No. {isEditMode ? "" : "(Auto-generated)"}</label>
+            <input type="text" value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
+              readOnly
+              className={inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"}
+              placeholder="Auto-generated on save" />
           </div>
           <div>
             <label className={labelClass}>Format No.</label>
@@ -391,7 +395,8 @@ export const UTReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Report No.</label>
-            <input type="text" value={reportNo} readOnly className={inputClass + ' bg-gray-50'} />
+            <input type="text" value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
+              readOnly className={inputClass + " bg-gray-50 font-mono text-indigo-700"} />
           </div>
           <div>
             <label className={labelClass}>Client</label>

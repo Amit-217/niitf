@@ -23,6 +23,7 @@ import {
 
 const INITIAL_FORM: CustomerPayload = {
   companyName: "",
+  shortCode: "",
   contactPerson: "",
   mobile: "",
   email: "",
@@ -97,6 +98,7 @@ export const CustomersPage = () => {
     setEditTarget(c);
     setForm({
       companyName: c.companyName,
+      shortCode: c.shortCode || "",
       contactPerson: c.contactPerson,
       mobile: c.mobile,
       email: c.email || "",
@@ -111,6 +113,10 @@ export const CustomersPage = () => {
     e.preventDefault();
     if (!form.companyName.trim()) {
       toast.error("Company name is required");
+      return;
+    }
+    if (!form.shortCode.trim()) {
+      toast.error("Short code is required");
       return;
     }
     if (!form.contactPerson.trim()) {
@@ -139,6 +145,7 @@ export const CustomersPage = () => {
     try {
       const payload: CustomerPayload = {
         companyName: form.companyName.trim(),
+        shortCode: form.shortCode.trim().toUpperCase(),
         contactPerson: form.contactPerson.trim(),
         mobile: form.mobile.trim(),
         email: form.email?.trim() || null,
@@ -219,6 +226,7 @@ export const CustomersPage = () => {
               <tr>
                 {[
                   "Company",
+                  "Code",
                   "Contact Person",
                   "Mobile",
                   "Email",
@@ -267,6 +275,11 @@ export const CustomersPage = () => {
                       >
                         {c.companyName}
                       </button>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="font-mono text-xs font-bold bg-gray-100 px-2 py-1 rounded text-gray-600 border border-gray-200 uppercase">
+                        {c.shortCode}
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-gray-700">
                       {c.contactPerson}
@@ -394,6 +407,22 @@ export const CustomersPage = () => {
                         }
                         className={inputClass}
                         placeholder="e.g. Acme Industries Ltd."
+                      />
+                    </div>
+                    <div className="col-span-2 sm:col-span-1">
+                      <label className={labelClass}>Short Code *</label>
+                      <input
+                        required
+                        value={form.shortCode}
+                        onChange={(e) =>
+                          setForm((f) => ({
+                            ...f,
+                            shortCode: e.target.value.toUpperCase(),
+                          }))
+                        }
+                        className={inputClass}
+                        placeholder="e.g. ACME"
+                        maxLength={10}
                       />
                     </div>
                     <div className="col-span-2 sm:col-span-1">

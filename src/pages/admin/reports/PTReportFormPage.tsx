@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ArrowLeft, Plus, Trash2, Save, AlertCircle, Users } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save } from "lucide-react";
 import { createPTReport, updatePTReport, getPTReportById } from "../../../api/customerApi";
 import { getApiErrorMessage } from "../../../api/error";
 import api from "../../../api/axios";
@@ -281,8 +281,8 @@ export const PTReportFormPage: React.FC = () => {
       toast.error("Customer ID is missing.");
       return;
     }
-    if (!reportNo.trim()) {
-      toast.error("Report No. is required.");
+    if (!isEditMode && !customerId) {
+      toast.error("Please select a customer first.");
       return;
     }
     setSaving(true);
@@ -347,8 +347,8 @@ export const PTReportFormPage: React.FC = () => {
             drawingOrJointNo: o.drawingOrJointNo,
             size: o.size,
             quantity: Number(o.quantity) || 0,
-            evaluation: o.evaluation || undefined,
-            result: o.remark,
+            evaluation: o.evaluation || "",
+            remark: o.remark || "",
           })),
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
@@ -434,13 +434,13 @@ export const PTReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Report No. *</label>
+            <label className={labelClass}>Report No. {isEditMode ? "" : "(Auto-generated)"}</label>
             <input
               type="text"
-              value={reportNo}
-              onChange={(e) => setReportNo(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. NIIT/GE/PT/25-26/01"
+              value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
+              readOnly
+              className={inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"}
+              placeholder="Auto-generated on save"
             />
           </div>
           <div>
@@ -472,9 +472,9 @@ export const PTReportFormPage: React.FC = () => {
             <label className={labelClass}>Report No.</label>
             <input
               type="text"
-              value={reportNo}
+              value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
               readOnly
-              className={inputClass + " bg-gray-50"}
+              className={inputClass + " bg-gray-50 font-mono text-indigo-700"}
             />
           </div>
           <div>
