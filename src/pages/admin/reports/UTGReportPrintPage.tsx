@@ -255,10 +255,11 @@ export const UTGReportPrintPage: React.FC = () => {
       >
         <div
           style={{
+            position: "relative",
             width: "210mm",
             minHeight: "297mm",
             margin: "0 auto",
-            padding: "5mm",
+            padding: "5mm 5mm 35mm 5mm",
             background: "#fff",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
@@ -631,15 +632,19 @@ export const UTGReportPrintPage: React.FC = () => {
               </tbody>
               <tfoot style={{ display: "table-footer-group" }}>
                 <tr>
-                  <td style={{ padding: "0 0 5mm 0" }}>
-                    <div className="tfoot-content">
-                      <ReportFooter />
-                    </div>
+                  <td style={{ padding: 0 }}>
+                    <div className="tfoot-content" style={{ height: "15mm" }}></div>
                   </td>
                 </tr>
               </tfoot>
             </table>
           </div>
+          
+          {/* ABSOLUTE BOTTOM FOOTER ON SCREEN */}
+          <div className={`no-print ${bwMode ? 'bw' : ''}`} style={{ position: "absolute", bottom: "5mm", left: "5mm", right: "5mm" }}>
+            <ReportFooter />
+          </div>
+
         </div>
       </div>
 

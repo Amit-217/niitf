@@ -69,8 +69,9 @@ const PRINT_STYLES = `
   .reject-cell { font-weight: bold; color: #b91c1c; }
 
   @media print {
-    .print-fixed-footer { display: none !important; }
-    .tfoot-content { visibility: visible !important; }
+    .print-fixed-footer { position: fixed !important; bottom: 8mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; z-index: 99999 !important; background: transparent !important; }
+    .print-fixed-footer-inner { width: 287mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
+    .tfoot-content { visibility: hidden !important; }
   }
   @media screen {
     .print-fixed-footer { display: none; }
@@ -204,11 +205,12 @@ export const AWSDReportPrintPage: React.FC = () => {
       >
         <div
           style={{
+            position: "relative",
             width: "297mm",
             minHeight: "210mm",
             background: "#fff",
             margin: "0 auto",
-            padding: "5mm",
+            padding: "5mm 5mm 35mm 5mm",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
           }}
@@ -609,14 +611,23 @@ export const AWSDReportPrintPage: React.FC = () => {
 
             <tfoot style={{ display: "table-footer-group" }}>
               <tr>
-                <td style={{ padding: "0 0 5mm 0" }}>
-                  <div className="tfoot-content">
-                    <ReportFooter />
-                  </div>
+                <td style={{ padding: 0 }}>
+                  <div className="tfoot-content" style={{ height: "15mm" }}></div>
                 </td>
               </tr>
             </tfoot>
           </table>
+          
+          <div className={`no-print ${bwMode ? 'bw' : ''}`} style={{ position: "absolute", bottom: "5mm", left: "5mm", right: "5mm" }}>
+            <ReportFooter />
+          </div>
+
+        </div>
+      </div>
+      {/* The fixed footer that only appears in print on every page at the bottom */}
+      <div className="print-fixed-footer">
+        <div className="print-fixed-footer-inner" style={{ border: 'none', boxShadow: 'none' }}>
+          <ReportFooter />
         </div>
       </div>
     </>
