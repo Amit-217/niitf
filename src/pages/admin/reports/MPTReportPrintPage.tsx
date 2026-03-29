@@ -6,7 +6,11 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { getMPTReportById, getPublicMPTReportById, MPTReport } from "../../../api/customerApi";
+import {
+  getMPTReportById,
+  getPublicMPTReportById,
+  MPTReport,
+} from "../../../api/customerApi";
 
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
@@ -32,7 +36,7 @@ const PRINT_STYLES = `
   * { box-sizing: border-box; }
   .report { background: #fff; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
   .rpt-header { background: #185FA5; padding: 10px 12px; display: flex; align-items: center; gap: 12px; }
-  .logo-box { width: 60px; height: 60px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 3px; }
+  .logo-box { width: 90px; height: 90px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 3px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #fff; }
   .hdr-center .org { font-size: 15px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
@@ -42,19 +46,26 @@ const PRINT_STYLES = `
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
   .bw .rpt-header { background: #fff !important; border-bottom: 2px solid #111 !important; }
+  .bw .hdr-center { color: #111 !important; }
   .bw .hdr-center .org { color: #111 !important; }
   .bw .hdr-center .sub { color: #444 !important; }
   .bw .hdr-center .iso { color: #111 !important; }
-  .bw .logo-box { color: #111 !important; background: #f0f0f0 !important; border: 1px solid #aaa !important; }
-  .bw .section-hdr { background: #d0d0d0 !important; color: #000 !important; border-left: 3px solid #000 !important; }
-  .bw .col-hdr { background: #e8e8e8 !important; color: #000 !important; }
-  .bw .rpt-title { background: #e8e8e8 !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
+  .bw .logo-box { background: #f0f0f0 !important; border: 1px solid #aaa !important; }
+  .bw .section-hdr { background: #c8c8c8 !important; color: #000 !important; border-left: 3px solid #000 !important; }
+  .bw .col-hdr { background: #e0e0e0 !important; color: #000 !important; }
+  .bw .rpt-title { background: #e0e0e0 !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
   .bw .footer-meta { background: #d0d0d0 !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #e0e0e0 !important; color: #000 !important; border: 1px solid #999 !important; }
   .bw .accept-badge { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #888 !important; }
   .bw .reject-badge { background: #d8d8d8 !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
   .bw .neutral-badge { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #999 !important; }
+  .bw .report-table td, .bw .report-table th { border-color: #999 !important; }
+  .bw .obs-table td, .bw .obs-table th { border-color: #999 !important; }
+  .bw .obs-table th { background: #d8d8d8 !important; color: #000 !important; }
+  .bw .sign-table td { border-color: #999 !important; }
+  .bw .lbl { background: #ebebeb !important; }
+  .bw .footer { background: #ebebeb !important; color: #333 !important; border-color: #999 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -344,60 +355,7 @@ export const MPTReportPrintPage = () => {
               <tbody>
                 <tr>
                   <td colSpan={4} className="section-hdr">
-                    1. Scope &amp; Reference Standards
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl">Applicable Standard</td>
-                  <td className="val">
-                    {standards.length > 0 ? (
-                      standards.map((tag) => (
-                        <span key={`std-${tag}`} className="std-tag">
-                          {tag}
-                        </span>
-                      ))
-                    ) : (
-                      <span style={{ color: "#6b7280", fontStyle: "italic" }}>
-                        Not specified
-                      </span>
-                    )}
-                  </td>
-                  <td className="lbl">Acceptance Criteria</td>
-                  <td className="val">
-                    {acceptance.length > 0 ? (
-                      acceptance.map((tag) => (
-                        <span key={`acc-${tag}`} className="std-tag">
-                          {tag}
-                        </span>
-                      ))
-                    ) : (
-                      <span style={{ color: "#6b7280", fontStyle: "italic" }}>
-                        Not specified
-                      </span>
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl">Procedure Reference</td>
-                  <td className="val">{v(report.reportNo) || "-"}</td>
-                  <td className="lbl">Technique</td>
-                  <td className="val">{technique || "-"}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            {/* ── 2. Job Details ── */}
-            <table className="report-table mt-n1">
-              <colgroup>
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-              </colgroup>
-              <tbody>
-                <tr>
-                  <td colSpan={4} className="section-hdr">
-                    2. Job Details
+                    1. Job Details
                   </td>
                 </tr>
                 <tr>
@@ -411,6 +369,28 @@ export const MPTReportPrintPage = () => {
                   <td className="val">{v(report.reportNo) || "-"}</td>
                   <td className="lbl">Report Date</td>
                   <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
+                </tr>
+                <tr>
+                  <td className="lbl">Reference Std.</td>
+                  <td className="val">
+                    {standards.length > 0 ? (
+                      standards.join(", ")
+                    ) : (
+                      <span style={{ color: "#6b7280", fontStyle: "italic" }}>
+                        Not specified
+                      </span>
+                    )}
+                  </td>
+                  <td className="lbl">Acceptance Criteria</td>
+                  <td className="val">
+                    {acceptance.length > 0 ? (
+                      acceptance.join(", ")
+                    ) : (
+                      <span style={{ color: "#6b7280", fontStyle: "italic" }}>
+                        Not specified
+                      </span>
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <td className="lbl">Inspection Date</td>
@@ -438,10 +418,16 @@ export const MPTReportPrintPage = () => {
                   <td className="lbl">Surface Condition</td>
                   <td className="val">{v(jd.surfaceCondition) || "-"}</td>
                 </tr>
+                <tr>
+                  <td className="lbl">Technique</td>
+                  <td colSpan={3} className="val">
+                    {technique || "-"}
+                  </td>
+                </tr>
               </tbody>
             </table>
 
-            {/* ── 3. Equipment Details ── */}
+            {/* ── 2. Equipment Details ── */}
             <table className="report-table mt-n1">
               <colgroup>
                 <col style={{ width: "22%" }} />
