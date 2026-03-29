@@ -115,13 +115,6 @@ export const DashboardLayout: React.FC = () => {
             links: [
                 { name: 'All Reports', path: `/${basePath}/reports`, icon: FileBarChart2 },
                 { name: 'Customer', path: `/${basePath}/customers`, icon: Users },
-                { name: 'MPT Report', path: `/${basePath}/reports/mpt/new`, icon: Magnet },
-                { name: 'PT Report', path: `/${basePath}/reports/pt/new`, icon: Droplets },
-                { name: 'UT Report', path: `/${basePath}/reports/ut/new`, icon: Waves },
-                { name: 'VSSC-UT Report', path: `/${basePath}/reports/vssc-ut/new`, icon: Satellite },
-                { name: 'UTG Report', path: `/${basePath}/reports/utg/new`, icon: Ruler },
-                { name: 'TPI IVR Report', path: `/${basePath}/reports/tpi-ivr/new`, icon: ClipboardList },
-                { name: 'AWS D1.1 Report', path: `/${basePath}/reports/awsd/new`, icon: GitBranch },
             ]
         }
     ];
