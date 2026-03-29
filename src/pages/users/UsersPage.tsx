@@ -134,15 +134,15 @@ const UserModal: React.FC<UserModalProps> = ({ mode, editUser, currentUserRole, 
             <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={onClose} />
 
             {/* Panel */}
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-3xl lg:max-w-4xl overflow-hidden animate-in fade-in zoom-in duration-200">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-violet-600 to-purple-700 px-6 py-5">
+                <div className="bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 px-8 py-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-lg font-bold text-white">
+                            <h2 className="text-xl font-bold text-white">
                                 {mode === 'create' ? 'Add New User' : 'Edit User'}
                             </h2>
-                            <p className="text-violet-200 text-sm mt-0.5">
+                            <p className="text-violet-100/90 text-sm mt-1 max-w-2xl">
                                 {mode === 'create' ? 'Fill in details — a welcome email will be sent.' : 'Update user information below.'}
                             </p>
                         </div>
@@ -153,19 +153,19 @@ const UserModal: React.FC<UserModalProps> = ({ mode, editUser, currentUserRole, 
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="col-span-2">
+                <form onSubmit={handleSubmit} className="p-8 space-y-6 max-h-[80vh] overflow-y-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="md:col-span-2">
                             <label className={labelClass}>Full Name *</label>
-                            <input className={inputClass} type="text" placeholder="e.g. Rahul Sharma" value={form.name} onChange={set('name')} required />
+                            <input className={`${inputClass} py-3`} type="text" placeholder="e.g. Rahul Sharma" value={form.name} onChange={set('name')} required />
                         </div>
                         <div>
                             <label className={labelClass}>Mobile *</label>
-                            <input className={inputClass} type="text" placeholder="9876543210" value={form.mobile} onChange={set('mobile')} maxLength={10} required={mode === 'create'} />
+                            <input className={`${inputClass} py-3`} type="text" placeholder="9876543210" value={form.mobile} onChange={set('mobile')} maxLength={10} required={mode === 'create'} />
                         </div>
                         <div>
                             <label className={labelClass}>Role</label>
-                            <select className={inputClass} value={form.role} onChange={set('role')} disabled={currentUserRole === 'EMPLOYEE'}>
+                            <select className={`${inputClass} py-3`} value={form.role} onChange={set('role')} disabled={currentUserRole === 'EMPLOYEE'}>
                                 <option value="EMPLOYEE">Employee</option>
                                 <option value="ADMIN">Admin</option>
                                 {currentUserRole === 'SUPER_ADMIN' && <option value="SUPER_ADMIN">Super Admin</option>}
@@ -173,15 +173,15 @@ const UserModal: React.FC<UserModalProps> = ({ mode, editUser, currentUserRole, 
                         </div>
                         {mode === 'create' && (
                             <>
-                                <div className="col-span-2">
+                                <div className="md:col-span-2">
                                     <label className={labelClass}>Email Address *</label>
-                                    <input className={inputClass} type="email" placeholder="user@niitsoft.com" value={form.email} onChange={set('email')} required />
+                                    <input className={`${inputClass} py-3`} type="email" placeholder="user@niitsoft.com" value={form.email} onChange={set('email')} required />
                                 </div>
-                                <div className="col-span-2">
+                                <div className="md:col-span-2">
                                     <label className={labelClass}>Password *</label>
                                     <div className="relative">
                                         <input
-                                            className={`${inputClass} pr-10`}
+                                            className={`${inputClass} py-3 pr-10`}
                                             type={showPassword ? 'text' : 'password'}
                                             placeholder="Min. 6 characters"
                                             value={form.password}
@@ -198,7 +198,7 @@ const UserModal: React.FC<UserModalProps> = ({ mode, editUser, currentUserRole, 
                             </>
                         )}
                         {mode === 'edit' && currentUserRole !== 'EMPLOYEE' && (
-                            <div className="col-span-2">
+                            <div className="md:col-span-2">
                                 <label className="flex items-center gap-3 cursor-pointer group">
                                     <div className="relative">
                                         <input type="checkbox" className="sr-only" checked={form.isActive} onChange={e => setForm(p => ({ ...p, isActive: e.target.checked }))} />
@@ -277,7 +277,6 @@ export const UsersPage: React.FC = () => {
     const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
-    const [total, setTotal] = useState(0);
     const [modal, setModal] = useState<{ type: 'create' | 'edit'; user?: UserType } | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<{ user: UserType; type: 'soft' | 'hard' } | null>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
@@ -289,23 +288,38 @@ export const UsersPage: React.FC = () => {
     const fetchUsers = useCallback(async () => {
         setLoading(true);
         try {
-            const params: any = { page, limit };
-            if (search) params.search = search;
-            if (roleFilter !== 'ALL') params.role = roleFilter;
-            if (statusFilter !== 'ALL') params.status = statusFilter === 'ACTIVE' ? 'active' : 'inactive';
-            const res: any = await api.get('/users/', { params });
+            const res: any = await api.get('/users?limit=1000');
             setUsers(res.data || []);
-            setTotal(res.pagination?.total ?? (res.data || []).length);
         } catch {
             toast.error('Failed to load users.');
         } finally {
             setLoading(false);
         }
-    }, [page, limit, search, roleFilter, statusFilter]);
+    }, []);
 
     useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
-    const filtered = users;
+    useEffect(() => {
+        setPage(1);
+    }, [search, roleFilter, statusFilter]);
+
+    const filtered = users.filter(u => {
+        const q = search.toLowerCase();
+        const matchSearch = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.empId.toLowerCase().includes(q);
+        const matchRole = roleFilter === 'ALL' || u.role === roleFilter;
+        const matchStatus = statusFilter === 'ALL' || (statusFilter === 'ACTIVE' ? u.isActive : !u.isActive);
+        return matchSearch && matchRole && matchStatus;
+    });
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / limit));
+    const safePage = Math.min(page, totalPages);
+    const paginatedUsers = filtered.slice((safePage - 1) * limit, safePage * limit);
+
+    useEffect(() => {
+        if (page > totalPages) {
+            setPage(totalPages);
+        }
+    }, [page, totalPages]);
 
     const handleDelete = async () => {
         if (!deleteTarget) return;
@@ -460,7 +474,7 @@ export const UsersPage: React.FC = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                filtered.map(user => (
+                                paginatedUsers.map(user => (
                                     <tr key={user._id} className="hover:bg-gray-50/50 transition-colors group">
                                         {/* User */}
                                         <td className="px-4 py-3.5 whitespace-nowrap">
@@ -552,12 +566,15 @@ export const UsersPage: React.FC = () => {
                 </div>
 
                 <Pagination
-                    page={page}
-                    totalPages={Math.ceil(total / limit)}
-                    total={total}
+                    page={safePage}
+                    totalPages={totalPages}
+                    total={filtered.length}
                     limit={limit}
                     onPageChange={setPage}
-                    onLimitChange={(l) => { setLimit(l); setPage(1); }}
+                    onLimitChange={(nextLimit) => {
+                        setLimit(nextLimit);
+                        setPage(1);
+                    }}
                 />
             </div>
 

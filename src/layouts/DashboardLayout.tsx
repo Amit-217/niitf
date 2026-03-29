@@ -11,12 +11,19 @@ import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Breadcrumbs } from '../components/Breadcrumbs';
+import { getMyNotifications, markAllNotificationsRead, markNotificationRead } from '../api/notificationApi';
+import { getAllTasks } from '../api/taskApi';
 
 export const DashboardLayout: React.FC = () => {
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false); // desktop sidebar collapsed state
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isNotificationsLoading, setIsNotificationsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [notifications, setNotifications] = useState<any[]>([]);
+    const [dismissedNotificationIds, setDismissedNotificationIds] = useState<string[]>([]);
+    const [myTaskCount, setMyTaskCount] = useState(0);
     
     // Sub-menu states
     const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({
@@ -40,23 +47,344 @@ export const DashboardLayout: React.FC = () => {
 
     const navigate = useNavigate();
     const profileRef = useRef<HTMLDivElement>(null);
+    const notificationRef = useRef<HTMLDivElement>(null);
 
     // Retrieve user data
     const userStr = localStorage.getItem('user');
     const user = userStr ? JSON.parse(userStr) : null;
     const role = user?.role || 'EMPLOYEE';
     const basePath = role === 'STUDENT' ? 'student' : (role === 'ADMIN' || role === 'SUPER_ADMIN' ? 'admin' : 'employee');
+    const currentUserId = user?.userId || user?.id || user?._id || '';
+    const dismissedNotificationsStorageKey = `dismissed-notifications:${currentUserId || 'guest'}`;
+
+    const normalizeNotificationId = (value: any) => {
+        if (!value) return '';
+        if (typeof value === 'object') return normalizeNotificationId(value._id || value.id || value.userId);
+        return String(value);
+    };
+
+    const isTaskNotification = (item: any) => {
+        const type = String(item?.type || '');
+        return type === 'TASK_ASSIGNED' || type === 'TASK_UPDATE' || type === 'TASK_COMPLETED' || String(item?._id || '').startsWith('task-feed-');
+    };
+
+    const getNotificationSection = (item: any) => {
+        const type = String(item?.type || '');
+        if (type === 'TASK_ASSIGNED') return 'assigned';
+        if (type === 'TASK_UPDATE' || type === 'TASK_COMPLETED' || String(item?._id || '').startsWith('task-feed-')) return 'updates';
+        return 'other';
+    };
+
+    const getNotificationVisual = (item: any) => {
+        const section = getNotificationSection(item);
+        if (section === 'assigned') {
+            return {
+                Icon: ListTodo,
+                iconClass: 'bg-primary-50 text-primary-700',
+            };
+        }
+        if (section === 'updates') {
+            return {
+                Icon: FileText,
+                iconClass: 'bg-amber-50 text-amber-700',
+            };
+        }
+        return {
+            Icon: Bell,
+            iconClass: 'bg-gray-50 text-gray-700',
+        };
+    };
+
+    const buildTaskFeedNotification = (task: any) => {
+        const taskId = normalizeNotificationId(task?._id);
+        if (!taskId) return null;
+
+        const eventTimestamp = task?.updatedAt || task?.createdAt || new Date().toISOString();
+        const eventKey = new Date(eventTimestamp).getTime();
+        const isCreator = normalizeNotificationId(task?.createdBy) === currentUserId;
+        const isAssigned = Array.isArray(task?.assignedTo) && task.assignedTo.some((assigned: any) => normalizeNotificationId(assigned) === currentUserId);
+
+        if (!isCreator && !isAssigned) return null;
+
+        let type = 'TASK_ASSIGNED';
+        let title = 'Task assigned to you';
+        let message = `You have been assigned to "${task?.title || 'a task'}".`;
+
+        if (String(task?.status || '') === 'COMPLETED') {
+            type = 'TASK_COMPLETED';
+            title = 'Task completed';
+            message = `"${task?.title || 'A task'}" has been marked as completed.`;
+        } else if (String(task?.status || '') === 'IN_PROGRESS') {
+            type = 'TASK_UPDATE';
+            title = 'Task in progress';
+            message = `"${task?.title || 'A task'}" is now in progress.`;
+        }
+
+        return {
+            _id: `client-task-${taskId}-${type}-${eventKey}`,
+            recipientId: currentUserId,
+            actorId: normalizeNotificationId(task?.createdBy),
+            taskId: task,
+            type,
+            title,
+            message,
+            readAt: null,
+            createdAt: eventTimestamp,
+        };
+    };
 
     // Close profile dropdown on outside click
+    useEffect(() => {
+        try {
+            const raw = localStorage.getItem(dismissedNotificationsStorageKey);
+            setDismissedNotificationIds(raw ? JSON.parse(raw) : []);
+        } catch {
+            setDismissedNotificationIds([]);
+        }
+    }, [dismissedNotificationsStorageKey]);
+
     useEffect(() => {
         const handler = (e: MouseEvent) => {
             if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
                 setIsProfileDropdownOpen(false);
             }
+            if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) {
+                setIsNotificationOpen(false);
+            }
         };
         document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
     }, []);
+
+    const fetchNotifications = async () => {
+        setIsNotificationsLoading(true);
+        try {
+            let fetched: any[] = [];
+            try {
+                const res = await getMyNotifications({ limit: 8 });
+                fetched = Array.isArray(res.data) ? res.data : [];
+            } catch {
+                fetched = [];
+            }
+
+            let mergedNotifications = [...fetched];
+
+            if ((role === 'ADMIN' || role === 'SUPER_ADMIN' || role === 'EMPLOYEE') && currentUserId) {
+                try {
+                    const tasksRes = await getAllTasks();
+                    const allTasks = Array.isArray(tasksRes.data) ? tasksRes.data : [];
+                    const userTasks = allTasks.filter((task: any) => {
+                        const isCreator = normalizeNotificationId(task?.createdBy) === currentUserId;
+                        const isAssigned = Array.isArray(task?.assignedTo) && task.assignedTo.some((assigned: any) => normalizeNotificationId(assigned) === currentUserId);
+                        return isCreator || isAssigned;
+                    });
+
+                    let fallbackTaskNotifications = userTasks
+                        .map((task: any) => buildTaskFeedNotification(task))
+                        .filter(Boolean)
+                        .filter((item: any) => {
+                            const taskId = normalizeNotificationId(item.taskId?._id || item.taskId);
+                            const type = String(item.type || '');
+                            return !mergedNotifications.some((existing: any) => {
+                                const existingTaskId = normalizeNotificationId(existing.taskId?._id || existing.taskId);
+                                return existingTaskId === taskId && String(existing.type || '') === type;
+                            });
+                        });
+
+                    if (!fallbackTaskNotifications.length && userTasks.length > 0) {
+                        const latestTask = userTasks[0];
+                        fallbackTaskNotifications = [{
+                            _id: `client-task-summary-${normalizeNotificationId(latestTask._id)}-${currentUserId}`,
+                            recipientId: currentUserId,
+                            actorId: normalizeNotificationId(latestTask.createdBy),
+                            taskId: latestTask,
+                            type: 'TASK_ASSIGNED',
+                            title: 'Assigned tasks',
+                            message: `You have ${userTasks.length} assigned task${userTasks.length === 1 ? '' : 's'}.`,
+                            readAt: null,
+                            createdAt: latestTask.updatedAt || latestTask.createdAt || new Date().toISOString(),
+                        }];
+                    }
+
+                    mergedNotifications = [...mergedNotifications, ...fallbackTaskNotifications];
+                } catch {
+                    // Ignore fallback failures and keep the backend notifications.
+                }
+            }
+
+            const dismissedSet = new Set(dismissedNotificationIds.map(normalizeNotificationId));
+            const visibleNotifications = mergedNotifications
+                .filter((item: any) => !dismissedSet.has(normalizeNotificationId(item._id)))
+                .sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+
+            const fallbackTaskNotifications = mergedNotifications
+                .filter((item: any) => isTaskNotification(item))
+                .sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+
+            setNotifications(
+                visibleNotifications.length > 0 ? visibleNotifications : fallbackTaskNotifications
+            );
+        } catch {
+            setNotifications([]);
+        } finally {
+            setIsNotificationsLoading(false);
+        }
+    };
+
+    const fetchMyTaskCount = async () => {
+        if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
+            setMyTaskCount(0);
+            return;
+        }
+
+        if (!currentUserId) {
+            setMyTaskCount(0);
+            return;
+        }
+
+        try {
+            const res = await getAllTasks();
+            const tasks = res.data || [];
+            const count = tasks.filter((task: any) => {
+                const isAssignedToMe = (task.assignedTo || []).some((emp: any) => String(emp?._id || emp) === String(currentUserId));
+                return isAssignedToMe;
+            }).length;
+            setMyTaskCount(count);
+        } catch {
+            setMyTaskCount(0);
+        }
+    };
+
+    useEffect(() => {
+        fetchNotifications();
+        fetchMyTaskCount();
+        const timer = window.setInterval(fetchNotifications, 30000);
+        const taskTimer = window.setInterval(fetchMyTaskCount, 30000);
+        const handleNotificationRefresh = () => {
+            fetchNotifications();
+        };
+        const handleWindowFocus = () => {
+            fetchNotifications();
+        };
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                fetchNotifications();
+            }
+        };
+        window.addEventListener('notifications:refresh', handleNotificationRefresh);
+        window.addEventListener('focus', handleWindowFocus);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => {
+            window.clearInterval(timer);
+            window.clearInterval(taskTimer);
+            window.removeEventListener('notifications:refresh', handleNotificationRefresh);
+            window.removeEventListener('focus', handleWindowFocus);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [role, currentUserId]);
+
+    const unreadCount = notifications.filter((item) => !item.readAt).length;
+
+    const persistDismissedNotificationIds = (nextIds: string[]) => {
+        setDismissedNotificationIds(nextIds);
+        localStorage.setItem(dismissedNotificationsStorageKey, JSON.stringify(nextIds));
+    };
+
+    const getTaskIdFromNotification = (notification: any) =>
+        normalizeNotificationId(notification?.taskId?._id || notification?.taskId);
+
+    const dismissNotificationLocally = (notification: any) => {
+        const notificationId = normalizeNotificationId(notification?._id);
+        const taskId = getTaskIdFromNotification(notification);
+        const relatedIds = notifications
+            .filter((item) => {
+                if (normalizeNotificationId(item._id) === notificationId) return true;
+                if (!taskId) return false;
+                return getTaskIdFromNotification(item) === taskId;
+            })
+            .map((item) => normalizeNotificationId(item._id));
+
+        persistDismissedNotificationIds([
+            ...new Set([...dismissedNotificationIds, ...relatedIds]),
+        ]);
+
+        setNotifications((prev) =>
+            prev.filter((item) => {
+                const itemId = normalizeNotificationId(item._id);
+                if (itemId === notificationId) return false;
+                if (!taskId) return true;
+                return getTaskIdFromNotification(item) !== taskId;
+            })
+        );
+    };
+
+    const handleMarkAllRead = async () => {
+        try {
+            await markAllNotificationsRead();
+            const allIds = notifications.map((item) => normalizeNotificationId(item._id));
+            persistDismissedNotificationIds([
+                ...new Set([...dismissedNotificationIds, ...allIds]),
+            ]);
+            setNotifications((prev) => prev.map((item) => ({ ...item, readAt: item.readAt || new Date().toISOString() })));
+        } catch {
+            toast.error('Failed to clear notifications');
+        }
+    };
+
+    const handleBellClick = async () => {
+        setIsProfileDropdownOpen(false);
+        if (!isNotificationOpen) {
+            await fetchNotifications();
+        }
+        setIsNotificationOpen((v) => !v);
+    };
+
+    const handleVisitNotification = async (notification: any) => {
+        try {
+            const isSyntheticTaskFeed = String(notification._id || '').startsWith('task-feed-');
+            if (!isSyntheticTaskFeed) {
+                await markNotificationRead(notification._id);
+            }
+            dismissNotificationLocally(notification);
+            if (notification.taskId?._id || notification.taskId) {
+                navigate(`/${basePath}/my-tasks`, {
+                    state: { taskId: notification.taskId?._id || notification.taskId }
+                });
+            }
+        } catch {
+            toast.error('Failed to open notification');
+        }
+    };
+
+    const handleCloseNotification = async (notification: any) => {
+        const notificationId = normalizeNotificationId(notification._id);
+        try {
+            if (!String(notificationId).startsWith('task-feed-')) {
+                await markNotificationRead(notificationId);
+            }
+        } catch {
+            // Ignore close failures and still dismiss locally.
+        }
+
+        dismissNotificationLocally(notification);
+    };
+
+    const groupedNotifications = notifications.reduce(
+        (acc, item) => {
+            if (isTaskNotification(item)) {
+                const section = getNotificationSection(item);
+                if (section === 'assigned') acc.assigned.push(item);
+                else if (section === 'updates') acc.updates.push(item);
+                else acc.other.push(item);
+            } else {
+                acc.other.push(item);
+            }
+            return acc;
+        },
+        { assigned: [] as any[], updates: [] as any[], other: [] as any[] }
+    );
+    const taskNotificationCount = groupedNotifications.assigned.length + groupedNotifications.updates.length;
+    const bellNotificationCount = unreadCount;
 
     const handleLogout = () => {
         localStorage.removeItem('accessToken');
@@ -123,6 +451,7 @@ export const DashboardLayout: React.FC = () => {
         { name: 'Dashboard', path: `/${basePath}/dashboard`, icon: LayoutDashboard }
     ] : [
         { name: 'Dashboard', path: `/${basePath}/dashboard`, icon: LayoutDashboard },
+        ...((role === 'ADMIN' || role === 'SUPER_ADMIN') ? [{ name: 'My Tasks', path: `/${basePath}/my-tasks`, icon: ListTodo }] : []),
         { name: 'Settings', path: `/${basePath}/settings`, icon: Briefcase },
     ];
 
@@ -153,10 +482,130 @@ export const DashboardLayout: React.FC = () => {
 
                 {/* Right Header */}
                 <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
-                    <button className="text-gray-500 hover:text-primary-600 relative p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                        <Bell size={18} />
-                        <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-                    </button>
+                    <div className="relative" ref={notificationRef}>
+                        <button
+                            onClick={handleBellClick}
+                            aria-label="Notifications"
+                            aria-expanded={isNotificationOpen}
+                            className="text-gray-500 hover:text-primary-600 relative p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                        >
+                            <Bell size={18} />
+                            {taskNotificationCount > 0 && (
+                                <span
+                                    className="absolute -bottom-1 -left-1 inline-flex items-center gap-0.5 rounded-full bg-primary-600 px-1.5 py-0.5 text-[9px] font-black text-white shadow-md ring-2 ring-white"
+                                    title={`${taskNotificationCount} task notification${taskNotificationCount === 1 ? '' : 's'}`}
+                                >
+                                    <ListTodo size={9} />
+                                    <span>{taskNotificationCount}</span>
+                                </span>
+                            )}
+                            {bellNotificationCount > 0 && (
+                                <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1.5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white">
+                                    {bellNotificationCount > 99 ? '99+' : bellNotificationCount}
+                                </span>
+                            )}
+                        </button>
+
+                        {isNotificationOpen && (
+                            <div className="absolute right-0 mt-2 w-80 max-w-[90vw] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
+                                <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/70">
+                                    <div>
+                                        <p className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Notifications</p>
+                                        <p className="text-[11px] text-gray-500 mt-1">{unreadCount} unread</p>
+                                    </div>
+                                    <button
+                                        onClick={handleMarkAllRead}
+                                        disabled={!unreadCount}
+                                        className="text-xs font-bold text-primary-600 disabled:text-gray-300"
+                                    >
+                                        Mark all read
+                                    </button>
+                                </div>
+                                <div className="max-h-96 overflow-y-auto">
+                                    {isNotificationsLoading ? (
+                                        <div className="p-5 text-center text-sm text-gray-500">
+                                            Loading notifications...
+                                        </div>
+                                    ) : notifications.length === 0 ? (
+                                        <div className="p-5 text-center text-sm text-gray-500">
+                                            No recent notifications.
+                                        </div>
+                                    ) : (
+                                        <div className="p-2 space-y-4">
+                                            {[
+                                                { key: 'assigned', title: 'Task Assigned', items: groupedNotifications.assigned },
+                                                { key: 'updates', title: 'Task Updates', items: groupedNotifications.updates },
+                                                { key: 'other', title: 'Other Notifications', items: groupedNotifications.other },
+                                            ].map((section) => (
+                                                section.items.length > 0 && (
+                                                    <div key={section.key} className="space-y-2">
+                                                        <div className="px-2 pt-1 flex items-center justify-between">
+                                                            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">
+                                                                {section.title}
+                                                            </p>
+                                                            <span className="text-[10px] font-black text-gray-300">
+                                                                {section.items.length}
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            {section.items.map((item: any) => {
+                                                                const canVisit = Boolean(item.taskId?._id || item.taskId);
+                                                                const isUnread = !item.readAt;
+                                                                const { Icon, iconClass } = getNotificationVisual(item);
+                                                                return (
+                                                                    <div
+                                                                        key={item._id}
+                                                                        className={`rounded-2xl border p-3 transition-colors ${
+                                                                            isUnread ? 'border-gray-200 bg-white' : 'border-gray-100 bg-gray-50/70'
+                                                                        }`}
+                                                                    >
+                                                                        <div className="flex items-start gap-3">
+                                                                            <div className={`mt-0.5 w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${iconClass}`}>
+                                                                                <Icon size={16} />
+                                                                            </div>
+                                                                            <div className="min-w-0 flex-1">
+                                                                                <div className="flex items-center gap-2">
+                                                                                    <p className="text-sm font-bold text-gray-900 truncate">{item.title}</p>
+                                                                                    {isUnread && (
+                                                                                        <span className="h-2 w-2 rounded-full bg-rose-500 shrink-0" />
+                                                                                    )}
+                                                                                </div>
+                                                                                <p className="text-xs text-gray-500 mt-1 line-clamp-2">{item.message}</p>
+
+                                                                                <div className="mt-3 flex items-center justify-end gap-2">
+                                                                                    {canVisit && (
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            onClick={() => handleVisitNotification(item)}
+                                                                                            className="px-3 py-1.5 rounded-lg bg-primary-600 text-white text-[11px] font-bold hover:bg-primary-700 transition-colors"
+                                                                                        >
+                                                                                            Visit
+                                                                                        </button>
+                                                                                    )}
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        onClick={() => handleCloseNotification(item)}
+                                                                                        className="px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 text-[11px] font-bold hover:bg-gray-50 transition-colors"
+                                                                                    >
+                                                                                        Close
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                )
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     {/* Profile Dropdown */}
                     <div className="relative" ref={profileRef}>
@@ -198,7 +647,7 @@ export const DashboardLayout: React.FC = () => {
                 {/* Mobile overlay background */}
                 {isMobileSidebarOpen && (
                     <div
-                        className="fixed inset-0 bg-gray-900/50 z-10 lg:hidden backdrop-blur-sm"
+                        className="fixed inset-0 bg-gray-900/40 z-10 lg:hidden"
                         onClick={() => setIsMobileSidebarOpen(false)}
                     />
                 )}
@@ -206,9 +655,9 @@ export const DashboardLayout: React.FC = () => {
                 {/* ── Sidebar ───────────────────────────────────────────────── */}
                 <aside
                     className={`
-                        fixed lg:sticky top-16 left-0 h-[calc(100vh-4rem)]
+                        fixed lg:sticky top-[76px] left-0 h-[calc(100dvh-76px)] max-h-[calc(100dvh-76px)]
                         bg-white border border-gray-200 rounded-r-2xl
-                        shadow-lg z-20 flex flex-col
+                        shadow-lg z-20 flex flex-col overflow-hidden
                         transition-all duration-300 ease-in-out
                         ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                         ${sidebarCollapsed ? 'lg:w-16 w-64' : 'w-64'}
@@ -256,6 +705,39 @@ export const DashboardLayout: React.FC = () => {
                                 );
                             }}
                         </NavLink>
+
+                        {standaloneLinks[1]?.name === 'My Tasks' && (
+                            <NavLink
+                                to={standaloneLinks[1].path}
+                                className={({ isActive }) => `
+                                    flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group mt-2
+                                    ${sidebarCollapsed ? 'justify-center' : ''}
+                                    ${isActive
+                                        ? 'bg-primary-50 text-primary-700 shadow-sm'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
+                                `}
+                                onClick={() => setIsMobileSidebarOpen(false)}
+                            >
+                                {({ isActive }) => {
+                                    const Icon = standaloneLinks[1].icon;
+                                    return (
+                                        <>
+                                            <div className={`p-1 rounded-lg transition-colors ${isActive ? 'bg-white shadow-sm' : 'group-hover:bg-white'}`}>
+                                                <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
+                                            </div>
+                                            {!sidebarCollapsed && (
+                                                <span className="truncate flex-1">My Tasks</span>
+                                            )}
+                                            {!sidebarCollapsed && (
+                                                <span className="ml-auto min-w-6 h-6 px-2 inline-flex items-center justify-center rounded-full bg-violet-100 text-violet-700 text-[10px] font-black">
+                                                    {myTaskCount}
+                                                </span>
+                                            )}
+                                        </>
+                                    );
+                                }}
+                            </NavLink>
+                        )}
 
                         {/* Grouped Menus */}
                         {groups.map((group) => (
@@ -307,9 +789,9 @@ export const DashboardLayout: React.FC = () => {
                         ))}
 
                         {/* Standalone Link: Settings */}
-                        {standaloneLinks.length > 1 && (
+                        {standaloneLinks[standaloneLinks.length - 1]?.name === 'Settings' && (
                             <NavLink
-                                to={standaloneLinks[1].path}
+                                to={standaloneLinks[standaloneLinks.length - 1].path}
                                 className={({ isActive }) => `
                                     flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group mt-2
                                     ${sidebarCollapsed ? 'justify-center' : ''}
@@ -320,13 +802,13 @@ export const DashboardLayout: React.FC = () => {
                                 onClick={() => setIsMobileSidebarOpen(false)}
                             >
                                 {({ isActive }) => {
-                                    const Icon = standaloneLinks[1].icon;
+                                    const Icon = standaloneLinks[standaloneLinks.length - 1].icon;
                                     return (
                                         <>
                                             <div className={`p-1 rounded-lg transition-colors ${isActive ? 'bg-white shadow-sm' : 'group-hover:bg-white'}`}>
                                                 <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />
                                             </div>
-                                            {!sidebarCollapsed && <span className="truncate flex-1">{standaloneLinks[1].name}</span>}
+                                            {!sidebarCollapsed && <span className="truncate flex-1">{standaloneLinks[standaloneLinks.length - 1].name}</span>}
                                         </>
                                     );
                                 }}

@@ -136,15 +136,16 @@ const BatchModal: React.FC<ModalProps> = ({
     e.preventDefault();
     setLoading(true);
     try {
-      const payload: any = { batchName, startDate, status };
+      const payload: Record<string, string> = { batchName, startDate, status };
       if (endDate) payload.endDate = endDate;
       if (!batch) payload.courseId = courseId;
       if (batch) await api.put(`/batches/${batch.batchId}`, payload);
       else await api.post("/batches", payload);
       onSaved();
       onClose();
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to save.");
+    } catch (err: unknown) {
+      const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      toast.error(message || "Failed to save.");
     } finally {
       setLoading(false);
     }
@@ -425,7 +426,7 @@ const BatchCard: React.FC<{
 
 export const BatchesPage: React.FC = () => {
   const [batches, setBatches] = useState<Batch[]>([]);
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<
@@ -447,7 +448,7 @@ export const BatchesPage: React.FC = () => {
         search,
         status: statusFilter,
       });
-      const [bRes, cRes]: any[] = await Promise.all([
+      const [bRes, cRes] = await Promise.all([
         api.get(`/batches?${params.toString()}`),
         api.get("/courses?limit=100"),
       ]);
@@ -462,9 +463,9 @@ export const BatchesPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const d = setTimeout(() => fetchData(), search ? 500 : 0);
+    const d = setTimeout(() => { void fetchData(); }, search ? 500 : 0);
     return () => clearTimeout(d);
-  }, [page, search, statusFilter]);
+  }, [page, search, statusFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleToggleActive = async (b: Batch) => {
     try {

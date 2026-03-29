@@ -115,3 +115,6 @@ export const getAllSalaryRecordsForMonth = (month: string) =>
 
 export const deleteSalaryRecord = (id: string) =>
     api.delete(`/admin/salary-record/remove/${id}`);
+
+export const updateSalaryRecordStatus = (id: string, status: 'DRAFT' | 'PAID') =>
+    api.patch(`/admin/salary-record/${id}/status`, { status });

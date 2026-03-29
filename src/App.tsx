@@ -22,11 +22,13 @@ import { CoursesPage } from "./pages/courses/CoursesPage";
 import { BatchesPage } from "./pages/batches/BatchesPage";
 import { EnquiriesPage } from "./pages/enquiries/EnquiriesPage";
 import { AttendancePage } from "./pages/admin/attendance/AttendancePage";
+import { AttendanceHistoryPage } from "./pages/admin/attendance/AttendanceHistoryPage";
 import { SalaryConfigPage } from "./pages/admin/payroll/SalaryConfigPage";
 import { OvertimePage } from "./pages/admin/payroll/OvertimePage";
 import { AdvancesPage } from "./pages/admin/payroll/AdvancesPage";
 import { SalaryRecordsPage } from "./pages/admin/payroll/SalaryRecordsPage";
 import { AdminTasksPage } from "./pages/admin/tasks/AdminTasksPage";
+import { MyTasksPage } from "./pages/admin/tasks/MyTasksPage";
 import { EmployeeTasksPage } from "./pages/employee/tasks/EmployeeTasksPage";
 import { StudentsPage } from "./pages/admin/students/StudentsPage";
 import { CustomersPage } from "./pages/admin/customers/CustomersPage";
@@ -139,10 +141,12 @@ function App() {
           <Route path="users" element={<UsersPage />} />
           <Route path="courses" element={<CoursesPage />} />
           <Route path="attendance" element={<AttendancePage />} />
+          <Route path="attendance/history" element={<AttendanceHistoryPage />} />
           <Route path="payroll/config" element={<SalaryConfigPage />} />
           <Route path="payroll/overtime" element={<OvertimePage />} />
           <Route path="payroll/advances" element={<AdvancesPage />} />
           <Route path="payroll/records" element={<SalaryRecordsPage />} />
+          <Route path="my-tasks" element={<MyTasksPage />} />
           <Route path="tasks" element={<AdminTasksPage />} />
           <Route path="batches" element={<BatchesPage />} />
           <Route path="students" element={<StudentsPage />} />
