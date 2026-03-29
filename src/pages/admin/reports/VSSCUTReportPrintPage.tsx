@@ -21,16 +21,16 @@ const PRINT_STYLES = `
     #report-root > div { width: 210mm !important; min-height: 297mm !important; margin: 0 auto !important; padding: 3mm !important; box-sizing: border-box !important; box-shadow: none !important; }
     .report { margin: 0 !important; box-shadow: none !important; width: calc(100% / 0.92) !important; transform: scale(0.92); transform-origin: top left; }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
   .report { background: #fff; border: none; border-radius: 6px; overflow: hidden; }
   .rpt-header { background: #185FA5; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
   .logo-box { width: 90px; height: 90px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 3px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #fff; }
-  .hdr-center .org { font-size: 14px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 8px; color: #d7e8fb; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 8px; color: #eef6ff; font-weight: 700; margin-top: 2px; }
+  .hdr-center .org { font-size: 15px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .sub { font-size: 9px; color: #d7e8fb; margin-top: 2px; line-height: 1.4; }
+  .hdr-center .iso { font-size: 9px; color: #eef6ff; font-weight: 700; margin-top: 2px; }
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 8px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
@@ -56,19 +56,19 @@ const PRINT_STYLES = `
   .bw .lbl { background: #f0f0f0 !important; }
   .bw .footer { background: #f5f5f5 !important; color: #000 !important; border-color: #000 !important; }
   .bw .report-body { border-color: #000 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 13px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 10px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 4px 6px; vertical-align: middle; word-break: break-word; font-size: 10px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 9px; text-align: center; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 9px; white-space: nowrap; }
-  .val { font-size: 10px; }
+  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 4px 6px; vertical-align: middle; word-break: break-word; font-size: 11px; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 10px; text-align: center; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 10px; white-space: nowrap; }
+  .val { font-size: 11px; }
   .mt-n1 { margin-top: -1px; }
   .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 3px; font-size: 9px; text-align: center; vertical-align: middle; }
+  .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 3px; font-size: 11px; text-align: center; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
-  .footer { background: #f8fafc; padding: 6px 10px; font-size: 8px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .footer { background: #f8fafc; padding: 6px 10px; font-size: 9px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
@@ -436,7 +436,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 <tr style={{ background: "#185FA5", color: "#fff" }}>
                   <th style={{ width: "6%" }}>Skip</th>
                   {PROBE_MODES.map((pm) => (
-                    <th key={pm} colSpan={3} style={{ fontSize: "7pt" }}>
+                    <th key={pm} colSpan={3} style={{ fontSize: "11px" }}>
                       {pm}
                     </th>
                   ))}
@@ -445,13 +445,13 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                   <th></th>
                   {PROBE_MODES.map((pm) => (
                     <>
-                      <th key={pm + "bp"} style={{ fontSize: "6.5pt" }}>
+                      <th key={pm + "bp"} style={{ fontSize: "10px" }}>
                         BP
                       </th>
-                      <th key={pm + "mm"} style={{ fontSize: "6.5pt" }}>
+                      <th key={pm + "mm"} style={{ fontSize: "10px" }}>
                         mm
                       </th>
-                      <th key={pm + "fsh"} style={{ fontSize: "6.5pt" }}>
+                      <th key={pm + "fsh"} style={{ fontSize: "10px" }}>
                         %FSH
                       </th>
                     </>
@@ -488,7 +488,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                     style={{
                       fontWeight: 700,
                       textAlign: "center",
-                      fontSize: "7pt",
+                      fontSize: "11px",
                     }}
                   >
                     DAC dB
@@ -504,7 +504,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                     style={{
                       fontWeight: 700,
                       textAlign: "center",
-                      fontSize: "7pt",
+                      fontSize: "11px",
                     }}
                   >
                     Scan dB
@@ -590,7 +590,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       width: "33%",
                       textAlign: "center",
                       fontWeight: 700,
-                      fontSize: "7pt",
+                      fontSize: "11px",
                       background: "#E6F1FB",
                       padding: "3px 4px",
                     }}
@@ -602,7 +602,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       width: "33%",
                       textAlign: "center",
                       fontWeight: 700,
-                      fontSize: "7pt",
+                      fontSize: "11px",
                       background: "#E6F1FB",
                       padding: "3px 4px",
                     }}
@@ -614,7 +614,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       width: "34%",
                       textAlign: "center",
                       fontWeight: 700,
-                      fontSize: "7pt",
+                      fontSize: "11px",
                       background: "#E6F1FB",
                       padding: "3px 4px",
                     }}
@@ -627,7 +627,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                     style={{
                       verticalAlign: "bottom",
                       paddingBottom: 2,
-                      fontSize: "7pt",
+                      fontSize: "11px",
                     }}
                   >
                     Signature:
@@ -636,7 +636,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                     style={{
                       verticalAlign: "bottom",
                       paddingBottom: 2,
-                      fontSize: "7pt",
+                      fontSize: "11px",
                     }}
                   >
                     Signature:
@@ -645,20 +645,20 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                     style={{
                       verticalAlign: "bottom",
                       paddingBottom: 2,
-                      fontSize: "7pt",
+                      fontSize: "11px",
                     }}
                   >
                     Signature:
                   </td>
                 </tr>
                 <tr>
-                  <td style={{ fontSize: "7pt" }}>Name: {v(inspector.name)}</td>
-                  <td style={{ fontSize: "7pt" }}>Name: {v(fs.qc?.name)}</td>
-                  <td style={{ fontSize: "7pt" }}>Name: {v(fs.rqs?.name)}</td>
+                  <td style={{ fontSize: "11px" }}>Name: {v(inspector.name)}</td>
+                  <td style={{ fontSize: "11px" }}>Name: {v(fs.qc?.name)}</td>
+                  <td style={{ fontSize: "11px" }}>Name: {v(fs.rqs?.name)}</td>
                 </tr>
                 {inspector.qualification && (
                   <tr>
-                    <td style={{ fontSize: "7pt" }}>
+                    <td style={{ fontSize: "11px" }}>
                       {v(inspector.qualification)}
                     </td>
                     <td></td>
@@ -666,13 +666,13 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                   </tr>
                 )}
                 <tr>
-                  <td style={{ fontSize: "7pt" }}>
+                  <td style={{ fontSize: "11px" }}>
                     Date: {fmtDate(inspector.date)}
                   </td>
-                  <td style={{ fontSize: "7pt" }}>
+                  <td style={{ fontSize: "11px" }}>
                     Date: {fmtDate(fs.qc?.date)}
                   </td>
-                  <td style={{ fontSize: "7pt" }}>
+                  <td style={{ fontSize: "11px" }}>
                     Date: {fmtDate(fs.rqs?.date)}
                   </td>
                 </tr>
@@ -696,7 +696,6 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           </div>
         </div>
       </div>
-
     </>
   );
 };
