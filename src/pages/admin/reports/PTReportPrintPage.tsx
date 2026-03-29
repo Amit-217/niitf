@@ -300,10 +300,12 @@ export const PTReportPrintPage: React.FC = () => {
             background: "#fff",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          <div className={`report${bwMode ? ' bw' : ''}`}>
-            <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
+          <div className={`report${bwMode ? ' bw' : ''}`} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            <table style={{ width: "100%", height: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
               <thead style={{ display: "table-header-group" }}>
                 <tr>
                   <td style={{ padding: "5mm 0 0 0" }}>

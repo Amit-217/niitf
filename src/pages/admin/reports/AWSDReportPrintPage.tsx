@@ -69,8 +69,9 @@ const PRINT_STYLES = `
   .reject-cell { font-weight: bold; color: #b91c1c; }
 
   @media print {
-    .print-fixed-footer { display: none !important; }
-    .tfoot-content { visibility: visible !important; }
+    .print-fixed-footer { position: fixed !important; bottom: 8mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; z-index: 99999 !important; background: transparent !important; }
+    .print-fixed-footer-inner { width: 287mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
+    .tfoot-content { visibility: hidden !important; }
   }
   @media screen {
     .print-fixed-footer { display: none; }
@@ -211,9 +212,11 @@ export const AWSDReportPrintPage: React.FC = () => {
             padding: "5mm",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
+          <table style={{ width: "100%", height: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
             <thead style={{ display: "table-header-group" }}>
               <tr>
                 <td style={{ padding: "5mm 0 0 0" }}>
@@ -617,6 +620,12 @@ export const AWSDReportPrintPage: React.FC = () => {
               </tr>
             </tfoot>
           </table>
+        </div>
+      </div>
+      {/* The fixed footer that only appears in print on every page at the bottom */}
+      <div className="print-fixed-footer">
+        <div className="print-fixed-footer-inner" style={{ border: 'none', boxShadow: 'none' }}>
+          <ReportFooter />
         </div>
       </div>
     </>
