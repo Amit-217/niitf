@@ -69,9 +69,8 @@ const PRINT_STYLES = `
   .reject-cell { font-weight: bold; color: #b91c1c; }
 
   @media print {
-    .print-fixed-footer { position: fixed; bottom: 5mm; left: 0; width: 100%; display: flex; justify-content: center; z-index: 1000; background: transparent; }
-    .print-fixed-footer-inner { width: calc(297mm - 10mm); background: transparent; margin: 0 auto; }
-    .tfoot-content { visibility: hidden; }
+    .print-fixed-footer { display: none !important; }
+    .tfoot-content { visibility: visible !important; }
   }
   @media screen {
     .print-fixed-footer { display: none; }
@@ -193,13 +192,6 @@ export const AWSDReportPrintPage: React.FC = () => {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
-
-      {/* The fixed footer that only appears in print on every page at the bottom */}
-      <div className="print-fixed-footer">
-        <div className={`print-fixed-footer-inner report`} style={{ border: 'none', boxShadow: 'none' }}>
-          <ReportFooter />
-        </div>
-      </div>
 
       {/* ── Report Content ── */}
       <div
@@ -627,6 +619,7 @@ export const AWSDReportPrintPage: React.FC = () => {
           </table>
         </div>
       </div>
+
     </>
   );
 };

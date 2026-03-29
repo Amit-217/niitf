@@ -87,9 +87,8 @@ const PRINT_STYLES = `
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
   @media print {
-    .print-fixed-footer { position: fixed; bottom: 3mm; left: 0; width: 100%; display: flex; justify-content: center; z-index: 1000; background: transparent; }
-    .print-fixed-footer-inner { width: calc((210mm - 6mm) / 0.92); transform: scale(0.92); transform-origin: bottom center; background: transparent; margin: 0 auto; }
-    .tfoot-content { visibility: hidden; }
+    .print-fixed-footer { display: none !important; }
+    .tfoot-content { visibility: visible !important; }
   }
   @media screen {
     .print-fixed-footer { display: none; }
@@ -294,13 +293,6 @@ export const MPTReportPrintPage = () => {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
-
-      {/* The fixed footer that only appears in print on every page at the bottom */}
-      <div className="print-fixed-footer">
-        <div className={`print-fixed-footer-inner report${bwMode ? " bw" : ""}`} style={{ border: 'none', boxShadow: 'none' }}>
-          <ReportFooter />
-        </div>
-      </div>
 
       <div
         className="no-print"
@@ -796,6 +788,7 @@ export const MPTReportPrintPage = () => {
           </div>
         </div>
       </div>
+
     </>
   );
 };
