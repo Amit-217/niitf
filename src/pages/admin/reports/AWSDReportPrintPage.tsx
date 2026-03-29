@@ -23,13 +23,13 @@ const PRINT_STYLES = `
       margin: 0 auto !important;
       width: 297mm !important;
       min-height: 210mm !important;
-      padding: 5mm !important;
+      padding: 0 5mm 0 5mm !important;
       box-sizing: border-box !important;
     }
   }
   body {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 7pt;
+    font-size: 13px;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -37,36 +37,45 @@ const PRINT_STYLES = `
 
   /* ── Main border table ── */
   .outer-table { width: 100%; border-collapse: collapse; border: 1.5px solid #000; }
-  .outer-table td, .outer-table th { border: 1px solid #555; padding: 2px 4px; vertical-align: middle; word-break: break-word; }
+  .outer-table td, .outer-table th { border: 1px solid #555; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
 
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .report-table td, .report-table th { border: 1px solid #555; padding: 2px 3px; vertical-align: middle; word-break: break-word; }
+  .report-table td, .report-table th { border: 1px solid #555; padding: 2px 3px; vertical-align: middle; word-break: break-word; font-size: 11px; }
 
-  .section-hdr { background: #185FA5; color: #fff; font-weight: bold; font-size: 7pt; text-align: center; letter-spacing: 0.5px; padding: 2px 3px; }
-  .col-hdr { background: #e8ecf0; font-weight: bold; font-size: 6.5pt; text-align: center; vertical-align: middle; }
-  .col-hdr-db { background: #dbeafe; font-weight: bold; font-size: 6.5pt; text-align: center; vertical-align: middle; }
-  .col-hdr-disc { background: #fef3c7; font-weight: bold; font-size: 6.5pt; text-align: center; vertical-align: middle; }
+  .section-hdr { background: #185FA5; color: #fff; font-weight: bold; font-size: 11px; text-align: center; letter-spacing: 0.5px; padding: 2px 3px; }
+  .col-hdr { background: #e8ecf0; font-weight: bold; font-size: 10px; text-align: center; vertical-align: middle; }
+  .col-hdr-db { background: #dbeafe; font-weight: bold; font-size: 10px; text-align: center; vertical-align: middle; }
+  .col-hdr-disc { background: #fef3c7; font-weight: bold; font-size: 10px; text-align: center; vertical-align: middle; }
 
-  .lbl { background: #f5f7fa; font-weight: 600; font-size: 7pt; }
-  .val { font-size: 7pt; }
+  .lbl { background: #f5f7fa; font-weight: 600; font-size: 10px; }
+  .val { font-size: 11px; }
 
-  .title-cell { text-align: center; font-size: 10pt; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; text-decoration: underline; padding: 4px 0; }
-  .company-name { font-size: 9pt; font-weight: bold; text-transform: uppercase; text-align: center; color: #1a3c8f; }
-  .company-sub { font-size: 5.5pt; text-align: center; color: #333; line-height: 1.4; }
-  .company-iso { font-size: 5.5pt; text-align: center; font-weight: bold; color: #333; }
+  .title-cell { text-align: center; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; text-decoration: underline; padding: 4px 0; }
+  .company-name { font-size: 15px; font-weight: bold; text-transform: uppercase; text-align: center; color: #1a3c8f; }
+  .company-sub { font-size: 9px; text-align: center; color: #333; line-height: 1.4; }
+  .company-iso { font-size: 9px; text-align: center; font-weight: bold; color: #333; }
 
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .obs-table td, .obs-table th { border: 1px solid #555; padding: 1px 2px; font-size: 6.5pt; vertical-align: middle; text-align: center; word-break: break-word; }
+  .obs-table td, .obs-table th { border: 1px solid #555; padding: 1px 2px; font-size: 11px; vertical-align: middle; text-align: center; word-break: break-word; }
   .obs-table td.tl { text-align: left; }
 
-  .cert-para { font-size: 6.5pt; font-style: italic; color: #333; padding: 3px 4px; border: 1px solid #555; margin-top: -1px; line-height: 1.4; }
+  .cert-para { font-size: 11px; font-style: italic; color: #333; padding: 3px 4px; border: 1px solid #555; margin-top: -1px; line-height: 1.4; }
 
   .sign-table { width: 100%; border-collapse: collapse; }
-  .sign-table td { border: 1px solid #555; padding: 3px 5px; font-size: 7pt; vertical-align: top; }
+  .sign-table td { border: 1px solid #555; padding: 3px 5px; font-size: 11px; vertical-align: top; }
 
   .mt-n1 { margin-top: -1px; }
-  .footer-text { font-size: 5.5pt; text-align: center; color: #555; margin-top: 3px; }
+  .footer-text { font-size: 9px; text-align: center; color: #555; margin-top: 3px; }
   .reject-cell { font-weight: bold; color: #b91c1c; }
+
+  @media print {
+    .print-fixed-footer { display: none !important; }
+    .tfoot-content { visibility: visible !important; }
+  }
+  @media screen {
+    .print-fixed-footer { display: none; }
+    .tfoot-content { visibility: visible; }
+  }
 `;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -170,6 +179,16 @@ export const AWSDReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const cert = report.certification ?? {};
 
+  const ReportFooter = () => (
+    <div className="footer-text">
+      Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
+      Baramati, Dist-Pune 413133 &nbsp;|&nbsp; Ph. +91 9860186056, +91
+      7875154431 &nbsp;|&nbsp; Reg. Office: A/p - Kuthare, Tal - Patan,
+      Dist-Satara 415112 &nbsp;|&nbsp; Website: www.niitindt.com
+      &nbsp;|&nbsp; Email: niit04@gmail.com
+    </div>
+  );
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
@@ -194,8 +213,12 @@ export const AWSDReportPrintPage: React.FC = () => {
             boxSizing: "border-box",
           }}
         >
-          {/* ── HEADER ── */}
-          <table
+          <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
+            <thead style={{ display: "table-header-group" }}>
+              <tr>
+                <td style={{ padding: "5mm 0 0 0" }}>
+                  {/* ── HEADER ── */}
+                  <table
             style={{
               width: "100%",
               borderCollapse: "collapse",
@@ -226,7 +249,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: 7,
+                      fontSize: 11,
                       color: "#1a3c8f",
                       fontWeight: "bold",
                     }}
@@ -266,7 +289,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                     verticalAlign: "middle",
                     border: "1px solid #444",
                     padding: "3px 6px",
-                    fontSize: "7pt",
+                    fontSize: "11px",
                     lineHeight: 1.9,
                   }}
                 >
@@ -298,10 +321,16 @@ export const AWSDReportPrintPage: React.FC = () => {
                 </td>
               </tr>
             </tbody>
-          </table>
-
-          {/* ── JOB INFORMATION ── */}
-          <table className="report-table mt-n1">
+                  </table>
+                </td>
+              </tr>
+            </thead>
+            
+            <tbody style={{ display: "table-row-group" }}>
+              <tr>
+                <td style={{ padding: 0, verticalAlign: "top" }}>
+                  {/* ── JOB INFORMATION ── */}
+                  <table className="report-table mt-n1">
             <colgroup>
               <col style={{ width: "14%" }} />
               <col style={{ width: "20%" }} />
@@ -573,16 +602,21 @@ export const AWSDReportPrintPage: React.FC = () => {
                 <td colSpan={2}></td>
               </tr>
             </tbody>
-          </table>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
 
-          {/* ── Footer ── */}
-          <div className="footer-text">
-            Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
-            Baramati, Dist-Pune 413133 &nbsp;|&nbsp; Ph. +91 9860186056, +91
-            7875154431 &nbsp;|&nbsp; Reg. Office: A/p - Kuthare, Tal - Patan,
-            Dist-Satara 415112 &nbsp;|&nbsp; Website: www.niitindt.com
-            &nbsp;|&nbsp; Email: niit04@gmail.com
-          </div>
+            <tfoot style={{ display: "table-footer-group" }}>
+              <tr>
+                <td style={{ padding: "0 0 5mm 0" }}>
+                  <div className="tfoot-content">
+                    <ReportFooter />
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
         </div>
       </div>
     </>

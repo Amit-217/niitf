@@ -6,7 +6,11 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { getMPTReportById, getPublicMPTReportById, MPTReport } from "../../../api/customerApi";
+import {
+  getMPTReportById,
+  getPublicMPTReportById,
+  MPTReport,
+} from "../../../api/customerApi";
 
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
@@ -18,21 +22,17 @@ const PRINT_STYLES = `
     body { margin: 0; background: #fff; }
     #report-root { background: #fff !important; padding: 0 !important; }
     #report-root > div {
-      width: 210mm !important; min-height: 297mm !important; height: 297mm !important;
-      margin: 0 auto !important; padding: 3mm !important;
-      box-sizing: border-box !important; box-shadow: none !important; overflow: hidden !important;
+      width: 210mm !important; min-height: 297mm !important;
+      margin: 0 auto !important; padding: 0 3mm 0 3mm !important; /* Top padding moved to thead, bottom to tfoot */
+      box-sizing: border-box !important; box-shadow: none !important;
     }
     .report { margin: 0 !important; box-shadow: none !important; width: calc(100% / 0.92) !important; transform: scale(0.92); transform-origin: top left; }
-    .rpt-header { padding: 8px 10px !important; }
-    .rpt-title { padding: 5px !important; font-size: 11px !important; }
-    .section-hdr { padding: 4px 7px !important; font-size: 8.5px !important; }
-    .footer { padding: 4px 8px !important; font-size: 7px !important; line-height: 1.25 !important; }
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
-  .rpt-header { background: #185FA5; padding: 10px 12px; display: flex; align-items: center; gap: 12px; }
-  .logo-box { width: 60px; height: 60px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 3px; }
+  .report { background: #fff; border: none; border-radius: 6px; overflow: hidden; }
+  .rpt-header { background: #185FA5; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+  .logo-box { width: 90px; height: 90px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 3px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #fff; }
   .hdr-center .org { font-size: 15px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
@@ -41,20 +41,28 @@ const PRINT_STYLES = `
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 8px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
-  .bw .rpt-header { background: #fff !important; border-bottom: 2px solid #111 !important; }
-  .bw .hdr-center .org { color: #111 !important; }
-  .bw .hdr-center .sub { color: #444 !important; }
-  .bw .hdr-center .iso { color: #111 !important; }
-  .bw .logo-box { color: #111 !important; background: #f0f0f0 !important; border: 1px solid #aaa !important; }
+  .bw .rpt-header { background: #fff !important; border-bottom: 2px solid #000 !important; }
+  .bw .hdr-center { color: #000 !important; }
+  .bw .hdr-center .org { color: #000 !important; }
+  .bw .hdr-center .sub { color: #333 !important; }
+  .bw .hdr-center .iso { color: #000 !important; }
+  .bw .logo-box { background: transparent !important; border: none !important; width: 110px !important; height: 110px !important; }
   .bw .section-hdr { background: #d0d0d0 !important; color: #000 !important; border-left: 3px solid #000 !important; }
   .bw .col-hdr { background: #e8e8e8 !important; color: #000 !important; }
-  .bw .rpt-title { background: #e8e8e8 !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
-  .bw .footer-meta { background: #d0d0d0 !important; color: #000 !important; }
+  .bw .rpt-title { background: #e0e0e0 !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
+  .bw .footer-meta { background: #e0e0e0 !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
-  .bw .std-tag { background: #e0e0e0 !important; color: #000 !important; border: 1px solid #999 !important; }
-  .bw .accept-badge { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #888 !important; }
-  .bw .reject-badge { background: #d8d8d8 !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
-  .bw .neutral-badge { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #999 !important; }
+  .bw .std-tag { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .accept-badge { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .reject-badge { background: #e0e0e0 !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
+  .bw .neutral-badge { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .report-table td, .bw .report-table th { border-color: #888 !important; }
+  .bw .obs-table td, .bw .obs-table th { border-color: #888 !important; }
+  .bw .obs-table th { background: #e0e0e0 !important; color: #000 !important; }
+  .bw .sign-table td { border-color: #888 !important; }
+  .bw .lbl { background: #f0f0f0 !important; }
+  .bw .footer { background: #f5f5f5 !important; color: #000 !important; border-color: #000 !important; }
+  .bw .report-body { border-color: #000 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -73,9 +81,20 @@ const PRINT_STYLES = `
   .accept-badge { background: #eaf4de; color: #27500a; }
   .reject-badge { background: #fcebeb; color: #7a1f1f; }
   .neutral-badge { background: #edf0f5; color: #334155; }
-  .footer { background: #f8fafc; padding: 6px 10px; font-size: 9px; color: #4b5563; border-top: 1px solid #d9e1ea; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .footer { background: #f8fafc; padding: 6px 10px; font-size: 9px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+
+  @media print {
+    .print-fixed-footer { position: fixed !important; bottom: 10mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; z-index: 99999 !important; background: transparent !important; }
+    .print-fixed-footer-inner { width: 193.2mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
+    .tfoot-content { visibility: hidden !important; }
+  }
+  @media screen {
+    .print-fixed-footer { display: none; }
+    .tfoot-content { visibility: visible; }
+  }
 `;
 
 const fmtDate = (d?: string | null) => {
@@ -247,6 +266,31 @@ export const MPTReportPrintPage = () => {
       ? `Examination completed. ${rejectedCount} rejectable indication(s) identified; repair and re-examination required before final acceptance.`
       : "Examination completed as per applicable standards. No rejectable indications observed in inspected items.");
 
+  const ReportFooter = () => (
+    <>
+      <div className="footer">
+        <div className="footer-text-block">
+          Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office,
+          MIDC, Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91
+          7875154431
+          <br />
+          Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 |
+          Website: www.niitindt.com | Email: niit04@gmail.com |
+          info@niitindt.com
+        </div>
+        <div className="qr-wrap">
+          <QRCodeSVG value={qrUrl} size={48} />
+        </div>
+      </div>
+      <div className="footer-meta">
+        Format No: <span>FMT-NDT-01</span>
+        &nbsp;|&nbsp; Rev. No: <span>00</span>
+        &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
+        &nbsp;|&nbsp; Page: <span>1 of 1</span>
+      </div>
+    </>
+  );
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
@@ -310,458 +354,446 @@ export const MPTReportPrintPage = () => {
           }}
         >
           <div className={`report${bwMode ? " bw" : ""}`}>
-            {/* ── HEADER ── */}
-            <div className="rpt-header">
-              <div className="logo-box">
-                <img src="/logo.png" alt="NIIT Logo" />
-              </div>
-              <div className="hdr-center">
-                <div className="org">
-                  National Industrial Inspection &amp; Training
-                </div>
-                <div className="sub">
-                  THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING | NDT
-                  CONSULTANCY | PHYSICAL CALIBRATION | FACTORY INSPECTION UNDER
-                  MAHARASHTRA FACTORY ACT | QUALITY MANAGEMENT SYSTEM TRAINING
-                </div>
-                <div className="iso">
-                  (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
-                </div>
-              </div>
-            </div>
-            <div className="rpt-title">
-              Magnetic Particle Examination Report
-            </div>
+            <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
+              <thead style={{ display: "table-header-group" }}>
+                <tr>
+                  <td style={{ padding: "5mm 0 0 0" }}>
+                    {/* ── HEADER ── */}
+                    <div className="rpt-header">
+                      <div className="logo-box">
+                        <img src="/logo.png" alt="NIIT Logo" />
+                      </div>
+                      <div className="hdr-center">
+                        <div className="org">
+                          National Industrial Inspection &amp; Training
+                        </div>
+                        <div className="sub">
+                          THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING | NDT
+                          CONSULTANCY | PHYSICAL CALIBRATION | FACTORY INSPECTION UNDER
+                          MAHARASHTRA FACTORY ACT | QUALITY MANAGEMENT SYSTEM TRAINING
+                        </div>
+                        <div className="iso">
+                          (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </thead>
 
-            {/* ── 1. Scope & Reference Standards ── */}
-            <table className="report-table mt-n1">
-              <colgroup>
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-              </colgroup>
-              <tbody>
+              <tbody style={{ display: "table-row-group" }}>
                 <tr>
-                  <td colSpan={4} className="section-hdr">
-                    1. Scope &amp; Reference Standards
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl">Applicable Standard</td>
-                  <td className="val">
-                    {standards.length > 0 ? (
-                      standards.map((tag) => (
-                        <span key={`std-${tag}`} className="std-tag">
-                          {tag}
-                        </span>
-                      ))
-                    ) : (
-                      <span style={{ color: "#6b7280", fontStyle: "italic" }}>
-                        Not specified
-                      </span>
-                    )}
-                  </td>
-                  <td className="lbl">Acceptance Criteria</td>
-                  <td className="val">
-                    {acceptance.length > 0 ? (
-                      acceptance.map((tag) => (
-                        <span key={`acc-${tag}`} className="std-tag">
-                          {tag}
-                        </span>
-                      ))
-                    ) : (
-                      <span style={{ color: "#6b7280", fontStyle: "italic" }}>
-                        Not specified
-                      </span>
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl">Procedure Reference</td>
-                  <td className="val">{v(report.reportNo) || "-"}</td>
-                  <td className="lbl">Technique</td>
-                  <td className="val">{technique || "-"}</td>
-                </tr>
-              </tbody>
-            </table>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body">
+                      <div className="rpt-title">
+                        Magnetic Particle Examination Report
+                      </div>
 
-            {/* ── 2. Job Details ── */}
-            <table className="report-table mt-n1">
-              <colgroup>
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-              </colgroup>
-              <tbody>
-                <tr>
-                  <td colSpan={4} className="section-hdr">
-                    2. Job Details
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl">Customer</td>
-                  <td className="val">{v(jd.customer) || "-"}</td>
-                  <td className="lbl">Client / TPI</td>
-                  <td className="val">{v(jd.client) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Report No.</td>
-                  <td className="val">{v(report.reportNo) || "-"}</td>
-                  <td className="lbl">Report Date</td>
-                  <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Inspection Date</td>
-                  <td className="val">
-                    {dateRange(jd.inspectionDate, jd.inspectionEndDate) || "-"}
-                  </td>
-                  <td className="lbl">Inspection Time</td>
-                  <td className="val">{v(jd.inspectionTime) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Stage of Inspection</td>
-                  <td className="val">{v(jd.stageOfInspection) || "-"}</td>
-                  <td className="lbl">Type of Joint</td>
-                  <td className="val">{v(jd.typeOfJoint) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Welding Process</td>
-                  <td className="val">{v(jd.weldingProcess) || "-"}</td>
-                  <td className="lbl">Material</td>
-                  <td className="val">{v(jd.material) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Thickness</td>
-                  <td className="val">{v(jd.thickness) || "-"}</td>
-                  <td className="lbl">Surface Condition</td>
-                  <td className="val">{v(jd.surfaceCondition) || "-"}</td>
-                </tr>
-              </tbody>
-            </table>
+                      {/* ── 1. Scope & Reference Standards ── */}
+                      <table className="report-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td colSpan={4} className="section-hdr">
+                              1. Job Details
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Customer</td>
+                            <td className="val">{v(jd.customer) || "-"}</td>
+                            <td className="lbl">Client / TPI</td>
+                            <td className="val">{v(jd.client) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Report No.</td>
+                            <td className="val">{v(report.reportNo) || "-"}</td>
+                            <td className="lbl">Report Date</td>
+                            <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Reference Std.</td>
+                            <td className="val">
+                              {standards.length > 0 ? (
+                                standards.join(", ")
+                              ) : (
+                                <span style={{ color: "#6b7280", fontStyle: "italic" }}>
+                                  Not specified
+                                </span>
+                              )}
+                            </td>
+                            <td className="lbl">Acceptance Criteria</td>
+                            <td className="val">
+                              {acceptance.length > 0 ? (
+                                acceptance.join(", ")
+                              ) : (
+                                <span style={{ color: "#6b7280", fontStyle: "italic" }}>
+                                  Not specified
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Inspection Date</td>
+                            <td className="val">
+                              {dateRange(jd.inspectionDate, jd.inspectionEndDate) || "-"}
+                            </td>
+                            <td className="lbl">Inspection Time</td>
+                            <td className="val">{v(jd.inspectionTime) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Stage of Inspection</td>
+                            <td className="val">{v(jd.stageOfInspection) || "-"}</td>
+                            <td className="lbl">Type of Joint</td>
+                            <td className="val">{v(jd.typeOfJoint) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Welding Process</td>
+                            <td className="val">{v(jd.weldingProcess) || "-"}</td>
+                            <td className="lbl">Material</td>
+                            <td className="val">{v(jd.material) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Thickness</td>
+                            <td className="val">{v(jd.thickness) || "-"}</td>
+                            <td className="lbl">Surface Condition</td>
+                            <td className="val">{v(jd.surfaceCondition) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Technique</td>
+                            <td colSpan={3} className="val">
+                              {technique || "-"}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-            {/* ── 3. Equipment Details ── */}
-            <table className="report-table mt-n1">
-              <colgroup>
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-              </colgroup>
-              <tbody>
-                <tr>
-                  <td colSpan={4} className="section-hdr">
-                    3. Equipment Details
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl">Equipment Type</td>
-                  <td className="val">{v(eq.equipmentType) || "-"}</td>
-                  <td className="lbl">Make</td>
-                  <td className="val">{v(eq.make) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Serial No.</td>
-                  <td className="val">{v(eq.srNo) || "-"}</td>
-                  <td className="lbl">Calibration Due</td>
-                  <td className="val">{fmtDate(eq.calibrationDue) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Yoke Spacing</td>
-                  <td className="val">{v(eq.yokeSpacing) || "-"}</td>
-                  <td className="lbl">Pie Gauge Calibration</td>
-                  <td className="val">{v(eq.pieGaugeCalibration) || "-"}</td>
-                </tr>
-              </tbody>
-            </table>
+                      {/* ── 2. Equipment Details ── */}
+                      <table className="report-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td colSpan={4} className="section-hdr">
+                              3. Equipment Details
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Equipment Type</td>
+                            <td className="val">{v(eq.equipmentType) || "-"}</td>
+                            <td className="lbl">Make</td>
+                            <td className="val">{v(eq.make) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Serial No.</td>
+                            <td className="val">{v(eq.srNo) || "-"}</td>
+                            <td className="lbl">Calibration Due</td>
+                            <td className="val">{fmtDate(eq.calibrationDue) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Yoke Spacing</td>
+                            <td className="val">{v(eq.yokeSpacing) || "-"}</td>
+                            <td className="lbl">Pie Gauge Calibration</td>
+                            <td className="val">{v(eq.pieGaugeCalibration) || "-"}</td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-            {/* ── 4. Medium Details ── */}
-            <table className="report-table mt-n1">
-              <colgroup>
-                <col style={{ width: "20%" }} />
-                <col style={{ width: "40%" }} />
-                <col style={{ width: "20%" }} />
-                <col style={{ width: "20%" }} />
-              </colgroup>
-              <tbody>
-                <tr>
-                  <td colSpan={4} className="section-hdr">
-                    4. Medium Details
-                  </td>
-                </tr>
-                <tr>
-                  <td className="col-hdr">Material</td>
-                  <td className="col-hdr">Manufacturer / Batch No.</td>
-                  <td className="col-hdr">Expiry Date</td>
-                  <td className="col-hdr">Type</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Black Ink</td>
-                  <td className="val">
-                    {`${v(md.blackInk?.manufacturer)}${md.blackInk?.manufacturer && md.blackInk?.batchNo ? " / " : ""}${v(md.blackInk?.batchNo)}` ||
-                      "-"}
-                  </td>
-                  <td className="val">{v(md.blackInk?.expiryDate) || "-"}</td>
-                  <td className="val">Ink</td>
-                </tr>
-                <tr>
-                  <td className="lbl">White Contrast</td>
-                  <td className="val">
-                    {`${v(md.whiteContrast?.manufacturer)}${md.whiteContrast?.manufacturer && md.whiteContrast?.batchNo ? " / " : ""}${v(md.whiteContrast?.batchNo)}` ||
-                      "-"}
-                  </td>
-                  <td className="val">
-                    {v(md.whiteContrast?.expiryDate) || "-"}
-                  </td>
-                  <td className="val">Contrast</td>
-                </tr>
-              </tbody>
-            </table>
+                      {/* ── 4. Medium Details ── */}
+                      <table className="report-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "20%" }} />
+                          <col style={{ width: "40%" }} />
+                          <col style={{ width: "20%" }} />
+                          <col style={{ width: "20%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td colSpan={4} className="section-hdr">
+                              4. Medium Details
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="col-hdr">Material</td>
+                            <td className="col-hdr">Manufacturer / Batch No.</td>
+                            <td className="col-hdr">Expiry Date</td>
+                            <td className="col-hdr">Type</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Black Ink</td>
+                            <td className="val">
+                              {`${v(md.blackInk?.manufacturer)}${md.blackInk?.manufacturer && md.blackInk?.batchNo ? " / " : ""}${v(md.blackInk?.batchNo)}` ||
+                                "-"}
+                            </td>
+                            <td className="val">{v(md.blackInk?.expiryDate) || "-"}</td>
+                            <td className="val">Ink</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">White Contrast</td>
+                            <td className="val">
+                              {`${v(md.whiteContrast?.manufacturer)}${md.whiteContrast?.manufacturer && md.whiteContrast?.batchNo ? " / " : ""}${v(md.whiteContrast?.batchNo)}` ||
+                                "-"}
+                            </td>
+                            <td className="val">
+                              {v(md.whiteContrast?.expiryDate) || "-"}
+                            </td>
+                            <td className="val">Contrast</td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-            {/* ── 5. Method Description ── */}
-            <table className="report-table mt-n1">
-              <colgroup>
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-              </colgroup>
-              <tbody>
-                <tr>
-                  <td colSpan={4} className="section-hdr">
-                    5. Method Description
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl">Method</td>
-                  <td className="val">{v(me.method) || "-"}</td>
-                  <td className="lbl">Light Intensity</td>
-                  <td className="val">{v(me.lightIntensity) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Magnetization Type</td>
-                  <td className="val">{v(me.magnetizationType) || "-"}</td>
-                  <td className="lbl">Light Equip. Used</td>
-                  <td className="val">{v(me.lightEquipmentUsed) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Magnetizing Method</td>
-                  <td className="val">{v(me.magnetizingMethod) || "-"}</td>
-                  <td className="lbl">Bath Concentration</td>
-                  <td className="val">{v(me.bathConcentration) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Demagnetization</td>
-                  <td className="val">{v(me.demagnetization) || "-"}</td>
-                  <td className="lbl">Field Direction Verified By</td>
-                  <td className="val">
-                    {v(me.magneticFieldDirectionVerifiedBy) || "-"}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl">Gauss Meter Reading</td>
-                  <td className="val">{v(me.gaussMeterReading) || "-"}</td>
-                  <td className="lbl">Current</td>
-                  <td className="val">{v(me.current) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Current Type</td>
-                  <td className="val">{v(me.currentType) || "-"}</td>
-                  <td className="lbl">Post Cleaning</td>
-                  <td className="val">{v(me.postCleaning) || "-"}</td>
-                </tr>
-              </tbody>
-            </table>
+                      {/* ── 5. Method Description ── */}
+                      <table className="report-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td colSpan={4} className="section-hdr">
+                              5. Method Description
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Method</td>
+                            <td className="val">{v(me.method) || "-"}</td>
+                            <td className="lbl">Light Intensity</td>
+                            <td className="val">{v(me.lightIntensity) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Magnetization Type</td>
+                            <td className="val">{v(me.magnetizationType) || "-"}</td>
+                            <td className="lbl">Light Equip. Used</td>
+                            <td className="val">{v(me.lightEquipmentUsed) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Magnetizing Method</td>
+                            <td className="val">{v(me.magnetizingMethod) || "-"}</td>
+                            <td className="lbl">Bath Concentration</td>
+                            <td className="val">{v(me.bathConcentration) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Demagnetization</td>
+                            <td className="val">{v(me.demagnetization) || "-"}</td>
+                            <td className="lbl">Field Direction Verified By</td>
+                            <td className="val">
+                              {v(me.magneticFieldDirectionVerifiedBy) || "-"}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Gauss Meter Reading</td>
+                            <td className="val">{v(me.gaussMeterReading) || "-"}</td>
+                            <td className="lbl">Current</td>
+                            <td className="val">{v(me.current) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Current Type</td>
+                            <td className="val">{v(me.currentType) || "-"}</td>
+                            <td className="lbl">Post Cleaning</td>
+                            <td className="val">{v(me.postCleaning) || "-"}</td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-            {/* ── 6. Observations ── */}
-            <table className="obs-table mt-n1">
-              <tbody>
-                <tr>
-                  <td colSpan={7} className="section-hdr">
-                    6. Observations
-                  </td>
-                </tr>
-                <tr>
-                  <th style={{ width: "6%" }}>Sr.</th>
-                  <th>Job Description</th>
-                  <th>Drg No. / Joint No.</th>
-                  <th style={{ width: "10%" }}>Size</th>
-                  <th style={{ width: "7%" }}>Qty</th>
-                  <th>Interpretation</th>
-                  <th style={{ width: "13%" }}>Evaluation</th>
-                </tr>
-                {obs.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      style={{
-                        textAlign: "center",
-                        color: "#6b7280",
-                        padding: "6px",
-                      }}
-                    >
-                      No observations recorded.
-                    </td>
-                  </tr>
-                ) : (
-                  obs.map((o, index) => (
-                    <tr key={`${o.srNo}-${index}`}>
-                      <td style={{ textAlign: "center" }}>
-                        {o.srNo || index + 1}
-                      </td>
-                      <td>{v(o.jobDescription) || "-"}</td>
-                      <td>{v(o.drawingOrJointNo) || "-"}</td>
-                      <td>{v(o.size) || "-"}</td>
-                      <td style={{ textAlign: "center" }}>
-                        {o.quantity ?? "-"}
-                      </td>
-                      <td>{v(o.evaluation) || "-"}</td>
-                      <td>
-                        <span
-                          className={resultClass(
-                            o.result || o.remark || o.evaluation,
+                      {/* ── 6. Observations ── */}
+                      <table className="obs-table mt-n1">
+                        <tbody>
+                          <tr>
+                            <td colSpan={7} className="section-hdr">
+                              6. Observations
+                            </td>
+                          </tr>
+                          <tr>
+                            <th style={{ width: "6%" }}>Sr.</th>
+                            <th>Job Description</th>
+                            <th>Drg No. / Joint No.</th>
+                            <th style={{ width: "10%" }}>Size</th>
+                            <th style={{ width: "7%" }}>Qty</th>
+                            <th>Interpretation</th>
+                            <th style={{ width: "13%" }}>Evaluation</th>
+                          </tr>
+                          {obs.length === 0 ? (
+                            <tr>
+                              <td
+                                colSpan={7}
+                                style={{
+                                  textAlign: "center",
+                                  color: "#6b7280",
+                                  padding: "6px",
+                                }}
+                              >
+                                No observations recorded.
+                              </td>
+                            </tr>
+                          ) : (
+                            obs.map((o, index) => (
+                              <tr key={`${o.srNo}-${index}`}>
+                                <td style={{ textAlign: "center" }}>
+                                  {o.srNo || index + 1}
+                                </td>
+                                <td>{v(o.jobDescription) || "-"}</td>
+                                <td>{v(o.drawingOrJointNo) || "-"}</td>
+                                <td>{v(o.size) || "-"}</td>
+                                <td style={{ textAlign: "center" }}>
+                                  {o.quantity ?? "-"}
+                                </td>
+                                <td>{v(o.evaluation) || "-"}</td>
+                                <td>
+                                  <span
+                                    className={resultClass(
+                                      o.result || o.remark || o.evaluation,
+                                    )}
+                                  >
+                                    {v(o.result) || "N/A"}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))
                           )}
-                        >
-                          {v(o.result) || "N/A"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
-                )}
+                        </tbody>
+                      </table>
+
+                      {/* ── 7. Conclusion ── */}
+                      <table className="report-table mt-n1">
+                        <tbody>
+                          <tr>
+                            <td colSpan={2} className="section-hdr">
+                              7. Conclusion
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl" style={{ width: "22%" }}>
+                              Overall Result
+                            </td>
+                            <td className="val">{conclusionText}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+
+                      {/* ── 8. Signatures ── */}
+                      <table className="sign-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.4%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td
+                              style={{
+                                fontWeight: 600,
+                                fontSize: "9px",
+                                background: "#E6F1FB",
+                                color: "#0C447C",
+                                textAlign: "center",
+                              }}
+                            >
+                              CUSTOMER REPRESENTATIVE
+                            </td>
+                            <td
+                              style={{
+                                fontWeight: 600,
+                                fontSize: "9px",
+                                background: "#E6F1FB",
+                                color: "#0C447C",
+                                textAlign: "center",
+                              }}
+                            >
+                              CLIENT / TPI REPRESENTATIVE
+                            </td>
+                            <td
+                              style={{
+                                fontWeight: 600,
+                                fontSize: "9px",
+                                background: "#E6F1FB",
+                                color: "#0C447C",
+                                textAlign: "center",
+                              }}
+                            >
+                              NDT INSPECTOR
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Name: {v(fs.customer?.name) || "-"}</td>
+                            <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
+                            <td>Name: {v(inspectors[0]?.name) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td>Designation: -</td>
+                            <td>Designation: -</td>
+                            <td>
+                              Qualification: {v(inspectors[0]?.qualification) || "-"}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                          </tr>
+                          <tr>
+                            <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(inspectors[0]?.idNo) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
+                            <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
+                            <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+
+                      {inspectors.length > 1 && (
+                        <table className="sign-table mt-n1">
+                          <tbody>
+                            {inspectors.slice(1).map((inspector, index) => (
+                              <tr key={`${inspector.idNo}-${index}`}>
+                                <td colSpan={3}>
+                                  Additional Inspector {index + 2}:{" "}
+                                  {v(inspector.name) || "-"} |{" "}
+                                  {v(inspector.qualification) || "-"} | ID:{" "}
+                                  {v(inspector.idNo) || "-"} | Date:{" "}
+                                  {fmtDate(inspector.date) || "-"}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+
+                    </div>{/* ── end report-body ── */}
+                  </td>
+                </tr>
               </tbody>
+
+              <tfoot style={{ display: "table-footer-group" }}>
+                <tr>
+                  <td style={{ padding: "0 0 5mm 0" }}>
+                    <div className="tfoot-content">
+                      <ReportFooter />
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
             </table>
-
-            {/* ── 7. Conclusion ── */}
-            <table className="report-table mt-n1">
-              <tbody>
-                <tr>
-                  <td colSpan={2} className="section-hdr">
-                    7. Conclusion
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl" style={{ width: "22%" }}>
-                    Overall Result
-                  </td>
-                  <td className="val">{conclusionText}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            {/* ── 8. Signatures ── */}
-            <table className="sign-table mt-n1">
-              <colgroup>
-                <col style={{ width: "33.3%" }} />
-                <col style={{ width: "33.3%" }} />
-                <col style={{ width: "33.4%" }} />
-              </colgroup>
-              <tbody>
-                <tr>
-                  <td
-                    style={{
-                      fontWeight: 600,
-                      fontSize: "9px",
-                      background: "#E6F1FB",
-                      color: "#0C447C",
-                      textAlign: "center",
-                    }}
-                  >
-                    CUSTOMER REPRESENTATIVE
-                  </td>
-                  <td
-                    style={{
-                      fontWeight: 600,
-                      fontSize: "9px",
-                      background: "#E6F1FB",
-                      color: "#0C447C",
-                      textAlign: "center",
-                    }}
-                  >
-                    CLIENT / TPI REPRESENTATIVE
-                  </td>
-                  <td
-                    style={{
-                      fontWeight: 600,
-                      fontSize: "9px",
-                      background: "#E6F1FB",
-                      color: "#0C447C",
-                      textAlign: "center",
-                    }}
-                  >
-                    NDT INSPECTOR
-                  </td>
-                </tr>
-                <tr>
-                  <td>Name: {v(fs.customer?.name) || "-"}</td>
-                  <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
-                  <td>Name: {v(inspectors[0]?.name) || "-"}</td>
-                </tr>
-                <tr>
-                  <td>Designation: -</td>
-                  <td>Designation: -</td>
-                  <td>
-                    Qualification: {v(inspectors[0]?.qualification) || "-"}
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ height: 28 }}>Signature:</td>
-                  <td style={{ height: 28 }}>Signature:</td>
-                  <td style={{ height: 28 }}>Signature:</td>
-                </tr>
-                <tr>
-                  <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
-                  <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
-                  <td>I.D. No.: {v(inspectors[0]?.idNo) || "-"}</td>
-                </tr>
-                <tr>
-                  <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
-                  <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
-                  <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            {inspectors.length > 1 && (
-              <table className="sign-table mt-n1">
-                <tbody>
-                  {inspectors.slice(1).map((inspector, index) => (
-                    <tr key={`${inspector.idNo}-${index}`}>
-                      <td colSpan={3}>
-                        Additional Inspector {index + 2}:{" "}
-                        {v(inspector.name) || "-"} |{" "}
-                        {v(inspector.qualification) || "-"} | ID:{" "}
-                        {v(inspector.idNo) || "-"} | Date:{" "}
-                        {fmtDate(inspector.date) || "-"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-
-            {/* ── Footer ── */}
-            <div className="footer">
-              <div className="footer-text-block">
-                Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office,
-                MIDC, Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91
-                7875154431
-                <br />
-                Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 |
-                Website: www.niitindt.com | Email: niit04@gmail.com |
-                info@niitindt.com
-              </div>
-              <div className="qr-wrap">
-                <QRCodeSVG value={qrUrl} size={48} />
-              </div>
-            </div>
-            <div className="footer-meta">
-              Format No: <span>FMT-NDT-01</span>
-              &nbsp;|&nbsp; Rev. No: <span>00</span>
-              &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
-              &nbsp;|&nbsp; Page: <span>1 of 1</span>
-            </div>
           </div>
+        </div>
+      </div>
+
+      {/* The fixed footer that only appears in print on every page at the bottom */}
+      <div className="print-fixed-footer">
+        <div className={`print-fixed-footer-inner ${bwMode ? "bw" : ""}`} style={{ border: 'none', boxShadow: 'none' }}>
+          <ReportFooter />
         </div>
       </div>
     </>

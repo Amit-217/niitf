@@ -20,62 +20,77 @@ const PRINT_STYLES = `
     body { margin: 0; background: #fff; }
     #report-root { background: #fff !important; padding: 0 !important; }
     #report-root > div {
-      width: 210mm !important; min-height: 297mm !important; height: 297mm !important;
-      margin: 0 auto !important; padding: 3mm !important;
-      box-sizing: border-box !important; box-shadow: none !important; overflow: hidden !important;
+      width: 210mm !important; min-height: 297mm !important;
+      margin: 0 auto !important; padding: 0 3mm 0 3mm !important;
+      box-sizing: border-box !important; box-shadow: none !important;
     }
     .report { margin: 0 !important; box-shadow: none !important; width: calc(100% / 0.92) !important; transform: scale(0.92); transform-origin: top left; }
-    .rpt-header { padding: 8px 10px !important; }
-    .rpt-title { padding: 5px !important; font-size: 11px !important; }
-    .section-hdr { padding: 4px 7px !important; font-size: 8.5px !important; }
-    .footer { padding: 4px 8px !important; font-size: 7px !important; line-height: 1.25 !important; }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
-  .rpt-header { background: #185FA5; padding: 10px 12px; display: flex; align-items: center; gap: 12px; }
-  .logo-box { width: 60px; height: 60px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 3px; }
+  .report { background: #fff; border: none; border-radius: 6px; overflow: hidden; }
+  .rpt-header { background: #185FA5; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+  .logo-box { width: 90px; height: 90px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 3px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #fff; }
-  .hdr-center .org { font-size: 14px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 8px; color: #d7e8fb; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 8px; color: #eef6ff; font-weight: 700; margin-top: 2px; }
+  .hdr-center .org { font-size: 15px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .sub { font-size: 9px; color: #d7e8fb; margin-top: 2px; line-height: 1.4; }
+  .hdr-center .iso { font-size: 9px; color: #eef6ff; font-weight: 700; margin-top: 2px; }
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 8px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
-  .bw .rpt-header { background: #fff !important; border-bottom: 2px solid #111 !important; }
-  .bw .hdr-center .org { color: #111 !important; }
-  .bw .hdr-center .sub { color: #444 !important; }
-  .bw .hdr-center .iso { color: #111 !important; }
-  .bw .logo-box { color: #111 !important; background: #f0f0f0 !important; border: 1px solid #aaa !important; }
+  .bw .rpt-header { background: #fff !important; border-bottom: 2px solid #000 !important; }
+  .bw .hdr-center { color: #000 !important; }
+  .bw .hdr-center .org { color: #000 !important; }
+  .bw .hdr-center .sub { color: #333 !important; }
+  .bw .hdr-center .iso { color: #000 !important; }
+  .bw .logo-box { background: transparent !important; border: none !important; width: 110px !important; height: 110px !important; }
   .bw .section-hdr { background: #d0d0d0 !important; color: #000 !important; border-left: 3px solid #000 !important; }
   .bw .col-hdr { background: #e8e8e8 !important; color: #000 !important; }
-  .bw .rpt-title { background: #e8e8e8 !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
-  .bw .footer-meta { background: #d0d0d0 !important; color: #000 !important; }
+  .bw .rpt-title { background: #e0e0e0 !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
+  .bw .footer-meta { background: #e0e0e0 !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
-  .bw .std-tag { background: #e0e0e0 !important; color: #000 !important; border: 1px solid #999 !important; }
-  .bw .accept-badge { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #888 !important; }
-  .bw .reject-badge { background: #d8d8d8 !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
-  .bw .neutral-badge { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #999 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 13px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 10px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .bw .std-tag { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .accept-badge { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .reject-badge { background: #e0e0e0 !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
+  .bw .neutral-badge { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .report-table td, .bw .report-table th { border-color: #888 !important; }
+  .bw .obs-table td, .bw .obs-table th { border-color: #888 !important; }
+  .bw .obs-table th { background: #e0e0e0 !important; color: #000 !important; }
+  .bw .sign-table td { border-color: #888 !important; }
+  .bw .lbl { background: #f0f0f0 !important; }
+  .bw .footer { background: #f5f5f5 !important; color: #000 !important; border-color: #000 !important; }
+  .bw .report-body { border-color: #000 !important; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 4px 6px; vertical-align: middle; word-break: break-word; font-size: 10px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 9px; text-align: center; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 9px; white-space: nowrap; }
-  .val { font-size: 10px; }
+  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 4px 6px; vertical-align: middle; word-break: break-word; font-size: 11px; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 10px; text-align: center; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 10px; white-space: nowrap; }
+  .val { font-size: 11px; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 4px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
-  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9px; font-weight: 700; }
+  .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 4px 5px; font-size: 11px; vertical-align: top; word-break: break-word; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .sign-table td { border: 1px solid #d9e1ea; padding: 4px 6px; font-size: 10px; vertical-align: top; }
+  .sign-table td { border: 1px solid #d9e1ea; padding: 4px 6px; font-size: 11px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
+  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 4px; font-size: 9px; text-align: center; vertical-align: middle; }
+  .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 4px; font-size: 11px; text-align: center; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
-  .footer { background: #f8fafc; padding: 6px 10px; font-size: 8px; color: #4b5563; border-top: 1px solid #d9e1ea; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .footer { background: #f8fafc; padding: 6px 10px; font-size: 9px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+
+  @media print {
+    .print-fixed-footer { position: fixed !important; bottom: 8mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; z-index: 99999 !important; background: transparent !important; }
+    .print-fixed-footer-inner { width: 193.2mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
+    .tfoot-content { visibility: hidden !important; }
+  }
+  @media screen {
+    .print-fixed-footer { display: none; }
+    .tfoot-content { visibility: visible; }
+  }
 `;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -201,6 +216,31 @@ export const UTReportPrintPage: React.FC = () => {
     { label: "70°", data: apc.deg70 },
   ];
 
+  const ReportFooter = () => (
+    <>
+      <div className="footer">
+        <div className="footer-text-block">
+          Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office,
+          MIDC, Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91
+          7875154431
+          <br />
+          Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 |
+          Website: www.niitindt.com | Email: niit04@gmail.com |
+          info@niitindt.com
+        </div>
+        <div className="qr-wrap">
+          <QRCodeSVG value={qrUrl} size={48} />
+        </div>
+      </div>
+      <div className="footer-meta">
+        Format No: <span>FMT-NDT-UT-01</span>
+        &nbsp;|&nbsp; Rev. No: <span>00</span>
+        &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
+        &nbsp;|&nbsp; Page: <span>1 of 1</span>
+      </div>
+    </>
+  );
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
@@ -241,7 +281,11 @@ export const UTReportPrintPage: React.FC = () => {
           }}
         >
           <div className={`report${bwMode ? ' bw' : ''}`}>
-            <div className="rpt-header">
+            <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
+              <thead style={{ display: "table-header-group" }}>
+                <tr>
+                  <td style={{ padding: "5mm 0 0 0" }}>
+                    <div className="rpt-header">
               <div className="logo-box">
                 <img src="/logo.png" alt="NIIT Logo" />
               </div>
@@ -259,6 +303,13 @@ export const UTReportPrintPage: React.FC = () => {
                 </div>
               </div>
             </div>
+                  </td>
+                </tr>
+              </thead>
+              <tbody style={{ display: "table-row-group" }}>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body">
             <div className="rpt-title">Ultrasonic Testing Report</div>
 
             {/* ── JOB DETAILS ── */}
@@ -408,7 +459,7 @@ export const UTReportPrintPage: React.FC = () => {
                         textAlign: "center",
                         padding: "4px",
                         color: "#999",
-                        fontSize: "7.5pt",
+                        fontSize: "11px",
                       }}
                     >
                       No search units recorded.
@@ -561,7 +612,7 @@ export const UTReportPrintPage: React.FC = () => {
                       style={{
                         textAlign: "center",
                         padding: "6px",
-                        fontSize: "7.5pt",
+                        fontSize: "11px",
                         color: "#999",
                       }}
                     >
@@ -598,24 +649,24 @@ export const UTReportPrintPage: React.FC = () => {
               </colgroup>
               <tbody>
                 <tr>
-                  <td style={{ fontWeight: 600, fontSize: "7pt" }}>
+                  <td style={{ fontWeight: 600, fontSize: "11px" }}>
                     EXAMINED BY
                   </td>
-                  <td style={{ fontWeight: 600, fontSize: "7pt" }}>
+                  <td style={{ fontWeight: 600, fontSize: "11px" }}>
                     CUSTOMER: <span>{v(fs.customer?.name)}</span>
                   </td>
-                  <td style={{ fontWeight: 600, fontSize: "7pt" }}>
+                  <td style={{ fontWeight: 600, fontSize: "11px" }}>
                     CLIENT / TPI: <span>{v(fs.clientOrTPI?.name)}</span>
                   </td>
                 </tr>
                 <tr>
-                  <td style={{ fontWeight: 600, fontSize: "7.5pt" }}>
+                  <td style={{ fontWeight: 600, fontSize: "11px" }}>
                     National Industrial Inspection And Training
                   </td>
-                  <td style={{ fontWeight: 600, fontSize: "7.5pt" }}>
+                  <td style={{ fontWeight: 600, fontSize: "11px" }}>
                     {v(jd.customer)}
                   </td>
-                  <td style={{ fontWeight: 600, fontSize: "7.5pt" }}>
+                  <td style={{ fontWeight: 600, fontSize: "11px" }}>
                     {v(jd.client)}
                   </td>
                 </tr>
@@ -655,27 +706,28 @@ export const UTReportPrintPage: React.FC = () => {
               </tbody>
             </table>
 
-            <div className="footer">
-              <div className="footer-text-block">
-                Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office,
-                MIDC, Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91
-                7875154431
-                <br />
-                Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 |
-                Website: www.niitindt.com | Email: niit04@gmail.com |
-                info@niitindt.com
-              </div>
-              <div className="qr-wrap">
-                <QRCodeSVG value={qrUrl} size={48} />
-              </div>
-            </div>
-            <div className="footer-meta">
-              Format No: <span>FMT-NDT-UT-01</span>
-              &nbsp;|&nbsp; Rev. No: <span>00</span>
-              &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
-              &nbsp;|&nbsp; Page: <span>1 of 1</span>
-            </div>
+            </div>{/* ── end report-body ── */}
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot style={{ display: "table-footer-group" }}>
+                <tr>
+                  <td style={{ padding: "0 0 5mm 0" }}>
+                    <div className="tfoot-content">
+                      <ReportFooter />
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
+        </div>
+      </div>
+
+      {/* The fixed footer that only appears in print on every page at the bottom */}
+      <div className="print-fixed-footer">
+        <div className={`print-fixed-footer-inner ${bwMode ? "bw" : ""}`} style={{ border: 'none', boxShadow: 'none' }}>
+          <ReportFooter />
         </div>
       </div>
     </>
