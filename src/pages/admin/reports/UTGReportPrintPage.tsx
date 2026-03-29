@@ -230,7 +230,11 @@ export const UTGReportPrintPage: React.FC = () => {
           }}
         >
           <div className={`report${bwMode ? ' bw' : ''}`}>
-            <div className="rpt-header">
+            <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
+              <thead style={{ display: "table-header-group" }}>
+                <tr>
+                  <td style={{ padding: 0 }}>
+                    <div className="rpt-header">
               <div className="logo-box">
                 <img src="/logo.png" alt="NIIT Logo" />
               </div>
@@ -248,7 +252,13 @@ export const UTGReportPrintPage: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="report-body">
+                  </td>
+                </tr>
+              </thead>
+              <tbody style={{ display: "table-row-group" }}>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body">
             <div className="rpt-title">Ultrasonic Thickness Gauging Report</div>
 
             {/* ── JOB DETAILS ── */}
@@ -581,8 +591,13 @@ export const UTGReportPrintPage: React.FC = () => {
             </table>
 
             </div>{/* ── end report-body ── */}
-
-            <div className="footer">
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot style={{ display: "table-footer-group" }}>
+                <tr>
+                  <td style={{ padding: 0 }}>
+                    <div className="footer">
               <div className="footer-text-block">
                 Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office,
                 MIDC, Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91
@@ -602,6 +617,10 @@ export const UTGReportPrintPage: React.FC = () => {
               &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
               &nbsp;|&nbsp; Page: <span>1 of 1</span>
             </div>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
         </div>
       </div>

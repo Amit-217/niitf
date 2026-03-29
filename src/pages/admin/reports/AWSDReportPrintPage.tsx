@@ -194,8 +194,12 @@ export const AWSDReportPrintPage: React.FC = () => {
             boxSizing: "border-box",
           }}
         >
-          {/* ── HEADER ── */}
-          <table
+          <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
+            <thead style={{ display: "table-header-group" }}>
+              <tr>
+                <td style={{ padding: 0 }}>
+                  {/* ── HEADER ── */}
+                  <table
             style={{
               width: "100%",
               borderCollapse: "collapse",
@@ -298,10 +302,16 @@ export const AWSDReportPrintPage: React.FC = () => {
                 </td>
               </tr>
             </tbody>
-          </table>
-
-          {/* ── JOB INFORMATION ── */}
-          <table className="report-table mt-n1">
+                  </table>
+                </td>
+              </tr>
+            </thead>
+            
+            <tbody style={{ display: "table-row-group" }}>
+              <tr>
+                <td style={{ padding: 0, verticalAlign: "top" }}>
+                  {/* ── JOB INFORMATION ── */}
+                  <table className="report-table mt-n1">
             <colgroup>
               <col style={{ width: "14%" }} />
               <col style={{ width: "20%" }} />
@@ -573,16 +583,26 @@ export const AWSDReportPrintPage: React.FC = () => {
                 <td colSpan={2}></td>
               </tr>
             </tbody>
-          </table>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
 
-          {/* ── Footer ── */}
-          <div className="footer-text">
-            Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
-            Baramati, Dist-Pune 413133 &nbsp;|&nbsp; Ph. +91 9860186056, +91
-            7875154431 &nbsp;|&nbsp; Reg. Office: A/p - Kuthare, Tal - Patan,
-            Dist-Satara 415112 &nbsp;|&nbsp; Website: www.niitindt.com
-            &nbsp;|&nbsp; Email: niit04@gmail.com
-          </div>
+            <tfoot style={{ display: "table-footer-group" }}>
+              <tr>
+                <td style={{ padding: 0 }}>
+                  {/* ── Footer ── */}
+                  <div className="footer-text">
+                    Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
+                    Baramati, Dist-Pune 413133 &nbsp;|&nbsp; Ph. +91 9860186056, +91
+                    7875154431 &nbsp;|&nbsp; Reg. Office: A/p - Kuthare, Tal - Patan,
+                    Dist-Satara 415112 &nbsp;|&nbsp; Website: www.niitindt.com
+                    &nbsp;|&nbsp; Email: niit04@gmail.com
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
         </div>
       </div>
     </>

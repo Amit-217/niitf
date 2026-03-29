@@ -319,26 +319,37 @@ export const MPTReportPrintPage = () => {
           }}
         >
           <div className={`report${bwMode ? " bw" : ""}`}>
-            {/* ── HEADER ── */}
-            <div className="rpt-header">
-              <div className="logo-box">
-                <img src="/logo.png" alt="NIIT Logo" />
-              </div>
-              <div className="hdr-center">
-                <div className="org">
-                  National Industrial Inspection &amp; Training
-                </div>
-                <div className="sub">
-                  THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING | NDT
-                  CONSULTANCY | PHYSICAL CALIBRATION | FACTORY INSPECTION UNDER
-                  MAHARASHTRA FACTORY ACT | QUALITY MANAGEMENT SYSTEM TRAINING
-                </div>
-                <div className="iso">
-                  (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
-                </div>
-              </div>
-            </div>
-            <div className="report-body">
+            <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
+              <thead style={{ display: "table-header-group" }}>
+                <tr>
+                  <td style={{ padding: 0 }}>
+                    {/* ── HEADER ── */}
+                    <div className="rpt-header">
+                      <div className="logo-box">
+                        <img src="/logo.png" alt="NIIT Logo" />
+                      </div>
+                      <div className="hdr-center">
+                        <div className="org">
+                          National Industrial Inspection &amp; Training
+                        </div>
+                        <div className="sub">
+                          THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING | NDT
+                          CONSULTANCY | PHYSICAL CALIBRATION | FACTORY INSPECTION UNDER
+                          MAHARASHTRA FACTORY ACT | QUALITY MANAGEMENT SYSTEM TRAINING
+                        </div>
+                        <div className="iso">
+                          (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </thead>
+              
+              <tbody style={{ display: "table-row-group" }}>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body">
             <div className="rpt-title">
               Magnetic Particle Examination Report
             </div>
@@ -726,28 +737,38 @@ export const MPTReportPrintPage = () => {
             )}
 
             </div>{/* ── end report-body ── */}
+                  </td>
+                </tr>
+              </tbody>
 
-            {/* ── Footer ── */}
-            <div className="footer">
-              <div className="footer-text-block">
-                Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office,
-                MIDC, Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91
-                7875154431
-                <br />
-                Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 |
-                Website: www.niitindt.com | Email: niit04@gmail.com |
-                info@niitindt.com
-              </div>
-              <div className="qr-wrap">
-                <QRCodeSVG value={qrUrl} size={48} />
-              </div>
-            </div>
-            <div className="footer-meta">
-              Format No: <span>FMT-NDT-01</span>
-              &nbsp;|&nbsp; Rev. No: <span>00</span>
-              &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
-              &nbsp;|&nbsp; Page: <span>1 of 1</span>
-            </div>
+              <tfoot style={{ display: "table-footer-group" }}>
+                <tr>
+                  <td style={{ padding: 0 }}>
+                    {/* ── Footer ── */}
+                    <div className="footer">
+                      <div className="footer-text-block">
+                        Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office,
+                        MIDC, Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91
+                        7875154431
+                        <br />
+                        Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 |
+                        Website: www.niitindt.com | Email: niit04@gmail.com |
+                        info@niitindt.com
+                      </div>
+                      <div className="qr-wrap">
+                        <QRCodeSVG value={qrUrl} size={48} />
+                      </div>
+                    </div>
+                    <div className="footer-meta">
+                      Format No: <span>FMT-NDT-01</span>
+                      &nbsp;|&nbsp; Rev. No: <span>00</span>
+                      &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
+                      &nbsp;|&nbsp; Page: <span>1 of 1</span>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
         </div>
       </div>
