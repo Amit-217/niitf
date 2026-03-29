@@ -258,7 +258,7 @@ export const UTReportFormPage: React.FC = () => {
     getUTReportById(id)
       .then((res: any) => {
         const r = (res as any).data ?? res;
-        if (r.customerId) setCustomerId(r.customerId);
+        if (r.customerId) setCustomerId(typeof r.customerId === "object" ? r.customerId?._id ?? "" : r.customerId);
         if (r.jobDetails?.customer) setCustomerName(r.jobDetails.customer);
         setReportNo(r.reportNo ?? "");
 

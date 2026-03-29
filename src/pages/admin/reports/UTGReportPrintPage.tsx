@@ -19,29 +19,8 @@ const PRINT_STYLES = `
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; }
     #report-root { background: #fff !important; padding: 0 !important; }
-    #report-root > div { width: 210mm !important; min-height: 297mm !important; height: 297mm !important; margin: 0 auto !important; padding: 3mm !important; box-sizing: border-box !important; box-shadow: none !important; overflow: hidden !important; }
+    #report-root > div { width: 210mm !important; min-height: 297mm !important; margin: 0 auto !important; padding: 3mm !important; box-sizing: border-box !important; box-shadow: none !important; }
     .report { margin: 0 !important; box-shadow: none !important; width: calc(100% / 0.92) !important; transform: scale(0.92); transform-origin: top left; }
-    .rpt-header { padding: 8px 10px !important; background: #fff !important; border-bottom: 2px solid #000 !important; }
-    .hdr-center { color: #000 !important; }
-    .hdr-center .org { color: #000 !important; }
-    .hdr-center .sub { color: #333 !important; }
-    .hdr-center .iso { color: #000 !important; }
-    .logo-box { background: transparent !important; border: none !important; }
-    .rpt-title { padding: 5px !important; font-size: 11px !important; background: #e0e0e0 !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
-    .section-hdr { padding: 4px 7px !important; font-size: 8.5px !important; background: #d0d0d0 !important; color: #000 !important; border-left: 3px solid #000 !important; }
-    .col-hdr { background: #e8e8e8 !important; color: #000 !important; }
-    .lbl { background: #f0f0f0 !important; }
-    .report-table td, .report-table th { border-color: #888 !important; }
-    .obs-table td, .obs-table th { border-color: #888 !important; }
-    .obs-table th { background: #e0e0e0 !important; color: #000 !important; }
-    .sign-table td { border-color: #888 !important; }
-    .footer-meta { background: #e0e0e0 !important; color: #000 !important; }
-    .footer-meta span { color: #000 !important; }
-    .footer { padding: 4px 8px !important; font-size: 7px !important; line-height: 1.25 !important; background: #f5f5f5 !important; color: #000 !important; border-color: #000 !important; }
-    .report-body { border-color: #000 !important; }
-    .accept-badge { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #777 !important; }
-    .reject-badge { background: #e0e0e0 !important; color: #000 !important; border: 1px solid #000 !important; border-left: 3px solid #000 !important; }
-    .neutral-badge { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #777 !important; }
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }

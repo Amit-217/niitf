@@ -222,7 +222,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
       .then((res: any) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const r = (res as any).data ?? res;
-        if (r.customerId) setCustomerId(r.customerId);
+        if (r.customerId) setCustomerId(typeof r.customerId === "object" ? r.customerId?._id ?? "" : r.customerId);
         if (r.customer) setCustomerName(r.customer);
         setReportNo(r.reportNo ?? "");
         setPageNo(r.pageNo ?? "");
