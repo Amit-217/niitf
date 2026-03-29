@@ -5,7 +5,6 @@ import {
     FileBarChart2,
     Search,
     Eye,
-    Printer,
     Pencil,
     Trash2,
     Magnet,
@@ -33,14 +32,14 @@ import { Pagination } from "../../../components/Pagination";
 
 type ReportType = "mpt" | "pt" | "ut" | "vssc-ut" | "utg" | "tpi-ivr" | "awsd";
 
-const REPORT_TYPES: { key: ReportType; label: string; fullLabel: string; icon: any; color: string; textColor: string; borderColor: string; bgNum: string }[] = [
-    { key: "mpt", label: "MPT", fullLabel: "Magnetic Particle Testing", icon: Magnet, color: "bg-rose-50", textColor: "text-rose-600", borderColor: "border-rose-200", bgNum: "bg-rose-100" },
-    { key: "pt", label: "PT", fullLabel: "Liquid Penetrant Testing", icon: Droplets, color: "bg-blue-50", textColor: "text-blue-600", borderColor: "border-blue-200", bgNum: "bg-blue-100" },
-    { key: "ut", label: "UT", fullLabel: "Ultrasonic Testing", icon: Waves, color: "bg-violet-50", textColor: "text-violet-600", borderColor: "border-violet-200", bgNum: "bg-violet-100" },
-    { key: "vssc-ut", label: "VSSC-UT", fullLabel: "VSSC Ultrasonic Testing", icon: Satellite, color: "bg-amber-50", textColor: "text-amber-600", borderColor: "border-amber-200", bgNum: "bg-amber-100" },
-    { key: "utg", label: "UTG", fullLabel: "UT Thickness Gauging", icon: Ruler, color: "bg-teal-50", textColor: "text-teal-600", borderColor: "border-teal-200", bgNum: "bg-teal-100" },
-    { key: "tpi-ivr", label: "TPI IVR", fullLabel: "Inspection Visit Report", icon: ClipboardList, color: "bg-cyan-50", textColor: "text-cyan-600", borderColor: "border-cyan-200", bgNum: "bg-cyan-100" },
-    { key: "awsd", label: "AWS D1.1", fullLabel: "UT of Welds (AWS D1.1)", icon: GitBranch, color: "bg-orange-50", textColor: "text-orange-600", borderColor: "border-orange-200", bgNum: "bg-orange-100" },
+const REPORT_TYPES: { key: ReportType; label: string; fullLabel: string; icon: any; color: string; textColor: string; borderColor: string; bgNum: string; dotColor: string }[] = [
+    { key: "mpt", label: "MPT", fullLabel: "Magnetic Particle Testing", icon: Magnet, color: "bg-rose-50", textColor: "text-rose-600", borderColor: "border-rose-200", bgNum: "bg-rose-100", dotColor: "bg-rose-600" },
+    { key: "pt", label: "PT", fullLabel: "Liquid Penetrant Testing", icon: Droplets, color: "bg-blue-50", textColor: "text-blue-600", borderColor: "border-blue-200", bgNum: "bg-blue-100", dotColor: "bg-blue-600" },
+    { key: "ut", label: "UT", fullLabel: "Ultrasonic Testing", icon: Waves, color: "bg-violet-50", textColor: "text-violet-600", borderColor: "border-violet-200", bgNum: "bg-violet-100", dotColor: "bg-violet-600" },
+    { key: "vssc-ut", label: "VSSC-UT", fullLabel: "VSSC Ultrasonic Testing", icon: Satellite, color: "bg-amber-50", textColor: "text-amber-600", borderColor: "border-amber-200", bgNum: "bg-amber-100", dotColor: "bg-amber-600" },
+    { key: "utg", label: "UTG", fullLabel: "UT Thickness Gauging", icon: Ruler, color: "bg-teal-50", textColor: "text-teal-600", borderColor: "border-teal-200", bgNum: "bg-teal-100", dotColor: "bg-teal-600" },
+    { key: "tpi-ivr", label: "TPI IVR", fullLabel: "Inspection Visit Report", icon: ClipboardList, color: "bg-cyan-50", textColor: "text-cyan-600", borderColor: "border-cyan-200", bgNum: "bg-cyan-100", dotColor: "bg-cyan-600" },
+    { key: "awsd", label: "AWS D1.1", fullLabel: "UT of Welds (AWS D1.1)", icon: GitBranch, color: "bg-orange-50", textColor: "text-orange-600", borderColor: "border-orange-200", bgNum: "bg-orange-100", dotColor: "bg-orange-600" },
 ];
 
 const fmt = (d?: string | null) =>
@@ -167,10 +166,10 @@ export const ReportsListPage = () => {
                     </div>
                     
                     <button
-                    onClick={() => navigate(`/admin/reports/${activeTab}/new`)}
-                        className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-black transition-all shadow-lg shadow-gray-900/20 active:scale-95 whitespace-nowrap"
+                        onClick={() => navigate(`/admin/reports/${activeTab}/new`)}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300 whitespace-nowrap"
                     >
-                        <Plus size={15} /> New {activeInfo.label}
+                        <Plus size={17} /> New {activeInfo.label}
                     </button>
                 </div>
             </div>
@@ -205,10 +204,7 @@ export const ReportsListPage = () => {
                                 </p>
                             </div>
                             {isActive && (
-                                <div className="absolute top-3 right-3 flex h-2 w-2">
-                                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${rt.textColor} opacity-75`}></span>
-                                    <span className={`relative inline-flex rounded-full h-2 w-2 ${rt.textColor.replace('text-', 'bg-')}`}></span>
-                                </div>
+                                <div className={`absolute top-3 right-3 h-2 w-2 rounded-full ${rt.dotColor}`} />
                             )}
                         </button>
                     );
@@ -332,13 +328,6 @@ export const ReportsListPage = () => {
                                                     title="View"
                                                 >
                                                     <Eye size={14} />
-                                                </button>
-                                                <button
-                                                    onClick={() => window.open(`/admin/reports/${activeTab}/${r._id}/print?autoprint=true`, '_blank')}
-                                                    className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    title="Print"
-                                                >
-                                                    <Printer size={14} />
                                                 </button>
                                                 <button
                                                     onClick={() => navigate(`/admin/reports/${activeTab}/${r._id}/edit`)}

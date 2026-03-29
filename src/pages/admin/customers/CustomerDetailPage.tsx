@@ -16,7 +16,6 @@ import {
   X,
   Save,
   Loader2,
-  Printer,
   Eye,
   User,
   Magnet,
@@ -849,13 +848,6 @@ export const CustomerDetailPage = () => {
                                 title="View Report"
                               >
                                 <Eye size={14} />
-                              </button>
-                              <button
-                                onClick={() => window.open(`/admin/reports/${reportSubType}/${r._id}/print?autoprint=true`, '_blank')}
-                                className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                title="Print / Download PDF"
-                              >
-                                <Printer size={14} />
                               </button>
                               <button
                                 onClick={() => navigate(`/admin/reports/${reportSubType}/${r._id}/edit`, { state: { customerId: id, reportSubType, customerName: customer?.companyName } })}
