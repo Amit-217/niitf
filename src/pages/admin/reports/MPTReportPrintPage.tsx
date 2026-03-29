@@ -87,8 +87,9 @@ const PRINT_STYLES = `
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
   @media print {
-    .print-fixed-footer { display: none !important; }
-    .tfoot-content { visibility: visible !important; }
+    .print-fixed-footer { position: fixed !important; bottom: 10mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; z-index: 99999 !important; background: transparent !important; }
+    .print-fixed-footer-inner { width: 193.2mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
+    .tfoot-content { visibility: hidden !important; }
   }
   @media screen {
     .print-fixed-footer { display: none; }
@@ -379,398 +380,398 @@ export const MPTReportPrintPage = () => {
                   </td>
                 </tr>
               </thead>
-              
+
               <tbody style={{ display: "table-row-group" }}>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
                     <div className="report-body">
-            <div className="rpt-title">
-              Magnetic Particle Examination Report
-            </div>
+                      <div className="rpt-title">
+                        Magnetic Particle Examination Report
+                      </div>
 
-            {/* ── 1. Scope & Reference Standards ── */}
-            <table className="report-table mt-n1">
-              <colgroup>
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-              </colgroup>
-              <tbody>
-                <tr>
-                  <td colSpan={4} className="section-hdr">
-                    1. Job Details
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl">Customer</td>
-                  <td className="val">{v(jd.customer) || "-"}</td>
-                  <td className="lbl">Client / TPI</td>
-                  <td className="val">{v(jd.client) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Report No.</td>
-                  <td className="val">{v(report.reportNo) || "-"}</td>
-                  <td className="lbl">Report Date</td>
-                  <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Reference Std.</td>
-                  <td className="val">
-                    {standards.length > 0 ? (
-                      standards.join(", ")
-                    ) : (
-                      <span style={{ color: "#6b7280", fontStyle: "italic" }}>
-                        Not specified
-                      </span>
-                    )}
-                  </td>
-                  <td className="lbl">Acceptance Criteria</td>
-                  <td className="val">
-                    {acceptance.length > 0 ? (
-                      acceptance.join(", ")
-                    ) : (
-                      <span style={{ color: "#6b7280", fontStyle: "italic" }}>
-                        Not specified
-                      </span>
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl">Inspection Date</td>
-                  <td className="val">
-                    {dateRange(jd.inspectionDate, jd.inspectionEndDate) || "-"}
-                  </td>
-                  <td className="lbl">Inspection Time</td>
-                  <td className="val">{v(jd.inspectionTime) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Stage of Inspection</td>
-                  <td className="val">{v(jd.stageOfInspection) || "-"}</td>
-                  <td className="lbl">Type of Joint</td>
-                  <td className="val">{v(jd.typeOfJoint) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Welding Process</td>
-                  <td className="val">{v(jd.weldingProcess) || "-"}</td>
-                  <td className="lbl">Material</td>
-                  <td className="val">{v(jd.material) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Thickness</td>
-                  <td className="val">{v(jd.thickness) || "-"}</td>
-                  <td className="lbl">Surface Condition</td>
-                  <td className="val">{v(jd.surfaceCondition) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Technique</td>
-                  <td colSpan={3} className="val">
-                    {technique || "-"}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                      {/* ── 1. Scope & Reference Standards ── */}
+                      <table className="report-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td colSpan={4} className="section-hdr">
+                              1. Job Details
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Customer</td>
+                            <td className="val">{v(jd.customer) || "-"}</td>
+                            <td className="lbl">Client / TPI</td>
+                            <td className="val">{v(jd.client) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Report No.</td>
+                            <td className="val">{v(report.reportNo) || "-"}</td>
+                            <td className="lbl">Report Date</td>
+                            <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Reference Std.</td>
+                            <td className="val">
+                              {standards.length > 0 ? (
+                                standards.join(", ")
+                              ) : (
+                                <span style={{ color: "#6b7280", fontStyle: "italic" }}>
+                                  Not specified
+                                </span>
+                              )}
+                            </td>
+                            <td className="lbl">Acceptance Criteria</td>
+                            <td className="val">
+                              {acceptance.length > 0 ? (
+                                acceptance.join(", ")
+                              ) : (
+                                <span style={{ color: "#6b7280", fontStyle: "italic" }}>
+                                  Not specified
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Inspection Date</td>
+                            <td className="val">
+                              {dateRange(jd.inspectionDate, jd.inspectionEndDate) || "-"}
+                            </td>
+                            <td className="lbl">Inspection Time</td>
+                            <td className="val">{v(jd.inspectionTime) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Stage of Inspection</td>
+                            <td className="val">{v(jd.stageOfInspection) || "-"}</td>
+                            <td className="lbl">Type of Joint</td>
+                            <td className="val">{v(jd.typeOfJoint) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Welding Process</td>
+                            <td className="val">{v(jd.weldingProcess) || "-"}</td>
+                            <td className="lbl">Material</td>
+                            <td className="val">{v(jd.material) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Thickness</td>
+                            <td className="val">{v(jd.thickness) || "-"}</td>
+                            <td className="lbl">Surface Condition</td>
+                            <td className="val">{v(jd.surfaceCondition) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Technique</td>
+                            <td colSpan={3} className="val">
+                              {technique || "-"}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-            {/* ── 2. Equipment Details ── */}
-            <table className="report-table mt-n1">
-              <colgroup>
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-              </colgroup>
-              <tbody>
-                <tr>
-                  <td colSpan={4} className="section-hdr">
-                    3. Equipment Details
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl">Equipment Type</td>
-                  <td className="val">{v(eq.equipmentType) || "-"}</td>
-                  <td className="lbl">Make</td>
-                  <td className="val">{v(eq.make) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Serial No.</td>
-                  <td className="val">{v(eq.srNo) || "-"}</td>
-                  <td className="lbl">Calibration Due</td>
-                  <td className="val">{fmtDate(eq.calibrationDue) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Yoke Spacing</td>
-                  <td className="val">{v(eq.yokeSpacing) || "-"}</td>
-                  <td className="lbl">Pie Gauge Calibration</td>
-                  <td className="val">{v(eq.pieGaugeCalibration) || "-"}</td>
-                </tr>
-              </tbody>
-            </table>
+                      {/* ── 2. Equipment Details ── */}
+                      <table className="report-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td colSpan={4} className="section-hdr">
+                              3. Equipment Details
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Equipment Type</td>
+                            <td className="val">{v(eq.equipmentType) || "-"}</td>
+                            <td className="lbl">Make</td>
+                            <td className="val">{v(eq.make) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Serial No.</td>
+                            <td className="val">{v(eq.srNo) || "-"}</td>
+                            <td className="lbl">Calibration Due</td>
+                            <td className="val">{fmtDate(eq.calibrationDue) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Yoke Spacing</td>
+                            <td className="val">{v(eq.yokeSpacing) || "-"}</td>
+                            <td className="lbl">Pie Gauge Calibration</td>
+                            <td className="val">{v(eq.pieGaugeCalibration) || "-"}</td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-            {/* ── 4. Medium Details ── */}
-            <table className="report-table mt-n1">
-              <colgroup>
-                <col style={{ width: "20%" }} />
-                <col style={{ width: "40%" }} />
-                <col style={{ width: "20%" }} />
-                <col style={{ width: "20%" }} />
-              </colgroup>
-              <tbody>
-                <tr>
-                  <td colSpan={4} className="section-hdr">
-                    4. Medium Details
-                  </td>
-                </tr>
-                <tr>
-                  <td className="col-hdr">Material</td>
-                  <td className="col-hdr">Manufacturer / Batch No.</td>
-                  <td className="col-hdr">Expiry Date</td>
-                  <td className="col-hdr">Type</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Black Ink</td>
-                  <td className="val">
-                    {`${v(md.blackInk?.manufacturer)}${md.blackInk?.manufacturer && md.blackInk?.batchNo ? " / " : ""}${v(md.blackInk?.batchNo)}` ||
-                      "-"}
-                  </td>
-                  <td className="val">{v(md.blackInk?.expiryDate) || "-"}</td>
-                  <td className="val">Ink</td>
-                </tr>
-                <tr>
-                  <td className="lbl">White Contrast</td>
-                  <td className="val">
-                    {`${v(md.whiteContrast?.manufacturer)}${md.whiteContrast?.manufacturer && md.whiteContrast?.batchNo ? " / " : ""}${v(md.whiteContrast?.batchNo)}` ||
-                      "-"}
-                  </td>
-                  <td className="val">
-                    {v(md.whiteContrast?.expiryDate) || "-"}
-                  </td>
-                  <td className="val">Contrast</td>
-                </tr>
-              </tbody>
-            </table>
+                      {/* ── 4. Medium Details ── */}
+                      <table className="report-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "20%" }} />
+                          <col style={{ width: "40%" }} />
+                          <col style={{ width: "20%" }} />
+                          <col style={{ width: "20%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td colSpan={4} className="section-hdr">
+                              4. Medium Details
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="col-hdr">Material</td>
+                            <td className="col-hdr">Manufacturer / Batch No.</td>
+                            <td className="col-hdr">Expiry Date</td>
+                            <td className="col-hdr">Type</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Black Ink</td>
+                            <td className="val">
+                              {`${v(md.blackInk?.manufacturer)}${md.blackInk?.manufacturer && md.blackInk?.batchNo ? " / " : ""}${v(md.blackInk?.batchNo)}` ||
+                                "-"}
+                            </td>
+                            <td className="val">{v(md.blackInk?.expiryDate) || "-"}</td>
+                            <td className="val">Ink</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">White Contrast</td>
+                            <td className="val">
+                              {`${v(md.whiteContrast?.manufacturer)}${md.whiteContrast?.manufacturer && md.whiteContrast?.batchNo ? " / " : ""}${v(md.whiteContrast?.batchNo)}` ||
+                                "-"}
+                            </td>
+                            <td className="val">
+                              {v(md.whiteContrast?.expiryDate) || "-"}
+                            </td>
+                            <td className="val">Contrast</td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-            {/* ── 5. Method Description ── */}
-            <table className="report-table mt-n1">
-              <colgroup>
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "28%" }} />
-              </colgroup>
-              <tbody>
-                <tr>
-                  <td colSpan={4} className="section-hdr">
-                    5. Method Description
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl">Method</td>
-                  <td className="val">{v(me.method) || "-"}</td>
-                  <td className="lbl">Light Intensity</td>
-                  <td className="val">{v(me.lightIntensity) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Magnetization Type</td>
-                  <td className="val">{v(me.magnetizationType) || "-"}</td>
-                  <td className="lbl">Light Equip. Used</td>
-                  <td className="val">{v(me.lightEquipmentUsed) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Magnetizing Method</td>
-                  <td className="val">{v(me.magnetizingMethod) || "-"}</td>
-                  <td className="lbl">Bath Concentration</td>
-                  <td className="val">{v(me.bathConcentration) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Demagnetization</td>
-                  <td className="val">{v(me.demagnetization) || "-"}</td>
-                  <td className="lbl">Field Direction Verified By</td>
-                  <td className="val">
-                    {v(me.magneticFieldDirectionVerifiedBy) || "-"}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl">Gauss Meter Reading</td>
-                  <td className="val">{v(me.gaussMeterReading) || "-"}</td>
-                  <td className="lbl">Current</td>
-                  <td className="val">{v(me.current) || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="lbl">Current Type</td>
-                  <td className="val">{v(me.currentType) || "-"}</td>
-                  <td className="lbl">Post Cleaning</td>
-                  <td className="val">{v(me.postCleaning) || "-"}</td>
-                </tr>
-              </tbody>
-            </table>
+                      {/* ── 5. Method Description ── */}
+                      <table className="report-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td colSpan={4} className="section-hdr">
+                              5. Method Description
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Method</td>
+                            <td className="val">{v(me.method) || "-"}</td>
+                            <td className="lbl">Light Intensity</td>
+                            <td className="val">{v(me.lightIntensity) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Magnetization Type</td>
+                            <td className="val">{v(me.magnetizationType) || "-"}</td>
+                            <td className="lbl">Light Equip. Used</td>
+                            <td className="val">{v(me.lightEquipmentUsed) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Magnetizing Method</td>
+                            <td className="val">{v(me.magnetizingMethod) || "-"}</td>
+                            <td className="lbl">Bath Concentration</td>
+                            <td className="val">{v(me.bathConcentration) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Demagnetization</td>
+                            <td className="val">{v(me.demagnetization) || "-"}</td>
+                            <td className="lbl">Field Direction Verified By</td>
+                            <td className="val">
+                              {v(me.magneticFieldDirectionVerifiedBy) || "-"}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Gauss Meter Reading</td>
+                            <td className="val">{v(me.gaussMeterReading) || "-"}</td>
+                            <td className="lbl">Current</td>
+                            <td className="val">{v(me.current) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Current Type</td>
+                            <td className="val">{v(me.currentType) || "-"}</td>
+                            <td className="lbl">Post Cleaning</td>
+                            <td className="val">{v(me.postCleaning) || "-"}</td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-            {/* ── 6. Observations ── */}
-            <table className="obs-table mt-n1">
-              <tbody>
-                <tr>
-                  <td colSpan={7} className="section-hdr">
-                    6. Observations
-                  </td>
-                </tr>
-                <tr>
-                  <th style={{ width: "6%" }}>Sr.</th>
-                  <th>Job Description</th>
-                  <th>Drg No. / Joint No.</th>
-                  <th style={{ width: "10%" }}>Size</th>
-                  <th style={{ width: "7%" }}>Qty</th>
-                  <th>Interpretation</th>
-                  <th style={{ width: "13%" }}>Evaluation</th>
-                </tr>
-                {obs.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      style={{
-                        textAlign: "center",
-                        color: "#6b7280",
-                        padding: "6px",
-                      }}
-                    >
-                      No observations recorded.
-                    </td>
-                  </tr>
-                ) : (
-                  obs.map((o, index) => (
-                    <tr key={`${o.srNo}-${index}`}>
-                      <td style={{ textAlign: "center" }}>
-                        {o.srNo || index + 1}
-                      </td>
-                      <td>{v(o.jobDescription) || "-"}</td>
-                      <td>{v(o.drawingOrJointNo) || "-"}</td>
-                      <td>{v(o.size) || "-"}</td>
-                      <td style={{ textAlign: "center" }}>
-                        {o.quantity ?? "-"}
-                      </td>
-                      <td>{v(o.evaluation) || "-"}</td>
-                      <td>
-                        <span
-                          className={resultClass(
-                            o.result || o.remark || o.evaluation,
+                      {/* ── 6. Observations ── */}
+                      <table className="obs-table mt-n1">
+                        <tbody>
+                          <tr>
+                            <td colSpan={7} className="section-hdr">
+                              6. Observations
+                            </td>
+                          </tr>
+                          <tr>
+                            <th style={{ width: "6%" }}>Sr.</th>
+                            <th>Job Description</th>
+                            <th>Drg No. / Joint No.</th>
+                            <th style={{ width: "10%" }}>Size</th>
+                            <th style={{ width: "7%" }}>Qty</th>
+                            <th>Interpretation</th>
+                            <th style={{ width: "13%" }}>Evaluation</th>
+                          </tr>
+                          {obs.length === 0 ? (
+                            <tr>
+                              <td
+                                colSpan={7}
+                                style={{
+                                  textAlign: "center",
+                                  color: "#6b7280",
+                                  padding: "6px",
+                                }}
+                              >
+                                No observations recorded.
+                              </td>
+                            </tr>
+                          ) : (
+                            obs.map((o, index) => (
+                              <tr key={`${o.srNo}-${index}`}>
+                                <td style={{ textAlign: "center" }}>
+                                  {o.srNo || index + 1}
+                                </td>
+                                <td>{v(o.jobDescription) || "-"}</td>
+                                <td>{v(o.drawingOrJointNo) || "-"}</td>
+                                <td>{v(o.size) || "-"}</td>
+                                <td style={{ textAlign: "center" }}>
+                                  {o.quantity ?? "-"}
+                                </td>
+                                <td>{v(o.evaluation) || "-"}</td>
+                                <td>
+                                  <span
+                                    className={resultClass(
+                                      o.result || o.remark || o.evaluation,
+                                    )}
+                                  >
+                                    {v(o.result) || "N/A"}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))
                           )}
-                        >
-                          {v(o.result) || "N/A"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                        </tbody>
+                      </table>
 
-            {/* ── 7. Conclusion ── */}
-            <table className="report-table mt-n1">
-              <tbody>
-                <tr>
-                  <td colSpan={2} className="section-hdr">
-                    7. Conclusion
-                  </td>
-                </tr>
-                <tr>
-                  <td className="lbl" style={{ width: "22%" }}>
-                    Overall Result
-                  </td>
-                  <td className="val">{conclusionText}</td>
-                </tr>
-              </tbody>
-            </table>
+                      {/* ── 7. Conclusion ── */}
+                      <table className="report-table mt-n1">
+                        <tbody>
+                          <tr>
+                            <td colSpan={2} className="section-hdr">
+                              7. Conclusion
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl" style={{ width: "22%" }}>
+                              Overall Result
+                            </td>
+                            <td className="val">{conclusionText}</td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-            {/* ── 8. Signatures ── */}
-            <table className="sign-table mt-n1">
-              <colgroup>
-                <col style={{ width: "33.3%" }} />
-                <col style={{ width: "33.3%" }} />
-                <col style={{ width: "33.4%" }} />
-              </colgroup>
-              <tbody>
-                <tr>
-                  <td
-                    style={{
-                      fontWeight: 600,
-                      fontSize: "9px",
-                      background: "#E6F1FB",
-                      color: "#0C447C",
-                      textAlign: "center",
-                    }}
-                  >
-                    CUSTOMER REPRESENTATIVE
-                  </td>
-                  <td
-                    style={{
-                      fontWeight: 600,
-                      fontSize: "9px",
-                      background: "#E6F1FB",
-                      color: "#0C447C",
-                      textAlign: "center",
-                    }}
-                  >
-                    CLIENT / TPI REPRESENTATIVE
-                  </td>
-                  <td
-                    style={{
-                      fontWeight: 600,
-                      fontSize: "9px",
-                      background: "#E6F1FB",
-                      color: "#0C447C",
-                      textAlign: "center",
-                    }}
-                  >
-                    NDT INSPECTOR
-                  </td>
-                </tr>
-                <tr>
-                  <td>Name: {v(fs.customer?.name) || "-"}</td>
-                  <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
-                  <td>Name: {v(inspectors[0]?.name) || "-"}</td>
-                </tr>
-                <tr>
-                  <td>Designation: -</td>
-                  <td>Designation: -</td>
-                  <td>
-                    Qualification: {v(inspectors[0]?.qualification) || "-"}
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ height: 28 }}>Signature:</td>
-                  <td style={{ height: 28 }}>Signature:</td>
-                  <td style={{ height: 28 }}>Signature:</td>
-                </tr>
-                <tr>
-                  <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
-                  <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
-                  <td>I.D. No.: {v(inspectors[0]?.idNo) || "-"}</td>
-                </tr>
-                <tr>
-                  <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
-                  <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
-                  <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
-                </tr>
-              </tbody>
-            </table>
+                      {/* ── 8. Signatures ── */}
+                      <table className="sign-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.4%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td
+                              style={{
+                                fontWeight: 600,
+                                fontSize: "9px",
+                                background: "#E6F1FB",
+                                color: "#0C447C",
+                                textAlign: "center",
+                              }}
+                            >
+                              CUSTOMER REPRESENTATIVE
+                            </td>
+                            <td
+                              style={{
+                                fontWeight: 600,
+                                fontSize: "9px",
+                                background: "#E6F1FB",
+                                color: "#0C447C",
+                                textAlign: "center",
+                              }}
+                            >
+                              CLIENT / TPI REPRESENTATIVE
+                            </td>
+                            <td
+                              style={{
+                                fontWeight: 600,
+                                fontSize: "9px",
+                                background: "#E6F1FB",
+                                color: "#0C447C",
+                                textAlign: "center",
+                              }}
+                            >
+                              NDT INSPECTOR
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Name: {v(fs.customer?.name) || "-"}</td>
+                            <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
+                            <td>Name: {v(inspectors[0]?.name) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td>Designation: -</td>
+                            <td>Designation: -</td>
+                            <td>
+                              Qualification: {v(inspectors[0]?.qualification) || "-"}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                          </tr>
+                          <tr>
+                            <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(inspectors[0]?.idNo) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
+                            <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
+                            <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-            {inspectors.length > 1 && (
-              <table className="sign-table mt-n1">
-                <tbody>
-                  {inspectors.slice(1).map((inspector, index) => (
-                    <tr key={`${inspector.idNo}-${index}`}>
-                      <td colSpan={3}>
-                        Additional Inspector {index + 2}:{" "}
-                        {v(inspector.name) || "-"} |{" "}
-                        {v(inspector.qualification) || "-"} | ID:{" "}
-                        {v(inspector.idNo) || "-"} | Date:{" "}
-                        {fmtDate(inspector.date) || "-"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+                      {inspectors.length > 1 && (
+                        <table className="sign-table mt-n1">
+                          <tbody>
+                            {inspectors.slice(1).map((inspector, index) => (
+                              <tr key={`${inspector.idNo}-${index}`}>
+                                <td colSpan={3}>
+                                  Additional Inspector {index + 2}:{" "}
+                                  {v(inspector.name) || "-"} |{" "}
+                                  {v(inspector.qualification) || "-"} | ID:{" "}
+                                  {v(inspector.idNo) || "-"} | Date:{" "}
+                                  {fmtDate(inspector.date) || "-"}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
 
-            </div>{/* ── end report-body ── */}
+                    </div>{/* ── end report-body ── */}
                   </td>
                 </tr>
               </tbody>
@@ -789,6 +790,12 @@ export const MPTReportPrintPage = () => {
         </div>
       </div>
 
+      {/* The fixed footer that only appears in print on every page at the bottom */}
+      <div className="print-fixed-footer">
+        <div className={`print-fixed-footer-inner ${bwMode ? "bw" : ""}`} style={{ border: 'none', boxShadow: 'none' }}>
+          <ReportFooter />
+        </div>
+      </div>
     </>
   );
 };
