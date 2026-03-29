@@ -657,7 +657,7 @@ export const DashboardLayout: React.FC = () => {
                     className={`
                         fixed lg:sticky top-[76px] left-0 h-[calc(100dvh-76px)] max-h-[calc(100dvh-76px)]
                         bg-white border border-gray-200 rounded-r-2xl
-                        shadow-lg z-20 flex flex-col overflow-hidden
+                        shadow-lg z-20 flex flex-col overflow-visible
                         transition-all duration-300 ease-in-out
                         ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                         ${sidebarCollapsed ? 'lg:w-16 w-64' : 'w-64'}
