@@ -44,7 +44,7 @@ const PRINT_STYLES = `
   .bw .hdr-center .org { color: #111 !important; }
   .bw .hdr-center .sub { color: #444 !important; }
   .bw .hdr-center .iso { color: #111 !important; }
-  .bw .logo-box { background: #f0f0f0 !important; border: 1px solid #aaa !important; }
+  .bw .logo-box { background: transparent !important; border: none !important; width: 110px !important; height: 110px !important; }
   .bw .section-hdr { background: #c8c8c8 !important; color: #000 !important; border-left: 3px solid #000 !important; }
   .bw .col-hdr { background: #e0e0e0 !important; color: #000 !important; }
   .bw .rpt-title { background: #e0e0e0 !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
