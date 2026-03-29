@@ -28,8 +28,8 @@ const PRINT_STYLES = `
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
-  .rpt-header { background: #185FA5; padding: 10px 12px; display: flex; align-items: center; gap: 12px; }
+  .report { background: #fff; border: none; border-radius: 6px; overflow: hidden; }
+  .rpt-header { background: #185FA5; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
   .logo-box { width: 90px; height: 90px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 3px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #fff; }
@@ -73,7 +73,8 @@ const PRINT_STYLES = `
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 4px 6px; font-size: 10px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
-  .footer { background: #f8fafc; padding: 6px 10px; font-size: 8px; color: #4b5563; border-top: 1px solid #d9e1ea; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .footer { background: #f8fafc; padding: 6px 10px; font-size: 8px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 `;
@@ -250,6 +251,7 @@ export const UTGReportPrintPage: React.FC = () => {
                 </div>
               </div>
             </div>
+            <div className="report-body">
             <div className="rpt-title">Ultrasonic Thickness Gauging Report</div>
 
             {/* ── JOB DETAILS ── */}
@@ -580,6 +582,8 @@ export const UTGReportPrintPage: React.FC = () => {
                 </tr>
               </tbody>
             </table>
+
+            </div>{/* ── end report-body ── */}
 
             <div className="footer">
               <div className="footer-text-block">

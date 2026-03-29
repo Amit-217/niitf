@@ -59,6 +59,7 @@ const PRINT_STYLES = `
   .rpt-header {
     background: #185FA5;
     padding: 10px 12px;
+    margin-bottom: 8px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -116,9 +117,10 @@ const PRINT_STYLES = `
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 4px 6px; font-size: 10px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
+  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
   .footer {
     background: #f8fafc; padding: 6px 10px; font-size: 8px; color: #4b5563;
-    border-top: 1px solid #d9e1ea; line-height: 1.4;
+    margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4;
     display: flex; align-items: center; gap: 8px;
   }
   .footer-text-block { flex: 1; text-align: center; }
@@ -297,6 +299,7 @@ export const PTReportPrintPage: React.FC = () => {
                 </div>
               </div>
             </div>
+            <div className="report-body">
             <div className="rpt-title">Liquid Penetrant Test Report</div>
 
             {/* ── JOB DETAILS ── */}
@@ -596,6 +599,8 @@ export const PTReportPrintPage: React.FC = () => {
                 </tr>
               </tbody>
             </table>
+
+            </div>{/* ── end report-body ── */}
 
             <div className="footer">
               <div className="footer-text-block">

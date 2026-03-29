@@ -34,8 +34,8 @@ const PRINT_STYLES = `
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
-  .rpt-header { background: #185FA5; padding: 10px 12px; display: flex; align-items: center; gap: 12px; }
+  .report { background: #fff; border: none; border-radius: 6px; overflow: hidden; }
+  .rpt-header { background: #185FA5; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
   .logo-box { width: 90px; height: 90px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 3px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #fff; }
@@ -84,7 +84,8 @@ const PRINT_STYLES = `
   .accept-badge { background: #eaf4de; color: #27500a; }
   .reject-badge { background: #fcebeb; color: #7a1f1f; }
   .neutral-badge { background: #edf0f5; color: #334155; }
-  .footer { background: #f8fafc; padding: 6px 10px; font-size: 9px; color: #4b5563; border-top: 1px solid #d9e1ea; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .footer { background: #f8fafc; padding: 6px 10px; font-size: 9px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 `;
@@ -340,6 +341,7 @@ export const MPTReportPrintPage = () => {
                 </div>
               </div>
             </div>
+            <div className="report-body">
             <div className="rpt-title">
               Magnetic Particle Examination Report
             </div>
@@ -725,6 +727,8 @@ export const MPTReportPrintPage = () => {
                 </tbody>
               </table>
             )}
+
+            </div>{/* ── end report-body ── */}
 
             {/* ── Footer ── */}
             <div className="footer">

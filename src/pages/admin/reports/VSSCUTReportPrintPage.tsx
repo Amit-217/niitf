@@ -27,8 +27,8 @@ const PRINT_STYLES = `
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
-  .rpt-header { background: #185FA5; padding: 10px 12px; display: flex; align-items: center; gap: 12px; }
+  .report { background: #fff; border: none; border-radius: 6px; overflow: hidden; }
+  .rpt-header { background: #185FA5; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
   .logo-box { width: 90px; height: 90px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 3px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #fff; }
@@ -67,10 +67,11 @@ const PRINT_STYLES = `
   .lbl { background: #f7fafc; font-weight: 600; font-size: 9px; white-space: nowrap; }
   .val { font-size: 10px; }
   .mt-n1 { margin-top: -1px; }
+  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 3px; font-size: 9px; text-align: center; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
-  .footer { background: #f8fafc; padding: 6px 10px; font-size: 8px; color: #4b5563; border-top: 1px solid #d9e1ea; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .footer { background: #f8fafc; padding: 6px 10px; font-size: 8px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 `;
@@ -248,6 +249,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 </div>
               </div>
             </div>
+            <div className="report-body">
             <div className="rpt-title">Ultrasonic Testing Report</div>
 
             {/* Report No + Date row */}
@@ -635,6 +637,8 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 </tr>
               </tbody>
             </table>
+
+            </div>{/* ── end report-body ── */}
 
             <div className="footer">
               <div className="footer-text-block">
