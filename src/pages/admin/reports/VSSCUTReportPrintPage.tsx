@@ -71,6 +71,16 @@ const PRINT_STYLES = `
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 8px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+
+  @media print {
+    .print-fixed-footer { position: fixed; bottom: 3mm; left: 0; width: 100%; display: flex; justify-content: center; z-index: 1000; background: transparent; }
+    .print-fixed-footer-inner { width: calc((210mm - 6mm) / 0.92); transform: scale(0.92); transform-origin: bottom center; background: transparent; margin: 0 auto; }
+    .tfoot-content { visibility: hidden; }
+  }
+  @media screen {
+    .print-fixed-footer { display: none; }
+    .tfoot-content { visibility: visible; }
+  }
 `;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -192,9 +202,41 @@ export const VSSCUTReportPrintPage: React.FC = () => {
   const inspector = fs.inspector?.[0] ?? {};
   const ct = apc.calibTable ?? {};
 
+  const ReportFooter = () => (
+    <>
+      <div className="footer">
+        <div className="footer-text-block">
+          Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office,
+          MIDC, Baramati, Dist-Pune 413133 | Ph: +91 9608168056, +91
+          7875154431
+          <br />
+          Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 |
+          Website: www.niitindt.com | Email: niit04@gmail.com |
+          info@niitindt.com
+        </div>
+        <div className="qr-wrap">
+          <QRCodeSVG value={qrUrl} size={48} />
+        </div>
+      </div>
+      <div className="footer-meta">
+        Format No: <span>FMT-NDT-VSSC-UT-01</span>
+        &nbsp;|&nbsp; Rev. No: <span>00</span>
+        &nbsp;|&nbsp; Report Date: <span>{fmtDate(report.reportDate)}</span>
+        &nbsp;|&nbsp; Page: <span>{v(report.pageNo) || "1 of 1"}</span>
+      </div>
+    </>
+  );
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
+
+      {/* The fixed footer that only appears in print on every page at the bottom */}
+      <div className="print-fixed-footer">
+        <div className={`print-fixed-footer-inner report${bwMode ? " bw" : ""}`} style={{ border: 'none', boxShadow: 'none' }}>
+          <ReportFooter />
+        </div>
+      </div>
 
       <div className="no-print" style={{ position: 'fixed', top: 12, right: 16, zIndex: 100, display: 'flex', gap: 8 }}>
         <button
@@ -231,7 +273,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
             <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
               <thead style={{ display: "table-header-group" }}>
                 <tr>
-                  <td style={{ padding: 0 }}>
+                  <td style={{ padding: "5mm 0 0 0" }}>
                     <div className="rpt-header">
               <div className="logo-box">
                 <img src="/logo.png" alt="NIIT Logo" />
@@ -651,27 +693,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               </tbody>
               <tfoot style={{ display: "table-footer-group" }}>
                 <tr>
-                  <td style={{ padding: 0 }}>
-                    <div className="footer">
-              <div className="footer-text-block">
-                Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office,
-                MIDC, Baramati, Dist-Pune 413133 | Ph: +91 9608168056, +91
-                7875154431
-                <br />
-                Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 |
-                Website: www.niitindt.com | Email: niit04@gmail.com |
-                info@niitindt.com
-              </div>
-              <div className="qr-wrap">
-                <QRCodeSVG value={qrUrl} size={48} />
-              </div>
-            </div>
-            <div className="footer-meta">
-              Format No: <span>FMT-NDT-VSSC-UT-01</span>
-              &nbsp;|&nbsp; Rev. No: <span>00</span>
-              &nbsp;|&nbsp; Report Date: <span>{fmtDate(report.reportDate)}</span>
-              &nbsp;|&nbsp; Page: <span>{v(report.pageNo) || "1 of 1"}</span>
-            </div>
+                  <td style={{ padding: "0 0 5mm 0" }}>
+                    <div className="tfoot-content">
+                      <ReportFooter />
+                    </div>
                   </td>
                 </tr>
               </tfoot>

@@ -23,7 +23,7 @@ const PRINT_STYLES = `
       margin: 0 auto !important;
       width: 297mm !important;
       min-height: 210mm !important;
-      padding: 5mm !important;
+      padding: 0 5mm 0 5mm !important;
       box-sizing: border-box !important;
     }
   }
@@ -67,6 +67,16 @@ const PRINT_STYLES = `
   .mt-n1 { margin-top: -1px; }
   .footer-text { font-size: 5.5pt; text-align: center; color: #555; margin-top: 3px; }
   .reject-cell { font-weight: bold; color: #b91c1c; }
+
+  @media print {
+    .print-fixed-footer { position: fixed; bottom: 5mm; left: 0; width: 100%; display: flex; justify-content: center; z-index: 1000; background: transparent; }
+    .print-fixed-footer-inner { width: calc(297mm - 10mm); background: transparent; margin: 0 auto; }
+    .tfoot-content { visibility: hidden; }
+  }
+  @media screen {
+    .print-fixed-footer { display: none; }
+    .tfoot-content { visibility: visible; }
+  }
 `;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -170,9 +180,26 @@ export const AWSDReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const cert = report.certification ?? {};
 
+  const ReportFooter = () => (
+    <div className="footer-text">
+      Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
+      Baramati, Dist-Pune 413133 &nbsp;|&nbsp; Ph. +91 9860186056, +91
+      7875154431 &nbsp;|&nbsp; Reg. Office: A/p - Kuthare, Tal - Patan,
+      Dist-Satara 415112 &nbsp;|&nbsp; Website: www.niitindt.com
+      &nbsp;|&nbsp; Email: niit04@gmail.com
+    </div>
+  );
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
+
+      {/* The fixed footer that only appears in print on every page at the bottom */}
+      <div className="print-fixed-footer">
+        <div className={`print-fixed-footer-inner report`} style={{ border: 'none', boxShadow: 'none' }}>
+          <ReportFooter />
+        </div>
+      </div>
 
       {/* ── Report Content ── */}
       <div
@@ -197,7 +224,7 @@ export const AWSDReportPrintPage: React.FC = () => {
           <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
             <thead style={{ display: "table-header-group" }}>
               <tr>
-                <td style={{ padding: 0 }}>
+                <td style={{ padding: "5mm 0 0 0" }}>
                   {/* ── HEADER ── */}
                   <table
             style={{
@@ -590,14 +617,9 @@ export const AWSDReportPrintPage: React.FC = () => {
 
             <tfoot style={{ display: "table-footer-group" }}>
               <tr>
-                <td style={{ padding: 0 }}>
-                  {/* ── Footer ── */}
-                  <div className="footer-text">
-                    Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
-                    Baramati, Dist-Pune 413133 &nbsp;|&nbsp; Ph. +91 9860186056, +91
-                    7875154431 &nbsp;|&nbsp; Reg. Office: A/p - Kuthare, Tal - Patan,
-                    Dist-Satara 415112 &nbsp;|&nbsp; Website: www.niitindt.com
-                    &nbsp;|&nbsp; Email: niit04@gmail.com
+                <td style={{ padding: "0 0 5mm 0" }}>
+                  <div className="tfoot-content">
+                    <ReportFooter />
                   </div>
                 </td>
               </tr>
