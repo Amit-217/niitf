@@ -690,66 +690,47 @@ export const MPTReportPrintPage = () => {
                         </colgroup>
                         <tbody>
                           <tr>
-                            <td
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "9px",
-                                background: "#E6F1FB",
-                                color: "#0C447C",
-                                textAlign: "center",
-                              }}
-                            >
-                              CUSTOMER REPRESENTATIVE
-                            </td>
-                            <td
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "9px",
-                                background: "#E6F1FB",
-                                color: "#0C447C",
-                                textAlign: "center",
-                              }}
-                            >
-                              CLIENT / TPI REPRESENTATIVE
-                            </td>
-                            <td
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "9px",
-                                background: "#E6F1FB",
-                                color: "#0C447C",
-                                textAlign: "center",
-                              }}
-                            >
-                              NDT INSPECTOR
-                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER: <span>{v(fs.customer?.name)}</span></td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT / TPI: <span>{v(fs.clientOrTPI?.name)}</span></td>
                           </tr>
                           <tr>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>National Industrial Inspection And Training</td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.customer)}</td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.client)}</td>
+                          </tr>
+                          <tr>
+                            <td>Name: {v(inspectors[0]?.name) || "-"}</td>
                             <td>Name: {v(fs.customer?.name) || "-"}</td>
                             <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
-                            <td>Name: {v(inspectors[0]?.name) || "-"}</td>
                           </tr>
                           <tr>
-                            <td>Designation: -</td>
-                            <td>Designation: -</td>
                             <td>
-                              Qualification: {v(inspectors[0]?.qualification) || "-"}
+                              {v(inspectors[0]?.qualification) || "-"}
+                              {inspectors[0]?.designation ? ` / ${inspectors[0].designation}` : ""}
                             </td>
+                            <td>Designation: {v(fs.customer?.designation) || "-"}</td>
+                            <td>Designation: {v(fs.clientOrTPI?.designation) || "-"}</td>
                           </tr>
                           <tr>
                             <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
+                            <td>Signature:</td>
+                            <td>Signature:</td>
                           </tr>
                           <tr>
+                            <td style={{ height: 28 }}></td>
+                            <td></td>
+                            <td></td>
+                          </tr>
+                          <tr>
+                            <td>I.D. No.: {v(inspectors[0]?.idNo) || "-"}</td>
                             <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
                             <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
-                            <td>I.D. No.: {v(inspectors[0]?.idNo) || "-"}</td>
                           </tr>
                           <tr>
+                            <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
                             <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
                             <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
-                            <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
                           </tr>
                         </tbody>
                       </table>

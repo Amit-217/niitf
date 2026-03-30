@@ -69,6 +69,8 @@ const PRINT_STYLES = `
   .val { font-size: 11px; }
   .mt-n1 { margin-top: -1px; }
   .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .sign-table td { border: 1px solid #d9e1ea; padding: 4px 6px; font-size: 11px; vertical-align: top; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 3px; font-size: 11px; text-align: center; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
@@ -687,105 +689,52 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* Signature Section */}
-                      <table className="report-table">
+                      <table className="sign-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.4%" }} />
+                        </colgroup>
                         <tbody>
                           <tr>
-                            <td
-                              style={{
-                                width: "33%",
-                                textAlign: "center",
-                                fontWeight: 700,
-                                fontSize: "11px",
-                                background: "#E6F1FB",
-                                padding: "3px 4px",
-                              }}
-                            >
-                              National Ind. Insp. &amp; Training
-                            </td>
-                            <td
-                              style={{
-                                width: "33%",
-                                textAlign: "center",
-                                fontWeight: 700,
-                                fontSize: "11px",
-                                background: "#E6F1FB",
-                                padding: "3px 4px",
-                              }}
-                            >
-                              QC / WIL
-                            </td>
-                            <td
-                              style={{
-                                width: "34%",
-                                textAlign: "center",
-                                fontWeight: 700,
-                                fontSize: "11px",
-                                background: "#E6F1FB",
-                                padding: "3px 4px",
-                              }}
-                            >
-                              RQS / VSSC
-                            </td>
-                          </tr>
-                          <tr style={{ height: 30 }}>
-                            <td
-                              style={{
-                                verticalAlign: "bottom",
-                                paddingBottom: 2,
-                                fontSize: "11px",
-                              }}
-                            >
-                              Signature:
-                            </td>
-                            <td
-                              style={{
-                                verticalAlign: "bottom",
-                                paddingBottom: 2,
-                                fontSize: "11px",
-                              }}
-                            >
-                              Signature:
-                            </td>
-                            <td
-                              style={{
-                                verticalAlign: "bottom",
-                                paddingBottom: 2,
-                                fontSize: "11px",
-                              }}
-                            >
-                              Signature:
-                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER: <span>{v(fs.qc?.name)}</span></td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT / TPI: <span>{v(fs.rqs?.name)}</span></td>
                           </tr>
                           <tr>
-                            <td style={{ fontSize: "11px" }}>
-                              Name: {v(inspector.name)}
-                            </td>
-                            <td style={{ fontSize: "11px" }}>
-                              Name: {v(fs.qc?.name)}
-                            </td>
-                            <td style={{ fontSize: "11px" }}>
-                              Name: {v(fs.rqs?.name)}
-                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>National Industrial Inspection And Training</td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(report.customer)}</td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}></td>
                           </tr>
-                          {inspector.qualification && (
-                            <tr>
-                              <td style={{ fontSize: "11px" }}>
-                                {v(inspector.qualification)}
-                              </td>
-                              <td></td>
-                              <td></td>
-                            </tr>
-                          )}
                           <tr>
-                            <td style={{ fontSize: "11px" }}>
-                              Date: {fmtDate(inspector.date)}
-                            </td>
-                            <td style={{ fontSize: "11px" }}>
-                              Date: {fmtDate(fs.qc?.date)}
-                            </td>
-                            <td style={{ fontSize: "11px" }}>
-                              Date: {fmtDate(fs.rqs?.date)}
-                            </td>
+                            <td style={{ minHeight: 14 }}>Name: {v(inspector.name)}</td>
+                            <td>Name: {v(fs.qc?.name)}</td>
+                            <td>Name: {v(fs.rqs?.name)}</td>
+                          </tr>
+                          <tr>
+                            <td>{v(inspector.qualification)}</td>
+                            <td>Designation:</td>
+                            <td>Designation:</td>
+                          </tr>
+                          <tr>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td>Signature:</td>
+                            <td>Signature:</td>
+                          </tr>
+                          <tr>
+                            <td style={{ height: 28 }}></td>
+                            <td></td>
+                            <td></td>
+                          </tr>
+                          <tr>
+                            <td>I.D. No.: {v(inspector.idNo)}</td>
+                            <td>I.D. No.: {v(fs.qc?.idNo)}</td>
+                            <td>I.D. No.: {v(fs.rqs?.idNo)}</td>
+                          </tr>
+                          <tr>
+                            <td>Date: {fmtDate(inspector.date)}</td>
+                            <td>Date: {fmtDate(fs.qc?.date)}</td>
+                            <td>Date: {fmtDate(fs.rqs?.date)}</td>
                           </tr>
                         </tbody>
                       </table>
