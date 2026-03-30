@@ -6,12 +6,10 @@ import {
   CalendarClock, 
   MessageSquarePlus, 
   CheckCircle2, 
-  Save, 
   Loader2, 
   X, 
   MessageSquare, 
   Bell, 
-  Eye,
   Info,
   Send
 } from 'lucide-react';
@@ -59,16 +57,13 @@ const getStatusLabel = (status: string) => {
 export const EmployeeTasksPage = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
-  const [isCompleteModalOpen, setCompleteModalOpen] = useState(false);
-  const [isViewThreadOpen, setViewThreadOpen] = useState(false);
+  const [isTaskModalOpen, setTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [comment, setComment] = useState('');
-  const [completionNote, setCompletionNote] = useState('');
-  const [myPastUpdates, setMyPastUpdates] = useState<any[]>([]);
-  const [viewThreadUpdates, setViewThreadUpdates] = useState<any[]>([]);
+  const [statusDraft, setStatusDraft] = useState<'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED'>('ASSIGNED');
+  const [updates, setUpdates] = useState<any[]>([]);
   const [isSubmitting, setSubmitting] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'IN_PROGRESS' | 'COMPLETED'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED'>('ALL');
 
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const currentUserId = currentUser?.userId || currentUser?.id || currentUser?._id || null;
@@ -94,7 +89,6 @@ export const EmployeeTasksPage = () => {
 
   const filteredTasks = tasks.filter((task) => {
     if (statusFilter === 'ALL') return true;
-    if (statusFilter === 'PENDING') return task.status === 'ASSIGNED';
     return task.status === statusFilter;
   });
 
@@ -104,30 +98,21 @@ export const EmployeeTasksPage = () => {
     const matched = tasks.find((task) => task._id === taskId);
     if (matched) {
       openedTaskIdRef.current = taskId;
-      openUpdateModal(matched);
+      openTaskModal(matched);
     }
   }, [tasks, location.state]);
 
-  const openUpdateModal = async (task: Task) => {
+  const openTaskModal = async (task: Task, initialStatus?: 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED') => {
     setSelectedTask(task);
     setComment('');
-    setUpdateModalOpen(true);
+    setStatusDraft(initialStatus || task.status);
+    setTaskModalOpen(true);
     try {
       const res = await getTaskUpdates(task._id);
-      setMyPastUpdates(res.data || []);
+      setUpdates(res.data || []);
     } catch (e) {
       console.error('History load failed');
-    }
-  };
-
-  const openViewThreadModal = async (task: Task) => {
-    setSelectedTask(task);
-    setViewThreadOpen(true);
-    try {
-      const res = await getTaskUpdates(task._id);
-      setViewThreadUpdates(res.data || []);
-    } catch (e) {
-      console.error('Thread load failed');
+      setUpdates([]);
     }
   };
 
@@ -136,37 +121,36 @@ export const EmployeeTasksPage = () => {
     if (!selectedTask || !comment.trim()) return;
     setSubmitting(true);
     try {
-      await submitTaskUpdate(selectedTask._id, {
-        date: new Date().toISOString().split('T')[0],
-        comment
-      });
+      // If status changed, update it first
+      if (statusDraft !== selectedTask.status) {
+        if (statusDraft === 'COMPLETED') {
+            await api.patch(`/tasks/${selectedTask._id}/complete`, { completionNote: comment });
+        } else {
+            await api.patch(`/tasks/${selectedTask._id}`, { status: statusDraft });
+        }
+      }
+
+      // If it wasn't a completion (already done above), or if we want another update
+      if (statusDraft !== 'COMPLETED') {
+          await submitTaskUpdate(selectedTask._id, {
+            date: new Date().toISOString().split('T')[0],
+            comment
+          });
+      }
+
       toast.success('Update submitted!');
       setComment('');
       
       const res = await getTaskUpdates(selectedTask._id);
-      setMyPastUpdates(res.data || []);
+      setUpdates(res.data || []);
       
       window.dispatchEvent(new Event('notifications:refresh'));
       await fetchMyTasks(true);
+
+      // Close if completed
+      if (statusDraft === 'COMPLETED') setTaskModalOpen(false);
     } catch (error: any) {
       toast.error(error.message || 'Failed to submit update');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleMarkComplete = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedTask || !completionNote.trim()) return;
-    setSubmitting(true);
-    try {
-      await api.patch(`/tasks/${selectedTask._id}/complete`, { completionNote });
-      toast.success('Task marked as completed!');
-      setCompleteModalOpen(false);
-      window.dispatchEvent(new Event('notifications:refresh'));
-      fetchMyTasks();
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to complete task');
     } finally {
       setSubmitting(false);
     }
@@ -239,7 +223,6 @@ export const EmployeeTasksPage = () => {
         <div className="mt-6 flex flex-wrap gap-2">
           {[
             { id: 'ALL', label: 'All Tasks', count: tasks.length },
-            { id: 'PENDING', label: 'Pending', count: tasks.filter(t => t.status === 'ASSIGNED').length },
             { id: 'IN_PROGRESS', label: 'In Progress', count: tasks.filter(t => t.status === 'IN_PROGRESS').length },
             { id: 'COMPLETED', label: 'Completed', count: tasks.filter(t => t.status === 'COMPLETED').length },
           ].map((f) => (
@@ -297,27 +280,18 @@ export const EmployeeTasksPage = () => {
               </p>
               
               <div className="flex gap-2.5 pt-4 border-t border-gray-50 mt-auto">
-                {task.status !== 'COMPLETED' ? (
-                  <>
-                    <button 
-                      onClick={() => openUpdateModal(task)} 
-                      className="flex-1 py-3 bg-violet-50 text-violet-700 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-violet-600 hover:text-white transition-all shadow-sm"
-                    >
-                      <MessageSquarePlus size={14} /> Update
-                    </button>
-                    <button 
-                      onClick={() => { setSelectedTask(task); setCompletionNote(''); setCompleteModalOpen(true); }} 
-                      className="flex-1 py-3 bg-emerald-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all shadow-md shadow-emerald-100"
-                    >
-                      <CheckCircle2 size={14} /> Finish
-                    </button>
-                  </>
-                ) : (
+                <button 
+                  onClick={() => openTaskModal(task)} 
+                  className="flex-1 py-3 bg-violet-50 text-violet-700 border border-violet-100 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-violet-600 hover:text-white transition-all shadow-sm"
+                >
+                  <MessageSquarePlus size={14} /> View detail
+                </button>
+                {task.status !== 'COMPLETED' && (
                   <button 
-                    onClick={() => openViewThreadModal(task)} 
-                    className="w-full py-3 bg-violet-50 text-violet-700 border border-violet-100 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-violet-600 hover:text-white transition-all shadow-sm"
+                    onClick={() => openTaskModal(task, 'COMPLETED')} 
+                    className="flex-1 py-3 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100"
                   >
-                    <Eye size={14} /> View Timeline
+                    <CheckCircle2 size={14} /> Finish
                   </button>
                 )}
               </div>
@@ -326,48 +300,57 @@ export const EmployeeTasksPage = () => {
         </div>
       )}
 
-      {/* Update Thread Modal */}
-      {isUpdateModalOpen && selectedTask && (
+      {/* Single Unified Task Modal */}
+      {isTaskModalOpen && selectedTask && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setUpdateModalOpen(false)} />
-          <div className="relative bg-white rounded-[2rem] w-full max-w-3xl overflow-hidden animate-in fade-in zoom-in duration-200 shadow-2xl">
-            <div className="px-6 py-5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white flex justify-between items-start gap-4">
+          <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setTaskModalOpen(false)} />
+          <div className="relative bg-white rounded-[2rem] w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in duration-200 shadow-2xl">
+            <div className="px-6 py-5 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white flex justify-between items-start gap-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-violet-100/80">Task Communication</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-violet-100/80">Manage My Task</p>
                 <h2 className="font-black text-xl mt-1 line-clamp-1">{selectedTask.title}</h2>
+                <p className="text-violet-50 text-xs mt-1">Review instructions and submit updates or finalize the task.</p>
               </div>
               <button 
-                onClick={() => setUpdateModalOpen(false)} 
+                onClick={() => setTaskModalOpen(false)} 
                 className="p-2 rounded-xl hover:bg-white/10 transition-colors"
               >
                 <X size={20} />
               </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] max-h-[80dvh] lg:max-h-[70vh] overflow-y-auto lg:overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] max-h-[80dvh] lg:max-h-[70vh] overflow-y-auto lg:overflow-hidden">
               {/* Form Side */}
               <div className="p-6 overflow-y-auto border-b lg:border-b-0 lg:border-r border-gray-100">
-                <form onSubmit={handleSubmitUpdate} className="space-y-6">
+                <div className="rounded-2xl border border-gray-100 bg-gray-50/50 p-4 mb-6">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Description</p>
+                    <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedTask.description}</p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                        <div className="px-3 py-1.5 rounded-xl bg-white border border-gray-100 flex items-center gap-2">
+                            <CalendarClock size={12} className="text-violet-400" />
+                            <span className="text-[10px] font-bold text-gray-500">Due: {selectedTask.dueDate ? new Date(selectedTask.dueDate).toLocaleDateString() : 'N/A'}</span>
+                        </div>
+                        <span className={`px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest ${getStatusBadge(selectedTask.status)}`}>
+                            {getStatusLabel(selectedTask.status)}
+                        </span>
+                    </div>
+                </div>
+
+                <form onSubmit={handleSubmitUpdate} className="space-y-5">
+
                   <div>
-                    <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                    <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] mb-3 flex items-center gap-2 font-black">
                        <MessageSquare size={16} className="text-violet-600" />
-                       New Progress Update
+                       Progress Comment
                     </h3>
                     <textarea 
                       required 
-                      rows={6} 
+                      rows={4} 
                       value={comment} 
                       onChange={e => setComment(e.target.value)} 
                       className="w-full p-4 border border-gray-100 rounded-2xl bg-gray-50 focus:bg-white focus:ring-4 focus:ring-violet-500/10 focus:border-violet-400 outline-none resize-none transition-all text-sm leading-relaxed" 
-                      placeholder="What have you completed since the last update?" 
+                      placeholder={statusDraft === 'COMPLETED' ? "Summarize your final achievements..." : "What have you completed since the last update?"} 
                     />
-                  </div>
-                  
-                  <div className="flex items-start gap-3 bg-amber-50/50 border border-amber-100 rounded-2xl p-4">
-                    <Bell size={18} className="text-amber-500 shrink-0 mt-0.5" />
-                    <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
-                      Your update will be visible to administrators. They can provide feedback or guidance directly in the thread.
-                    </p>
                   </div>
                   
                   <button 
@@ -380,7 +363,7 @@ export const EmployeeTasksPage = () => {
                     ) : (
                       <>
                         <Send size={16} />
-                        Post Update
+                        {statusDraft === 'COMPLETED' ? 'Finalize & Finish' : 'Post Update'}
                       </>
                     )}
                   </button>
@@ -390,94 +373,15 @@ export const EmployeeTasksPage = () => {
               {/* Thread Side */}
               <div className="p-6 bg-gray-50/50 overflow-y-auto">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em]">Timeline</h3>
-                  <span className="text-[10px] font-black uppercase text-gray-400">{myPastUpdates.length} Entries</span>
+                  <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <Bell size={14} className="text-violet-600" />
+                    Timeline
+                  </h3>
+                  <span className="text-[10px] font-black uppercase text-gray-400">{updates.length} Entries</span>
                 </div>
-                {renderThread(myPastUpdates)}
+                {renderThread(updates)}
               </div>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* View Thread Only Modal */}
-      {isViewThreadOpen && selectedTask && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setViewThreadOpen(false)} />
-          <div className="relative bg-white rounded-[2rem] w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200 shadow-2xl">
-            <div className="px-6 py-5 bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 text-white flex justify-between items-start gap-4">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-100/100">Task Completed</p>
-                <h2 className="font-black text-xl mt-1 line-clamp-1">{selectedTask.title}</h2>
-              </div>
-              <button 
-                onClick={() => setViewThreadOpen(false)} 
-                className="p-2 rounded-xl hover:bg-white/10 transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <div className="p-6 bg-gray-50/30">
-              <div className="mb-6 flex items-center justify-between">
-                <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em]">Full Conversation</h3>
-                <span className="text-[10px] font-bold text-gray-400 px-3 py-1 bg-white border border-gray-100 rounded-full">{viewThreadUpdates.length} Messages</span>
-              </div>
-              <div className="max-h-[60vh] overflow-y-auto pr-1">
-                {renderThread(viewThreadUpdates)}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Completion Modal */}
-      {isCompleteModalOpen && selectedTask && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-           <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setCompleteModalOpen(false)} />
-           <div className="relative bg-white rounded-[2.5rem] w-full max-w-md p-8 animate-in fade-in zoom-in duration-200 shadow-2xl">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600">Final Validation</p>
-                <h2 className="text-xl font-black text-gray-900 mt-1">Complete Task</h2>
-              </div>
-              <button 
-                onClick={() => setCompleteModalOpen(false)}
-                className="p-2 rounded-xl text-gray-400 hover:bg-gray-100 transition-colors"
-              >
-                <X size={20}/>
-              </button>
-            </div>
-            
-            <form onSubmit={handleMarkComplete} className="space-y-6">
-              <div>
-                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
-                  Completion Summary
-                </label>
-                <textarea 
-                  required 
-                  rows={5} 
-                  value={completionNote} 
-                  onChange={e => setCompletionNote(e.target.value)} 
-                  className="w-full p-4 border border-gray-100 rounded-2xl bg-gray-50 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none resize-none transition-all text-sm leading-relaxed" 
-                  placeholder="Summarize your final achievements for this task..." 
-                />
-              </div>
-              
-              <button 
-                type="submit" 
-                disabled={isSubmitting || !completionNote.trim()} 
-                className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase text-[11px] tracking-[0.25em] flex items-center justify-center gap-3 transition-all hover:bg-emerald-700 disabled:opacity-50 shadow-xl shadow-emerald-100"
-              >
-                {isSubmitting ? (
-                  <Loader2 className="animate-spin" size={18} />
-                ) : (
-                  <>
-                    <CheckCircle2 size={16} />
-                    Finalize Task
-                  </>
-                )}
-              </button>
-            </form>
           </div>
         </div>
       )}
