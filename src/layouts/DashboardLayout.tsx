@@ -409,15 +409,9 @@ export const DashboardLayout: React.FC = () => {
             key: 'customerManagement',
             icon: Building2,
             links: [
+                { name: 'Quotations', path: `/${basePath}/quotations`, icon: FileText },
                 { name: 'All Reports', path: `/${basePath}/reports`, icon: FileBarChart2 },
                 { name: 'Customer', path: `/${basePath}/customers`, icon: Users },
-                { name: 'MPT Report', path: `/${basePath}/reports/mpt/new`, icon: Magnet },
-                { name: 'PT Report', path: `/${basePath}/reports/pt/new`, icon: Droplets },
-                { name: 'UT Report', path: `/${basePath}/reports/ut/new`, icon: Waves },
-                { name: 'VSSC-UT Report', path: `/${basePath}/reports/vssc-ut/new`, icon: Satellite },
-                { name: 'UTG Report', path: `/${basePath}/reports/utg/new`, icon: Ruler },
-                { name: 'TPI IVR Report', path: `/${basePath}/reports/tpi-ivr/new`, icon: ClipboardList },
-                { name: 'AWS D1.1 Report', path: `/${basePath}/reports/awsd/new`, icon: GitBranch },
             ]
         }
     ];
@@ -623,7 +617,7 @@ export const DashboardLayout: React.FC = () => {
                     className={`
                         fixed lg:sticky top-[76px] left-0 h-[calc(100dvh-76px)] max-h-[calc(100dvh-76px)]
                         bg-white border border-gray-200 rounded-r-2xl
-                        shadow-lg z-20 flex flex-col overflow-hidden
+                        shadow-lg z-20 flex flex-col overflow-visible
                         transition-all duration-300 ease-in-out
                         ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                         ${sidebarCollapsed ? 'lg:w-16 w-64' : 'w-64'}

@@ -195,7 +195,7 @@ export const PTReportFormPage: React.FC = () => {
     getPTReportById(id)
       .then((res: any) => {
         const r = (res as any).data ?? res;
-        setCustomerId(r.customerId ?? "");
+        setCustomerId(typeof r.customerId === "object" ? r.customerId?._id ?? "" : r.customerId ?? "");
         setCustomerName(r.jobDetails?.customer ?? "");
         setReportNo(r.reportNo ?? "");
         const jd = r.jobDetails ?? {};
