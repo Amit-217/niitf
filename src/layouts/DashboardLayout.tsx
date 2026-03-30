@@ -4,7 +4,7 @@ import {
     Menu, X, Bell, User, LogOut, LayoutDashboard,
     Users, BookOpen, Clock, CircleHelp, Briefcase,
     ChevronLeft, ChevronRight, ListTodo, FileText, GraduationCap, Search,
-    ChevronDown, ChevronUp, Building2, Magnet, Droplets, Waves, Satellite, FileBarChart2, Ruler, ClipboardList, GitBranch
+    ChevronDown, ChevronUp, Building2, FileBarChart2
 } from 'lucide-react';
 
 import { toast } from 'react-toastify';
@@ -22,7 +22,6 @@ export const DashboardLayout: React.FC = () => {
     const [isNotificationsLoading, setIsNotificationsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [notifications, setNotifications] = useState<any[]>([]);
-    const [hiddenSyntheticNotificationIds, setHiddenSyntheticNotificationIds] = useState<string[]>([]);
     const [myTaskCount, setMyTaskCount] = useState(0);
     
     // Sub-menu states
@@ -55,11 +54,15 @@ export const DashboardLayout: React.FC = () => {
     const role = user?.role || 'EMPLOYEE';
     const basePath = role === 'STUDENT' ? 'student' : (role === 'ADMIN' || role === 'SUPER_ADMIN' ? 'admin' : 'employee');
     const currentUserId = user?.userId || user?.id || user?._id || '';
-    const hiddenSyntheticNotificationsStorageKey = `hidden-task-notifications:${currentUserId || 'guest'}`;
 
     const normalizeNotificationId = (value: any) => {
         if (!value) return '';
-        if (typeof value === 'object') return normalizeNotificationId(value._id || value.id || value.userId);
+        if (typeof value === 'string') return value;
+        if (typeof value === 'object') {
+            const id = value._id || value.id || value.userId;
+            if (id) return String(id);
+            return String(value);
+        }
         return String(value);
     };
 
@@ -95,68 +98,7 @@ export const DashboardLayout: React.FC = () => {
         };
     };
 
-    const buildTaskFeedNotification = (task: any) => {
-        const taskId = normalizeNotificationId(task?._id);
-        if (!taskId) return null;
 
-        const eventTimestamp = task?.updatedAt || task?.createdAt || new Date().toISOString();
-        const eventKey = new Date(eventTimestamp).getTime();
-        const isCreator = normalizeNotificationId(task?.createdBy) === currentUserId;
-        const isAssigned = Array.isArray(task?.assignedTo) && task.assignedTo.some((assigned: any) => normalizeNotificationId(assigned) === currentUserId);
-
-        if (!isCreator && !isAssigned) return null;
-
-        let type = 'TASK_ASSIGNED';
-        let title = 'Task assigned';
-        let message = `You have been assigned to "${task?.title || 'a task'}".`;
-
-        if (String(task?.status || '') === 'COMPLETED') {
-            type = 'TASK_COMPLETED';
-            title = 'Task completed';
-            message = `"${task?.title || 'A task'}" has been marked as completed.`;
-        } else if (String(task?.status || '') === 'IN_PROGRESS') {
-            type = 'TASK_UPDATE';
-            title = 'Task in progress';
-            message = `"${task?.title || 'A task'}" is now in progress.`;
-        } else if (isCreator) {
-            title = 'Task created';
-            message = `You created "${task?.title || 'a task'}".`;
-        }
-
-        return {
-            _id: `task-feed-${taskId}-${type}-${eventKey}`,
-            recipientId: currentUserId,
-            actorId: normalizeNotificationId(task?.createdBy),
-            taskId: task,
-            type,
-            title,
-            message,
-            readAt: null,
-            createdAt: eventTimestamp,
-        };
-    };
-
-    const isSyntheticNotificationId = (value: any) => {
-        const id = normalizeNotificationId(value);
-        return id.startsWith('task-feed-') || id.startsWith('client-task-') || id.startsWith('client-task-summary-');
-    };
-
-    useEffect(() => {
-        try {
-            const raw = localStorage.getItem(hiddenSyntheticNotificationsStorageKey);
-            setHiddenSyntheticNotificationIds(raw ? JSON.parse(raw) : []);
-        } catch {
-            setHiddenSyntheticNotificationIds([]);
-        }
-    }, [hiddenSyntheticNotificationsStorageKey]);
-
-    const persistHiddenSyntheticNotificationIds = useCallback((updater: string[] | ((prev: string[]) => string[])) => {
-        setHiddenSyntheticNotificationIds((prev) => {
-            const next = typeof updater === 'function' ? updater(prev) : updater;
-            localStorage.setItem(hiddenSyntheticNotificationsStorageKey, JSON.stringify(next));
-            return next;
-        });
-    }, [hiddenSyntheticNotificationsStorageKey]);
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
@@ -172,42 +114,33 @@ export const DashboardLayout: React.FC = () => {
     }, []);
 
     const fetchNotifications = useCallback(async () => {
-        setIsNotificationsLoading(true);
+        const isFirstLoad = notifications.length === 0;
+        if (isFirstLoad) setIsNotificationsLoading(true);
         try {
-            const res = await getMyNotifications({ limit: 12 });
-            const fetched = Array.isArray(res.data) ? res.data : [];
+            // Only fetch UNREAD notifications to ensure they "disappear" once read/visited
+            const res = await getMyNotifications({ limit: 100, unread: true });
+            const body: any = res;
+            const fetched = Array.isArray(body?.data) ? body.data : (Array.isArray(body) ? body : []);
+            
             const uniqueNotifications = fetched.filter((item: any, index: number, items: any[]) => {
                 const id = normalizeNotificationId(item?._id);
                 if (!id) return true;
                 return items.findIndex((candidate: any) => normalizeNotificationId(candidate?._id) === id) === index;
             });
-            let visibleNotifications = uniqueNotifications
-                .sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
-
-            if (visibleNotifications.length === 0 && currentUserId && (role === 'ADMIN' || role === 'SUPER_ADMIN' || role === 'EMPLOYEE')) {
-                try {
-                    const tasksRes = await getAllTasks();
-                    const allTasks = Array.isArray(tasksRes.data) ? tasksRes.data : [];
-                    const fallbackNotifications = allTasks
-                        .map((task: any) => buildTaskFeedNotification(task))
-                        .filter(Boolean)
-                        .filter((item: any) => !hiddenSyntheticNotificationIds.includes(normalizeNotificationId(item._id)))
-                        .sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
-                        .slice(0, 12);
-
-                    visibleNotifications = fallbackNotifications;
-                } catch {
-                    visibleNotifications = [];
-                }
+            
+            // Further ensure we only show unread items in the list
+            setNotifications(uniqueNotifications.filter((n: any) => !n.readAt).sort((a: any, b: any) => 
+                new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+            ));
+        } catch (error: any) {
+            console.error('Notification fetch error:', error);
+            if (notifications.length === 0) {
+                 setNotifications([]);
             }
-
-            setNotifications(visibleNotifications);
-        } catch {
-            setNotifications([]);
         } finally {
-            setIsNotificationsLoading(false);
+            if (isFirstLoad) setIsNotificationsLoading(false);
         }
-    }, [currentUserId, hiddenSyntheticNotificationIds, role]);
+    }, [notifications.length]);
 
     const fetchMyTaskCount = useCallback(async () => {
         if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
@@ -236,8 +169,8 @@ export const DashboardLayout: React.FC = () => {
     useEffect(() => {
         fetchNotifications();
         fetchMyTaskCount();
-        const timer = window.setInterval(fetchNotifications, 30000);
-        const taskTimer = window.setInterval(fetchMyTaskCount, 30000);
+        const timer = window.setInterval(fetchNotifications, 10000);
+        const taskTimer = window.setInterval(fetchMyTaskCount, 10000);
         const handleNotificationRefresh = () => {
             fetchNotifications();
         };
@@ -267,10 +200,6 @@ export const DashboardLayout: React.FC = () => {
         const notificationId = normalizeNotificationId(notification?._id);
         if (!notificationId) return;
 
-        if (isSyntheticNotificationId(notificationId)) {
-            persistHiddenSyntheticNotificationIds((prev) => [...new Set([...prev, notificationId])]);
-        }
-
         setNotifications((prev) =>
             prev.filter((item) => normalizeNotificationId(item._id) !== notificationId)
         );
@@ -279,15 +208,9 @@ export const DashboardLayout: React.FC = () => {
     const handleMarkAllRead = async () => {
         try {
             await markAllNotificationsRead();
-            const syntheticIds = notifications
-                .map((item) => normalizeNotificationId(item?._id))
-                .filter((id) => isSyntheticNotificationId(id));
-
-            if (syntheticIds.length > 0) {
-                persistHiddenSyntheticNotificationIds((prev) => [...new Set([...prev, ...syntheticIds])]);
-            }
-
+            // Clear notifications from the list since we only show unread ones
             setNotifications([]);
+            toast.success('Cleared all notifications');
         } catch {
             toast.error('Failed to clear notifications');
         }
@@ -302,11 +225,8 @@ export const DashboardLayout: React.FC = () => {
     };
 
     const handleVisitNotification = async (notification: any) => {
-        const isSyntheticTaskFeed = isSyntheticNotificationId(notification._id);
         try {
-            if (!isSyntheticTaskFeed) {
-                await markNotificationRead(notification._id);
-            }
+            await markNotificationRead(notification._id);
         } catch {
             // Ignore read failures and still allow the notification to open.
         }
@@ -315,9 +235,7 @@ export const DashboardLayout: React.FC = () => {
         setIsNotificationOpen(false);
 
         if (notification.taskId?._id || notification.taskId) {
-            const taskPath = role === 'ADMIN' || role === 'SUPER_ADMIN'
-                ? `/${basePath}/my-tasks`
-                : `/${basePath}/tasks`;
+            const taskPath = `/${basePath}/tasks`;
             navigate(taskPath, {
                 state: { taskId: notification.taskId?._id || notification.taskId }
             });
@@ -327,15 +245,12 @@ export const DashboardLayout: React.FC = () => {
     const handleCloseNotification = async (notification: any) => {
         const notificationId = normalizeNotificationId(notification._id);
         try {
-            if (!isSyntheticNotificationId(notificationId)) {
-                await markNotificationRead(notificationId);
-            }
+            await markNotificationRead(notificationId);
         } catch {
             // Ignore close failures and still dismiss locally.
         }
 
         dismissNotificationLocally(notification);
-        setIsNotificationOpen(false);
     };
 
     const groupedNotifications = notifications.reduce(
@@ -382,7 +297,7 @@ export const DashboardLayout: React.FC = () => {
                     { name: 'Salary Generation', path: `/${basePath}/payroll/records`, icon: LayoutDashboard },
                     { name: 'Payroll Config', path: `/${basePath}/payroll/config`, icon: Briefcase },
                     { name: 'Attendance', path: `/${basePath}/attendance`, icon: Clock },
-                    { name: 'Task Master', path: `/${basePath}/tasks`, icon: ListTodo },
+                    { name: 'Admin Task', path: `/${basePath}/tasks`, icon: ListTodo },
                     { name: 'Overtime', path: `/${basePath}/payroll/overtime`, icon: Clock },
                     { name: 'Advances', path: `/${basePath}/payroll/advances`, icon: Briefcase },
                 ] : [

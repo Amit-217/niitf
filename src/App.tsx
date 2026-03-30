@@ -294,7 +294,7 @@ function App() {
         {/* Fallback */}
         <Route path="*" element={<Login />} />
       </Routes>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} limit={3} />
     </BrowserRouter>
   );
 }
