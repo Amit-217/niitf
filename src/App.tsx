@@ -52,6 +52,9 @@ import { AdmissionsPage } from "./pages/admin/admissions/AdmissionsPage";
 import { TestsPage } from "./pages/admin/tests/TestsPage";
 import { TakeTestPage } from "./pages/student/tests/TakeTestPage";
 import { StudentExamAccessPage } from "./pages/student/tests/StudentExamAccessPage";
+import { QuotationsListPage } from "./pages/admin/quotations/QuotationsListPage";
+import { QuotationFormPage } from "./pages/admin/quotations/QuotationFormPage";
+import { QuotationPrintPage } from "./pages/admin/quotations/QuotationPrintPage";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -155,6 +158,11 @@ function App() {
           <Route path="enquiries" element={<EnquiriesPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="customers/:id" element={<CustomerDetailPage />} />
+          
+          <Route path="quotations" element={<QuotationsListPage />} />
+          <Route path="quotations/:type/new" element={<QuotationFormPage />} />
+          <Route path="quotations/:type/:id/edit" element={<QuotationFormPage />} />
+          
           <Route path="reports" element={<ReportsListPage />} />
           <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
           <Route path="reports/mpt/:id/edit" element={<MPTReportFormPage />} />
@@ -280,6 +288,8 @@ function App() {
         <Route path="/reports/public/utg/:id" element={<UTGReportPrintPage />} />
         <Route path="/reports/public/tpi-ivr/:id" element={<TPIIVRReportPrintPage />} />
         <Route path="/reports/public/awsd/:id" element={<AWSDReportPrintPage />} />
+
+        <Route path="/reports/quotations/:type/:id/print" element={<QuotationPrintPage />} />
 
         {/* Fallback */}
         <Route path="*" element={<Login />} />
