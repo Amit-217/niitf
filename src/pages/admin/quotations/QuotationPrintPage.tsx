@@ -18,6 +18,27 @@ const PRINT_STYLES = `
       margin: 0 auto !important; padding: 0 !important;
       box-sizing: border-box !important; box-shadow: none !important;
     }
+    .screen-footer { display: none !important; }
+    .print-footer-fixed { 
+      display: block !important; 
+      position: fixed !important; 
+      bottom: 0 !important; 
+      left: 0 !important; 
+      width: 210mm !important; 
+      margin: 0 auto !important;
+      right: 0 !important;
+      background: #fff !important;
+      z-index: 9999 !important;
+    }
+    .print-footer-fixed-inner {
+      padding: 0 5mm 5mm 5mm !important;
+    }
+    .tfoot-spacer { display: table-footer-group !important; }
+  }
+  @media screen {
+    .print-footer-fixed { display: none !important; }
+    .tfoot-spacer { display: none !important; }
+    .screen-footer { display: block; }
   }
   body { font-family: 'Times New Roman', Times, serif; font-size: 13px; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
@@ -35,17 +56,8 @@ const PRINT_STYLES = `
   .footer-meta span { color: #fff; font-weight: 700; }
   .quotation-table th, .quotation-table td { border: 1px solid #000; padding: 5px 6px; }
   .quotation-table th { font-weight: bold; text-align: center; }
-
-  @media print {
-    .print-fixed-footer { position: fixed !important; bottom: 10mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; z-index: 99999 !important; background: transparent !important; }
-    .print-fixed-footer-inner { width: 193.2mm !important; background: transparent !important; margin: 0 auto !important; border: none !important; box-shadow: none !important; }
-    .tfoot-content { visibility: hidden !important; }
-  }
-  @media screen {
-    .print-fixed-footer { display: none; }
-    .tfoot-content { visibility: visible; }
-  }
 `;
+
 
 export const QuotationPrintPage: React.FC = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -280,27 +292,27 @@ export const QuotationPrintPage: React.FC = () => {
               </tr>
             </tbody>
 
-            {/* tfoot: invisible spacer in print — reserves space for the fixed footer */}
-            <tfoot style={{ display: 'table-footer-group' }}>
+            {/* tfoot: spacer to prevent content from overlapping the fixed footer */}
+            <tfoot className="tfoot-spacer">
               <tr>
                 <td style={{ padding: 0 }}>
-                  <div className="tfoot-content" style={{ height: '35mm' }} />
+                  <div style={{ height: '35mm', visibility: 'hidden' }}>spacer</div>
                 </td>
               </tr>
             </tfoot>
           </table>
 
           {/* Screen-only footer — absolute at bottom of page card */}
-          <div className="no-print" style={{ position: 'absolute', bottom: '5mm', left: '5mm', right: '5mm' }}>
+          <div className="screen-footer" style={{ position: 'absolute', bottom: '5mm', left: '5mm', right: '5mm' }}>
             <QuotationFooter />
           </div>
 
         </div>
       </div>
 
-      {/* Print-only footer — fixed at bottom of EVERY printed page */}
-      <div className="print-fixed-footer">
-        <div className="print-fixed-footer-inner">
+      {/* Print-only fixed footer — pins to physical bottom of every page */}
+      <div className="print-footer-fixed">
+        <div className="print-footer-fixed-inner">
           <QuotationFooter />
         </div>
       </div>

@@ -441,9 +441,9 @@ export const DashboardLayout: React.FC = () => {
             key: 'customerManagement',
             icon: Building2,
             links: [
-                { name: 'Quotations', path: `/${basePath}/quotations`, icon: FileText },
-                { name: 'All Reports', path: `/${basePath}/reports`, icon: FileBarChart2 },
                 { name: 'Customer', path: `/${basePath}/customers`, icon: Users },
+                { name: 'All Reports', path: `/${basePath}/reports`, icon: FileBarChart2 },
+                { name: 'Quotations', path: `/${basePath}/quotations`, icon: FileText },
             ]
         }
     ];
