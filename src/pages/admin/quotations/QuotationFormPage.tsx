@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Breadcrumbs } from '../../../components/Breadcrumbs';
 import {
@@ -12,6 +12,8 @@ import { Save, Ban, Plus, Trash2 } from 'lucide-react';
 export const QuotationFormPage: React.FC = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const locationState = location.state as { customerId?: string } | null;
   const isEditing = Boolean(id);
   const qType = type === 'training' ? 'Training' : 'Service';
 
@@ -66,7 +68,11 @@ export const QuotationFormPage: React.FC = () => {
         }
       } else {
         // Auto gen quotation number roughly if required, but backend usually requires unique string
-        setFormData((prev: any) => ({ ...prev, quotationNo: `Q-${Date.now().toString().slice(-6)}` }));
+        setFormData((prev: any) => ({
+          ...prev,
+          quotationNo: `Q-${Date.now().toString().slice(-6)}`,
+          ...(locationState?.customerId ? { customerId: locationState.customerId } : {}),
+        }));
       }
     } catch (err) {
       toast.error('Failed to load initial data');
@@ -110,6 +116,13 @@ export const QuotationFormPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Enforce customer selection
+    if (!formData.customerId) {
+      toast.error('Please select a customer before saving.');
+      return;
+    }
+
     try {
       setIsLoading(true);
       
@@ -142,7 +155,14 @@ export const QuotationFormPage: React.FC = () => {
         else await createServiceQuotation(payload);
         toast.success(`${qType} Quotation created successfully`);
       }
-      navigate('/admin/quotations');
+
+      // Navigate back to customer page if customerId is known, else global list
+      const customerId = formData.customerId || locationState?.customerId;
+      if (customerId) {
+        navigate(`/admin/customers/${customerId}`, { state: { activeTab: 'quotations' } });
+      } else {
+        navigate('/admin/quotations');
+      }
     } catch (err) {
       toast.error('Failed to save quotation');
     } finally {
