@@ -256,7 +256,10 @@ export const MPTReportPrintPage = () => {
   const standards = splitTags(jd.referenceStd);
   const acceptance = splitTags(jd.acceptanceCriteria);
   const getEvaluation = (o: (typeof obs)[number]) => {
-    const legacy = o as (typeof obs)[number] & { result?: string; remark?: string };
+    const legacy = o as (typeof obs)[number] & {
+      result?: string;
+      remark?: string;
+    };
     return legacy.evaluation || legacy.result || legacy.remark || "";
   };
 
@@ -644,7 +647,9 @@ export const MPTReportPrintPage = () => {
                             <td className="val">
                               {v(me.demagnetization) || "-"}
                             </td>
-                            <td className="lbl">Magnetic Field Direction Verified by</td>
+                            <td className="lbl">
+                              Magnetic Field Direction Verified by
+                            </td>
                             <td className="val">
                               {v(me.magneticFieldDirectionVerifiedBy) || "-"}
                             </td>
@@ -674,7 +679,7 @@ export const MPTReportPrintPage = () => {
                               6. Observations
                             </td>
                           </tr>
-                           <tr>
+                          <tr>
                             <th style={{ width: "6%" }}>Sr. No.</th>
                             <th>Job Description</th>
                             <th>Drg No. / Joint No.</th>
@@ -710,18 +715,14 @@ export const MPTReportPrintPage = () => {
                                 </td>
                                 <td>
                                   <span
-                                    className={resultClass(
-                                      o.interpretation,
-                                    )}
+                                    className={resultClass(o.interpretation)}
                                   >
                                     {v(o.interpretation) || "N/A"}
                                   </span>
                                 </td>
                                 <td>
                                   <span
-                                    className={resultClass(
-                                      getEvaluation(o),
-                                    )}
+                                    className={resultClass(getEvaluation(o))}
                                   >
                                     {v(getEvaluation(o)) || "Accepted"}
                                   </span>
@@ -785,14 +786,26 @@ export const MPTReportPrintPage = () => {
                             <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
                           </tr>
                           <tr>
+                            <td>MT NDE Level II:</td>
                             <td>
-                              MT NDE Level II:
+                              Designation:{" "}
+                              {v(
+                                (
+                                  fs.customer as unknown as {
+                                    designation?: string;
+                                  }
+                                )?.designation,
+                              )}
                             </td>
                             <td>
-                              Designation: {v((fs.customer as unknown as { designation?: string })?.designation)}
-                            </td>
-                            <td>
-                              Designation: {v((fs.clientOrTPI as unknown as { designation?: string })?.designation)}
+                              Designation:{" "}
+                              {v(
+                                (
+                                  fs.clientOrTPI as unknown as {
+                                    designation?: string;
+                                  }
+                                )?.designation,
+                              )}
                             </td>
                           </tr>
                           <tr>
@@ -877,4 +890,3 @@ export const MPTReportPrintPage = () => {
     </>
   );
 };
-

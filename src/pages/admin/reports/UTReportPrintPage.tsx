@@ -650,7 +650,9 @@ export const UTReportPrintPage: React.FC = () => {
                             <td className="col-hdr" style={{ width: "10%" }}>
                               Quantity in Nos.
                             </td>
-                            <td className="col-hdr" style={{ width: "20%" }}>Interpretation</td>
+                            <td className="col-hdr" style={{ width: "20%" }}>
+                              Interpretation
+                            </td>
                             <td className="col-hdr" style={{ width: "16%" }}>
                               Evaluation
                             </td>
@@ -686,7 +688,9 @@ export const UTReportPrintPage: React.FC = () => {
                                   {o.quantity ?? ""}
                                 </td>
                                 <td>{v(o.interpretation)}</td>
-                                <td>{v(o.evaluation || o.remark || o.result)}</td>
+                                <td>
+                                  {v(o.evaluation || o.remark || o.result)}
+                                </td>
                               </tr>
                             ))
                           )}
@@ -807,4 +811,3 @@ export const UTReportPrintPage: React.FC = () => {
     </>
   );
 };
-

@@ -339,7 +339,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       <div className="rpt-title">Ultrasonic Testing Report</div>
 
                       {/* ── VSSC UT SPECIFIC HEADER ── */}
-                      <table className="report-table mt-n1" style={{ marginBottom: 4 }}>
+                      <table
+                        className="report-table mt-n1"
+                        style={{ marginBottom: 4 }}
+                      >
                         <colgroup>
                           <col style={{ width: "28%" }} />
                           <col style={{ width: "36%" }} />
@@ -347,90 +350,136 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         </colgroup>
                         <tbody>
                           <tr>
-                            <td className="val" style={{ color: "#c53030", fontWeight: 700, padding: "6px" }}>
-                              Report No. {v(report.reportNo)} <br />
-                              Page No: 1 / 1
-                            </td>
-                            <td className="val" colSpan={2} style={{ color: "#c53030", fontWeight: 700, padding: "6px 12px" }}>
-                              Job Description: {v(report.jobDescription)}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="val">
-                              Report Date: <span style={{ color: "#c53030", fontWeight: 700 }}>{fmtDate(report.reportDate)}</span>
-                            </td>
-                            <td className="val">
-                              Weld Joint No.: <strong>{v(report.weldJointNo)}</strong>
-                            </td>
-                            <td className="val">
-                              Thickness of Job: <strong>{v(report.thicknessOfJob)}</strong>
+                            <td colSpan={3} style={{ padding: 0 }}>
+                              <div style={{ display: "flex" }}>
+                                <div style={{ width: "50%", padding: "6px", fontWeight: 700, fontSize: "11px" }}>
+                                  Report No. {v(report.reportNo)}
+                                </div>
+                                <div style={{ width: "50%", padding: "6px 12px", fontWeight: 700, fontSize: "11px", borderLeft: "1px solid #d9e1ea" }}>
+                                  Job Description: {v(report.jobDescription)}
+                                </div>
+                              </div>
                             </td>
                           </tr>
                           <tr>
                             <td className="val">
-                              Surface Condition:<br />
+                              Report Date:{" "}
+                              <strong>{fmtDate(report.reportDate)}</strong>
+                            </td>
+                            <td className="val">
+                              Weld Joint No.:{" "}
+                              <strong>{v(report.weldJointNo)}</strong>
+                            </td>
+                            <td className="val">
+                              Thickness of Job:{" "}
+                              <strong>{v(report.thicknessOfJob)}</strong>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="val">
+                              Surface Condition:
+                              <br />
                               <strong>{v(report.surfaceCondition)}</strong>
                             </td>
                             <td className="val">
                               Customer: <strong>{v(report.customer)}</strong>
                             </td>
                             <td className="val">
-                              Period of Inspection:<br />
-                              <span style={{ color: "#c53030", fontWeight: 700 }}>{v(report.periodOfInspection)}</span>
+                              Period of Inspection:
+                              <br />
+                              <strong>{v(report.periodOfInspection)}</strong>
                             </td>
                           </tr>
                           <tr>
                             <td className="val" style={{ padding: 0 }}>
-                              <div style={{ padding: "4px 6px", borderBottom: "1px solid #d9e1ea" }}>
+                              <div
+                                style={{
+                                  padding: "4px 6px",
+                                  borderBottom: "1px solid #d9e1ea",
+                                }}
+                              >
                                 Material: <strong>{v(report.material)}</strong>
                               </div>
                               <div style={{ padding: "4px 6px" }}>
-                                Equipment Used: <strong>{v(report.equipmentUsed)}</strong>
+                                Equipment Used:{" "}
+                                <strong>{v(report.equipmentUsed)}</strong>
                               </div>
                             </td>
-                            <td className="val" style={{ verticalAlign: "top" }}>
-                              Scanning technique:<br />
+                            <td
+                              className="val"
+                              style={{ verticalAlign: "top" }}
+                            >
+                              Scanning technique:
+                              <br />
                               <strong>{v(report.scanningTechnique)}</strong>
                             </td>
-                            <td className="val" style={{ verticalAlign: "top" }}>
-                              Stage of Inspection:<br />
+                            <td
+                              className="val"
+                              style={{ verticalAlign: "top" }}
+                            >
+                              Stage of Inspection:
+                              <br />
                               <strong>{v(report.stageOfInspection)}</strong>
                             </td>
                           </tr>
                           <tr>
                             <td className="val" style={{ padding: 0 }}>
-                              <div style={{ padding: "4px 6px", borderBottom: "1px solid #d9e1ea" }}>
+                              <div
+                                style={{
+                                  padding: "4px 6px",
+                                  borderBottom: "1px solid #d9e1ea",
+                                }}
+                              >
                                 Couplant: <strong>{v(report.couplant)}</strong>
                               </div>
                               <div style={{ padding: "4px 6px" }}>
-                                Reference datum:<br />
+                                Reference datum:
+                                <br />
                                 <strong>{v(report.referenceDatum)}</strong>
                               </div>
                             </td>
-                            <td className="val" style={{ verticalAlign: "top" }}>
-                              Area scanned:<br />
+                            <td
+                              className="val"
+                              style={{ verticalAlign: "top" }}
+                            >
+                              Area scanned:
+                              <br />
                               <strong>{v(report.areaScanned)}</strong>
                             </td>
-                            <td className="val" style={{ verticalAlign: "top" }}>
-                              Acceptance Standard:<br />
+                            <td
+                              className="val"
+                              style={{ verticalAlign: "top" }}
+                            >
+                              Acceptance Standard:
+                              <br />
                               <strong>{v(report.acceptanceStandard)}</strong>
                             </td>
                           </tr>
                           <tr>
                             <td className="val">
-                              Test Setup<br />
-                              For Angle Range: <strong>{v(ts.angleRange)}</strong><br />
-                              For Normal Range: <strong>{v(ts.normalRange)}</strong>
+                              Test Setup
+                              <br />
+                              For Angle Range:{" "}
+                              <strong>{v(ts.angleRange)}</strong>
+                              <br />
+                              For Normal Range:{" "}
+                              <strong>{v(ts.normalRange)}</strong>
                             </td>
                             <td className="val">
-                              Standard Cal Block:<br />
-                              For Angle: <strong>{v(ts.standardCalBlock?.angle)}</strong><br />
-                              For Normal: <strong>{v(ts.standardCalBlock?.normal)}</strong>
+                              Standard Cal Block:
+                              <br />
+                              For Angle:{" "}
+                              <strong>{v(ts.standardCalBlock?.angle)}</strong>
+                              <br />
+                              For Normal:{" "}
+                              <strong>{v(ts.standardCalBlock?.normal)}</strong>
                             </td>
                             <td className="val">
-                              Idtn. No of Ref Block:<br />
-                              <span style={{ color: "#c53030", fontWeight: 700 }}>For Angle: {v(ts.identificationNoOfRefBlock?.angle)}</span><br />
-                              <span style={{ color: "#c53030", fontWeight: 700 }}>For Normal: {v(ts.identificationNoOfRefBlock?.normal)}</span>
+                              Idtn. No of Ref Block:
+                              <br />
+                              <strong>For Angle:{" "}{v(ts.identificationNoOfRefBlock?.angle)}</strong>
+                              <br />
+                              <strong>For Normal:{" "}{v(ts.identificationNoOfRefBlock?.normal)}</strong>
                             </td>
                           </tr>
                         </tbody>
@@ -448,12 +497,24 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl" style={{ width: "12%" }}>Frequency</td>
-                            <td className="val" style={{ width: "21.3%", color: "#c53030", fontWeight: 700 }}>{v(apc.frequency)}</td>
-                            <td className="lbl" style={{ width: "12%" }}>Size</td>
-                            <td className="val" style={{ width: "21.3%", color: "#c53030", fontWeight: 700 }}>{v(apc.size)}</td>
-                            <td className="lbl" style={{ width: "12%" }}>Type</td>
-                            <td className="val" style={{ width: "21.4%", color: "#c53030", fontWeight: 700 }}>{v(apc.type)}</td>
+                            <td className="lbl" style={{ width: "12%" }}>
+                              Frequency
+                            </td>
+                            <td className="val" style={{ width: "21.3%", fontWeight: 700 }}>
+                              {v(apc.frequency)}
+                            </td>
+                            <td className="lbl" style={{ width: "12%" }}>
+                              Size
+                            </td>
+                            <td className="val" style={{ width: "21.3%", fontWeight: 700 }}>
+                              {v(apc.size)}
+                            </td>
+                            <td className="lbl" style={{ width: "12%" }}>
+                              Type
+                            </td>
+                            <td className="val" style={{ width: "21.4%", fontWeight: 700 }}>
+                              {v(apc.type)}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -465,7 +526,11 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       >
                         <thead>
                           <tr style={{ background: "#f8fafc" }}>
-                            <th className="lbl" style={{ width: "16%", textAlign: "left" }} rowSpan={2}>
+                            <th
+                              className="lbl"
+                              style={{ width: "16%", textAlign: "left" }}
+                              rowSpan={2}
+                            >
                               Sr. Nos. of probes
                             </th>
                             <th className="col-hdr" colSpan={4}>
@@ -490,22 +555,36 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                             ))}
                           </tr>
                           <tr style={{ background: "#fff" }}>
-                            <th className="lbl" style={{ textAlign: "left" }}>Scanning</th>
+                            <th className="lbl" style={{ textAlign: "left" }}>
+                              Scanning
+                            </th>
                             {PROBE_MODES.map((pm) => (
                               <React.Fragment key={pm + "_hdr"}>
-                                <th style={{ fontSize: "10px", width: "7%" }}>BP mm</th>
-                                <th style={{ fontSize: "10px", width: "7%" }}>%FSH</th>
+                                <th style={{ fontSize: "10px", width: "7%" }}>
+                                  BP mm
+                                </th>
+                                <th style={{ fontSize: "10px", width: "7%" }}>
+                                  %FSH
+                                </th>
                               </React.Fragment>
                             ))}
                           </tr>
                         </thead>
                         <tbody>
                           <tr className="bg-white">
-                            <td className="lbl" style={{ textAlign: "center" }}>Skips</td>
+                            <td className="lbl" style={{ textAlign: "center" }}>
+                              Skips
+                            </td>
                             {PROBE_MODES.map((pm) => (
                               <React.Fragment key={pm + "_skip_hdr"}>
-                                <td className="lbl" style={{ background: "#fff" }}></td>
-                                <td className="lbl" style={{ background: "#fff" }}></td>
+                                <td
+                                  className="lbl"
+                                  style={{ background: "#fff" }}
+                                ></td>
+                                <td
+                                  className="lbl"
+                                  style={{ background: "#fff" }}
+                                ></td>
                               </React.Fragment>
                             ))}
                           </tr>
@@ -524,15 +603,26 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                                 const cell = (ct[pm] as any)?.[key] ?? {};
                                 return (
                                   <React.Fragment key={pm + "_" + key}>
-                                    <td style={{ fontWeight: 500 }}>{v(cell.bp)}</td>
-                                    <td style={{ fontWeight: 500 }}>{v(cell.fsh)}</td>
+                                    <td style={{ fontWeight: 500 }}>
+                                      {v(cell.bp)}
+                                    </td>
+                                    <td style={{ fontWeight: 500 }}>
+                                      {v(cell.fsh)}
+                                    </td>
                                   </React.Fragment>
                                 );
                               })}
                             </tr>
                           ))}
                           <tr>
-                            <td style={{ fontWeight: 700, textAlign: "left", fontSize: "11px", background: "#f7fafc" }}>
+                            <td
+                              style={{
+                                fontWeight: 700,
+                                textAlign: "left",
+                                fontSize: "11px",
+                                background: "#f7fafc",
+                              }}
+                            >
                               DAC dB
                             </td>
                             {PROBE_MODES.map((pm) => (
@@ -546,7 +636,14 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                             ))}
                           </tr>
                           <tr>
-                            <td style={{ fontWeight: 700, textAlign: "left", fontSize: "11px", background: "#f7fafc" }}>
+                            <td
+                              style={{
+                                fontWeight: 700,
+                                textAlign: "left",
+                                fontSize: "11px",
+                                background: "#f7fafc",
+                              }}
+                            >
                               Scanning dB
                             </td>
                             {PROBE_MODES.map((pm) => (
@@ -625,7 +722,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           {(report.evaluation || report.remarks) && (
                             <tr>
                               <td className="lbl">Evaluation</td>
-                              <td className="val">{v(report.evaluation || report.remarks)}</td>
+                              <td className="val">
+                                {v(report.evaluation || report.remarks)}
+                              </td>
                             </tr>
                           )}
                         </tbody>

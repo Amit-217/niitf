@@ -257,7 +257,12 @@ export const UTReportFormPage: React.FC = () => {
     getUTReportById(id)
       .then((res: any) => {
         const r = (res as any).data ?? res;
-        if (r.customerId) setCustomerId(typeof r.customerId === "object" ? r.customerId?._id ?? "" : r.customerId);
+        if (r.customerId)
+          setCustomerId(
+            typeof r.customerId === "object"
+              ? (r.customerId?._id ?? "")
+              : r.customerId,
+          );
         if (r.jobDetails?.customer) setCustomerName(r.jobDetails.customer);
         setReportNo(r.reportNo ?? "");
 
@@ -1142,8 +1147,12 @@ export const UTReportFormPage: React.FC = () => {
                 <th className="border border-gray-200 px-2 py-2 text-center w-16">
                   Qty
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">Interpretation</th>
-                <th className="border border-gray-200 px-2 py-2 text-left">Evaluation</th>
+                <th className="border border-gray-200 px-2 py-2 text-left">
+                  Interpretation
+                </th>
+                <th className="border border-gray-200 px-2 py-2 text-left">
+                  Evaluation
+                </th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
             </thead>
@@ -1208,7 +1217,9 @@ export const UTReportFormPage: React.FC = () => {
                   <td className="border border-gray-200 px-1 py-1">
                     <select
                       value={row.evaluation}
-                      onChange={(e) => updateObs(idx, "evaluation", e.target.value)}
+                      onChange={(e) =>
+                        updateObs(idx, "evaluation", e.target.value)
+                      }
                       className={inputClass}
                     >
                       <option value="">Select...</option>
@@ -1415,4 +1426,3 @@ export const UTReportFormPage: React.FC = () => {
     </div>
   );
 };
-

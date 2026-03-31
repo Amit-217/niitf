@@ -185,8 +185,8 @@ export const AWSDReportPrintPage: React.FC = () => {
       Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
       Baramati, Dist-Pune 413133 &nbsp;|&nbsp; Ph. +91 9860186056, +91
       7875154431 &nbsp;|&nbsp; Reg. Office: A/p - Kuthare, Tal - Patan,
-      Dist-Satara 415112 &nbsp;|&nbsp; Website: www.niitindt.com
-      &nbsp;|&nbsp; Email: niit04@gmail.com
+      Dist-Satara 415112 &nbsp;|&nbsp; Website: www.niitindt.com &nbsp;|&nbsp;
+      Email: niit04@gmail.com
     </div>
   );
 
@@ -215,393 +215,436 @@ export const AWSDReportPrintPage: React.FC = () => {
             boxSizing: "border-box",
           }}
         >
-          <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              borderSpacing: 0,
+              margin: 0,
+              padding: 0,
+            }}
+          >
             <thead style={{ display: "table-header-group" }}>
               <tr>
                 <td style={{ padding: "5mm 0 0 0" }}>
                   {/* â”€â”€ HEADER â”€â”€ */}
                   <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              border: "1.5px solid #444",
-              marginBottom: -1,
-            }}
-          >
-            <tbody>
-              <tr>
-                {/* Logo */}
-                <td
-                  rowSpan={2}
-                  style={{
-                    width: "10%",
-                    textAlign: "center",
-                    verticalAlign: "middle",
-                    border: "1px solid #444",
-                    padding: 4,
-                  }}
-                >
-                  <div
                     style={{
-                      border: "2px solid #1a3c8f",
-                      borderRadius: 4,
-                      width: 48,
-                      height: 48,
-                      margin: "0 auto",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 11,
-                      color: "#1a3c8f",
-                      fontWeight: "bold",
+                      width: "100%",
+                      borderCollapse: "collapse",
+                      border: "1.5px solid #444",
+                      marginBottom: -1,
                     }}
                   >
-                    NIIT
-                    <br />
-                    LOGO
-                  </div>
-                </td>
-                {/* Company info */}
-                <td
-                  style={{
-                    textAlign: "center",
-                    verticalAlign: "middle",
-                    border: "1px solid #444",
-                    padding: "2px 6px",
-                  }}
-                >
-                  <div className="company-name">
-                    National Industrial Inspection &amp; Training
-                  </div>
-                  <div className="company-sub">
-                    THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING | NDT
-                    CONSULTANCY | PHYSICAL CALIBRATION | FACTORY INSPECTION
-                    UNDER MAHARASHTRA FACTORY ACT | QUALITY MANAGEMENT SYSTEM
-                    TRAINING
-                  </div>
-                  <div className="company-iso">
-                    (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
-                  </div>
-                </td>
-                {/* Format info */}
-                <td
-                  rowSpan={2}
-                  style={{
-                    width: "20%",
-                    verticalAlign: "middle",
-                    border: "1px solid #444",
-                    padding: "3px 6px",
-                    fontSize: "11px",
-                    lineHeight: 1.9,
-                  }}
-                >
-                  <div>
-                    <strong>Report No:</strong> {v(report.reportNo)}
-                  </div>
-                  <div>
-                    <strong>Format No:</strong> FMT-NDT-AWSD-01
-                  </div>
-                  <div>
-                    <strong>Rev. No:</strong> 00
-                  </div>
-                  <div>
-                    <strong>Page No:</strong> 1/1
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td
-                  style={{
-                    textAlign: "center",
-                    border: "1px solid #444",
-                    padding: "3px 6px",
-                  }}
-                >
-                  <div className="title-cell">
-                    Report of UT of Welds (AWS D1.1)
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+                    <tbody>
+                      <tr>
+                        {/* Logo */}
+                        <td
+                          rowSpan={2}
+                          style={{
+                            width: "10%",
+                            textAlign: "center",
+                            verticalAlign: "middle",
+                            border: "1px solid #444",
+                            padding: 4,
+                          }}
+                        >
+                          <div
+                            style={{
+                              border: "2px solid #1a3c8f",
+                              borderRadius: 4,
+                              width: 48,
+                              height: 48,
+                              margin: "0 auto",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: 11,
+                              color: "#1a3c8f",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            NIIT
+                            <br />
+                            LOGO
+                          </div>
+                        </td>
+                        {/* Company info */}
+                        <td
+                          style={{
+                            textAlign: "center",
+                            verticalAlign: "middle",
+                            border: "1px solid #444",
+                            padding: "2px 6px",
+                          }}
+                        >
+                          <div className="company-name">
+                            National Industrial Inspection &amp; Training
+                          </div>
+                          <div className="company-sub">
+                            THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING
+                            | NDT CONSULTANCY | PHYSICAL CALIBRATION | FACTORY
+                            INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY
+                            MANAGEMENT SYSTEM TRAINING
+                          </div>
+                          <div className="company-iso">
+                            (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
+                          </div>
+                        </td>
+                        {/* Format info */}
+                        <td
+                          rowSpan={2}
+                          style={{
+                            width: "20%",
+                            verticalAlign: "middle",
+                            border: "1px solid #444",
+                            padding: "3px 6px",
+                            fontSize: "11px",
+                            lineHeight: 1.9,
+                          }}
+                        >
+                          <div>
+                            <strong>Report No:</strong> {v(report.reportNo)}
+                          </div>
+                          <div>
+                            <strong>Format No:</strong> FMT-NDT-AWSD-01
+                          </div>
+                          <div>
+                            <strong>Rev. No:</strong> 00
+                          </div>
+                          <div>
+                            <strong>Page No:</strong> 1/1
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            border: "1px solid #444",
+                            padding: "3px 6px",
+                          }}
+                        >
+                          <div className="title-cell">
+                            Report of UT of Welds (AWS D1.1)
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
                   </table>
                 </td>
               </tr>
             </thead>
-            
+
             <tbody style={{ display: "table-row-group" }}>
               <tr>
                 <td style={{ padding: 0, verticalAlign: "top" }}>
                   {/* â”€â”€ JOB INFORMATION â”€â”€ */}
                   <table className="report-table mt-n1">
-            <colgroup>
-              <col style={{ width: "14%" }} />
-              <col style={{ width: "20%" }} />
-              <col style={{ width: "14%" }} />
-              <col style={{ width: "20%" }} />
-              <col style={{ width: "14%" }} />
-              <col style={{ width: "18%" }} />
-            </colgroup>
-            <tbody>
-              <tr>
-                <td colSpan={6} className="section-hdr">
-                  JOB INFORMATION
-                </td>
-              </tr>
-              <tr>
-                <td className="lbl">Project</td>
-                <td className="val" colSpan={3}>
-                  {v(report.project)}
-                </td>
-                <td className="lbl">Weld Identification</td>
-                <td className="val">{v(report.weldIdentification)}</td>
-              </tr>
-              <tr>
-                <td className="lbl">Material Thickness</td>
-                <td className="val">{v(report.materialThickness)}</td>
-                <td className="lbl">Weld Joint (AWS)</td>
-                <td className="val">{v(report.weldJointAWS)}</td>
-                <td className="lbl">Welding Process</td>
-                <td className="val">{v(report.weldingProcess)}</td>
-              </tr>
-              <tr>
-                <td className="lbl">Quality Requirements â€” Section</td>
-                <td className="val" colSpan={3}>
-                  {v(report.qualityRequirementsSection)}
-                </td>
-                <td className="lbl">Evaluation</td>
-                <td className="val">{v(report.evaluation || report.remarks)}</td>
-              </tr>
-            </tbody>
-          </table>
+                    <colgroup>
+                      <col style={{ width: "14%" }} />
+                      <col style={{ width: "20%" }} />
+                      <col style={{ width: "14%" }} />
+                      <col style={{ width: "20%" }} />
+                      <col style={{ width: "14%" }} />
+                      <col style={{ width: "18%" }} />
+                    </colgroup>
+                    <tbody>
+                      <tr>
+                        <td colSpan={6} className="section-hdr">
+                          JOB INFORMATION
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="lbl">Project</td>
+                        <td className="val" colSpan={3}>
+                          {v(report.project)}
+                        </td>
+                        <td className="lbl">Weld Identification</td>
+                        <td className="val">{v(report.weldIdentification)}</td>
+                      </tr>
+                      <tr>
+                        <td className="lbl">Material Thickness</td>
+                        <td className="val">{v(report.materialThickness)}</td>
+                        <td className="lbl">Weld Joint (AWS)</td>
+                        <td className="val">{v(report.weldJointAWS)}</td>
+                        <td className="lbl">Welding Process</td>
+                        <td className="val">{v(report.weldingProcess)}</td>
+                      </tr>
+                      <tr>
+                        <td className="lbl">
+                          Quality Requirements â€” Section
+                        </td>
+                        <td className="val" colSpan={3}>
+                          {v(report.qualityRequirementsSection)}
+                        </td>
+                        <td className="lbl">Evaluation</td>
+                        <td className="val">
+                          {v(report.evaluation || report.remarks)}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
 
-          {/* â”€â”€ OBSERVATIONS â”€â”€ */}
-          <table className="obs-table mt-n1">
-            <tbody>
-              <tr>
-                <td colSpan={16} className="section-hdr">
-                  OBSERVATIONS
-                </td>
-              </tr>
-              {/* Header row 1 */}
-              <tr>
-                <td className="col-hdr" rowSpan={2} style={{ width: "3.5%" }}>
-                  Line
-                  <br />
-                  No.
-                </td>
-                <td className="col-hdr" rowSpan={2} style={{ width: "6%" }}>
-                  Indication
-                  <br />
-                  No.
-                </td>
-                <td className="col-hdr" rowSpan={2} style={{ width: "7%" }}>
-                  Transducer
-                  <br />
-                  Angle
-                </td>
-                <td className="col-hdr" rowSpan={2} style={{ width: "4.5%" }}>
-                  From
-                  <br />
-                  Face
-                </td>
-                <td className="col-hdr" rowSpan={2} style={{ width: "3.5%" }}>
-                  Leg
-                </td>
-                <td
-                  className="col-hdr-db"
-                  colSpan={4}
-                  style={{ background: "#dbeafe" }}
-                >
-                  DECIBELS
-                </td>
-                <td
-                  className="col-hdr-disc"
-                  colSpan={5}
-                  style={{ background: "#fef3c7" }}
-                >
-                  DISCONTINUITY
-                </td>
-                <td className="col-hdr" rowSpan={2} style={{ width: "6%" }}>Interpretation</td>
-              </tr>
-              {/* Header row 2 */}
-              <tr>
-                <td
-                  className="col-hdr-db"
-                  style={{ width: "5.5%", background: "#dbeafe" }}
-                >
-                  a.
-                  <br />
-                  Ind. Level
-                </td>
-                <td
-                  className="col-hdr-db"
-                  style={{ width: "5.5%", background: "#dbeafe" }}
-                >
-                  b.
-                  <br />
-                  Ref. Level
-                </td>
-                <td
-                  className="col-hdr-db"
-                  style={{ width: "6%", background: "#dbeafe" }}
-                >
-                  c.
-                  <br />
-                  Atten. Factor
-                </td>
-                <td
-                  className="col-hdr-db"
-                  style={{ width: "5.5%", background: "#dbeafe" }}
-                >
-                  d.
-                  <br />
-                  Ind. Rating
-                </td>
-                <td
-                  className="col-hdr-disc"
-                  style={{ width: "5%", background: "#fef3c7" }}
-                >
-                  Length
-                </td>
-                <td
-                  className="col-hdr-disc"
-                  style={{ width: "5.5%", background: "#fef3c7" }}
-                >
-                  Angular
-                  <br />
-                  Dist.
-                </td>
-                <td
-                  className="col-hdr-disc"
-                  style={{ width: "6%", background: "#fef3c7" }}
-                >
-                  Depth
-                  <br />
-                  from A
-                </td>
-                <td
-                  className="col-hdr-disc"
-                  style={{ width: "4.5%", background: "#fef3c7" }}
-                >
-                  From
-                  <br />X
-                </td>
-                <td
-                  className="col-hdr-disc"
-                  style={{ width: "4.5%", background: "#fef3c7" }}
-                >
-                  From
-                  <br />Y
-                </td>
-              </tr>
+                  {/* â”€â”€ OBSERVATIONS â”€â”€ */}
+                  <table className="obs-table mt-n1">
+                    <tbody>
+                      <tr>
+                        <td colSpan={16} className="section-hdr">
+                          OBSERVATIONS
+                        </td>
+                      </tr>
+                      {/* Header row 1 */}
+                      <tr>
+                        <td
+                          className="col-hdr"
+                          rowSpan={2}
+                          style={{ width: "3.5%" }}
+                        >
+                          Line
+                          <br />
+                          No.
+                        </td>
+                        <td
+                          className="col-hdr"
+                          rowSpan={2}
+                          style={{ width: "6%" }}
+                        >
+                          Indication
+                          <br />
+                          No.
+                        </td>
+                        <td
+                          className="col-hdr"
+                          rowSpan={2}
+                          style={{ width: "7%" }}
+                        >
+                          Transducer
+                          <br />
+                          Angle
+                        </td>
+                        <td
+                          className="col-hdr"
+                          rowSpan={2}
+                          style={{ width: "4.5%" }}
+                        >
+                          From
+                          <br />
+                          Face
+                        </td>
+                        <td
+                          className="col-hdr"
+                          rowSpan={2}
+                          style={{ width: "3.5%" }}
+                        >
+                          Leg
+                        </td>
+                        <td
+                          className="col-hdr-db"
+                          colSpan={4}
+                          style={{ background: "#dbeafe" }}
+                        >
+                          DECIBELS
+                        </td>
+                        <td
+                          className="col-hdr-disc"
+                          colSpan={5}
+                          style={{ background: "#fef3c7" }}
+                        >
+                          DISCONTINUITY
+                        </td>
+                        <td
+                          className="col-hdr"
+                          rowSpan={2}
+                          style={{ width: "6%" }}
+                        >
+                          Interpretation
+                        </td>
+                      </tr>
+                      {/* Header row 2 */}
+                      <tr>
+                        <td
+                          className="col-hdr-db"
+                          style={{ width: "5.5%", background: "#dbeafe" }}
+                        >
+                          a.
+                          <br />
+                          Ind. Level
+                        </td>
+                        <td
+                          className="col-hdr-db"
+                          style={{ width: "5.5%", background: "#dbeafe" }}
+                        >
+                          b.
+                          <br />
+                          Ref. Level
+                        </td>
+                        <td
+                          className="col-hdr-db"
+                          style={{ width: "6%", background: "#dbeafe" }}
+                        >
+                          c.
+                          <br />
+                          Atten. Factor
+                        </td>
+                        <td
+                          className="col-hdr-db"
+                          style={{ width: "5.5%", background: "#dbeafe" }}
+                        >
+                          d.
+                          <br />
+                          Ind. Rating
+                        </td>
+                        <td
+                          className="col-hdr-disc"
+                          style={{ width: "5%", background: "#fef3c7" }}
+                        >
+                          Length
+                        </td>
+                        <td
+                          className="col-hdr-disc"
+                          style={{ width: "5.5%", background: "#fef3c7" }}
+                        >
+                          Angular
+                          <br />
+                          Dist.
+                        </td>
+                        <td
+                          className="col-hdr-disc"
+                          style={{ width: "6%", background: "#fef3c7" }}
+                        >
+                          Depth
+                          <br />
+                          from A
+                        </td>
+                        <td
+                          className="col-hdr-disc"
+                          style={{ width: "4.5%", background: "#fef3c7" }}
+                        >
+                          From
+                          <br />X
+                        </td>
+                        <td
+                          className="col-hdr-disc"
+                          style={{ width: "4.5%", background: "#fef3c7" }}
+                        >
+                          From
+                          <br />Y
+                        </td>
+                      </tr>
 
-              {/* Empty rows if no data */}
-              {obs.length === 0
-                ? Array.from({ length: 5 }).map((_, i) => (
-                    <tr key={i} style={{ height: 16 }}>
-                      <td>{i + 1}</td>
-                      {Array.from({ length: 15 }).map((__, j) => (
-                        <td key={j}></td>
-                      ))}
-                    </tr>
-                  ))
-                : obs.map((o: any, i: number) => (
-                    <tr key={i} style={{ height: 16 }}>
-                      <td>{v(o.lineNo)}</td>
-                      <td>{v(o.indicationNo)}</td>
-                      <td>{v(o.transducerAngle)}</td>
-                      <td>{v(o.fromFace)}</td>
-                      <td>{v(o.leg)}</td>
-                      <td style={{ background: "#f0f7ff" }}>
-                        {v(o.decibels?.indicationLevel)}
-                      </td>
-                      <td style={{ background: "#f0f7ff" }}>
-                        {v(o.decibels?.referenceLevel)}
-                      </td>
-                      <td style={{ background: "#f0f7ff" }}>
-                        {v(o.decibels?.attenuationFactor)}
-                      </td>
-                      <td style={{ background: "#f0f7ff" }}>
-                        {v(o.decibels?.indicationRating)}
-                      </td>
-                      <td style={{ background: "#fffbeb" }}>
-                        {v(o.discontinuity?.length)}
-                      </td>
-                      <td style={{ background: "#fffbeb" }}>
-                        {v(o.discontinuity?.angularDistance)}
-                      </td>
-                      <td style={{ background: "#fffbeb" }}>
-                        {v(o.discontinuity?.depthFromA)}
-                      </td>
-                      <td style={{ background: "#fffbeb" }}>
-                        {v(o.discontinuity?.distanceFromX)}
-                      </td>
-                      <td style={{ background: "#fffbeb" }}>
-                        {v(o.discontinuity?.distanceFromY)}
-                      </td>
-                      <td
-                        className={
-                          o.interpretation === "Reject" ? "reject-cell" : ""
-                        }
-                      >
-                        {v(o.interpretation)}
-                      </td>
-                    </tr>
-                  ))}
-            </tbody>
-          </table>
+                      {/* Empty rows if no data */}
+                      {obs.length === 0
+                        ? Array.from({ length: 5 }).map((_, i) => (
+                            <tr key={i} style={{ height: 16 }}>
+                              <td>{i + 1}</td>
+                              {Array.from({ length: 15 }).map((__, j) => (
+                                <td key={j}></td>
+                              ))}
+                            </tr>
+                          ))
+                        : obs.map((o: any, i: number) => (
+                            <tr key={i} style={{ height: 16 }}>
+                              <td>{v(o.lineNo)}</td>
+                              <td>{v(o.indicationNo)}</td>
+                              <td>{v(o.transducerAngle)}</td>
+                              <td>{v(o.fromFace)}</td>
+                              <td>{v(o.leg)}</td>
+                              <td style={{ background: "#f0f7ff" }}>
+                                {v(o.decibels?.indicationLevel)}
+                              </td>
+                              <td style={{ background: "#f0f7ff" }}>
+                                {v(o.decibels?.referenceLevel)}
+                              </td>
+                              <td style={{ background: "#f0f7ff" }}>
+                                {v(o.decibels?.attenuationFactor)}
+                              </td>
+                              <td style={{ background: "#f0f7ff" }}>
+                                {v(o.decibels?.indicationRating)}
+                              </td>
+                              <td style={{ background: "#fffbeb" }}>
+                                {v(o.discontinuity?.length)}
+                              </td>
+                              <td style={{ background: "#fffbeb" }}>
+                                {v(o.discontinuity?.angularDistance)}
+                              </td>
+                              <td style={{ background: "#fffbeb" }}>
+                                {v(o.discontinuity?.depthFromA)}
+                              </td>
+                              <td style={{ background: "#fffbeb" }}>
+                                {v(o.discontinuity?.distanceFromX)}
+                              </td>
+                              <td style={{ background: "#fffbeb" }}>
+                                {v(o.discontinuity?.distanceFromY)}
+                              </td>
+                              <td
+                                className={
+                                  o.interpretation === "Reject"
+                                    ? "reject-cell"
+                                    : ""
+                                }
+                              >
+                                {v(o.interpretation)}
+                              </td>
+                            </tr>
+                          ))}
+                    </tbody>
+                  </table>
 
-          {/* â”€â”€ CERTIFICATION TEXT â”€â”€ */}
-          <div className="cert-para">
-            We, the undersigned, certify that the statements in this record are
-            correct and that the welds were prepared and tested in conformance
-            with the requirements of Clause 8, Part F of AWS D1.1/D1.1M,&nbsp;
-            <strong>({v(cert.year) || "____"})</strong> Structural Welding
-            Codeâ€”Steel.
-          </div>
+                  {/* â”€â”€ CERTIFICATION TEXT â”€â”€ */}
+                  <div className="cert-para">
+                    We, the undersigned, certify that the statements in this
+                    record are correct and that the welds were prepared and
+                    tested in conformance with the requirements of Clause 8,
+                    Part F of AWS D1.1/D1.1M,&nbsp;
+                    <strong>({v(cert.year) || "____"})</strong> Structural
+                    Welding Codeâ€”Steel.
+                  </div>
 
-          {/* â”€â”€ CERTIFICATION / SIGNATURES â”€â”€ */}
-          <table className="sign-table mt-n1">
-            <colgroup>
-              <col style={{ width: "14%" }} />
-              <col style={{ width: "22%" }} />
-              <col style={{ width: "4%" }} />
-              <col style={{ width: "14%" }} />
-              <col style={{ width: "22%" }} />
-              <col style={{ width: "4%" }} />
-              <col style={{ width: "10%" }} />
-              <col style={{ width: "10%" }} />
-            </colgroup>
-            <tbody>
-              <tr>
-                <td className="lbl">Test Date</td>
-                <td className="val">{fmtDate(cert.testDate)}</td>
-                <td style={{ border: "none", padding: 0 }}></td>
-                <td className="lbl">Manufacturer or Contractor</td>
-                <td className="val">{v(cert.manufacturerOrContractor)}</td>
-                <td style={{ border: "none", padding: 0 }}></td>
-                <td className="lbl">Date</td>
-                <td className="val">{fmtDate(cert.date)}</td>
-              </tr>
-              <tr>
-                <td className="lbl">Inspected By</td>
-                <td className="val">{v(cert.inspectedBy)}</td>
-                <td style={{ border: "none", padding: 0 }}></td>
-                <td className="lbl">Authorized By</td>
-                <td className="val">{v(cert.authorizedBy)}</td>
-                <td style={{ border: "none", padding: 0 }}></td>
-                <td colSpan={2}></td>
-              </tr>
-              <tr>
-                <td style={{ height: 22 }}>Signature:</td>
-                <td></td>
-                <td style={{ border: "none", padding: 0 }}></td>
-                <td>Signature:</td>
-                <td></td>
-                <td style={{ border: "none", padding: 0 }}></td>
-                <td colSpan={2}></td>
-              </tr>
-            </tbody>
+                  {/* â”€â”€ CERTIFICATION / SIGNATURES â”€â”€ */}
+                  <table className="sign-table mt-n1">
+                    <colgroup>
+                      <col style={{ width: "14%" }} />
+                      <col style={{ width: "22%" }} />
+                      <col style={{ width: "4%" }} />
+                      <col style={{ width: "14%" }} />
+                      <col style={{ width: "22%" }} />
+                      <col style={{ width: "4%" }} />
+                      <col style={{ width: "10%" }} />
+                      <col style={{ width: "10%" }} />
+                    </colgroup>
+                    <tbody>
+                      <tr>
+                        <td className="lbl">Test Date</td>
+                        <td className="val">{fmtDate(cert.testDate)}</td>
+                        <td style={{ border: "none", padding: 0 }}></td>
+                        <td className="lbl">Manufacturer or Contractor</td>
+                        <td className="val">
+                          {v(cert.manufacturerOrContractor)}
+                        </td>
+                        <td style={{ border: "none", padding: 0 }}></td>
+                        <td className="lbl">Date</td>
+                        <td className="val">{fmtDate(cert.date)}</td>
+                      </tr>
+                      <tr>
+                        <td className="lbl">Inspected By</td>
+                        <td className="val">{v(cert.inspectedBy)}</td>
+                        <td style={{ border: "none", padding: 0 }}></td>
+                        <td className="lbl">Authorized By</td>
+                        <td className="val">{v(cert.authorizedBy)}</td>
+                        <td style={{ border: "none", padding: 0 }}></td>
+                        <td colSpan={2}></td>
+                      </tr>
+                      <tr>
+                        <td style={{ height: 22 }}>Signature:</td>
+                        <td></td>
+                        <td style={{ border: "none", padding: 0 }}></td>
+                        <td>Signature:</td>
+                        <td></td>
+                        <td style={{ border: "none", padding: 0 }}></td>
+                        <td colSpan={2}></td>
+                      </tr>
+                    </tbody>
                   </table>
                 </td>
               </tr>
@@ -610,25 +653,37 @@ export const AWSDReportPrintPage: React.FC = () => {
             <tfoot style={{ display: "table-footer-group" }}>
               <tr>
                 <td style={{ padding: 0 }}>
-                  <div className="tfoot-content" style={{ height: "15mm" }}></div>
+                  <div
+                    className="tfoot-content"
+                    style={{ height: "15mm" }}
+                  ></div>
                 </td>
               </tr>
             </tfoot>
           </table>
-          
-          <div className={`no-print ${bwMode ? 'bw' : ''}`} style={{ position: "absolute", bottom: "5mm", left: "5mm", right: "5mm" }}>
+
+          <div
+            className={`no-print ${bwMode ? "bw" : ""}`}
+            style={{
+              position: "absolute",
+              bottom: "5mm",
+              left: "5mm",
+              right: "5mm",
+            }}
+          >
             <ReportFooter />
           </div>
-
         </div>
       </div>
       {/* The fixed footer that only appears in print on every page at the bottom */}
       <div className="print-fixed-footer">
-        <div className="print-fixed-footer-inner" style={{ border: 'none', boxShadow: 'none' }}>
+        <div
+          className="print-fixed-footer-inner"
+          style={{ border: "none", boxShadow: "none" }}
+        >
           <ReportFooter />
         </div>
       </div>
     </>
   );
 };
-

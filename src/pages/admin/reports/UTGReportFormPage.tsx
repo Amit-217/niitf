@@ -1092,7 +1092,9 @@ export const UTGReportFormPage: React.FC = () => {
                   <td className="border border-gray-200 px-1 py-1">
                     <select
                       value={row.evaluation}
-                      onChange={(e) => updateObs(idx, "evaluation", e.target.value)}
+                      onChange={(e) =>
+                        updateObs(idx, "evaluation", e.target.value)
+                      }
                       className={inputClass}
                     >
                       <option value="">Select...</option>

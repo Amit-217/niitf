@@ -205,7 +205,11 @@ export const MPTReportFormPage: React.FC = () => {
     getMPTReportById(id)
       .then((res: any) => {
         const r = (res as any).data ?? res;
-        setCustomerId(typeof r.customerId === "object" ? r.customerId?._id ?? "" : r.customerId ?? "");
+        setCustomerId(
+          typeof r.customerId === "object"
+            ? (r.customerId?._id ?? "")
+            : (r.customerId ?? ""),
+        );
         setCustomerName(r.jobDetails?.customer ?? "");
         setReportNo(r.reportNo ?? "");
         const jd = r.jobDetails ?? {};
@@ -1175,8 +1179,12 @@ export const MPTReportFormPage: React.FC = () => {
                 <th className="border border-gray-200 px-2 py-2 text-center">
                   Qty
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">Interpretation</th>
-                <th className="border border-gray-200 px-2 py-2 text-left">Evaluation</th>
+                <th className="border border-gray-200 px-2 py-2 text-left">
+                  Interpretation
+                </th>
+                <th className="border border-gray-200 px-2 py-2 text-left">
+                  Evaluation
+                </th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
             </thead>
@@ -1241,7 +1249,9 @@ export const MPTReportFormPage: React.FC = () => {
                   <td className="border border-gray-200 px-1 py-1">
                     <select
                       value={row.evaluation}
-                      onChange={(e) => updateObs(idx, "evaluation", e.target.value)}
+                      onChange={(e) =>
+                        updateObs(idx, "evaluation", e.target.value)
+                      }
                       className={inputClass}
                     >
                       <option value="">Select...</option>
@@ -1531,4 +1541,3 @@ export const MPTReportFormPage: React.FC = () => {
     </div>
   );
 };
-

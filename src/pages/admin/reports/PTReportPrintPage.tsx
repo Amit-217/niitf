@@ -450,9 +450,7 @@ export const PTReportPrintPage: React.FC = () => {
                             <td className="lbl"></td>
                             <td className="val"></td>
                             <td className="lbl">Welding Process</td>
-                            <td className="val">
-                              {v(jd.weldingProcess)}
-                            </td>
+                            <td className="val">{v(jd.weldingProcess)}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -473,7 +471,9 @@ export const PTReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="lbl">Penetrant Method</td>
-                            <td className="val" colSpan={3}>{v(md.penetrantMethod)}</td>
+                            <td className="val" colSpan={3}>
+                              {v(md.penetrantMethod)}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">
@@ -584,7 +584,9 @@ export const PTReportPrintPage: React.FC = () => {
                             <td className="col-hdr" style={{ width: "10%" }}>
                               Quantity in Nos.
                             </td>
-                            <td className="col-hdr" style={{ width: "20%" }}>Interpretation</td>
+                            <td className="col-hdr" style={{ width: "20%" }}>
+                              Interpretation
+                            </td>
                             <td className="col-hdr" style={{ width: "16%" }}>
                               Evaluation
                             </td>
@@ -620,7 +622,9 @@ export const PTReportPrintPage: React.FC = () => {
                                   {o.quantity ?? ""}
                                 </td>
                                 <td>{v(o.interpretation)}</td>
-                                <td>{v(o.evaluation || o.remark || o.result)}</td>
+                                <td>
+                                  {v(o.evaluation || o.remark || o.result)}
+                                </td>
                               </tr>
                             ))
                           )}
@@ -743,4 +747,3 @@ export const PTReportPrintPage: React.FC = () => {
     </>
   );
 };
-

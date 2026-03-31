@@ -196,7 +196,11 @@ export const PTReportFormPage: React.FC = () => {
     getPTReportById(id)
       .then((res: any) => {
         const r = (res as any).data ?? res;
-        setCustomerId(typeof r.customerId === "object" ? r.customerId?._id ?? "" : r.customerId ?? "");
+        setCustomerId(
+          typeof r.customerId === "object"
+            ? (r.customerId?._id ?? "")
+            : (r.customerId ?? ""),
+        );
         setCustomerName(r.jobDetails?.customer ?? "");
         setReportNo(r.reportNo ?? "");
         const jd = r.jobDetails ?? {};
@@ -961,8 +965,12 @@ export const PTReportFormPage: React.FC = () => {
                 <th className="border border-gray-200 px-2 py-2 text-center w-16">
                   Qty
                 </th>
-                 <th className="border border-gray-200 px-2 py-2 text-left">Interpretation</th>
-                <th className="border border-gray-200 px-2 py-2 text-left">Evaluation</th>
+                <th className="border border-gray-200 px-2 py-2 text-left">
+                  Interpretation
+                </th>
+                <th className="border border-gray-200 px-2 py-2 text-left">
+                  Evaluation
+                </th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
             </thead>
@@ -1239,4 +1247,3 @@ export const PTReportFormPage: React.FC = () => {
     </div>
   );
 };
-

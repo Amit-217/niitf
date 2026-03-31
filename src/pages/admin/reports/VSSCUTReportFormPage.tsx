@@ -221,7 +221,12 @@ export const VSSCUTReportFormPage: React.FC = () => {
       .then((res: any) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const r = (res as any).data ?? res;
-        if (r.customerId) setCustomerId(typeof r.customerId === "object" ? r.customerId?._id ?? "" : r.customerId);
+        if (r.customerId)
+          setCustomerId(
+            typeof r.customerId === "object"
+              ? (r.customerId?._id ?? "")
+              : r.customerId,
+          );
         if (r.customer) setCustomerName(r.customer);
         setReportNo(r.reportNo ?? "");
         setJobDescription(r.jobDescription ?? "");
@@ -864,10 +869,16 @@ export const VSSCUTReportFormPage: React.FC = () => {
           <table className="w-full text-xs border-collapse min-w-[1000px]">
             <thead>
               <tr className="bg-gray-100 text-gray-700">
-                <th className="border border-gray-300 px-2 py-2 text-left" rowSpan={2}>
+                <th
+                  className="border border-gray-300 px-2 py-2 text-left"
+                  rowSpan={2}
+                >
                   Sr. Nos. of probes
                 </th>
-                <th className="border border-gray-300 p-0 text-center font-bold" colSpan={4}>
+                <th
+                  className="border border-gray-300 p-0 text-center font-bold"
+                  colSpan={4}
+                >
                   <input
                     type="text"
                     value={probe45Sr}
@@ -876,7 +887,10 @@ export const VSSCUTReportFormPage: React.FC = () => {
                     placeholder="e.g. 45 - 63230"
                   />
                 </th>
-                <th className="border border-gray-300 p-0 text-center font-bold" colSpan={4}>
+                <th
+                  className="border border-gray-300 p-0 text-center font-bold"
+                  colSpan={4}
+                >
                   <input
                     type="text"
                     value={probe60Sr}
@@ -885,7 +899,10 @@ export const VSSCUTReportFormPage: React.FC = () => {
                     placeholder="e.g. 60 - 63285"
                   />
                 </th>
-                <th className="border border-gray-300 p-0 text-center font-bold" colSpan={4}>
+                <th
+                  className="border border-gray-300 p-0 text-center font-bold"
+                  colSpan={4}
+                >
                   <input
                     type="text"
                     value={probe70Sr}
@@ -897,17 +914,27 @@ export const VSSCUTReportFormPage: React.FC = () => {
               </tr>
               <tr className="bg-gray-50 text-gray-700">
                 {PROBE_MODES.map((pm) => (
-                  <th key={pm} className="border border-gray-300 px-2 py-1 text-center font-bold" colSpan={2}>
+                  <th
+                    key={pm}
+                    className="border border-gray-300 px-2 py-1 text-center font-bold"
+                    colSpan={2}
+                  >
                     {pm.replace("L", " L").replace("T", " T")}
                   </th>
                 ))}
               </tr>
               <tr className="bg-white text-gray-600">
-                <th className="border border-gray-300 px-2 py-1 text-center font-bold">Scanning</th>
+                <th className="border border-gray-300 px-2 py-1 text-center font-bold">
+                  Scanning
+                </th>
                 {PROBE_MODES.map((pm) => (
                   <React.Fragment key={pm + "_sh"}>
-                    <th className="border border-gray-300 px-1 py-1 text-center">BP mm</th>
-                    <th className="border border-gray-300 px-1 py-1 text-center">%FSH</th>
+                    <th className="border border-gray-300 px-1 py-1 text-center">
+                      BP mm
+                    </th>
+                    <th className="border border-gray-300 px-1 py-1 text-center">
+                      %FSH
+                    </th>
                   </React.Fragment>
                 ))}
               </tr>
@@ -941,7 +968,11 @@ export const VSSCUTReportFormPage: React.FC = () => {
                   DAC dB
                 </td>
                 {PROBE_MODES.map((pm) => (
-                  <td key={pm} className="border border-gray-300 p-0" colSpan={2}>
+                  <td
+                    key={pm}
+                    className="border border-gray-300 p-0"
+                    colSpan={2}
+                  >
                     <input
                       type="text"
                       value={calibTable[pm].dacDb}
@@ -958,7 +989,11 @@ export const VSSCUTReportFormPage: React.FC = () => {
                   Scanning dB
                 </td>
                 {PROBE_MODES.map((pm) => (
-                  <td key={pm} className="border border-gray-300 p-0" colSpan={2}>
+                  <td
+                    key={pm}
+                    className="border border-gray-300 p-0"
+                    colSpan={2}
+                  >
                     <input
                       type="text"
                       value={calibTable[pm].scanningDb}
