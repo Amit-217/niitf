@@ -818,17 +818,27 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               <tfoot style={{ display: "table-footer-group" }}>
                 <tr>
                   <td style={{ padding: 0 }}>
-                    <div className="tfoot-content" style={{ height: "15mm" }}></div>
+                    <div
+                      className="tfoot-content"
+                      style={{ height: "15mm" }}
+                    ></div>
                   </td>
                 </tr>
               </tfoot>
             </table>
           </div>
-          
-          <div className={`no-print ${bwMode ? 'bw' : ''}`} style={{ position: "absolute", bottom: "5mm", left: "5mm", right: "5mm" }}>
+
+          <div
+            className={`no-print ${bwMode ? "bw" : ""}`}
+            style={{
+              position: "absolute",
+              bottom: "5mm",
+              left: "5mm",
+              right: "5mm",
+            }}
+          >
             <ReportFooter />
           </div>
-
         </div>
       </div>
 

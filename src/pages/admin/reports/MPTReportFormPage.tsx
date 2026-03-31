@@ -131,6 +131,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [jobThickness, setJobThickness] = useState("");
   const [jobTypeOfJoint, setJobTypeOfJoint] = useState("");
   const [jobSurfaceCondition, setJobSurfaceCondition] = useState("");
+  const [jobExtentOfExamination, setJobExtentOfExamination] = useState("");
   const [jobWeldingProcess, setJobWeldingProcess] = useState("");
 
   // â"€â"€ Equipment Details â"€â"€
@@ -234,6 +235,7 @@ export const MPTReportFormPage: React.FC = () => {
         setJobThickness(jd.thickness ?? "");
         setJobTypeOfJoint(jd.typeOfJoint ?? "");
         setJobSurfaceCondition(jd.surfaceCondition ?? "");
+        setJobExtentOfExamination(jd.extentOfExamination ?? "");
         setJobWeldingProcess(jd.weldingProcess ?? "");
         const eq = r.equipmentDetails ?? {};
         setEqType(eq.equipmentType ?? "");
@@ -411,6 +413,7 @@ export const MPTReportFormPage: React.FC = () => {
           thickness: jobThickness,
           typeOfJoint: jobTypeOfJoint || undefined,
           surfaceCondition: jobSurfaceCondition,
+          extentOfExamination: jobExtentOfExamination,
           weldingProcess: jobWeldingProcess || undefined,
         },
         equipmentDetails: {
@@ -709,6 +712,32 @@ export const MPTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
+            <label className={labelClass} htmlFor="jobExt">
+              Extent of Examination
+            </label>
+            <input
+              id="jobExt"
+              type="text"
+              value={jobExtentOfExamination}
+              onChange={(e) => setJobExtentOfExamination(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. 10% / 100% / To the maximum extent possible / Custom"
+            />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="jobThickness">
+              Thickness
+            </label>
+            <input
+              id="jobThickness"
+              type="text"
+              value={jobThickness}
+              onChange={(e) => setJobThickness(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. As per Drawing"
+            />
+          </div>
+          <div>
             <label className={labelClass} htmlFor="jobTypeOfJoint">
               Type of Joint
             </label>
@@ -724,6 +753,19 @@ export const MPTReportFormPage: React.FC = () => {
               <option>T Joint</option>
               <option>NA</option>
             </select>
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="jobSurface">
+              Surface Condition
+            </label>
+            <input
+              id="jobSurface"
+              type="text"
+              value={jobSurfaceCondition}
+              onChange={(e) => setJobSurfaceCondition(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. Smooth"
+            />
           </div>
           <div>
             <label className={labelClass} htmlFor="jobWelding">
@@ -743,45 +785,6 @@ export const MPTReportFormPage: React.FC = () => {
               <option>GTAW</option>
               <option>MAG</option>
             </select>
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobMaterial">
-              Material
-            </label>
-            <input
-              id="jobMaterial"
-              type="text"
-              value={jobMaterial}
-              onChange={(e) => setJobMaterial(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. As per Drawing"
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobThickness">
-              Thickness
-            </label>
-            <input
-              id="jobThickness"
-              type="text"
-              value={jobThickness}
-              onChange={(e) => setJobThickness(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. As per Drawing"
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobSurface">
-              Surface Condition
-            </label>
-            <input
-              id="jobSurface"
-              type="text"
-              value={jobSurfaceCondition}
-              onChange={(e) => setJobSurfaceCondition(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. Smooth"
-            />
           </div>
         </div>
       </div>
@@ -1176,10 +1179,10 @@ export const MPTReportFormPage: React.FC = () => {
                   Qty
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Interpretation
+                  Evaluation
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Evaluation
+                  Remark
                 </th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>

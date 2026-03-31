@@ -201,6 +201,7 @@ export interface MPTReportPayload {
     thickness?: string;
     typeOfJoint?: string;
     surfaceCondition?: string;
+    extentOfExamination?: string;
     weldingProcess?: string;
   };
   equipmentDetails?: {

@@ -700,17 +700,31 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         </colgroup>
                         <tbody>
                           <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER: <span>{v(fs.qc?.name)}</span></td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT / TPI: <span>{v(fs.rqs?.name)}</span></td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              EXAMINED BY
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              CUSTOMER: <span>{v(fs.qc?.name)}</span>
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              CLIENT / TPI: <span>{v(fs.rqs?.name)}</span>
+                            </td>
                           </tr>
                           <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>National Industrial Inspection And Training</td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(report.customer)}</td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}></td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              National Industrial Inspection And Training
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              {v(report.customer)}
+                            </td>
+                            <td
+                              style={{ fontWeight: 600, fontSize: "11px" }}
+                            ></td>
                           </tr>
                           <tr>
-                            <td style={{ minHeight: 14 }}>Name: {v(inspector.name)}</td>
+                            <td style={{ minHeight: 14 }}>
+                              Name: {v(inspector.name)}
+                            </td>
                             <td>Name: {v(fs.qc?.name)}</td>
                             <td>Name: {v(fs.rqs?.name)}</td>
                           </tr>
@@ -749,17 +763,27 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               <tfoot style={{ display: "table-footer-group" }}>
                 <tr>
                   <td style={{ padding: 0 }}>
-                    <div className="tfoot-content" style={{ height: "15mm" }}></div>
+                    <div
+                      className="tfoot-content"
+                      style={{ height: "15mm" }}
+                    ></div>
                   </td>
                 </tr>
               </tfoot>
             </table>
           </div>
-          
-          <div className={`no-print ${bwMode ? 'bw' : ''}`} style={{ position: "absolute", bottom: "5mm", left: "5mm", right: "5mm" }}>
+
+          <div
+            className={`no-print ${bwMode ? "bw" : ""}`}
+            style={{
+              position: "absolute",
+              bottom: "5mm",
+              left: "5mm",
+              right: "5mm",
+            }}
+          >
             <ReportFooter />
           </div>
-
         </div>
       </div>
 
