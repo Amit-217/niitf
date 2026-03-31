@@ -255,12 +255,13 @@ export const MPTReportPrintPage = () => {
 
   const standards = splitTags(jd.referenceStd);
   const acceptance = splitTags(jd.acceptanceCriteria);
-  const technique = v(
-    me.magnetizingMethod || me.magnetizationType || me.method,
-  );
+  const getEvaluation = (o: (typeof obs)[number]) => {
+    const legacy = o as (typeof obs)[number] & { result?: string; remark?: string };
+    return legacy.evaluation || legacy.result || legacy.remark || "";
+  };
 
   const rejectedCount = obs.filter((o) =>
-    /reject|repair|fail|not ok/i.test(v(o.result || o.remark || o.interpretation)),
+    /reject|repair|fail|not ok/i.test(v(getEvaluation(o) || o.interpretation)),
   ).length;
   const conclusionText =
     v((report as unknown as { conclusion?: string }).conclusion) ||
@@ -680,7 +681,7 @@ export const MPTReportPrintPage = () => {
                             <th style={{ width: "10%" }}>Size</th>
                             <th style={{ width: "10%" }}>Quantity in Nos.</th>
                             <th>Interpretation</th>
-                            <th style={{ width: "13%" }}>Remark</th>
+                            <th style={{ width: "13%" }}>Evaluation</th>
                           </tr>
                           {obs.length === 0 ? (
                             <tr>
@@ -719,10 +720,10 @@ export const MPTReportPrintPage = () => {
                                 <td>
                                   <span
                                     className={resultClass(
-                                      o.result,
+                                      getEvaluation(o),
                                     )}
                                   >
-                                    {v(o.result) || "Accepted"}
+                                    {v(getEvaluation(o)) || "Accepted"}
                                   </span>
                                 </td>
                               </tr>
@@ -741,7 +742,7 @@ export const MPTReportPrintPage = () => {
                           </tr>
                           <tr>
                             <td className="lbl" style={{ width: "22%" }}>
-                              Overall Result
+                              Overall Evaluation
                             </td>
                             <td className="val">{conclusionText}</td>
                           </tr>
@@ -788,10 +789,10 @@ export const MPTReportPrintPage = () => {
                               MT NDE Level II:
                             </td>
                             <td>
-                              Designation: {v(fs.customer?.designation)}
+                              Designation: {v((fs.customer as unknown as { designation?: string })?.designation)}
                             </td>
                             <td>
-                              Designation: {v(fs.clientOrTPI?.designation)}
+                              Designation: {v((fs.clientOrTPI as unknown as { designation?: string })?.designation)}
                             </td>
                           </tr>
                           <tr>

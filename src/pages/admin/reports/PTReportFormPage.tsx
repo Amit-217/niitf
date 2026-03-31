@@ -76,7 +76,7 @@ interface ObsRow {
   size: string;
   quantity: string;
   interpretation: string;
-  remark: string;
+  evaluation: string;
 }
 
 const emptyObs = (): ObsRow => ({
@@ -86,7 +86,7 @@ const emptyObs = (): ObsRow => ({
   size: "",
   quantity: "",
   interpretation: "",
-  remark: "",
+  evaluation: "",
 });
 
 // Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Page Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
@@ -286,7 +286,7 @@ export const PTReportFormPage: React.FC = () => {
               size: o.size ?? "",
               quantity: String(o.quantity ?? ""),
               interpretation: o.interpretation ?? "",
-              remark: o.remark ?? o.result ?? "",
+              evaluation: o.evaluation ?? o.remark ?? o.result ?? "",
             })),
           );
         }
@@ -405,7 +405,7 @@ export const PTReportFormPage: React.FC = () => {
             size: o.size,
             quantity: Number(o.quantity) || 0,
             interpretation: o.interpretation || "",
-            remark: o.remark || "",
+            evaluation: o.evaluation || "",
           })),
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
@@ -962,9 +962,7 @@ export const PTReportFormPage: React.FC = () => {
                   Qty
                 </th>
                  <th className="border border-gray-200 px-2 py-2 text-left">Interpretation</th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
-                  Remark
-                </th>
+                <th className="border border-gray-200 px-2 py-2 text-left">Evaluation</th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
             </thead>
@@ -1028,9 +1026,9 @@ export const PTReportFormPage: React.FC = () => {
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
                     <select
-                      value={row.remark}
+                      value={row.evaluation}
                       onChange={(e) =>
-                        updateObs(idx, "remark", e.target.value)
+                        updateObs(idx, "evaluation", e.target.value)
                       }
                       className={inputClass}
                     >

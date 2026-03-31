@@ -472,7 +472,7 @@ export const UTReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="col-hdr" style={{ width: "20%" }}>
-                              Model
+                              Search Unit / Model
                             </td>
                             <td className="col-hdr" style={{ width: "12%" }}>
                               Angle
@@ -652,7 +652,7 @@ export const UTReportPrintPage: React.FC = () => {
                             </td>
                             <td className="col-hdr" style={{ width: "20%" }}>Interpretation</td>
                             <td className="col-hdr" style={{ width: "16%" }}>
-                              Remark
+                              Evaluation
                             </td>
                           </tr>
                           {obs.length === 0 ? (
@@ -686,7 +686,7 @@ export const UTReportPrintPage: React.FC = () => {
                                   {o.quantity ?? ""}
                                 </td>
                                 <td>{v(o.interpretation)}</td>
-                                <td>{v(o.remark)}</td>
+                                <td>{v(o.evaluation || o.remark || o.result)}</td>
                               </tr>
                             ))
                           )}

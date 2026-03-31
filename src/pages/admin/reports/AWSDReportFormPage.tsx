@@ -59,7 +59,7 @@ interface ObsRow {
   distanceFromX: string;
   distanceFromY: string;
   interpretation: string;
-  remarks: string;
+  evaluation: string;
 }
 
 const emptyObs = (lineNo: number): ObsRow => ({
@@ -69,7 +69,7 @@ const emptyObs = (lineNo: number): ObsRow => ({
   dbIndicationLevel: '', dbReferenceLevel: '', dbAttenuationFactor: '', dbIndicationRating: '',
   length: '', angularDistance: '', depthFromA: '',
   distanceFromX: '', distanceFromY: '',
-  interpretation: '', remarks: '',
+  interpretation: '', evaluation: '',
 });
 
 // â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -96,7 +96,7 @@ export const AWSDReportFormPage: React.FC = () => {
   const [weldingProcess, setWeldingProcess] = useState('');
   const [weldingProcessOther, setWeldingProcessOther] = useState('');
   const [qualityRequirementsSection, setQualityRequirementsSection] = useState('');
-  const [jobRemarks, setJobRemarks] = useState('');
+  const [jobEvaluation, setJobEvaluation] = useState('');
 
   // â”€â”€ Observations â”€â”€
   const [observations, setObservations] = useState<ObsRow[]>(
@@ -135,7 +135,7 @@ export const AWSDReportFormPage: React.FC = () => {
       setWeldJointAWS(r.weldJointAWS ?? '');
       const [wp, wpO] = fromOther(r.weldingProcess, ['SMAW', 'GMAW', 'FCAW', 'SAW', 'GTAW', 'MAG', 'Other']);
       setWeldingProcess(wp); setWeldingProcessOther(wpO);
-      setQualityRequirementsSection(r.qualityRequirementsSection ?? ''); setJobRemarks(r.remarks ?? '');
+      setQualityRequirementsSection(r.qualityRequirementsSection ?? ''); setJobEvaluation(r.evaluation ?? r.remarks ?? '');
       if (r.observations?.length) {
         setObservations(r.observations.map((o: any) => {
           const [ta, taO] = fromOther(o.transducerAngle, ['45Â°', '60Â°', '70Â°', 'Normal (0Â°)', 'Other']);
@@ -150,7 +150,7 @@ export const AWSDReportFormPage: React.FC = () => {
             length: o.discontinuity?.length ?? '', angularDistance: o.discontinuity?.angularDistance ?? '',
             depthFromA: o.discontinuity?.depthFromA ?? '', distanceFromX: o.discontinuity?.distanceFromX ?? '',
             distanceFromY: o.discontinuity?.distanceFromY ?? '',
-            interpretation: o.interpretation ?? '', remarks: o.remarks ?? '',
+            interpretation: o.interpretation ?? '', evaluation: o.evaluation ?? o.remarks ?? '',
           };
         }));
       }
@@ -195,7 +195,7 @@ export const AWSDReportFormPage: React.FC = () => {
         weldJointAWS,
         weldingProcess: resolve(weldingProcess, weldingProcessOther),
         qualityRequirementsSection,
-        remarks: jobRemarks,
+        evaluation: jobEvaluation,
         observations: observations
           .filter(o => o.indicationNo.trim() || o.transducerAngle || o.interpretation)
           .map(o => ({
@@ -218,7 +218,7 @@ export const AWSDReportFormPage: React.FC = () => {
               distanceFromY: o.distanceFromY,
             },
             interpretation: o.interpretation,
-            remarks: o.remarks,
+            evaluation: o.evaluation,
           })),
         certification: {
           testDate: testDate || undefined,
@@ -315,8 +315,8 @@ export const AWSDReportFormPage: React.FC = () => {
             <input type="text" value={qualityRequirementsSection} onChange={e => setQualityRequirementsSection(e.target.value)} className={inputClass} placeholder="e.g. Clause 8, Part F" />
           </div>
           <div>
-            <label className={labelClass}>Remarks</label>
-            <input type="text" value={jobRemarks} onChange={e => setJobRemarks(e.target.value)} className={inputClass} />
+            <label className={labelClass}>Evaluation</label>
+            <input type="text" value={jobEvaluation} onChange={e => setJobEvaluation(e.target.value)} className={inputClass} />
           </div>
         </div>
       </div>

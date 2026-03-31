@@ -600,7 +600,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* Disposition & Remarks */}
+                      {/* Disposition & Evaluation */}
                       <table
                         className="report-table"
                         style={{ marginBottom: 3 }}
@@ -622,10 +622,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                               {v(report.disposition)}
                             </td>
                           </tr>
-                          {report.remarks && (
+                          {(report.evaluation || report.remarks) && (
                             <tr>
-                              <td className="lbl">Remarks</td>
-                              <td className="val">{v(report.remarks)}</td>
+                              <td className="lbl">Evaluation</td>
+                              <td className="val">{v(report.evaluation || report.remarks)}</td>
                             </tr>
                           )}
                         </tbody>

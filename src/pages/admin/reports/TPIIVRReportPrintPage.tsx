@@ -353,8 +353,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             </tr>
                             <tr>
                               <td className="lbl">I.R No:</td>
-                              <td className="val" style={{ color: "#e11d48", fontWeight: 600 }}>{v(report.irNo)}</td>
-                              <td className="val" style={{ color: "#e11d48", fontWeight: 600, textAlign: 'center' }}>{v(report.irRev)}</td>
+                              <td className="val" style={{ fontWeight: 600 }}>{v(report.irNo)}</td>
+                              <td className="val" style={{ fontWeight: 600, textAlign: 'center' }}><span style={{ fontSize: '10px', fontWeight: 600 }}>IR Rev.: </span>{v(report.irRev)}</td>
                               <td className="lbl">Dt. of Inspection</td>
                               <td className="val" style={{ color: "#e11d48", fontWeight: 600 }}>{fmtDate(report.dtOfInspection)}</td>
                             </tr>
@@ -543,21 +543,31 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="col-hdr" style={{ width: "8%" }}>
+                            <td className="col-hdr" style={{ width: "8%" }} rowSpan={2}>
                               PO Line No.
                             </td>
                             <td
                               className="col-hdr"
                               style={{ width: "24%", textAlign: "left" }}
+                              rowSpan={2}
                             >
                               Description
                             </td>
                             <td
                               className="col-hdr"
                               style={{ width: "16%", textAlign: "left" }}
+                              rowSpan={2}
                             >
                               Drg No. / Heat No.
                             </td>
+                            <td className="col-hdr" colSpan={5} style={{ textAlign: "center" }}>
+                              Quantity in Nos.
+                            </td>
+                            <td className="col-hdr" style={{ width: "14%" }} rowSpan={2}>
+                              Insp. Type
+                            </td>
+                          </tr>
+                          <tr>
                             <td className="col-hdr" style={{ width: "8%" }}>
                               Offered
                             </td>
@@ -572,9 +582,6 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             </td>
                             <td className="col-hdr" style={{ width: "7%" }}>
                               Reject
-                            </td>
-                            <td className="col-hdr" style={{ width: "14%" }}>
-                              Insp. Type
                             </td>
                           </tr>
                           {items.length === 0 ? (
@@ -793,7 +800,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                                 textAlign: "center",
                               }}
                             >
-                              FOR VENDOR
+                              FOR VENDOR{v(vd.vendor) ? `: ${v(vd.vendor)}` : ""}
                             </td>
                             <td
                               style={{
@@ -804,10 +811,6 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             >
                               FOR NIIT SURVEYOR, BARAMATI
                             </td>
-                          </tr>
-                          <tr>
-                            <td style={{ height: 32 }}></td>
-                            <td style={{ height: 32 }}></td>
                           </tr>
                           <tr>
                             <td>Name: {v(sigs.vendor?.name)}</td>

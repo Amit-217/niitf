@@ -95,7 +95,7 @@ interface ObsRow {
   srNo: number;
   itemName: string;
   measuredThickness: string;
-  remark: string;
+  evaluation: string;
 }
 
 const emptySearchUnit = (): SearchUnitRow => ({
@@ -125,7 +125,7 @@ const emptyObs = (): ObsRow => ({
   srNo: 1,
   itemName: "",
   measuredThickness: "",
-  remark: "",
+  evaluation: "",
 });
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -450,7 +450,7 @@ export const UTGReportFormPage: React.FC = () => {
               srNo: o.srNo,
               itemName: o.itemName ?? "",
               measuredThickness: o.measuredThickness ?? "",
-              remark: o.remark ?? "",
+              evaluation: o.evaluation ?? o.remark ?? o.result ?? "",
             })),
           );
         }
@@ -539,7 +539,7 @@ export const UTGReportFormPage: React.FC = () => {
             srNo: o.srNo,
             itemName: o.itemName,
             measuredThickness: o.measuredThickness,
-            remark: o.remark,
+            evaluation: o.evaluation,
           })),
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
@@ -1056,7 +1056,7 @@ export const UTGReportFormPage: React.FC = () => {
                   Measured Thickness (mm)
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left w-32">
-                  Remark
+                  Evaluation
                 </th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
@@ -1091,8 +1091,8 @@ export const UTGReportFormPage: React.FC = () => {
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
                     <select
-                      value={row.remark}
-                      onChange={(e) => updateObs(idx, "remark", e.target.value)}
+                      value={row.evaluation}
+                      onChange={(e) => updateObs(idx, "evaluation", e.target.value)}
                       className={inputClass}
                     >
                       <option value="">Select...</option>

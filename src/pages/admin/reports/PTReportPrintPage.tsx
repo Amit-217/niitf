@@ -586,7 +586,7 @@ export const PTReportPrintPage: React.FC = () => {
                             </td>
                             <td className="col-hdr" style={{ width: "20%" }}>Interpretation</td>
                             <td className="col-hdr" style={{ width: "16%" }}>
-                              Remark
+                              Evaluation
                             </td>
                           </tr>
                           {obs.length === 0 ? (
@@ -620,7 +620,7 @@ export const PTReportPrintPage: React.FC = () => {
                                   {o.quantity ?? ""}
                                 </td>
                                 <td>{v(o.interpretation)}</td>
-                                <td>{v(o.remark || o.result)}</td>
+                                <td>{v(o.evaluation || o.remark || o.result)}</td>
                               </tr>
                             ))
                           )}

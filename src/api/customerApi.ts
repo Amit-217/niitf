@@ -170,8 +170,7 @@ export interface MPTObservation {
   size: string;
   quantity: number;
   interpretation: string;
-  result: string;
-  remark: string;
+  evaluation: string;
 }
 
 export interface MPTInspector {
@@ -271,7 +270,7 @@ export interface PTObservation {
   size: string;
   quantity: number;
   interpretation: string;
-  remark: string;
+  evaluation: string;
 }
 
 export interface PTReportPayload {
@@ -355,7 +354,7 @@ export interface UTObservation {
   size: string;
   quantity: number;
   interpretation: string;
-  remark: string;
+  evaluation: string;
 }
 
 export interface UTReportPayload {
@@ -493,7 +492,7 @@ export interface VSSCUTReportPayload {
     skip?: string; bp?: string; dacDb?: string; scanningDb?: string;
   };
   disposition?: string;
-  remarks?: string;
+  evaluation?: string;
   finalSection?: {
     inspector?: { name?: string; qualification?: string; idNo?: string; date?: string }[];
     qc?: { name?: string; idNo?: string; date?: string };
@@ -542,7 +541,7 @@ export interface UTGObservation {
   srNo: number;
   itemName: string;
   measuredThickness: string;
-  remark: string;
+  evaluation: string;
 }
 
 export interface UTGReportPayload {

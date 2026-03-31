@@ -368,8 +368,8 @@ export const AWSDReportPrintPage: React.FC = () => {
                 <td className="val" colSpan={3}>
                   {v(report.qualityRequirementsSection)}
                 </td>
-                <td className="lbl">Remarks</td>
-                <td className="val">{v(report.remarks)}</td>
+                <td className="lbl">Evaluation</td>
+                <td className="val">{v(report.evaluation || report.remarks)}</td>
               </tr>
             </tbody>
           </table>

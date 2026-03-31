@@ -86,8 +86,7 @@ const emptyObs = (): ObsRow => ({
   size: "",
   quantity: "",
   interpretation: "",
-  result: "",
-  remark: "",
+  evaluation: "",
 });
 
 const emptyInspector = (): InspRow => ({
@@ -311,8 +310,7 @@ export const MPTReportFormPage: React.FC = () => {
               size: o.size ?? "",
               quantity: String(o.quantity ?? ""),
               interpretation: o.interpretation ?? "",
-              result: o.result ?? "",
-              remark: o.remark ?? "",
+              evaluation: o.evaluation ?? o.result ?? o.remark ?? "",
             })),
           );
         }
@@ -462,8 +460,7 @@ export const MPTReportFormPage: React.FC = () => {
             size: o.size,
             quantity: Number(o.quantity) || 0,
             interpretation: o.interpretation || "",
-            result: o.result || "",
-            remark: o.remark || "",
+            evaluation: o.evaluation || "",
           })),
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
@@ -1179,9 +1176,7 @@ export const MPTReportFormPage: React.FC = () => {
                   Qty
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">Interpretation</th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
-                  Remark
-                </th>
+                <th className="border border-gray-200 px-2 py-2 text-left">Evaluation</th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
             </thead>
@@ -1245,8 +1240,8 @@ export const MPTReportFormPage: React.FC = () => {
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
                     <select
-                      value={row.result}
-                      onChange={(e) => updateObs(idx, "result", e.target.value)}
+                      value={row.evaluation}
+                      onChange={(e) => updateObs(idx, "evaluation", e.target.value)}
                       className={inputClass}
                     >
                       <option value="">Select...</option>

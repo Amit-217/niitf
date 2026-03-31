@@ -180,10 +180,10 @@ export const VSSCUTReportFormPage: React.FC = () => {
   const [npDacDb, setNpDacDb] = useState("");
   const [npScanningDb, setNpScanningDb] = useState("");
 
-  // ── Disposition & Remarks ──
+  // ── Disposition & Evaluation ──
   const [disposition, setDisposition] = useState("");
-  const [remarks, setRemarks] = useState("");
-  const [remarksCustom, setRemarksCustom] = useState("");
+  const [evaluation, setEvaluation] = useState("");
+  const [evaluationCustom, setEvaluationCustom] = useState("");
 
   // ── Users for inspector dropdown ──
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
@@ -340,13 +340,13 @@ export const VSSCUTReportFormPage: React.FC = () => {
         setNpDacDb(npc.dacDb ?? "");
         setNpScanningDb(npc.scanningDb ?? "");
         setDisposition(r.disposition ?? "");
-        const [rm, rmC] = fromOther(r.remarks, [
+        const [rm, rmC] = fromOther(r.evaluation ?? r.remarks, [
           "RECORDABLE INDICATIONS WAS OBSERVED - REFER ANNEXURE– I",
           "NO RECORDABLE INDICATIONS WAS OBSERVED",
           "Other",
         ]);
-        setRemarks(rm);
-        setRemarksCustom(rmC);
+        setEvaluation(rm);
+        setEvaluationCustom(rmC);
         const fs = r.finalSection ?? {};
         const insp = fs.inspector?.[0] ?? {};
         setInspectorName(insp.name ?? "");
@@ -458,7 +458,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
           scanningDb: npScanningDb,
         },
         disposition: disposition || undefined,
-        remarks: resolve(remarks, remarksCustom),
+        evaluation: resolve(evaluation, evaluationCustom),
         finalSection: {
           inspector: [
             {
@@ -1052,9 +1052,9 @@ export const VSSCUTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Disposition & Remarks */}
+      {/* Disposition & Evaluation */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Disposition & Remarks</h2>
+        <h2 className={sectionTitleClass}>Disposition & Evaluation</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>Disposition</label>
@@ -1069,12 +1069,12 @@ export const VSSCUTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Remarks</label>
+            <label className={labelClass}>Evaluation</label>
             <SelectWithCustom
-              value={remarks}
-              onChange={setRemarks}
-              customValue={remarksCustom}
-              onCustomChange={setRemarksCustom}
+              value={evaluation}
+              onChange={setEvaluation}
+              customValue={evaluationCustom}
+              onCustomChange={setEvaluationCustom}
               options={[
                 "RECORDABLE INDICATIONS WAS OBSERVED - REFER ANNEXURE– I",
                 "NO RECORDABLE INDICATIONS WAS OBSERVED",
