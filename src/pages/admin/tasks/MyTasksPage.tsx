@@ -76,7 +76,6 @@ export const MyTasksPage = () => {
     try {
       const res = await getAllTasks();
       const allTasks = Array.isArray(res.data) ? res.data : [];
-      // Admin might see all tasks, so filter to only those assigned to them
       const mine = allTasks.filter((task: Task) =>
         (task.assignedTo || []).some((emp: any) => String(emp?._id || emp) === String(currentUserId)),
       );
@@ -251,6 +250,7 @@ export const MyTasksPage = () => {
         <div className="py-20 flex flex-col items-center justify-center bg-white rounded-3xl border border-dashed border-gray-200 text-gray-400">
           <Info size={40} className="mb-4 opacity-20" />
           <p className="font-bold uppercase tracking-widest text-sm">No tasks found</p>
+          <p className="text-xs mt-1">Try changing your filters or contact your admin.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -300,6 +300,7 @@ export const MyTasksPage = () => {
         </div>
       )}
 
+      {/* Single Unified Task Modal */}
       {isTaskModalOpen && selectedTask && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setTaskModalOpen(false)} />
@@ -308,6 +309,7 @@ export const MyTasksPage = () => {
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-violet-100/80">Admin Task Detail</p>
                 <h2 className="font-black text-xl mt-1 line-clamp-1">{selectedTask.title}</h2>
+                <p className="text-violet-50 text-xs mt-1">Review instructions and submit updates or finalize your personal task.</p>
               </div>
               <button 
                 onClick={() => setTaskModalOpen(false)} 
@@ -318,6 +320,7 @@ export const MyTasksPage = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] max-h-[80dvh] lg:max-h-[70vh] overflow-y-auto lg:overflow-hidden">
+              {/* Form Side */}
               <div className="p-6 overflow-y-auto border-b lg:border-b-0 lg:border-r border-gray-100">
                 <div className="rounded-2xl border border-gray-100 bg-gray-50/50 p-4 mb-6">
                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Description</p>
@@ -334,7 +337,6 @@ export const MyTasksPage = () => {
                 </div>
 
                 <form onSubmit={handleSubmitUpdate} className="space-y-5">
-
                   <div>
                     <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] mb-3 flex items-center gap-2 font-black">
                        <MessageSquare size={16} className="text-violet-600" />
@@ -367,6 +369,7 @@ export const MyTasksPage = () => {
                 </form>
               </div>
 
+              {/* Thread Side */}
               <div className="p-6 bg-gray-50/50 overflow-y-auto">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-2">

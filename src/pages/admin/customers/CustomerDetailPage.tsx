@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { getAllTrainingQuotations, getAllServiceQuotations, deleteTrainingQuotation, deleteServiceQuotation } from "../../../api/quotationApi";
 import { toast } from "react-toastify";
 import {
   ArrowLeft,
@@ -265,6 +266,18 @@ const REPORT_TYPES: { key: ReportSubType; label: string; fullLabel: string; icon
   { key: "awsd", label: "AWS D1.1", fullLabel: "UT of Welds (AWS D1.1)", icon: GitBranch, color: "bg-orange-50", textColor: "text-orange-600" },
 ];
 
+const QUOTATION_STATUSES = [
+  { key: "Draft", color: "bg-gray-50", textColor: "text-gray-600" },
+  { key: "Sent", color: "bg-blue-50", textColor: "text-blue-600" },
+  { key: "Accepted", color: "bg-green-50", textColor: "text-green-700" },
+  { key: "Rejected", color: "bg-red-50", textColor: "text-red-600" },
+];
+
+const QUOTATION_TYPES = [
+  { key: "service", label: "Service", fullLabel: "Service Quotation", color: "bg-blue-50", textColor: "text-blue-600" },
+  { key: "training", label: "Training", fullLabel: "Training Quotation", color: "bg-violet-50", textColor: "text-violet-600" },
+];
+
 const INIT_QUO_ITEMS: LineItem[] = [{ ...EMPTY_ITEM }];
 
 export const CustomerDetailPage = () => {
@@ -305,6 +318,8 @@ export const CustomerDetailPage = () => {
   // Quotations
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [quotationsTotal, setQuotationsTotal] = useState(0);
+  const [quotationTypeFilter, setQuotationTypeFilter] = useState<string | null>(null);
+  const [quotationStatusFilter, setQuotationStatusFilter] = useState<string | null>(null);
 
   // Invoices
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -425,10 +440,15 @@ export const CustomerDetailPage = () => {
   const fetchQuotations = useCallback(async () => {
     if (!id) return;
     try {
-      const res: any = await getQuotations({ customerId: id, limit: 50 });
-      const items = res?.data || res?.quotations || [];
-      setQuotations(Array.isArray(items) ? items : []);
-      setQuotationsTotal(res?.pagination?.total || items.length);
+      const [trainRes, servRes] = await Promise.all([
+        getAllTrainingQuotations({ customerId: id, limit: 1000 }),
+        getAllServiceQuotations({ customerId: id, limit: 1000 }),
+      ]);
+      const tData = (trainRes.data?.data || trainRes.data || []).map((q: any) => ({ ...q, _type: "training" }));
+      const sData = (servRes.data?.data || servRes.data || []).map((q: any) => ({ ...q, _type: "service" }));
+      const combined = [...tData, ...sData].sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+      setQuotations(combined as Quotation[]);
+      setQuotationsTotal(combined.length);
     } catch { /* silent */ }
   }, [id]);
 
@@ -579,7 +599,9 @@ export const CustomerDetailPage = () => {
     if (!window.confirm(`Delete this ${activeTab === "quotations" ? "quotation" : "invoice"}?`)) return;
     try {
       if (activeTab === "quotations") {
-        await deleteQuotation(item._id);
+        const qType = (item as any)._type || "service";
+        if (qType === "training") await deleteTrainingQuotation(item._id);
+        else await deleteServiceQuotation(item._id);
         fetchQuotations();
       } else {
         await deleteInvoice(item._id);
@@ -632,6 +654,10 @@ export const CustomerDetailPage = () => {
     mpt: mptReports, pt: ptReports, ut: utReports, "vssc-ut": vsscUtReports,
     utg: utgReports, "tpi-ivr": tpiIvrReports, awsd: awsdReports,
   };
+
+  const filteredQuotations = quotations
+    .filter(q => !quotationTypeFilter || (q as any)._type === quotationTypeFilter)
+    .filter(q => !quotationStatusFilter || q.status === quotationStatusFilter);
 
   const tabs = [
     { key: "reports" as ActiveTab, label: "Reports", icon: FileBadge, count: reportsTotal, color: "text-indigo-600 bg-indigo-50", activeColor: "border-indigo-600 text-indigo-700" },
@@ -711,7 +737,7 @@ export const CustomerDetailPage = () => {
           return (
             <button
               key={tab.key}
-              onClick={() => { const newTab = activeTab === tab.key ? null : tab.key; setActiveTab(newTab); if (newTab !== "reports") setReportSubType(null); }}
+              onClick={() => { const newTab = activeTab === tab.key ? null : tab.key; setActiveTab(newTab); if (newTab !== "reports") setReportSubType(null); if (newTab !== "quotations") { setQuotationStatusFilter(null); setQuotationTypeFilter(null); } }}
               className={`relative flex flex-col items-start p-5 rounded-2xl border-2 transition-all text-left shadow-sm hover:shadow-md ${
                 isActive
                   ? "border-violet-400 bg-violet-50/60 shadow-violet-100"
@@ -741,12 +767,12 @@ export const CustomerDetailPage = () => {
           <h2 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
             {tabs.find((t) => t.key === activeTab)?.label}
           </h2>
-          {activeTab !== "reports" && (
+          {activeTab !== "reports" && activeTab !== "quotations" && (
             <button
               onClick={openAddModal}
               className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-xs font-bold hover:from-violet-700 hover:to-purple-700 transition-all shadow shadow-violet-200"
             >
-              <Plus size={14} /> Add {activeTab === "quotations" ? "Quotation" : "Invoice"}
+              <Plus size={14} /> Add Invoice
             </button>
           )}
         </div>
@@ -881,40 +907,109 @@ export const CustomerDetailPage = () => {
 
         {/* Quotations Tab */}
         {activeTab === "quotations" && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
-                <tr>
-                  {["Quotation No", "Date", "Valid Till", "Subject", "Amount", "Status", "Actions"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {quotations.length === 0 ? (
-                  <tr><td colSpan={7} className="px-4 py-10 text-center text-gray-400">No quotations yet</td></tr>
-                ) : quotations.map((q) => (
-                  <tr key={q._id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 font-mono text-xs font-bold text-violet-700">{q.quotationNo}</td>
-                    <td className="px-4 py-3 text-gray-600">{fmt(q.date)}</td>
-                    <td className="px-4 py-3 text-gray-500">{fmt(q.validTill)}</td>
-                    <td className="px-4 py-3 text-gray-700 max-w-[160px] truncate">{q.subject || "—"}</td>
-                    <td className="px-4 py-3 font-semibold text-gray-900">₹{q.totalAmount.toLocaleString("en-IN")}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[q.status] || "bg-gray-100 text-gray-600"}`}>
-                        {q.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => openEditModal(q)} className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"><Pencil size={13} /></button>
-                        <button onClick={() => handleDelete(q)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={13} /></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div>
+            {/* Type cards (Service / Training) */}
+            <div className="p-5 grid grid-cols-2 gap-3 border-b border-gray-100">
+              {QUOTATION_TYPES.map((qt) => {
+                const count = quotations.filter(q => (q as any)._type === qt.key).length;
+                const isSelected = quotationTypeFilter === qt.key;
+                return (
+                  <button
+                    key={qt.key}
+                    onClick={() => { setQuotationTypeFilter(isSelected ? null : qt.key); setQuotationStatusFilter(null); }}
+                    className={`relative flex flex-col items-start p-4 rounded-2xl border-2 transition-all text-left hover:shadow-md ${
+                      isSelected
+                        ? "border-violet-400 bg-violet-50/70 shadow-sm shadow-violet-100"
+                        : "border-gray-200 bg-white hover:border-gray-300"
+                    }`}
+                  >
+                    <div className={`p-2 rounded-xl mb-2 ${qt.color}`}>
+                      <FileText size={18} className={qt.textColor} />
+                    </div>
+                    <p className={`text-[10px] font-black uppercase tracking-widest ${isSelected ? "text-violet-700" : "text-gray-500"}`}>
+                      {qt.fullLabel}
+                    </p>
+                    <p className={`text-2xl font-extrabold mt-0.5 ${isSelected ? "text-violet-900" : "text-gray-800"}`}>
+                      {count}
+                    </p>
+                    {isSelected && (
+                      <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-violet-500 rounded-full" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Add button + table — only shown when a type card is clicked */}
+            {quotationTypeFilter ? (
+              <div>
+                <div className="flex items-center justify-between px-5 py-3 bg-gray-50/50">
+                  <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                    {QUOTATION_TYPES.find(t => t.key === quotationTypeFilter)?.fullLabel}s
+                    <span className="ml-2 text-gray-400 font-normal normal-case">
+                      ({quotations.filter(q => (q as any)._type === quotationTypeFilter).length} records)
+                    </span>
+                  </p>
+                  <button
+                    onClick={() => navigate(`/admin/quotations/${quotationTypeFilter}/new`, { state: { customerId: id } })}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-xs font-bold hover:from-violet-700 hover:to-purple-700 transition-all shadow shadow-violet-200"
+                  >
+                    <Plus size={13} /> New {QUOTATION_TYPES.find(t => t.key === quotationTypeFilter)?.label} Quotation
+                  </button>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 border-b border-gray-100">
+                      <tr>
+                        {["Quotation No", "Date", "Type", "Customer", "Subject", "Amount", "Status", "Actions"].map((h) => (
+                          <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {filteredQuotations.length === 0 ? (
+                        <tr><td colSpan={8} className="px-4 py-10 text-center text-gray-400">
+                          {`No ${quotationTypeFilter} quotations${quotationStatusFilter ? ` with status "${quotationStatusFilter}"` : ""}`}
+                        </td></tr>
+                      ) : filteredQuotations.map((q) => (
+                        <tr key={q._id} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-4 py-3 font-mono text-xs font-bold text-violet-700">{q.quotationNo}</td>
+                          <td className="px-4 py-3 text-gray-600">{fmt(q.date)}</td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${(q as any)._type === "training" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
+                              {(q as any)._type === "training" ? "Training" : "Service"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-gray-700 font-medium text-xs">
+                            {typeof q.customerId === 'object' && (q.customerId as any)?.companyName
+                              ? (q.customerId as any).companyName
+                              : customer?.companyName || '—'}
+                          </td>
+                          <td className="px-4 py-3 text-gray-700 max-w-[160px] truncate">{q.subject || "—"}</td>
+                          <td className="px-4 py-3 font-semibold text-gray-900">₹{(q.totalAmount || 0).toLocaleString("en-IN")}</td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[q.status] || "bg-gray-100 text-gray-600"}`}>
+                              {q.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <button onClick={() => navigate(`/admin/quotations/${(q as any)._type || 'service'}/${q._id}/print`, { state: { customerId: id } })} className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="View"><Eye size={13} /></button>
+                              <button onClick={() => navigate(`/admin/quotations/${(q as any)._type || 'service'}/${q._id}/edit`)} className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="Edit"><Pencil size={13} /></button>
+                              <button onClick={() => handleDelete(q)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete"><Trash2 size={13} /></button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
+              <div className="px-5 py-10 text-center text-gray-400 text-sm">
+                Select a quotation type above to view its records
+              </div>
+            )}
           </div>
         )}
 

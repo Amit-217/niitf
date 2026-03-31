@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -67,6 +67,7 @@ export const AdminTasksPage = () => {
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
   const currentUserId =
     currentUser?.userId || currentUser?.id || currentUser?._id || "";
+  const currentUserRole = currentUser?.role || "";
   const isMyTasksMode = new URLSearchParams(location.search).get("mine") === "1";
 
   // Create/Edit Form states
@@ -127,23 +128,6 @@ export const AdminTasksPage = () => {
       setSelectedMyTask(null);
     }
   }, [isMyTasksDrawerOpen]);
-
-  const openedTaskIdRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    const taskId = (location.state as { taskId?: string } | null)?.taskId;
-    if (!taskId || openedTaskIdRef.current === taskId || tasks.length === 0) return;
-    const matched = tasks.find((task) => task._id === taskId);
-    if (matched) {
-      openedTaskIdRef.current = taskId;
-      if (isMyTasksMode) {
-        setSelectedMyTask(matched);
-        setMyTasksDrawerOpen(true);
-      } else {
-        openViewDrawer(matched);
-      }
-    }
-  }, [tasks, location.state, isMyTasksMode]);
 
   const handleOpenCreate = () => {
     setDrawerMode("CREATE");
@@ -354,19 +338,19 @@ export const AdminTasksPage = () => {
               </div>
             </div>
             {!isMyTasksMode && (
-              <div className="flex items-center gap-1 sm:gap-2">
+              <div className="flex items-center gap-1">
                 <button
                   onClick={(e) => handleOpenEdit(task, e)}
-                  className="p-2 sm:p-1.5 rounded-xl border border-gray-100 sm:border-none text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors"
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors"
                 >
-                  <Edit2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                  <Edit2 size={14} />
                 </button>
                 <button
                   onClick={(e) => handleDeleteTask(task._id, e)}
-                  className="p-2 sm:p-1.5 rounded-xl border border-gray-100 sm:border-none text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                   title="Delete Task"
                 >
-                  <Trash2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                  <Trash2 size={14} />
                 </button>
               </div>
             )}
@@ -438,7 +422,7 @@ export const AdminTasksPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <ListTodo className="text-primary-600" /> {isMyTasksMode ? 'My Tasks' : 'Admin Task'}
+            <ListTodo className="text-primary-600" /> {isMyTasksMode ? 'My Tasks' : 'Task Master'}
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             {isMyTasksMode
@@ -456,6 +440,11 @@ export const AdminTasksPage = () => {
             <Plus size={17} /> Create New Task
           </button>
         )}
+        {currentUserRole && (
+          <span className="text-xs font-black uppercase tracking-[0.25em] text-gray-400">
+            Signed in as {currentUserRole.replace('_', ' ')}
+          </span>
+        )}
       </div>
 
       {/* Toolbar */}
@@ -469,6 +458,15 @@ export const AdminTasksPage = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-violet-500/10 focus:border-violet-400 outline-none bg-white shadow-sm transition-all text-sm"
           />
+        </div>
+        <div className="flex items-center gap-2 whitespace-nowrap bg-gray-100/50 p-1.5 rounded-xl border border-gray-100">
+          <div className="bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-100 text-xs font-bold text-violet-700">
+          {visibleTasks.length}{" "}
+          {visibleTasks.length === 1 ? "Task" : "Tasks"} Found
+          </div>
+          <div className="px-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+            {isMyTasksMode ? 'My Tasks View' : 'Task Master View'}
+          </div>
         </div>
       </div>
 
@@ -519,16 +517,16 @@ export const AdminTasksPage = () => {
             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
             onClick={() => setCreateDrawerOpen(false)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full sm:max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200 mx-4 sm:mx-0">
-            <div className="bg-gradient-to-r from-violet-600 to-purple-700 px-5 sm:px-6 py-4 sm:py-5">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="bg-gradient-to-r from-violet-600 to-purple-700 px-6 py-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-base sm:text-lg font-bold text-white">
+                  <h2 className="text-lg font-bold text-white">
                     {drawerMode === "CREATE" ? "Create New Task" : "Edit Task"}
                   </h2>
-                  <p className="text-violet-200 text-[11px] sm:text-sm mt-0.5">
+                  <p className="text-violet-200 text-sm mt-0.5">
                     {drawerMode === "CREATE"
-                      ? "Fill in details and assign to employees."
+                      ? "Fill in task details and assign to employees."
                       : "Update task details and assignments."}
                   </p>
                 </div>
@@ -536,7 +534,7 @@ export const AdminTasksPage = () => {
                   onClick={() => setCreateDrawerOpen(false)}
                   className="p-1.5 rounded-lg text-violet-200 hover:text-white hover:bg-white/10 transition-colors"
                 >
-                  <X size={18} />
+                  <X size={20} />
                 </button>
               </div>
             </div>
@@ -544,9 +542,9 @@ export const AdminTasksPage = () => {
             <form
               id="create-task-form"
               onSubmit={handleFormSubmit}
-              className="p-5 sm:p-6 space-y-5 max-h-[75vh] overflow-y-auto"
+              className="p-6 space-y-4 max-h-[70vh] overflow-y-auto"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label className={labelClass}>Task Title *</label>
                   <input
@@ -678,12 +676,12 @@ export const AdminTasksPage = () => {
 
       {/* 2. View/Updates Drawer */}
       {isViewDrawerOpen && selectedTask && (
-        <div className="fixed inset-0 z-[60] flex justify-end">
+        <div className="fixed inset-0 z-50 flex justify-end pt-[40px]">
           <div
-            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+            className="absolute inset-0 top-[40px] bg-gray-900/40"
             onClick={() => setViewDrawerOpen(false)}
           />
-          <div className="w-full sm:max-w-lg bg-white h-full shadow-2xl relative flex flex-col animate-in slide-in-from-right duration-300">
+          <div className="w-full max-w-lg bg-white h-[calc(100dvh-40px)] shadow-2xl relative flex flex-col animate-in slide-in-from-right duration-300">
             <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-start">
               <div className="pr-4">
                 <span
@@ -773,7 +771,7 @@ export const AdminTasksPage = () => {
                     No updates yet. Start the conversation below.
                   </p>
                 ) : (
-                  <div className="flex flex-col-reverse space-y-3 space-y-reverse max-h-[420px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-violet-200 scrollbar-track-transparent">
+                  <div className="space-y-3">
                     {taskUpdates.map((update: any) => {
                       const isMine = String(update.employeeId?._id || update.employeeId) === String(currentUserId);
                       return (
@@ -782,22 +780,22 @@ export const AdminTasksPage = () => {
                           className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
                         >
                           <div
-                            className={`max-w-[92%] sm:max-w-[88%] rounded-2xl border px-3 sm:px-4 py-2 sm:py-3 shadow-sm ${isMine ? 'bg-violet-600 border-violet-500 text-white' : 'bg-white border-gray-200 text-gray-700'}`}
+                            className={`max-w-[88%] rounded-2xl border px-4 py-3 shadow-sm ${isMine ? 'bg-violet-600 border-violet-500 text-white' : 'bg-white border-gray-200 text-gray-700'}`}
                           >
-                            <div className="flex items-center justify-between gap-2 sm:gap-3 mb-1.5 sm:mb-2">
+                            <div className="flex items-center justify-between gap-3 mb-2">
                               <div className="flex items-center gap-2 min-w-0">
-                                <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[9px] sm:text-[10px] font-black ${isMine ? 'bg-white/15 text-white' : 'bg-violet-100 text-violet-700'}`}>
+                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black ${isMine ? 'bg-white/15 text-white' : 'bg-violet-100 text-violet-700'}`}>
                                   {update.employeeId?.name?.charAt(0) || '?'}
                                 </div>
-                                <span className="text-xs sm:text-sm font-bold truncate">
+                                <span className="text-sm font-bold truncate">
                                   {isMine ? 'You' : update.employeeId?.name || 'User'}
                                 </span>
                               </div>
-                              <span className={`text-[9px] font-semibold uppercase tracking-wider ${isMine ? 'text-violet-100' : 'text-gray-400'}`}>
-                                {new Date(update.createdAt || update.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
+                              <span className={`text-[10px] font-semibold uppercase tracking-wider ${isMine ? 'text-violet-100' : 'text-gray-400'}`}>
+                                {new Date(update.createdAt || update.date).toLocaleDateString()}
                               </span>
                             </div>
-                            <p className={`text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${isMine ? 'text-violet-50' : 'text-gray-700'}`}>
+                            <p className={`text-sm leading-relaxed whitespace-pre-wrap ${isMine ? 'text-violet-50' : 'text-gray-700'}`}>
                               {update.comment}
                             </p>
                           </div>
@@ -843,12 +841,12 @@ export const AdminTasksPage = () => {
       )}
 
       {isMyTasksDrawerOpen && (
-        <div className="fixed inset-0 z-[60] flex justify-end">
+        <div className="fixed inset-0 z-50 flex justify-end pt-[40px]">
           <div
-            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+            className="absolute inset-0 top-[40px] bg-gray-900/40"
             onClick={() => setMyTasksDrawerOpen(false)}
           />
-          <div className="w-full sm:max-w-md bg-white h-full shadow-2xl relative flex flex-col animate-in slide-in-from-right duration-300">
+          <div className="w-full max-w-md bg-white h-[calc(100dvh-40px)] shadow-2xl relative flex flex-col animate-in slide-in-from-right duration-300">
             <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">

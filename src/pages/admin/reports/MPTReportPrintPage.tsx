@@ -47,22 +47,22 @@ const PRINT_STYLES = `
   .bw .hdr-center .sub { color: #333 !important; }
   .bw .hdr-center .iso { color: #000 !important; }
   .bw .logo-box { background: transparent !important; border: none !important; width: 110px !important; height: 110px !important; }
-  .bw .section-hdr { background: #d0d0d0 !important; color: #000 !important; border-left: 3px solid #000 !important; }
-  .bw .col-hdr { background: #e8e8e8 !important; color: #000 !important; }
-  .bw .rpt-title { background: #e0e0e0 !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
-  .bw .footer-meta { background: #e0e0e0 !important; color: #000 !important; }
+  .bw .section-hdr { background: #fff !important; color: #000 !important; border-left: 3px solid #000 !important; }
+  .bw .col-hdr { background: #fff !important; color: #000 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
+  .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
-  .bw .std-tag { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #777 !important; }
-  .bw .accept-badge { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #777 !important; }
-  .bw .reject-badge { background: #e0e0e0 !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
-  .bw .neutral-badge { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .accept-badge { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .reject-badge { background: #fff !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
+  .bw .neutral-badge { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
   .bw .report-table td, .bw .report-table th { border-color: #888 !important; }
   .bw .obs-table td, .bw .obs-table th { border-color: #888 !important; }
-  .bw .obs-table th { background: #e0e0e0 !important; color: #000 !important; }
+  .bw .obs-table th { background: #fff !important; color: #000 !important; }
   .bw .sign-table td { border-color: #888 !important; }
-  .bw .lbl { background: #f0f0f0 !important; }
-  .bw .footer { background: #f5f5f5 !important; color: #000 !important; border-color: #000 !important; }
-  .bw .report-body { border-color: #000 !important; }
+  .bw .lbl { color: #000 !important; background: #fff !important; }
+  .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
+  .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -690,66 +690,47 @@ export const MPTReportPrintPage = () => {
                         </colgroup>
                         <tbody>
                           <tr>
-                            <td
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "9px",
-                                background: "#E6F1FB",
-                                color: "#0C447C",
-                                textAlign: "center",
-                              }}
-                            >
-                              CUSTOMER REPRESENTATIVE
-                            </td>
-                            <td
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "9px",
-                                background: "#E6F1FB",
-                                color: "#0C447C",
-                                textAlign: "center",
-                              }}
-                            >
-                              CLIENT / TPI REPRESENTATIVE
-                            </td>
-                            <td
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "9px",
-                                background: "#E6F1FB",
-                                color: "#0C447C",
-                                textAlign: "center",
-                              }}
-                            >
-                              NDT INSPECTOR
-                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER: <span>{v(fs.customer?.name)}</span></td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT / TPI: <span>{v(fs.clientOrTPI?.name)}</span></td>
                           </tr>
                           <tr>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>National Industrial Inspection And Training</td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.customer)}</td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.client)}</td>
+                          </tr>
+                          <tr>
+                            <td>Name: {v(inspectors[0]?.name) || "-"}</td>
                             <td>Name: {v(fs.customer?.name) || "-"}</td>
                             <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
-                            <td>Name: {v(inspectors[0]?.name) || "-"}</td>
                           </tr>
                           <tr>
-                            <td>Designation: -</td>
-                            <td>Designation: -</td>
                             <td>
-                              Qualification: {v(inspectors[0]?.qualification) || "-"}
+                              {v(inspectors[0]?.qualification) || "-"}
+                              {inspectors[0]?.designation ? ` / ${inspectors[0].designation}` : ""}
                             </td>
+                            <td>Designation: {v(fs.customer?.designation) || "-"}</td>
+                            <td>Designation: {v(fs.clientOrTPI?.designation) || "-"}</td>
                           </tr>
                           <tr>
                             <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
+                            <td>Signature:</td>
+                            <td>Signature:</td>
                           </tr>
                           <tr>
+                            <td style={{ height: 28 }}></td>
+                            <td></td>
+                            <td></td>
+                          </tr>
+                          <tr>
+                            <td>I.D. No.: {v(inspectors[0]?.idNo) || "-"}</td>
                             <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
                             <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
-                            <td>I.D. No.: {v(inspectors[0]?.idNo) || "-"}</td>
                           </tr>
                           <tr>
+                            <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
                             <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
                             <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
-                            <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
                           </tr>
                         </tbody>
                       </table>

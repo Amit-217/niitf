@@ -44,22 +44,22 @@ const PRINT_STYLES = `
   .bw .hdr-center .sub { color: #333 !important; }
   .bw .hdr-center .iso { color: #000 !important; }
   .bw .logo-box { background: transparent !important; border: none !important; width: 110px !important; height: 110px !important; }
-  .bw .section-hdr { background: #d0d0d0 !important; color: #000 !important; border-left: 3px solid #000 !important; }
-  .bw .col-hdr { background: #e8e8e8 !important; color: #000 !important; }
-  .bw .rpt-title { background: #e0e0e0 !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
-  .bw .footer-meta { background: #e0e0e0 !important; color: #000 !important; }
+  .bw .section-hdr { background: #fff !important; color: #000 !important; border-left: 3px solid #000 !important; }
+  .bw .col-hdr { background: #fff !important; color: #000 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
+  .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
-  .bw .std-tag { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #777 !important; }
-  .bw .accept-badge { background: #e8e8e8 !important; color: #000 !important; border: 1px solid #777 !important; }
-  .bw .reject-badge { background: #e0e0e0 !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
-  .bw .neutral-badge { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .accept-badge { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .reject-badge { background: #fff !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
+  .bw .neutral-badge { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
   .bw .report-table td, .bw .report-table th { border-color: #888 !important; }
   .bw .obs-table td, .bw .obs-table th { border-color: #888 !important; }
-  .bw .obs-table th { background: #e0e0e0 !important; color: #000 !important; }
+  .bw .obs-table th { background: #fff !important; color: #000 !important; }
   .bw .sign-table td { border-color: #888 !important; }
-  .bw .lbl { background: #f0f0f0 !important; }
-  .bw .footer { background: #f5f5f5 !important; color: #000 !important; border-color: #000 !important; }
-  .bw .report-body { border-color: #000 !important; }
+  .bw .lbl { color: #000 !important; background: #fff !important; }
+  .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
+  .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -69,6 +69,8 @@ const PRINT_STYLES = `
   .val { font-size: 11px; }
   .mt-n1 { margin-top: -1px; }
   .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .sign-table td { border: 1px solid #d9e1ea; padding: 4px 6px; font-size: 11px; vertical-align: top; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 3px; font-size: 11px; text-align: center; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
@@ -687,105 +689,52 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* Signature Section */}
-                      <table className="report-table">
+                      <table className="sign-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.4%" }} />
+                        </colgroup>
                         <tbody>
                           <tr>
-                            <td
-                              style={{
-                                width: "33%",
-                                textAlign: "center",
-                                fontWeight: 700,
-                                fontSize: "11px",
-                                background: "#E6F1FB",
-                                padding: "3px 4px",
-                              }}
-                            >
-                              National Ind. Insp. &amp; Training
-                            </td>
-                            <td
-                              style={{
-                                width: "33%",
-                                textAlign: "center",
-                                fontWeight: 700,
-                                fontSize: "11px",
-                                background: "#E6F1FB",
-                                padding: "3px 4px",
-                              }}
-                            >
-                              QC / WIL
-                            </td>
-                            <td
-                              style={{
-                                width: "34%",
-                                textAlign: "center",
-                                fontWeight: 700,
-                                fontSize: "11px",
-                                background: "#E6F1FB",
-                                padding: "3px 4px",
-                              }}
-                            >
-                              RQS / VSSC
-                            </td>
-                          </tr>
-                          <tr style={{ height: 30 }}>
-                            <td
-                              style={{
-                                verticalAlign: "bottom",
-                                paddingBottom: 2,
-                                fontSize: "11px",
-                              }}
-                            >
-                              Signature:
-                            </td>
-                            <td
-                              style={{
-                                verticalAlign: "bottom",
-                                paddingBottom: 2,
-                                fontSize: "11px",
-                              }}
-                            >
-                              Signature:
-                            </td>
-                            <td
-                              style={{
-                                verticalAlign: "bottom",
-                                paddingBottom: 2,
-                                fontSize: "11px",
-                              }}
-                            >
-                              Signature:
-                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER: <span>{v(fs.qc?.name)}</span></td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT / TPI: <span>{v(fs.rqs?.name)}</span></td>
                           </tr>
                           <tr>
-                            <td style={{ fontSize: "11px" }}>
-                              Name: {v(inspector.name)}
-                            </td>
-                            <td style={{ fontSize: "11px" }}>
-                              Name: {v(fs.qc?.name)}
-                            </td>
-                            <td style={{ fontSize: "11px" }}>
-                              Name: {v(fs.rqs?.name)}
-                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>National Industrial Inspection And Training</td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(report.customer)}</td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}></td>
                           </tr>
-                          {inspector.qualification && (
-                            <tr>
-                              <td style={{ fontSize: "11px" }}>
-                                {v(inspector.qualification)}
-                              </td>
-                              <td></td>
-                              <td></td>
-                            </tr>
-                          )}
                           <tr>
-                            <td style={{ fontSize: "11px" }}>
-                              Date: {fmtDate(inspector.date)}
-                            </td>
-                            <td style={{ fontSize: "11px" }}>
-                              Date: {fmtDate(fs.qc?.date)}
-                            </td>
-                            <td style={{ fontSize: "11px" }}>
-                              Date: {fmtDate(fs.rqs?.date)}
-                            </td>
+                            <td style={{ minHeight: 14 }}>Name: {v(inspector.name)}</td>
+                            <td>Name: {v(fs.qc?.name)}</td>
+                            <td>Name: {v(fs.rqs?.name)}</td>
+                          </tr>
+                          <tr>
+                            <td>{v(inspector.qualification)}</td>
+                            <td>Designation:</td>
+                            <td>Designation:</td>
+                          </tr>
+                          <tr>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td>Signature:</td>
+                            <td>Signature:</td>
+                          </tr>
+                          <tr>
+                            <td style={{ height: 28 }}></td>
+                            <td></td>
+                            <td></td>
+                          </tr>
+                          <tr>
+                            <td>I.D. No.: {v(inspector.idNo)}</td>
+                            <td>I.D. No.: {v(fs.qc?.idNo)}</td>
+                            <td>I.D. No.: {v(fs.rqs?.idNo)}</td>
+                          </tr>
+                          <tr>
+                            <td>Date: {fmtDate(inspector.date)}</td>
+                            <td>Date: {fmtDate(fs.qc?.date)}</td>
+                            <td>Date: {fmtDate(fs.rqs?.date)}</td>
                           </tr>
                         </tbody>
                       </table>

@@ -121,7 +121,6 @@ export const EmployeeTasksPage = () => {
     if (!selectedTask || !comment.trim()) return;
     setSubmitting(true);
     try {
-      // If status changed, update it first
       if (statusDraft !== selectedTask.status) {
         if (statusDraft === 'COMPLETED') {
             await api.patch(`/tasks/${selectedTask._id}/complete`, { completionNote: comment });
@@ -130,7 +129,6 @@ export const EmployeeTasksPage = () => {
         }
       }
 
-      // If it wasn't a completion (already done above), or if we want another update
       if (statusDraft !== 'COMPLETED') {
           await submitTaskUpdate(selectedTask._id, {
             date: new Date().toISOString().split('T')[0],
@@ -147,7 +145,6 @@ export const EmployeeTasksPage = () => {
       window.dispatchEvent(new Event('notifications:refresh'));
       await fetchMyTasks(true);
 
-      // Close if completed
       if (statusDraft === 'COMPLETED') setTaskModalOpen(false);
     } catch (error: any) {
       toast.error(error.message || 'Failed to submit update');
@@ -337,7 +334,6 @@ export const EmployeeTasksPage = () => {
                 </div>
 
                 <form onSubmit={handleSubmitUpdate} className="space-y-5">
-
                   <div>
                     <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] mb-3 flex items-center gap-2 font-black">
                        <MessageSquare size={16} className="text-violet-600" />
