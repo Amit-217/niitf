@@ -584,7 +584,7 @@ export const UTGReportPrintPage: React.FC = () => {
                       <table className="obs-table mt-n1">
                         <tbody>
                           <tr>
-                            <td colSpan={3} className="section-hdr">
+                            <td colSpan={4} className="section-hdr">
                               OBSERVATIONS
                             </td>
                           </tr>
@@ -592,17 +592,20 @@ export const UTGReportPrintPage: React.FC = () => {
                             <td className="col-hdr" style={{ width: "8%" }}>
                               Sr. No.
                             </td>
-                            <td className="col-hdr" style={{ width: "46%" }}>
+                            <td className="col-hdr" style={{ width: "40%" }}>
                               Item Name
                             </td>
-                            <td className="col-hdr" style={{ width: "24%" }}>
-                              Measured Thickness (mm)
+                            <td className="col-hdr" style={{ width: "32%" }}>
+                              Measured Thickness
+                            </td>
+                            <td className="col-hdr" style={{ width: "20%" }}>
+                              Remark
                             </td>
                           </tr>
                           {obs.length === 0 ? (
                             <tr>
                               <td
-                                colSpan={3}
+                                colSpan={4}
                                 style={{
                                   textAlign: "center",
                                   padding: "6px",
@@ -622,6 +625,9 @@ export const UTGReportPrintPage: React.FC = () => {
                                 <td>{v(o.itemName)}</td>
                                 <td style={{ textAlign: "center" }}>
                                   {v(o.measuredThickness)}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {v(o.remark)}
                                 </td>
                               </tr>
                             ))
