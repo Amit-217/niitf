@@ -337,7 +337,7 @@ export const TPIIVRFormPage: React.FC = () => {
 
       {/* ── I.R. No. ── */}
       <div className={sectionClass}>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div>
             <label className={labelClass}>I.R No. {isEditMode ? "" : "(Auto-generated)"}</label>
             <input
@@ -353,6 +353,10 @@ export const TPIIVRFormPage: React.FC = () => {
             <input type="text" value={irRev} onChange={e => setIrRev(e.target.value)} className={inputClass} placeholder="e.g. Rev.00" />
           </div>
           <div>
+            <label className={labelClass}>Date of Inspection</label>
+            <input type="date" value={dtOfInspection} onChange={e => setDtOfInspection(e.target.value)} className={inputClass} />
+          </div>
+          <div>
             <label className={labelClass}>Format No.</label>
             <input type="text" className={inputClass} defaultValue="NIIT-16 Rev.01" readOnly />
           </div>
@@ -363,10 +367,6 @@ export const TPIIVRFormPage: React.FC = () => {
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Date of Inspection</label>
-            <input type="date" value={dtOfInspection} onChange={e => setDtOfInspection(e.target.value)} className={inputClass} />
-          </div>
           <div>
             <label className={labelClass}>Client</label>
             <input type="text" value={client} onChange={e => setClient(e.target.value)} className={inputClass} placeholder="e.g. Metso Minerals (I) Pvt. Ltd." />
@@ -403,7 +403,7 @@ export const TPIIVRFormPage: React.FC = () => {
             <label className={labelClass}>PO Date</label>
             <input type="date" value={poDate} onChange={e => setPoDate(e.target.value)} className={inputClass} />
           </div>
-          <div className="sm:col-span-2">
+          <div>
             <label className={labelClass}>Inspection Stage</label>
             <SelectWithOther
               value={inspectionStage} onChange={setInspectionStage}

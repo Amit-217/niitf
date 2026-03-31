@@ -333,61 +333,74 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               <tbody style={{ display: "table-row-group" }}>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body">
-                      <div className="rpt-title">Inspection Visit Report</div>
-                      <div
-                        style={{
-                          padding: "5px 10px",
-                          fontSize: "10px",
-                          borderBottom: "1px solid #d9e1ea",
-                          background: "#f8fafc",
-                        }}
-                      >
-                        <strong>Client:</strong> {v(report.client)} &nbsp;&nbsp;{" "}
-                        <strong>Inspection Location:</strong>{" "}
-                        {v(report.inspectionLocation)}
-                      </div>
+                      <div className="report-body">
+                        <div className="rpt-title">Inspection Visit Report</div>
 
-                      {/* ── JOB DETAILS ── */}
-                      <table className="report-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "32%" }} />
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "32%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td colSpan={4} className="section-hdr">
-                              JOB DETAILS
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Project</td>
-                            <td className="val">{v(report.project)}</td>
-                            <td className="lbl">Part Name</td>
-                            <td className="val">{v(report.partName)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Appd. QAP No.</td>
-                            <td className="val">{v(report.appdQapNo)}</td>
-                            <td className="lbl">Appd. QAP Date</td>
-                            <td className="val">{fmtDate(report.appdQapDt)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Client PO No.</td>
-                            <td className="val">{v(report.clientPoNo)}</td>
-                            <td className="lbl">PO Date</td>
-                            <td className="val">{fmtDate(report.poDate)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">PO Amed. No.</td>
-                            <td className="val">{v(report.poAmedNo)}</td>
-                            <td className="lbl">Inspection Stage</td>
-                            <td className="val">{v(report.inspectionStage)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                        {/* ── JOB DETAILS ── */}
+                        <table className="report-table mt-n1">
+                          <colgroup>
+                            <col style={{ width: "15%" }} />
+                            <col style={{ width: "23%" }} />
+                            <col style={{ width: "12%" }} />
+                            <col style={{ width: "18%" }} />
+                            <col style={{ width: "32%" }} />
+                          </colgroup>
+                          <tbody>
+                            <tr>
+                              <td colSpan={5} className="section-hdr">
+                                JOB DETAILS
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="lbl">I.R No:</td>
+                              <td className="val" style={{ color: "#e11d48", fontWeight: 600 }}>{v(report.irNo)}</td>
+                              <td className="val" style={{ color: "#e11d48", fontWeight: 600, textAlign: 'center' }}>{v(report.irRev)}</td>
+                              <td className="lbl">Dt. of Inspection</td>
+                              <td className="val" style={{ color: "#e11d48", fontWeight: 600 }}>{fmtDate(report.dtOfInspection)}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        <table className="report-table mt-n1">
+                          <colgroup>
+                            <col style={{ width: "15%" }} />
+                            <col style={{ width: "35%" }} />
+                            <col style={{ width: "18%" }} />
+                            <col style={{ width: "32%" }} />
+                          </colgroup>
+                          <tbody>
+                            <tr>
+                              <td className="lbl">Client:-</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.client)}</td>
+                              <td className="lbl">Inspection location</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.inspectionLocation)}</td>
+                            </tr>
+                            <tr>
+                              <td className="lbl">Project</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.project)}</td>
+                              <td className="lbl">Appd. QAP No</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.appdQapNo)}</td>
+                            </tr>
+                            <tr>
+                              <td className="lbl">Client PO No</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.clientPoNo)}</td>
+                              <td className="lbl">Appd. QAP Dt.</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{fmtDate(report.appdQapDt)}</td>
+                            </tr>
+                            <tr>
+                              <td className="lbl">PO Amed. No</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.poAmedNo)}</td>
+                              <td className="lbl">Part Name</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.partName)}</td>
+                            </tr>
+                            <tr>
+                              <td className="lbl">PO Date</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{fmtDate(report.poDate)}</td>
+                              <td className="lbl">Inspection Stage</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.inspectionStage)}</td>
+                            </tr>
+                          </tbody>
+                        </table>
 
                       {/* ── CLIENT & VENDOR DETAILS ── */}
                       <table className="report-table mt-n1">
