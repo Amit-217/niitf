@@ -103,7 +103,7 @@ const PRINT_STYLES = `
     vertical-align: middle; word-break: break-word; font-size: 11px;
   }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 10px; text-align: center; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 10px; white-space: nowrap; width: 22%; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 10px; }
   .val { font-size: 11px; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 4px 5px; font-size: 11px; vertical-align: top; word-break: break-word; }

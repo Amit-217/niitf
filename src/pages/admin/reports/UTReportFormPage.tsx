@@ -150,7 +150,6 @@ export const UTReportFormPage: React.FC = () => {
   const [jobSurface, setJobSurface] = useState("");
   const [jobJointType, setJobJointType] = useState("");
   const [jobSurfaceTemp, setJobSurfaceTemp] = useState("");
-  const [jobWeldingProcess, setJobWeldingProcess] = useState("");
 
   // â”€â”€ Equipment Details â”€â”€
   const [eqType, setEqType] = useState("");
@@ -303,7 +302,6 @@ export const UTReportFormPage: React.FC = () => {
         setJobSurface(jd.surfaceCondition ?? "");
         setJobJointType(jd.typeOfJoint ?? "");
         setJobSurfaceTemp(jd.surfaceTemperature ?? "");
-        setJobWeldingProcess(jd.weldingProcess ?? "");
 
         const eq = r.equipmentDetails ?? {};
         const [eqT, eqTC] = fromOther(eq.equipmentType, [
@@ -421,7 +419,6 @@ export const UTReportFormPage: React.FC = () => {
           surfaceCondition: jobSurface,
           typeOfJoint: jobJointType || undefined,
           surfaceTemperature: jobSurfaceTemp,
-          weldingProcess: jobWeldingProcess || undefined,
         },
         equipmentDetails: {
           equipmentType: resolve(eqType, eqTypeCustom) || undefined,
@@ -764,22 +761,6 @@ export const UTReportFormPage: React.FC = () => {
               <option value="">Select...</option>
               <option>Room Temperature</option>
               <option>Other</option>
-            </select>
-          </div>
-          <div>
-            <label className={labelClass}>Welding Process</label>
-            <select
-              value={jobWeldingProcess}
-              onChange={(e) => setJobWeldingProcess(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>SMAW</option>
-              <option>GMAW</option>
-              <option>FCAW</option>
-              <option>SAW</option>
-              <option>GTAW</option>
-              <option>MAG</option>
             </select>
           </div>
         </div>
@@ -1164,6 +1145,9 @@ export const UTReportFormPage: React.FC = () => {
                 <th className="border border-gray-200 px-2 py-2 text-left">
                   Evaluation
                 </th>
+                <th className="border border-gray-200 px-2 py-2 text-left">
+                  Remark
+                </th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
             </thead>
@@ -1223,6 +1207,17 @@ export const UTReportFormPage: React.FC = () => {
                       <option value="">Select...</option>
                       <option>No relevant Indication Found</option>
                       <option>Relevant Indication Found</option>
+                    </select>
+                  </td>
+                  <td className="border border-gray-200 px-1 py-1">
+                    <select
+                      value={row.remark}
+                      onChange={(e) => updateObs(idx, "remark", e.target.value)}
+                      className={inputClass}
+                    >
+                      <option value="">Select...</option>
+                      <option>Accepted</option>
+                      <option>Rejected</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
