@@ -447,8 +447,10 @@ export const PTReportPrintPage: React.FC = () => {
                             <td className="val">{v(jd.surfaceTemperature)}</td>
                           </tr>
                           <tr>
+                            <td className="lbl"></td>
+                            <td className="val"></td>
                             <td className="lbl">Welding Process</td>
-                            <td className="val" colSpan={3}>
+                            <td className="val">
                               {v(jd.weldingProcess)}
                             </td>
                           </tr>
@@ -471,11 +473,13 @@ export const PTReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="lbl">Penetrant Method</td>
-                            <td className="val">{v(md.penetrantMethod)}</td>
+                            <td className="val" colSpan={3}>{v(md.penetrantMethod)}</td>
+                          </tr>
+                          <tr>
                             <td className="lbl">
-                              Excess Penetrant Removal Method
+                              Excess Penetrant Removal method
                             </td>
-                            <td className="val">
+                            <td className="val" colSpan={3}>
                               {v(md.excessPenetrantRemovalMethod)}
                             </td>
                           </tr>
@@ -560,7 +564,7 @@ export const PTReportPrintPage: React.FC = () => {
                       <table className="obs-table mt-n1">
                         <tbody>
                           <tr>
-                            <td colSpan={6} className="section-hdr">
+                            <td colSpan={7} className="section-hdr">
                               OBSERVATIONS
                             </td>
                           </tr>
@@ -580,14 +584,17 @@ export const PTReportPrintPage: React.FC = () => {
                             <td className="col-hdr" style={{ width: "10%" }}>
                               Quantity in Nos.
                             </td>
-                            <td className="col-hdr" style={{ width: "22%" }}>
+                            <td className="col-hdr" style={{ width: "20%" }}>
                               Evaluation
+                            </td>
+                            <td className="col-hdr" style={{ width: "16%" }}>
+                              Remark
                             </td>
                           </tr>
                           {obs.length === 0 ? (
                             <tr>
                               <td
-                                colSpan={6}
+                                colSpan={7}
                                 style={{
                                   textAlign: "center",
                                   padding: "6px",
@@ -615,6 +622,7 @@ export const PTReportPrintPage: React.FC = () => {
                                   {o.quantity ?? ""}
                                 </td>
                                 <td>{v(o.evaluation)}</td>
+                                <td>{v(o.remark || o.result)}</td>
                               </tr>
                             ))
                           )}

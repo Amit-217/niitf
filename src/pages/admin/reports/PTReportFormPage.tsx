@@ -155,6 +155,7 @@ export const PTReportFormPage: React.FC = () => {
   const [lightEquipCustom, setLightEquipCustom] = useState("");
   const [postCleaning, setPostCleaning] = useState("");
   const [dryingTime, setDryingTime] = useState("");
+  const [dryingTimeCustom, setDryingTimeCustom] = useState("");
 
   // â"€â"€ Observations â"€â"€
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
@@ -272,7 +273,10 @@ export const PTReportFormPage: React.FC = () => {
         setLightEquip(le);
         setLightEquipCustom(leC);
         setPostCleaning(mdesc.postCleaning ?? "");
-        setDryingTime(mdesc.dryingTime ?? "");
+        const dtOpts = ["10 Min", "NA", "Other"];
+        const [dt, dtC] = fromOther(mdesc.dryingTime, dtOpts);
+        setDryingTime(dt);
+        setDryingTimeCustom(dtC);
         if (r.observations?.length) {
           setObservations(
             r.observations.map((o: any) => ({
@@ -390,7 +394,7 @@ export const PTReportFormPage: React.FC = () => {
           developingTime,
           lightEquipmentUsed: resolve(lightEquip, lightEquipCustom),
           postCleaning,
-          dryingTime,
+          dryingTime: resolve(dryingTime, dryingTimeCustom),
         },
         observations: observations
           .filter((o) => o.jobDescription.trim())
@@ -908,12 +912,12 @@ export const PTReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Drying Time</label>
-            <input
-              type="text"
+            <SelectWithCustom
               value={dryingTime}
-              onChange={(e) => setDryingTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 10 Min / NA"
+              onChange={setDryingTime}
+              customValue={dryingTimeCustom}
+              onCustomChange={setDryingTimeCustom}
+              options={["10 Min", "NA", "Other"]}
             />
           </div>
         </div>
@@ -957,8 +961,11 @@ export const PTReportFormPage: React.FC = () => {
                 <th className="border border-gray-200 px-2 py-2 text-center w-16">
                   Qty
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
+                 <th className="border border-gray-200 px-2 py-2 text-left">
                   Evaluation
+                </th>
+                <th className="border border-gray-200 px-2 py-2 text-left">
+                  Remark
                 </th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
@@ -1019,6 +1026,19 @@ export const PTReportFormPage: React.FC = () => {
                       <option value="">Select...</option>
                       <option>No relevant Indication Found</option>
                       <option>Relevant Indication Found</option>
+                    </select>
+                  </td>
+                  <td className="border border-gray-200 px-1 py-1">
+                    <select
+                      value={row.remark}
+                      onChange={(e) =>
+                        updateObs(idx, "remark", e.target.value)
+                      }
+                      className={inputClass}
+                    >
+                      <option value="">Select...</option>
+                      <option>Accepted</option>
+                      <option>Rejected</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
