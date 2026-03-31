@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useParams,
   useNavigate,
@@ -229,7 +229,6 @@ export const VSSCUTReportPrintPage: React.FC = () => {
         Format No: <span>FMT-NDT-VSSC-UT-01</span>
         &nbsp;|&nbsp; Rev. No: <span>00</span>
         &nbsp;|&nbsp; Report Date: <span>{fmtDate(report.reportDate)}</span>
-        &nbsp;|&nbsp; Page: <span>{v(report.pageNo) || "1 of 1"}</span>
       </div>
     </>
   );
@@ -481,80 +480,72 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       >
                         <tbody>
                           <tr>
-                            <td className="section-hdr" colSpan={4}>
+                            <td className="section-hdr" colSpan={6}>
                               ANGLE PROBE CALIBRATION
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Frequency</td>
-                            <td className="val">{v(apc.frequency)}</td>
-                            <td className="lbl">Size</td>
-                            <td className="val">{v(apc.size)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Type</td>
-                            <td className="val">{v(apc.type)}</td>
-                            <td className="lbl">Sr. Nos. of Probes</td>
-                            <td className="val">
-                              {apc.probe45SerialNo
-                                ? `45 – ${apc.probe45SerialNo}`
-                                : ""}
-                              {apc.probe60SerialNo
-                                ? `  60 – ${apc.probe60SerialNo}`
-                                : ""}
-                              {apc.probe70SerialNo
-                                ? `  70 – ${apc.probe70SerialNo}`
-                                : ""}
-                            </td>
+                            <td className="lbl" style={{ width: "12%" }}>Frequency</td>
+                            <td className="val" style={{ width: "21.3%", color: "#c53030", fontWeight: 700 }}>{v(apc.frequency)}</td>
+                            <td className="lbl" style={{ width: "12%" }}>Size</td>
+                            <td className="val" style={{ width: "21.3%", color: "#c53030", fontWeight: 700 }}>{v(apc.size)}</td>
+                            <td className="lbl" style={{ width: "12%" }}>Type</td>
+                            <td className="val" style={{ width: "21.4%", color: "#c53030", fontWeight: 700 }}>{v(apc.type)}</td>
                           </tr>
                         </tbody>
                       </table>
 
                       {/* Calibration Table */}
                       <table
-                        className="calib-table"
+                        className="calib-table mt-n1"
                         style={{ marginBottom: 3 }}
                       >
                         <thead>
-                          <tr style={{ background: "#185FA5", color: "#fff" }}>
-                            <th style={{ width: "6%" }}>Skip</th>
+                          <tr style={{ background: "#f8fafc" }}>
+                            <th className="lbl" style={{ width: "16%", textAlign: "left" }} rowSpan={2}>
+                              Sr. Nos. of probes
+                            </th>
+                            <th className="col-hdr" colSpan={4}>
+                              {v(apc.probe45SerialNo)}
+                            </th>
+                            <th className="col-hdr" colSpan={4}>
+                              {v(apc.probe60SerialNo)}
+                            </th>
+                            <th className="col-hdr" colSpan={4}>
+                              {v(apc.probe70SerialNo)}
+                            </th>
+                          </tr>
+                          <tr style={{ background: "#f8fafc" }}>
                             {PROBE_MODES.map((pm) => (
                               <th
                                 key={pm}
-                                colSpan={3}
-                                style={{ fontSize: "11px" }}
+                                colSpan={2}
+                                style={{ fontSize: "11px", fontWeight: 700 }}
                               >
-                                {pm}
+                                {pm.replace("L", " L").replace("T", " T")}
                               </th>
                             ))}
                           </tr>
-                          <tr style={{ background: "#E6F1FB" }}>
-                            <th></th>
+                          <tr style={{ background: "#fff" }}>
+                            <th className="lbl" style={{ textAlign: "left" }}>Scanning</th>
                             {PROBE_MODES.map((pm) => (
-                              <>
-                                <th
-                                  key={pm + "bp"}
-                                  style={{ fontSize: "10px" }}
-                                >
-                                  BP
-                                </th>
-                                <th
-                                  key={pm + "mm"}
-                                  style={{ fontSize: "10px" }}
-                                >
-                                  mm
-                                </th>
-                                <th
-                                  key={pm + "fsh"}
-                                  style={{ fontSize: "10px" }}
-                                >
-                                  %FSH
-                                </th>
-                              </>
+                              <React.Fragment key={pm + "_hdr"}>
+                                <th style={{ fontSize: "10px", width: "7%" }}>BP mm</th>
+                                <th style={{ fontSize: "10px", width: "7%" }}>%FSH</th>
+                              </React.Fragment>
                             ))}
                           </tr>
                         </thead>
                         <tbody>
+                          <tr className="bg-white">
+                            <td className="lbl" style={{ textAlign: "center" }}>Skips</td>
+                            {PROBE_MODES.map((pm) => (
+                              <React.Fragment key={pm + "_skip_hdr"}>
+                                <td className="lbl" style={{ background: "#fff" }}></td>
+                                <td className="lbl" style={{ background: "#fff" }}></td>
+                              </React.Fragment>
+                            ))}
+                          </tr>
                           {SKIPS.map(({ key, label }) => (
                             <tr key={key}>
                               <td
@@ -567,53 +558,39 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                                 {label}
                               </td>
                               {PROBE_MODES.map((pm) => {
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 const cell = (ct[pm] as any)?.[key] ?? {};
                                 return (
-                                  <>
-                                    <td key={pm + "bp"}>{v(cell.bp)}</td>
-                                    <td key={pm + "mm"}>{v(cell.mm)}</td>
-                                    <td key={pm + "fsh"}>{v(cell.fsh)}</td>
-                                  </>
+                                  <React.Fragment key={pm + "_" + key}>
+                                    <td style={{ fontWeight: 500 }}>{v(cell.bp)}</td>
+                                    <td style={{ fontWeight: 500 }}>{v(cell.fsh)}</td>
+                                  </React.Fragment>
                                 );
                               })}
                             </tr>
                           ))}
-                          <tr style={{ background: "#fffbeb" }}>
-                            <td
-                              style={{
-                                fontWeight: 700,
-                                textAlign: "center",
-                                fontSize: "11px",
-                              }}
-                            >
+                          <tr>
+                            <td style={{ fontWeight: 700, textAlign: "left", fontSize: "11px", background: "#f7fafc" }}>
                               DAC dB
                             </td>
                             {PROBE_MODES.map((pm) => (
                               <td
-                                key={pm}
-                                colSpan={3}
-                                style={{ fontWeight: 500 }}
+                                key={pm + "_dac"}
+                                colSpan={2}
+                                style={{ fontWeight: 600 }}
                               >
                                 {v((ct[pm] as any)?.dacDb)}
                               </td>
                             ))}
                           </tr>
-                          <tr style={{ background: "#fffbeb" }}>
-                            <td
-                              style={{
-                                fontWeight: 700,
-                                textAlign: "center",
-                                fontSize: "11px",
-                              }}
-                            >
-                              Scan dB
+                          <tr>
+                            <td style={{ fontWeight: 700, textAlign: "left", fontSize: "11px", background: "#f7fafc" }}>
+                              Scanning dB
                             </td>
                             {PROBE_MODES.map((pm) => (
                               <td
-                                key={pm}
-                                colSpan={3}
-                                style={{ fontWeight: 500 }}
+                                key={pm + "_scan"}
+                                colSpan={2}
+                                style={{ fontWeight: 600 }}
                               >
                                 {v((ct[pm] as any)?.scanningDb)}
                               </td>

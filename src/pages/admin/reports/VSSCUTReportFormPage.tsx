@@ -124,7 +124,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
 
   // ── Job Details ──
   const [reportNo, setReportNo] = useState("");
-  const [pageNo, setPageNo] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [reportDate, setReportDate] = useState("");
   const [weldJointNo, setWeldJointNo] = useState("");
@@ -225,7 +224,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
         if (r.customerId) setCustomerId(typeof r.customerId === "object" ? r.customerId?._id ?? "" : r.customerId);
         if (r.customer) setCustomerName(r.customer);
         setReportNo(r.reportNo ?? "");
-        setPageNo(r.pageNo ?? "");
         setJobDescription(r.jobDescription ?? "");
         setReportDate(toDate(r.reportDate));
         setWeldJointNo(r.weldJointNo ?? "");
@@ -407,7 +405,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
       const payload = {
         customerId,
         reportNo: reportNo.trim(),
-        pageNo,
         status,
         jobDescription,
         reportDate: reportDate || undefined,
@@ -521,7 +518,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
 
       {/* Report No & Page No */}
       <div className={sectionClass}>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>
               Report No. {isEditMode ? "" : "(Auto-generated)"}
@@ -534,15 +531,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
                 inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"
               }
               placeholder="Auto-generated on save"
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Page No.</label>
-            <input
-              type="text"
-              value={pageNo}
-              onChange={(e) => setPageNo(e.target.value)}
-              className={inputClass}
             />
           </div>
           <div>
@@ -872,28 +860,54 @@ export const VSSCUTReportFormPage: React.FC = () => {
         </div>
 
         {/* Calibration Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs border-collapse min-w-[860px]">
+        <div className="overflow-x-auto mt-4">
+          <table className="w-full text-xs border-collapse min-w-[1000px]">
             <thead>
-              <tr className="bg-gray-800 text-white text-center">
-                <th className="border border-gray-400 px-2 py-2 w-12">Skip</th>
+              <tr className="bg-gray-100 text-gray-700">
+                <th className="border border-gray-300 px-2 py-2 text-left" rowSpan={2}>
+                  Sr. Nos. of probes
+                </th>
+                <th className="border border-gray-300 p-0 text-center font-bold" colSpan={4}>
+                  <input
+                    type="text"
+                    value={probe45Sr}
+                    onChange={(e) => setProbe45Sr(e.target.value)}
+                    className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
+                    placeholder="e.g. 45 - 63230"
+                  />
+                </th>
+                <th className="border border-gray-300 p-0 text-center font-bold" colSpan={4}>
+                  <input
+                    type="text"
+                    value={probe60Sr}
+                    onChange={(e) => setProbe60Sr(e.target.value)}
+                    className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
+                    placeholder="e.g. 60 - 63285"
+                  />
+                </th>
+                <th className="border border-gray-300 p-0 text-center font-bold" colSpan={4}>
+                  <input
+                    type="text"
+                    value={probe70Sr}
+                    onChange={(e) => setProbe70Sr(e.target.value)}
+                    className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
+                    placeholder="e.g. 70 - 63309"
+                  />
+                </th>
+              </tr>
+              <tr className="bg-gray-50 text-gray-700">
                 {PROBE_MODES.map((pm) => (
-                  <th
-                    key={pm}
-                    className="border border-gray-400 px-1 py-2 font-bold"
-                    colSpan={3}
-                  >
-                    {pm}
+                  <th key={pm} className="border border-gray-300 px-2 py-1 text-center font-bold" colSpan={2}>
+                    {pm.replace("L", " L").replace("T", " T")}
                   </th>
                 ))}
               </tr>
-              <tr className="bg-gray-100 text-center text-gray-600 text-[11px]">
-                <th className="border border-gray-300 px-1 py-1"></th>
+              <tr className="bg-white text-gray-600">
+                <th className="border border-gray-300 px-2 py-1 text-center font-bold">Scanning</th>
                 {PROBE_MODES.map((pm) => (
-                  <React.Fragment key={pm}>
-                    <th className="border border-gray-300 px-1 py-1">BP</th>
-                    <th className="border border-gray-300 px-1 py-1">mm</th>
-                    <th className="border border-gray-300 px-1 py-1">%FSH</th>
+                  <React.Fragment key={pm + "_sh"}>
+                    <th className="border border-gray-300 px-1 py-1 text-center">BP mm</th>
+                    <th className="border border-gray-300 px-1 py-1 text-center">%FSH</th>
                   </React.Fragment>
                 ))}
               </tr>
@@ -901,12 +915,12 @@ export const VSSCUTReportFormPage: React.FC = () => {
             <tbody>
               {SKIPS.map(({ key, label }) => (
                 <tr key={key} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 px-2 py-1 text-center font-semibold text-gray-700 bg-gray-50">
+                  <td className="border border-gray-300 px-2 py-1.5 text-center font-semibold text-gray-700 bg-gray-50">
                     {label}
                   </td>
                   {PROBE_MODES.map((pm) => (
                     <React.Fragment key={pm}>
-                      {(["bp", "mm", "fsh"] as const).map((field) => (
+                      {(["bp", "fsh"] as const).map((field) => (
                         <td key={field} className="border border-gray-300 p-0">
                           <input
                             type="text"
@@ -914,7 +928,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
                             onChange={(e) =>
                               updateCalibCell(pm, key, field, e.target.value)
                             }
-                            className="w-full border-0 text-xs px-1 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-400 rounded text-center min-w-[40px]"
+                            className="w-full border-0 text-xs px-1 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center font-medium"
                           />
                         </td>
                       ))}
@@ -922,46 +936,36 @@ export const VSSCUTReportFormPage: React.FC = () => {
                   ))}
                 </tr>
               ))}
-              <tr className="bg-amber-50">
-                <td className="border border-gray-300 px-2 py-1.5 text-center text-[11px] font-bold text-gray-700 whitespace-nowrap">
+              <tr>
+                <td className="border border-gray-300 px-2 py-1.5 text-left font-bold text-gray-700">
                   DAC dB
                 </td>
                 {PROBE_MODES.map((pm) => (
-                  <td
-                    key={pm}
-                    className="border border-gray-300 p-0"
-                    colSpan={3}
-                  >
+                  <td key={pm} className="border border-gray-300 p-0" colSpan={2}>
                     <input
                       type="text"
                       value={calibTable[pm].dacDb}
                       onChange={(e) =>
                         updateCalibSingle(pm, "dacDb", e.target.value)
                       }
-                      className="w-full border-0 text-xs px-1 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-400 rounded text-center bg-transparent"
-                      placeholder="e.g. 46.0 dB"
+                      className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center font-medium"
                     />
                   </td>
                 ))}
               </tr>
-              <tr className="bg-amber-50">
-                <td className="border border-gray-300 px-2 py-1.5 text-center text-[11px] font-bold text-gray-700 whitespace-nowrap">
-                  Scan dB
+              <tr>
+                <td className="border border-gray-300 px-2 py-1.5 text-left font-bold text-gray-700">
+                  Scanning dB
                 </td>
                 {PROBE_MODES.map((pm) => (
-                  <td
-                    key={pm}
-                    className="border border-gray-300 p-0"
-                    colSpan={3}
-                  >
+                  <td key={pm} className="border border-gray-300 p-0" colSpan={2}>
                     <input
                       type="text"
                       value={calibTable[pm].scanningDb}
                       onChange={(e) =>
                         updateCalibSingle(pm, "scanningDb", e.target.value)
                       }
-                      className="w-full border-0 text-xs px-1 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-400 rounded text-center bg-transparent"
-                      placeholder="e.g. 46.0 + 10dB"
+                      className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center text-red-600 font-medium"
                     />
                   </td>
                 ))}
