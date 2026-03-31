@@ -22,11 +22,10 @@ const PRINT_STYLES = `
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; }
     #report-root { background: #fff !important; padding: 0 !important; display: flex !important; flex-direction: column !important; }
-    #report-root > div { width: 210mm !important; min-height: 297mm !important; margin: 0 auto !important; padding: 3mm 3mm 45mm 3mm !important; box-sizing: border-box !important; box-shadow: none !important; position: relative !important; }
+    #report-root > div { width: 210mm !important; min-height: 297mm !important; margin: 0 auto !important; padding: 3mm 3mm 3mm 3mm !important; box-sizing: border-box !important; box-shadow: none !important; position: relative !important; }
     .report { margin: 0 !important; box-shadow: none !important; width: calc(100% / 0.92) !important; transform: scale(0.92); transform-origin: top left; }
-    .print-fixed-footer { position: absolute !important; bottom: 0 !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; background: transparent !important; margin: 0 !important; }
-    .print-fixed-footer-inner { width: 193.2mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
-    .tfoot-content { visibility: hidden !important; }
+    .print-fixed-footer { display: none !important; }
+    .tfoot-content { display: block !important; }
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
@@ -81,14 +80,9 @@ const PRINT_STYLES = `
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
-  @media print {
-    .print-fixed-footer { position: fixed !important; bottom: 8mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; z-index: 99999 !important; background: transparent !important; }
-    .print-fixed-footer-inner { width: 193.2mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
-    .tfoot-content { visibility: hidden !important; }
-  }
   @media screen {
     .print-fixed-footer { display: none; }
-    .tfoot-content { visibility: visible; }
+    .tfoot-content { display: none; }
   }
 `;
 
@@ -219,6 +213,8 @@ export const UTGReportPrintPage: React.FC = () => {
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
+          <br />
+          Powered by: viplora.tech
         </div>
         <div className="qr-wrap">
           <QRCodeSVG value={qrUrl} size={48} />
@@ -664,10 +660,9 @@ export const UTGReportPrintPage: React.FC = () => {
               <tfoot style={{ display: "table-footer-group" }}>
                 <tr>
                   <td style={{ padding: 0 }}>
-                    <div
-                      className="tfoot-content"
-                      style={{ height: "15mm" }}
-                    ></div>
+                    <div className={`tfoot-content ${bwMode ? "bw" : ""}`}>
+                      <ReportFooter />
+                    </div>
                   </td>
                 </tr>
               </tfoot>
@@ -689,15 +684,6 @@ export const UTGReportPrintPage: React.FC = () => {
         </div>
       </div>
 
-      {/* The fixed footer that only appears in print on every page at the bottom */}
-      <div className="print-fixed-footer">
-        <div
-          className={`print-fixed-footer-inner ${bwMode ? "bw" : ""}`}
-          style={{ border: "none", boxShadow: "none" }}
-        >
-          <ReportFooter />
-        </div>
-      </div>
     </>
   );
 };
