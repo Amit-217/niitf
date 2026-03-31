@@ -18,13 +18,16 @@ const PRINT_STYLES = `
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; }
-    #report-root { background: #fff !important; padding: 0 !important; }
+    #report-root { background: #fff !important; padding: 0 !important; display: flex !important; flex-direction: column !important; }
     #report-root > div {
       width: 210mm !important; min-height: 297mm !important;
-      margin: 0 auto !important; padding: 0 3mm 0 3mm !important;
-      box-sizing: border-box !important; box-shadow: none !important;
+      margin: 0 auto !important; padding: 0 3mm 45mm 3mm !important; /* Reserved 45mm at bottom for footer */
+      box-sizing: border-box !important; box-shadow: none !important; position: relative !important;
     }
     .report { margin: 0 !important; box-shadow: none !important; width: calc(100% / 0.92) !important; transform: scale(0.92); transform-origin: top left; }
+    .print-fixed-footer { position: absolute !important; bottom: 0 !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; background: transparent !important; margin: 0 !important; }
+    .print-fixed-footer-inner { width: 193.2mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
+    .tfoot-content { visibility: hidden !important; }
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
@@ -51,9 +54,9 @@ const PRINT_STYLES = `
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
-  .bw .accept-badge { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
-  .bw .reject-badge { background: #fff !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
-  .bw .neutral-badge { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .accept-badge { background: transparent !important; color: #000 !important; border: none !important; }
+  .bw .reject-badge { background: transparent !important; color: #000 !important; border: none !important; }
+  .bw .neutral-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .report-table td, .bw .report-table th { border-color: #888 !important; }
   .bw .obs-table td, .bw .obs-table th { border-color: #888 !important; }
   .bw .obs-table th { background: #fff !important; color: #000 !important; }

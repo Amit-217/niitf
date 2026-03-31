@@ -198,7 +198,6 @@ export interface MPTReportPayload {
     inspectionTime?: string;
     stageOfInspection?: string;
     material?: string;
-    extentOfExamination?: string;
     thickness?: string;
     typeOfJoint?: string;
     surfaceCondition?: string;

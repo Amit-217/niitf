@@ -128,8 +128,6 @@ export const MPTReportFormPage: React.FC = () => {
   const [jobInspectionTime, setJobInspectionTime] = useState("");
   const [jobStageOfInspection, setJobStageOfInspection] = useState("");
   const [jobMaterial, setJobMaterial] = useState("");
-  const [jobExtentOfExamination, setJobExtentOfExamination] = useState("");
-  const [jobExtentOther, setJobExtentOther] = useState("");
   const [jobThickness, setJobThickness] = useState("");
   const [jobTypeOfJoint, setJobTypeOfJoint] = useState("");
   const [jobSurfaceCondition, setJobSurfaceCondition] = useState("");
@@ -233,14 +231,6 @@ export const MPTReportFormPage: React.FC = () => {
         setJobInspectionTime(jd.inspectionTime ?? "");
         setJobStageOfInspection(jd.stageOfInspection ?? "");
         setJobMaterial(jd.material ?? "");
-        const [ext, extO] = fromOther(jd.extentOfExamination, [
-          "10%",
-          "100%",
-          "To the maximum extent possible",
-          "Other",
-        ]);
-        setJobExtentOfExamination(ext);
-        setJobExtentOther(extO);
         setJobThickness(jd.thickness ?? "");
         setJobTypeOfJoint(jd.typeOfJoint ?? "");
         setJobSurfaceCondition(jd.surfaceCondition ?? "");
@@ -418,10 +408,6 @@ export const MPTReportFormPage: React.FC = () => {
           inspectionTime: jobInspectionTime,
           stageOfInspection: jobStageOfInspection || undefined,
           material: jobMaterial,
-          extentOfExamination: resolveCustom(
-            jobExtentOfExamination,
-            jobExtentOther,
-          ),
           thickness: jobThickness,
           typeOfJoint: jobTypeOfJoint || undefined,
           surfaceCondition: jobSurfaceCondition,
@@ -601,6 +587,18 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
+            <label className={labelClass} htmlFor="jobClient">
+              Client / TPI
+            </label>
+            <input
+              id="jobClient"
+              type="text"
+              value={jobClient}
+              onChange={(e) => setJobClient(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
             <label className={labelClass} htmlFor="reportNo2">
               Report No.
             </label>
@@ -613,18 +611,6 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobClient">
-              Client
-            </label>
-            <input
-              id="jobClient"
-              type="text"
-              value={jobClient}
-              onChange={(e) => setJobClient(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
             <label className={labelClass} htmlFor="jobReportDate">
               Report Date
             </label>
@@ -633,30 +619,6 @@ export const MPTReportFormPage: React.FC = () => {
               type="date"
               value={jobReportDate}
               onChange={(e) => setJobReportDate(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobInspectionDate">
-              Inspection Start Date
-            </label>
-            <input
-              id="jobInspectionDate"
-              type="date"
-              value={jobInspectionDate}
-              onChange={(e) => setJobInspectionDate(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobInspectionEndDate">
-              Inspection End Date
-            </label>
-            <input
-              id="jobInspectionEndDate"
-              type="date"
-              value={jobInspectionEndDate}
-              onChange={(e) => setJobInspectionEndDate(e.target.value)}
               className={inputClass}
             />
           </div>
@@ -694,6 +656,30 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
+            <label className={labelClass} htmlFor="jobInspectionDate">
+              Inspection Start Date
+            </label>
+            <input
+              id="jobInspectionDate"
+              type="date"
+              value={jobInspectionDate}
+              onChange={(e) => setJobInspectionDate(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="jobInspectionEndDate">
+              Inspection End Date
+            </label>
+            <input
+              id="jobInspectionEndDate"
+              type="date"
+              value={jobInspectionEndDate}
+              onChange={(e) => setJobInspectionEndDate(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
             <label className={labelClass} htmlFor="jobInspectionTime">
               Inspection Time
             </label>
@@ -723,50 +709,6 @@ export const MPTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobMaterial">
-              Material
-            </label>
-            <input
-              id="jobMaterial"
-              type="text"
-              value={jobMaterial}
-              onChange={(e) => setJobMaterial(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. As per Drawing"
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobExtent">
-              Extent of Examination
-            </label>
-            <SelectWithOther
-              id="jobExtent"
-              value={jobExtentOfExamination}
-              onChange={setJobExtentOfExamination}
-              otherValue={jobExtentOther}
-              onOtherChange={setJobExtentOther}
-              options={[
-                "10%",
-                "100%",
-                "To the maximum extent possible",
-                "Other",
-              ]}
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobThickness">
-              Thickness
-            </label>
-            <input
-              id="jobThickness"
-              type="text"
-              value={jobThickness}
-              onChange={(e) => setJobThickness(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. As per Drawing"
-            />
-          </div>
-          <div>
             <label className={labelClass} htmlFor="jobTypeOfJoint">
               Type of Joint
             </label>
@@ -782,19 +724,6 @@ export const MPTReportFormPage: React.FC = () => {
               <option>T Joint</option>
               <option>NA</option>
             </select>
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobSurface">
-              Surface Condition
-            </label>
-            <input
-              id="jobSurface"
-              type="text"
-              value={jobSurfaceCondition}
-              onChange={(e) => setJobSurfaceCondition(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. Smooth"
-            />
           </div>
           <div>
             <label className={labelClass} htmlFor="jobWelding">
@@ -814,6 +743,45 @@ export const MPTReportFormPage: React.FC = () => {
               <option>GTAW</option>
               <option>MAG</option>
             </select>
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="jobMaterial">
+              Material
+            </label>
+            <input
+              id="jobMaterial"
+              type="text"
+              value={jobMaterial}
+              onChange={(e) => setJobMaterial(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. As per Drawing"
+            />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="jobThickness">
+              Thickness
+            </label>
+            <input
+              id="jobThickness"
+              type="text"
+              value={jobThickness}
+              onChange={(e) => setJobThickness(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. As per Drawing"
+            />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="jobSurface">
+              Surface Condition
+            </label>
+            <input
+              id="jobSurface"
+              type="text"
+              value={jobSurfaceCondition}
+              onChange={(e) => setJobSurfaceCondition(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. Smooth"
+            />
           </div>
         </div>
       </div>

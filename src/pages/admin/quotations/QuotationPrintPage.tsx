@@ -82,9 +82,17 @@ export const QuotationPrintPage: React.FC = () => {
         }
         const qData = qRes.data?.data || qRes.data;
         setData(qData);
-        if (qData?.customerId) {
-          const custRes = await getCustomerById(qData.customerId);
-          setCustomer(custRes.data?.data || custRes.data);
+        // Ensure we always have full customer details (address, GST, mobile, etc.)
+        const custId = typeof qData?.customerId === 'object' ? qData.customerId._id : qData?.customerId;
+        if (custId) {
+          try {
+            const custRes = await getCustomerById(custId);
+            setCustomer(custRes.data?.data || custRes.data);
+          } catch (e) {
+            console.error('Failed to fetch full customer details', e);
+            // fallback to shallow data if already exists
+            if (typeof qData.customerId === 'object') setCustomer(qData.customerId);
+          }
         }
       } catch (err) {
         console.error('Error fetching quotation print data', err);
