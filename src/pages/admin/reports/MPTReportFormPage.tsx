@@ -13,7 +13,7 @@ import { getApiErrorMessage } from "../../../api/error";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 import api from "../../../api/axios";
 
-// â"€â"€â"€ Styles â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Styles Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
 
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
@@ -22,7 +22,7 @@ const sectionClass = "bg-white rounded-xl border border-gray-200 p-5 mb-5";
 const sectionTitleClass =
   "text-sm font-semibold text-indigo-700 uppercase tracking-wide mb-4 pb-2 border-b border-gray-100";
 
-// â"€â"€â"€ SelectWithOther â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ SelectWithOther Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
 
 interface SelectWithOtherProps {
   id: string;
@@ -69,7 +69,7 @@ const SelectWithOther: React.FC<SelectWithOtherProps> = ({
   </div>
 );
 
-// â"€â"€â"€ Form State â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Form State Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
 
 interface ObsRow extends Omit<MPTObservation, "quantity"> {
   quantity: string;
@@ -85,7 +85,7 @@ const emptyObs = (): ObsRow => ({
   drawingOrJointNo: "",
   size: "",
   quantity: "",
-  evaluation: "",
+  interpretation: "",
   result: "",
   remark: "",
 });
@@ -113,7 +113,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
   const [customerName, setCustomerName] = useState(state?.customerName ?? "");
 
-  // â"€â"€ Job Details â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Job Details Ã¢"â‚¬Ã¢"â‚¬
   const [reportNo, setReportNo] = useState("");
   const jobCustomer = customerName;
   const [jobClient, setJobClient] = useState("");
@@ -134,7 +134,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [jobExtentOfExamination, setJobExtentOfExamination] = useState("");
   const [jobWeldingProcess, setJobWeldingProcess] = useState("");
 
-  // â"€â"€ Equipment Details â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Equipment Details Ã¢"â‚¬Ã¢"â‚¬
   const [eqType, setEqType] = useState("");
   const [eqSrNo, setEqSrNo] = useState("");
   const [eqMake, setEqMake] = useState("");
@@ -143,7 +143,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [eqYokeSpacing, setEqYokeSpacing] = useState("");
   const [eqPieGauge, setEqPieGauge] = useState("");
 
-  // â"€â"€ Medium Details â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Medium Details Ã¢"â‚¬Ã¢"â‚¬
   const [biManufacturer, setBiManufacturer] = useState("");
   const [biManufacturerOther, setBiManufacturerOther] = useState("");
   const [biBatchNo, setBiBatchNo] = useState("");
@@ -153,7 +153,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [wcBatchNo, setWcBatchNo] = useState("");
   const [wcExpiryDate, setWcExpiryDate] = useState("");
 
-  // â"€â"€ Method Description â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Method Description Ã¢"â‚¬Ã¢"â‚¬
   const [method, setMethod] = useState("");
   const [lightIntensity, setLightIntensity] = useState("");
   const [magnetizationType, setMagnetizationType] = useState("");
@@ -169,10 +169,10 @@ export const MPTReportFormPage: React.FC = () => {
   const [currentTypeOther, setCurrentTypeOther] = useState("");
   const [postCleaning, setPostCleaning] = useState("");
 
-  // â"€â"€ Observations â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
-  // â"€â"€ Final Section â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Final Section Ã¢"â‚¬Ã¢"â‚¬
   const [custName, setCustName] = useState("");
   const [custDesig, setCustDesig] = useState("");
   const [custSig, setCustSig] = useState("");
@@ -310,7 +310,7 @@ export const MPTReportFormPage: React.FC = () => {
               drawingOrJointNo: o.drawingOrJointNo ?? "",
               size: o.size ?? "",
               quantity: String(o.quantity ?? ""),
-              evaluation: o.evaluation ?? "",
+              interpretation: o.interpretation ?? "",
               result: o.result ?? "",
               remark: o.remark ?? "",
             })),
@@ -345,7 +345,7 @@ export const MPTReportFormPage: React.FC = () => {
       .catch(() => toast.error("Failed to load report."));
   }, [id]);
 
-  // â"€â"€ Helpers â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Helpers Ã¢"â‚¬Ã¢"â‚¬
   const resolveCustom = (val: string, other: string) =>
     val === "Other" && other.trim() ? other.trim() : val;
 
@@ -379,7 +379,7 @@ export const MPTReportFormPage: React.FC = () => {
   const removeInspector = (idx: number) =>
     setInspectors((prev) => prev.filter((_, i) => i !== idx));
 
-  // â"€â"€ Submit â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Submit Ã¢"â‚¬Ã¢"â‚¬
   const handleSubmit = async (status: "draft" | "final") => {
     if (!customerId && !id) {
       toast.error("Customer ID is missing. Go back and try again.");
@@ -461,7 +461,7 @@ export const MPTReportFormPage: React.FC = () => {
             drawingOrJointNo: o.drawingOrJointNo,
             size: o.size,
             quantity: Number(o.quantity) || 0,
-            evaluation: o.evaluation || "",
+            interpretation: o.interpretation || "",
             result: o.result || "",
             remark: o.remark || "",
           })),
@@ -506,7 +506,7 @@ export const MPTReportFormPage: React.FC = () => {
     }
   };
 
-  // â"€â"€â"€ Render â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Render Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
 
   const manufacturerOptions = [
     "Pradeep",
@@ -535,7 +535,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Missing Customer Banner ── */}
+      {/* â”€â”€ Missing Customer Banner â”€â”€ */}
       {!customerId && (
         <CustomerPickerBanner
           onCustomerSelected={(id, name) => {
@@ -573,7 +573,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Job Details â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Job Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -789,7 +789,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Equipment Details â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Equipment Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Equipment Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -875,7 +875,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Medium Details â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Medium Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Medium Details</h2>
         <div className="overflow-x-auto">
@@ -968,7 +968,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Method Description â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Method Description Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Description</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1145,7 +1145,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Observations â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
@@ -1178,9 +1178,7 @@ export const MPTReportFormPage: React.FC = () => {
                 <th className="border border-gray-200 px-2 py-2 text-center">
                   Qty
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
-                  Evaluation
-                </th>
+                <th className="border border-gray-200 px-2 py-2 text-left">Interpretation</th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
                   Remark
                 </th>
@@ -1234,9 +1232,9 @@ export const MPTReportFormPage: React.FC = () => {
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
                     <select
-                      value={row.evaluation}
+                      value={row.interpretation}
                       onChange={(e) =>
-                        updateObs(idx, "evaluation", e.target.value)
+                        updateObs(idx, "interpretation", e.target.value)
                       }
                       className={inputClass}
                     >
@@ -1274,7 +1272,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Examined By â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Examined By Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* NIIT Inspector(s) */}
@@ -1397,7 +1395,7 @@ export const MPTReportFormPage: React.FC = () => {
               Customer
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {customerName || "—"}
+              {customerName || "â€”"}
             </p>
             <div className="space-y-2">
               <div>
@@ -1454,7 +1452,7 @@ export const MPTReportFormPage: React.FC = () => {
               Client / TPI
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {jobClient || "—"}
+              {jobClient || "â€”"}
             </p>
             <div className="space-y-2">
               <div>
@@ -1507,7 +1505,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Action Buttons â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Action Buttons Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className="flex items-center justify-end gap-3 pb-8">
         <button
           type="button"
@@ -1538,3 +1536,4 @@ export const MPTReportFormPage: React.FC = () => {
     </div>
   );
 };
+

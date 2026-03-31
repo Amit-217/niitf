@@ -12,7 +12,7 @@ import {
   PTReport,
 } from "../../../api/customerApi";
 
-// ─── Print Styles ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Print Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
@@ -131,7 +131,7 @@ const PRINT_STYLES = `
   }
 `;
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const v = (s?: string) => s || "";
 const fmtDate = (d?: string) => {
@@ -141,7 +141,7 @@ const fmtDate = (d?: string) => {
   return `${String(dt.getDate()).padStart(2, "0")}.${String(dt.getMonth() + 1).padStart(2, "0")}.${dt.getFullYear()}`;
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export const PTReportPrintPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -315,7 +315,7 @@ export const PTReportPrintPage: React.FC = () => {
         </button>
       </div>
 
-      {/* ── Report Content ── */}
+      {/* â”€â”€ Report Content â”€â”€ */}
       <div
         id="report-root"
         style={{
@@ -379,7 +379,7 @@ export const PTReportPrintPage: React.FC = () => {
                         Liquid Penetrant Test Report
                       </div>
 
-                      {/* ── JOB DETAILS ── */}
+                      {/* â”€â”€ JOB DETAILS â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -457,7 +457,7 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* ── METHOD DETAILS ── */}
+                      {/* â”€â”€ METHOD DETAILS â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -486,7 +486,7 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* ── CONSUMABLES DETAILS ── */}
+                      {/* â”€â”€ CONSUMABLES DETAILS â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "14%" }} />
@@ -523,7 +523,7 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* ── METHOD DESCRIPTION ── */}
+                      {/* â”€â”€ METHOD DESCRIPTION â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -560,7 +560,7 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* ── OBSERVATIONS ── */}
+                      {/* â”€â”€ OBSERVATIONS â”€â”€ */}
                       <table className="obs-table mt-n1">
                         <tbody>
                           <tr>
@@ -584,9 +584,7 @@ export const PTReportPrintPage: React.FC = () => {
                             <td className="col-hdr" style={{ width: "10%" }}>
                               Quantity in Nos.
                             </td>
-                            <td className="col-hdr" style={{ width: "20%" }}>
-                              Evaluation
-                            </td>
+                            <td className="col-hdr" style={{ width: "20%" }}>Interpretation</td>
                             <td className="col-hdr" style={{ width: "16%" }}>
                               Remark
                             </td>
@@ -621,7 +619,7 @@ export const PTReportPrintPage: React.FC = () => {
                                 >
                                   {o.quantity ?? ""}
                                 </td>
-                                <td>{v(o.evaluation)}</td>
+                                <td>{v(o.interpretation)}</td>
                                 <td>{v(o.remark || o.result)}</td>
                               </tr>
                             ))
@@ -629,7 +627,7 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* ── EXAMINED BY ── */}
+                      {/* â”€â”€ EXAMINED BY â”€â”€ */}
                       <table className="sign-table mt-n1">
                         <colgroup>
                           <col style={{ width: "33.3%" }} />
@@ -702,7 +700,7 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
                     </div>
-                    {/* ── end report-body ── */}
+                    {/* â”€â”€ end report-body â”€â”€ */}
                   </td>
                 </tr>
               </tbody>
@@ -745,3 +743,4 @@ export const PTReportPrintPage: React.FC = () => {
     </>
   );
 };
+

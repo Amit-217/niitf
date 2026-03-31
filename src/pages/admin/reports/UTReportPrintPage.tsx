@@ -12,7 +12,7 @@ import {
   UTReport,
 } from "../../../api/customerApi";
 
-// ─── Print Styles ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Print Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
@@ -100,7 +100,7 @@ const PRINT_STYLES = `
   }
 `;
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const v = (s?: string | number) =>
   s !== undefined && s !== null ? String(s) : "";
@@ -111,7 +111,7 @@ const fmtDate = (d?: string) => {
   return `${String(dt.getDate()).padStart(2, "0")}.${String(dt.getMonth() + 1).padStart(2, "0")}.${dt.getFullYear()}`;
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export const UTReportPrintPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -217,10 +217,10 @@ export const UTReportPrintPage: React.FC = () => {
   const inspector = fs.inspector?.[0] ?? {};
 
   const calibAngles = [
-    { label: "0°", data: apc.deg0 },
-    { label: "45°", data: apc.deg45 },
-    { label: "60°", data: apc.deg60 },
-    { label: "70°", data: apc.deg70 },
+    { label: "0Â°", data: apc.deg0 },
+    { label: "45Â°", data: apc.deg45 },
+    { label: "60Â°", data: apc.deg60 },
+    { label: "70Â°", data: apc.deg70 },
   ];
 
   const ReportFooter = () => (
@@ -293,7 +293,7 @@ export const UTReportPrintPage: React.FC = () => {
         </button>
       </div>
 
-      {/* ── Report Content ── */}
+      {/* â”€â”€ Report Content â”€â”€ */}
       <div
         id="report-root"
         style={{
@@ -355,7 +355,7 @@ export const UTReportPrintPage: React.FC = () => {
                     <div className="report-body">
                       <div className="rpt-title">Ultrasonic Testing Report</div>
 
-                      {/* ── JOB DETAILS ── */}
+                      {/* â”€â”€ JOB DETAILS â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "18%" }} />
@@ -425,7 +425,7 @@ export const UTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* ── EQUIPMENT DETAILS ── */}
+                      {/* â”€â”€ EQUIPMENT DETAILS â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "18%" }} />
@@ -462,7 +462,7 @@ export const UTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* ── SEARCH UNIT DETAILS ── */}
+                      {/* â”€â”€ SEARCH UNIT DETAILS â”€â”€ */}
                       <table className="report-table mt-n1">
                         <tbody>
                           <tr>
@@ -539,7 +539,7 @@ export const UTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* ── TECHNIQUE DETAILS ── */}
+                      {/* â”€â”€ TECHNIQUE DETAILS â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -576,7 +576,7 @@ export const UTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* ── ANGLE PROBE CALIBRATION ── */}
+                      {/* â”€â”€ ANGLE PROBE CALIBRATION â”€â”€ */}
                       <table className="calib-table mt-n1">
                         <tbody>
                           <tr>
@@ -626,7 +626,7 @@ export const UTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* ── OBSERVATIONS ── */}
+                      {/* â”€â”€ OBSERVATIONS â”€â”€ */}
                       <table className="obs-table mt-n1">
                         <tbody>
                           <tr>
@@ -650,9 +650,7 @@ export const UTReportPrintPage: React.FC = () => {
                             <td className="col-hdr" style={{ width: "10%" }}>
                               Quantity in Nos.
                             </td>
-                            <td className="col-hdr" style={{ width: "20%" }}>
-                              Evaluation
-                            </td>
+                            <td className="col-hdr" style={{ width: "20%" }}>Interpretation</td>
                             <td className="col-hdr" style={{ width: "16%" }}>
                               Remark
                             </td>
@@ -687,7 +685,7 @@ export const UTReportPrintPage: React.FC = () => {
                                 >
                                   {o.quantity ?? ""}
                                 </td>
-                                <td>{v(o.evaluation)}</td>
+                                <td>{v(o.interpretation)}</td>
                                 <td>{v(o.remark)}</td>
                               </tr>
                             ))
@@ -695,7 +693,7 @@ export const UTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* ── EXAMINED BY ── */}
+                      {/* â”€â”€ EXAMINED BY â”€â”€ */}
                       <table className="sign-table mt-n1">
                         <colgroup>
                           <col style={{ width: "33.3%" }} />
@@ -766,7 +764,7 @@ export const UTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
                     </div>
-                    {/* ── end report-body ── */}
+                    {/* â”€â”€ end report-body â”€â”€ */}
                   </td>
                 </tr>
               </tbody>
@@ -809,3 +807,4 @@ export const UTReportPrintPage: React.FC = () => {
     </>
   );
 };
+

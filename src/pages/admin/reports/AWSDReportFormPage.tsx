@@ -5,7 +5,7 @@ import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
 import { createAWSDReport, updateAWSDReport, getAWSDReportById } from '../../../api/customerApi';
 import { CustomerPickerBanner } from '../../../components/CustomerPickerBanner';
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const inputClass =
   'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500';
@@ -14,7 +14,7 @@ const sectionClass = 'bg-white rounded-xl border border-gray-200 p-5 mb-5';
 const sectionTitleClass =
   'text-sm font-semibold text-indigo-700 uppercase tracking-wide mb-4 pb-2 border-b border-gray-100';
 
-// ─── SelectWithOther ──────────────────────────────────────────────────────────
+// â”€â”€â”€ SelectWithOther â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface SelectWithOtherProps {
   id?: string;
@@ -40,7 +40,7 @@ const SelectWithOther: React.FC<SelectWithOtherProps> = ({
   </div>
 );
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface ObsRow {
   lineNo: number;
@@ -58,7 +58,7 @@ interface ObsRow {
   depthFromA: string;
   distanceFromX: string;
   distanceFromY: string;
-  evaluation: string;
+  interpretation: string;
   remarks: string;
 }
 
@@ -69,10 +69,10 @@ const emptyObs = (lineNo: number): ObsRow => ({
   dbIndicationLevel: '', dbReferenceLevel: '', dbAttenuationFactor: '', dbIndicationRating: '',
   length: '', angularDistance: '', depthFromA: '',
   distanceFromX: '', distanceFromY: '',
-  evaluation: '', remarks: '',
+  interpretation: '', remarks: '',
 });
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export const AWSDReportFormPage: React.FC = () => {
   const navigate = useNavigate();
@@ -85,11 +85,11 @@ export const AWSDReportFormPage: React.FC = () => {
 
   const [saving, setSaving] = useState(false);
 
-  // ── Header Fields ──
+  // â”€â”€ Header Fields â”€â”€
   const [reportNo, setReportNo] = useState('');
   const [project, setProject] = useState('');
 
-  // ── Job Info ──
+  // â”€â”€ Job Info â”€â”€
   const [weldIdentification, setWeldIdentification] = useState('');
   const [materialThickness, setMaterialThickness] = useState('');
   const [weldJointAWS, setWeldJointAWS] = useState('');
@@ -98,12 +98,12 @@ export const AWSDReportFormPage: React.FC = () => {
   const [qualityRequirementsSection, setQualityRequirementsSection] = useState('');
   const [jobRemarks, setJobRemarks] = useState('');
 
-  // ── Observations ──
+  // â”€â”€ Observations â”€â”€
   const [observations, setObservations] = useState<ObsRow[]>(
     Array.from({ length: 3 }, (_, i) => emptyObs(i + 1))
   );
 
-  // ── Footer / Certification ──
+  // â”€â”€ Footer / Certification â”€â”€
   const [testDate, setTestDate] = useState('');
   const [inspectedBy, setInspectedBy] = useState('');
   const [certYear, setCertYear] = useState('');
@@ -111,7 +111,7 @@ export const AWSDReportFormPage: React.FC = () => {
   const [authorizedBy, setAuthorizedBy] = useState('');
   const [footerDate, setFooterDate] = useState('');
 
-  // ── Load in edit mode ──
+  // â”€â”€ Load in edit mode â”€â”€
   useEffect(() => {
     if (!id) return;
     const toDate = (d?: string | null) => d ? d.split('T')[0] : '';
@@ -138,7 +138,7 @@ export const AWSDReportFormPage: React.FC = () => {
       setQualityRequirementsSection(r.qualityRequirementsSection ?? ''); setJobRemarks(r.remarks ?? '');
       if (r.observations?.length) {
         setObservations(r.observations.map((o: any) => {
-          const [ta, taO] = fromOther(o.transducerAngle, ['45°', '60°', '70°', 'Normal (0°)', 'Other']);
+          const [ta, taO] = fromOther(o.transducerAngle, ['45Â°', '60Â°', '70Â°', 'Normal (0Â°)', 'Other']);
           return {
             lineNo: o.lineNo,
             indicationNo: o.indicationNo ?? '', transducerAngle: ta, transducerAngleOther: taO,
@@ -150,7 +150,7 @@ export const AWSDReportFormPage: React.FC = () => {
             length: o.discontinuity?.length ?? '', angularDistance: o.discontinuity?.angularDistance ?? '',
             depthFromA: o.discontinuity?.depthFromA ?? '', distanceFromX: o.discontinuity?.distanceFromX ?? '',
             distanceFromY: o.discontinuity?.distanceFromY ?? '',
-            evaluation: o.evaluation ?? '', remarks: o.remarks ?? '',
+            interpretation: o.interpretation ?? '', remarks: o.remarks ?? '',
           };
         }));
       }
@@ -161,7 +161,7 @@ export const AWSDReportFormPage: React.FC = () => {
     }).catch(() => toast.error('Failed to load report.'));
   }, [id]);
 
-  // ── Helpers ──
+  // â”€â”€ Helpers â”€â”€
   const resolve = (val: string, other: string) =>
     val === 'Other' && other.trim() ? other.trim() : val;
 
@@ -176,7 +176,7 @@ export const AWSDReportFormPage: React.FC = () => {
       prev.filter((_, i) => i !== idx).map((r, i) => ({ ...r, lineNo: i + 1 }))
     );
 
-  // ── Submit ──
+  // â”€â”€ Submit â”€â”€
   const handleSubmit = async (status: 'draft' | 'final') => {
     if (!isEditMode && !customerId) {
         toast.error("Please select a customer first.");
@@ -197,7 +197,7 @@ export const AWSDReportFormPage: React.FC = () => {
         qualityRequirementsSection,
         remarks: jobRemarks,
         observations: observations
-          .filter(o => o.indicationNo.trim() || o.transducerAngle || o.evaluation)
+          .filter(o => o.indicationNo.trim() || o.transducerAngle || o.interpretation)
           .map(o => ({
             lineNo: o.lineNo,
             indicationNo: o.indicationNo,
@@ -217,7 +217,7 @@ export const AWSDReportFormPage: React.FC = () => {
               distanceFromX: o.distanceFromX,
               distanceFromY: o.distanceFromY,
             },
-            evaluation: o.evaluation,
+            interpretation: o.interpretation,
             remarks: o.remarks,
           })),
         certification: {
@@ -256,7 +256,7 @@ export const AWSDReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Missing Customer Banner ── */}
+      {/* â”€â”€ Missing Customer Banner â”€â”€ */}
       {!customerId && (
         <CustomerPickerBanner
           onCustomerSelected={(id, name) => {
@@ -286,7 +286,7 @@ export const AWSDReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Job Info ── */}
+      {/* â”€â”€ Job Info â”€â”€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Information</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -311,7 +311,7 @@ export const AWSDReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Quality Requirements — Section No.</label>
+            <label className={labelClass}>Quality Requirements â€” Section No.</label>
             <input type="text" value={qualityRequirementsSection} onChange={e => setQualityRequirementsSection(e.target.value)} className={inputClass} placeholder="e.g. Clause 8, Part F" />
           </div>
           <div>
@@ -321,7 +321,7 @@ export const AWSDReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Observations Table ── */}
+      {/* â”€â”€ Observations Table â”€â”€ */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">Observations</h2>
@@ -342,7 +342,7 @@ export const AWSDReportFormPage: React.FC = () => {
                 <th rowSpan={2} className="border border-gray-200 px-2 py-2 text-center">Leg</th>
                 <th colSpan={4} className="border border-gray-200 px-2 py-2 text-center bg-indigo-50 text-indigo-700">Decibels</th>
                 <th colSpan={5} className="border border-gray-200 px-2 py-2 text-center bg-orange-50 text-orange-700">Discontinuity</th>
-                <th rowSpan={2} className="border border-gray-200 px-2 py-2 text-center">Evaluation</th>
+                <th rowSpan={2} className="border border-gray-200 px-2 py-2 text-center">Interpretation</th>
                 <th rowSpan={2} className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
               <tr className="bg-gray-50 text-gray-600">
@@ -370,7 +370,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={v => updateObs(idx, 'transducerAngle', v)}
                       otherValue={row.transducerAngleOther}
                       onOtherChange={v => updateObs(idx, 'transducerAngleOther', v)}
-                      options={['45°', '60°', '70°', 'Normal (0°)', 'Other']}
+                      options={['45Â°', '60Â°', '70Â°', 'Normal (0Â°)', 'Other']}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -418,7 +418,7 @@ export const AWSDReportFormPage: React.FC = () => {
                     <input type="text" value={row.distanceFromY} onChange={e => updateObs(idx, 'distanceFromY', e.target.value)} className={inputClass} />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
-                    <select value={row.evaluation} onChange={e => updateObs(idx, 'evaluation', e.target.value)} className="w-full border border-gray-300 rounded px-1 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <select value={row.interpretation} onChange={e => updateObs(idx, 'interpretation', e.target.value)} className="w-full border border-gray-300 rounded px-1 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
                       <option value="">-</option>
                       <option>Accept</option>
                       <option>Reject</option>
@@ -438,11 +438,11 @@ export const AWSDReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Certification & Signatures ── */}
+      {/* â”€â”€ Certification & Signatures â”€â”€ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Certification &amp; Signatures</h2>
         <p className="text-xs text-gray-500 mb-4 italic">
-          We, the undersigned, certify that the statements in this record are correct and that the welds were prepared and tested in conformance with the requirements of Clause 8, Part F of AWS D1.1/D1.1M, (year) Structural Welding Code—Steel.
+          We, the undersigned, certify that the statements in this record are correct and that the welds were prepared and tested in conformance with the requirements of Clause 8, Part F of AWS D1.1/D1.1M, (year) Structural Welding Codeâ€”Steel.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
@@ -480,7 +480,7 @@ export const AWSDReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Action Buttons ── */}
+      {/* â”€â”€ Action Buttons â”€â”€ */}
       <div className="flex items-center justify-end gap-3 pb-8">
         <button type="button" onClick={() => navigate(-1)} className="px-5 py-2.5 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
           Cancel
@@ -499,3 +499,4 @@ export const AWSDReportFormPage: React.FC = () => {
     </div>
   );
 };
+

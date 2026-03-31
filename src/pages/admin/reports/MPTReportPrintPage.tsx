@@ -260,7 +260,7 @@ export const MPTReportPrintPage = () => {
   );
 
   const rejectedCount = obs.filter((o) =>
-    /reject|repair|fail|not ok/i.test(v(o.result || o.remark || o.evaluation)),
+    /reject|repair|fail|not ok/i.test(v(o.result || o.remark || o.interpretation)),
   ).length;
   const conclusionText =
     v((report as unknown as { conclusion?: string }).conclusion) ||
@@ -368,7 +368,7 @@ export const MPTReportPrintPage = () => {
               <thead style={{ display: "table-header-group" }}>
                 <tr>
                   <td style={{ padding: "5mm 0 0 0" }}>
-                    {/* ── HEADER ── */}
+                    {/* â”€â”€ HEADER â”€â”€ */}
                     <div className="rpt-header">
                       <div className="logo-box">
                         <img src="/logo.png" alt="NIIT Logo" />
@@ -400,7 +400,7 @@ export const MPTReportPrintPage = () => {
                         Magnetic Particle Examination Report
                       </div>
 
-                      {/* ── 1. Scope & Reference Standards ── */}
+                      {/* â”€â”€ 1. Scope & Reference Standards â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -508,7 +508,7 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* ── 2. Equipment Details ── */}
+                      {/* â”€â”€ 2. Equipment Details â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -549,7 +549,7 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* ── 4. Medium Details ── */}
+                      {/* â”€â”€ 4. Medium Details â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "20%" }} />
@@ -596,7 +596,7 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* ── 5. Method Description ── */}
+                      {/* â”€â”€ 5. Method Description â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -665,7 +665,7 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* ── 6. Observations ── */}
+                      {/* â”€â”€ 6. Observations â”€â”€ */}
                       <table className="obs-table mt-n1">
                         <tbody>
                           <tr>
@@ -679,7 +679,7 @@ export const MPTReportPrintPage = () => {
                             <th>Drg No. / Joint No.</th>
                             <th style={{ width: "10%" }}>Size</th>
                             <th style={{ width: "10%" }}>Quantity in Nos.</th>
-                            <th>Evaluation</th>
+                            <th>Interpretation</th>
                             <th style={{ width: "13%" }}>Remark</th>
                           </tr>
                           {obs.length === 0 ? (
@@ -710,10 +710,10 @@ export const MPTReportPrintPage = () => {
                                 <td>
                                   <span
                                     className={resultClass(
-                                      o.evaluation,
+                                      o.interpretation,
                                     )}
                                   >
-                                    {v(o.evaluation) || "N/A"}
+                                    {v(o.interpretation) || "N/A"}
                                   </span>
                                 </td>
                                 <td>
@@ -731,7 +731,7 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* ── 7. Conclusion ── */}
+                      {/* â”€â”€ 7. Conclusion â”€â”€ */}
                       <table className="report-table mt-n1">
                         <tbody>
                           <tr>
@@ -748,7 +748,7 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* ── 8. Signatures ── */}
+                      {/* â”€â”€ 8. Signatures â”€â”€ */}
                       <table className="sign-table mt-n1">
                         <colgroup>
                           <col style={{ width: "33.3%" }} />
@@ -832,7 +832,7 @@ export const MPTReportPrintPage = () => {
                         </table>
                       )}
                     </div>
-                    {/* ── end report-body ── */}
+                    {/* â”€â”€ end report-body â”€â”€ */}
                   </td>
                 </tr>
               </tbody>
@@ -876,3 +876,4 @@ export const MPTReportPrintPage = () => {
     </>
   );
 };
+

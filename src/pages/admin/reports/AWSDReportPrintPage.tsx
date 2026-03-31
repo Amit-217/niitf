@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import { getAWSDReportById } from "../../../api/customerApi";
 
-// ─── Print Styles ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Print Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const PRINT_STYLES = `
   @page { size: A4 landscape; margin: 0; }
@@ -35,7 +35,7 @@ const PRINT_STYLES = `
   }
   * { box-sizing: border-box; }
 
-  /* ── Main border table ── */
+  /* â”€â”€ Main border table â”€â”€ */
   .outer-table { width: 100%; border-collapse: collapse; border: 1.5px solid #000; }
   .outer-table td, .outer-table th { border: 1px solid #555; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
 
@@ -79,7 +79,7 @@ const PRINT_STYLES = `
   }
 `;
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const v = (s?: string | number | null) =>
   s !== undefined && s !== null ? String(s) : "";
@@ -91,7 +91,7 @@ const fmtDate = (d?: string | null) => {
   return `${String(dt.getDate()).padStart(2, "0")}.${String(dt.getMonth() + 1).padStart(2, "0")}.${dt.getFullYear()}`;
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export const AWSDReportPrintPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -194,7 +194,7 @@ export const AWSDReportPrintPage: React.FC = () => {
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
-      {/* ── Report Content ── */}
+      {/* â”€â”€ Report Content â”€â”€ */}
       <div
         id="report-root"
         style={{
@@ -219,7 +219,7 @@ export const AWSDReportPrintPage: React.FC = () => {
             <thead style={{ display: "table-header-group" }}>
               <tr>
                 <td style={{ padding: "5mm 0 0 0" }}>
-                  {/* ── HEADER ── */}
+                  {/* â”€â”€ HEADER â”€â”€ */}
                   <table
             style={{
               width: "100%",
@@ -331,7 +331,7 @@ export const AWSDReportPrintPage: React.FC = () => {
             <tbody style={{ display: "table-row-group" }}>
               <tr>
                 <td style={{ padding: 0, verticalAlign: "top" }}>
-                  {/* ── JOB INFORMATION ── */}
+                  {/* â”€â”€ JOB INFORMATION â”€â”€ */}
                   <table className="report-table mt-n1">
             <colgroup>
               <col style={{ width: "14%" }} />
@@ -364,7 +364,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                 <td className="val">{v(report.weldingProcess)}</td>
               </tr>
               <tr>
-                <td className="lbl">Quality Requirements — Section</td>
+                <td className="lbl">Quality Requirements â€” Section</td>
                 <td className="val" colSpan={3}>
                   {v(report.qualityRequirementsSection)}
                 </td>
@@ -374,7 +374,7 @@ export const AWSDReportPrintPage: React.FC = () => {
             </tbody>
           </table>
 
-          {/* ── OBSERVATIONS ── */}
+          {/* â”€â”€ OBSERVATIONS â”€â”€ */}
           <table className="obs-table mt-n1">
             <tbody>
               <tr>
@@ -421,9 +421,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                 >
                   DISCONTINUITY
                 </td>
-                <td className="col-hdr" rowSpan={2} style={{ width: "6%" }}>
-                  Evaluation
-                </td>
+                <td className="col-hdr" rowSpan={2} style={{ width: "6%" }}>Interpretation</td>
               </tr>
               {/* Header row 2 */}
               <tr>
@@ -543,26 +541,26 @@ export const AWSDReportPrintPage: React.FC = () => {
                       </td>
                       <td
                         className={
-                          o.evaluation === "Reject" ? "reject-cell" : ""
+                          o.interpretation === "Reject" ? "reject-cell" : ""
                         }
                       >
-                        {v(o.evaluation)}
+                        {v(o.interpretation)}
                       </td>
                     </tr>
                   ))}
             </tbody>
           </table>
 
-          {/* ── CERTIFICATION TEXT ── */}
+          {/* â”€â”€ CERTIFICATION TEXT â”€â”€ */}
           <div className="cert-para">
             We, the undersigned, certify that the statements in this record are
             correct and that the welds were prepared and tested in conformance
             with the requirements of Clause 8, Part F of AWS D1.1/D1.1M,&nbsp;
             <strong>({v(cert.year) || "____"})</strong> Structural Welding
-            Code—Steel.
+            Codeâ€”Steel.
           </div>
 
-          {/* ── CERTIFICATION / SIGNATURES ── */}
+          {/* â”€â”€ CERTIFICATION / SIGNATURES â”€â”€ */}
           <table className="sign-table mt-n1">
             <colgroup>
               <col style={{ width: "14%" }} />
@@ -633,3 +631,4 @@ export const AWSDReportPrintPage: React.FC = () => {
     </>
   );
 };
+

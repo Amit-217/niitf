@@ -1,7 +1,7 @@
 import api from './axios';
 import publicApi from './publicApi';
 
-// ─── Customer Types ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Customer Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface CustomerPayload {
   companyName: string;
@@ -28,7 +28,7 @@ export interface Customer {
   createdAt: string;
 }
 
-// ─── Quotation / Invoice shared ───────────────────────────────────────────────
+// â”€â”€â”€ Quotation / Invoice shared â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface LineItem {
   srNo?: number;
@@ -39,7 +39,7 @@ export interface LineItem {
   amount: number;
 }
 
-// ─── Quotation Types ──────────────────────────────────────────────────────────
+// â”€â”€â”€ Quotation Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface QuotationPayload {
   customerId: string;
@@ -74,7 +74,7 @@ export interface Quotation {
   createdAt: string;
 }
 
-// ─── Invoice Types ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Invoice Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface InvoicePayload {
   customerId: string;
@@ -116,7 +116,7 @@ export interface Invoice {
   createdAt: string;
 }
 
-// ─── Customer API Functions ───────────────────────────────────────────────────
+// â”€â”€â”€ Customer API Functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export const getCustomers = (params?: { page?: number; limit?: number; search?: string }) =>
   api.get('/customers', { params });
@@ -133,7 +133,7 @@ export const updateCustomer = (id: string, data: Partial<CustomerPayload>) =>
 export const deleteCustomer = (id: string) =>
   api.delete(`/customers/${id}`);
 
-// ─── Quotation API Functions ──────────────────────────────────────────────────
+// â”€â”€â”€ Quotation API Functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export const getQuotations = (params?: { customerId?: string; page?: number; limit?: number; status?: string }) =>
   api.get('/quotations', { params });
@@ -147,7 +147,7 @@ export const updateQuotation = (id: string, data: Partial<QuotationPayload>) =>
 export const deleteQuotation = (id: string) =>
   api.delete(`/quotations/${id}`);
 
-// ─── Invoice API Functions ────────────────────────────────────────────────────
+// â”€â”€â”€ Invoice API Functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export const getInvoices = (params?: { customerId?: string; page?: number; limit?: number; status?: string }) =>
   api.get('/invoices', { params });
@@ -161,7 +161,7 @@ export const updateInvoice = (id: string, data: Partial<InvoicePayload>) =>
 export const deleteInvoice = (id: string) =>
   api.delete(`/invoices/${id}`);
 
-// ─── MPT Report Types ─────────────────────────────────────────────────────────
+// â”€â”€â”€ MPT Report Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface MPTObservation {
   srNo: number;
@@ -169,7 +169,7 @@ export interface MPTObservation {
   drawingOrJointNo: string;
   size: string;
   quantity: number;
-  evaluation: string;
+  interpretation: string;
   result: string;
   remark: string;
 }
@@ -245,7 +245,7 @@ export interface MPTReport extends MPTReportPayload {
   createdAt: string;
 }
 
-// ─── Report API Functions ─────────────────────────────────────────────────────
+// â”€â”€â”€ Report API Functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export const getMPTReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
   api.get('/reports/mpt', { params });
@@ -262,7 +262,7 @@ export const updateMPTReport = (id: string, data: Partial<MPTReportPayload>) =>
 export const deleteMPTReport = (id: string) =>
   api.delete(`/reports/mpt/${id}`);
 
-// ─── PT Report Types ──────────────────────────────────────────────────────────
+// â”€â”€â”€ PT Report Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface PTObservation {
   srNo: number;
@@ -270,7 +270,7 @@ export interface PTObservation {
   drawingOrJointNo: string;
   size: string;
   quantity: number;
-  evaluation: string;
+  interpretation: string;
   remark: string;
 }
 
@@ -329,7 +329,7 @@ export interface PTReport extends PTReportPayload {
   createdAt: string;
 }
 
-// ─── UT Report Types ──────────────────────────────────────────────────────────
+// â”€â”€â”€ UT Report Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface UTSearchUnit {
   model: string;
@@ -354,7 +354,7 @@ export interface UTObservation {
   drawingOrJointNo: string;
   size: string;
   quantity: number;
-  evaluation: string;
+  interpretation: string;
   remark: string;
 }
 
@@ -517,7 +517,7 @@ export const updateVSSCUTReport = (id: string, data: Partial<VSSCUTReportPayload
 export const deleteVSSCUTReport = (id: string) =>
   api.delete(`/reports/vssc-ut/${id}`);
 
-// ─── UTG Report Types ──────────────────────────────────────────────────────────
+// â”€â”€â”€ UTG Report Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface UTGSearchUnitRow {
   searchUnit?: string;
@@ -608,7 +608,7 @@ export const updateUTGReport = (id: string, data: Partial<UTGReportPayload>) =>
 export const deleteUTGReport = (id: string) =>
   api.delete(`/reports/utg/${id}`);
 
-// ─── TPI IVR Types ────────────────────────────────────────────────────────────
+// â”€â”€â”€ TPI IVR Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface TPIIVRInspectionItem {
   poLineNo?: string;
@@ -689,7 +689,7 @@ export const updateTPIIVRReport = (id: string, data: Partial<TPIIVRReportPayload
 export const deleteTPIIVRReport = (id: string) =>
   api.delete(`/reports/tpi-ivr/${id}`);
 
-// ─── AWS D1.1 UT Report Types ─────────────────────────────────────────────────
+// â”€â”€â”€ AWS D1.1 UT Report Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface AWSDObservation {
   lineNo: number;
@@ -710,7 +710,7 @@ export interface AWSDObservation {
     distanceFromX?: string;
     distanceFromY?: string;
   };
-  evaluation?: string;
+  interpretation?: string;
   remarks?: string;
 }
 
@@ -757,7 +757,7 @@ export const updateAWSDReport = (id: string, data: Partial<AWSDReportPayload>) =
 export const deleteAWSDReport = (id: string) =>
   api.delete(`/reports/awsd/${id}`);
 
-// ─── Public (unauthenticated) report fetch functions ─────────────────────────
+// â”€â”€â”€ Public (unauthenticated) report fetch functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const getPublicMPTReportById = (id: string) =>
   publicApi.get(`/public/reports/mpt/${id}`);
 export const getPublicPTReportById = (id: string) =>
@@ -772,3 +772,4 @@ export const getPublicTPIIVRReportById = (id: string) =>
   publicApi.get(`/public/reports/tpi-ivr/${id}`);
 export const getPublicAWSDReportById = (id: string) =>
   publicApi.get(`/public/reports/awsd/${id}`);
+
