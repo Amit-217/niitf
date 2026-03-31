@@ -254,6 +254,8 @@ export const PTReportPrintPage: React.FC = () => {
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
+          <br />
+          Powered by: viplora.tech
         </div>
         <div className="qr-wrap">
           <QRCodeSVG value={qrUrl} size={48} />
@@ -263,7 +265,6 @@ export const PTReportPrintPage: React.FC = () => {
         Format No: <span>FMT-NDT-PT-01</span>
         &nbsp;|&nbsp; Rev. No: <span>00</span>
         &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
-        &nbsp;|&nbsp; Page: <span>1 of 1</span>
       </div>
     </>
   );

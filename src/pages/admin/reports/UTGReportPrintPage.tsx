@@ -224,7 +224,6 @@ export const UTGReportPrintPage: React.FC = () => {
         Format No: <span>FMT-NDT-UTG-01</span>
         &nbsp;|&nbsp; Rev. No: <span>00</span>
         &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
-        &nbsp;|&nbsp; Page: <span>1 of 1</span>
       </div>
     </>
   );
