@@ -338,136 +338,99 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                     <div className="report-body">
                       <div className="rpt-title">Ultrasonic Testing Report</div>
 
-                      {/* Report No + Date row */}
-                      <table
-                        className="report-table mt-n1"
-                        style={{ marginBottom: 3 }}
-                      >
+                      {/* ── VSSC UT SPECIFIC HEADER ── */}
+                      <table className="report-table mt-n1" style={{ marginBottom: 4 }}>
+                        <colgroup>
+                          <col style={{ width: "28%" }} />
+                          <col style={{ width: "36%" }} />
+                          <col style={{ width: "36%" }} />
+                        </colgroup>
                         <tbody>
                           <tr>
-                            <td className="lbl" style={{ width: "15%" }}>
-                              Report No.
+                            <td className="val" style={{ color: "#c53030", fontWeight: 700, padding: "6px" }}>
+                              Report No. {v(report.reportNo)} <br />
+                              Page No: 1 / 1
                             </td>
-                            <td className="val" style={{ width: "35%" }}>
-                              {v(report.reportNo)}
+                            <td className="val" colSpan={2} style={{ color: "#c53030", fontWeight: 700, padding: "6px 12px" }}>
+                              Job Description: {v(report.jobDescription)}
                             </td>
-                            <td className="lbl" style={{ width: "20%" }}>
-                              Report Date
+                          </tr>
+                          <tr>
+                            <td className="val">
+                              Report Date: <span style={{ color: "#c53030", fontWeight: 700 }}>{fmtDate(report.reportDate)}</span>
                             </td>
                             <td className="val">
-                              {fmtDate(report.reportDate)}
+                              Weld Joint No.: <strong>{v(report.weldJointNo)}</strong>
                             </td>
-                          </tr>
-                        </tbody>
-                      </table>
-
-                      {/* Job Details */}
-                      <table
-                        className="report-table"
-                        style={{ marginBottom: 3 }}
-                      >
-                        <tbody>
-                          <tr>
-                            <td className="section-hdr" colSpan={4}>
-                              JOB DETAILS
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Job Description</td>
-                            <td className="val" colSpan={3}>
-                              {v(report.jobDescription)}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Weld Joint No.</td>
-                            <td className="val">{v(report.weldJointNo)}</td>
-                            <td className="lbl">Thickness of Job</td>
-                            <td className="val">{v(report.thicknessOfJob)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Surface Condition</td>
                             <td className="val">
-                              {v(report.surfaceCondition)}
+                              Thickness of Job: <strong>{v(report.thicknessOfJob)}</strong>
                             </td>
-                            <td className="lbl">Customer</td>
-                            <td className="val">{v(report.customer)}</td>
                           </tr>
                           <tr>
-                            <td className="lbl">Period of Inspection</td>
                             <td className="val">
-                              {v(report.periodOfInspection)}
+                              Surface Condition:<br />
+                              <strong>{v(report.surfaceCondition)}</strong>
                             </td>
-                            <td className="lbl">Material</td>
-                            <td className="val">{v(report.material)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Scanning Technique</td>
                             <td className="val">
-                              {v(report.scanningTechnique)}
+                              Customer: <strong>{v(report.customer)}</strong>
                             </td>
-                            <td className="lbl">Stage of Inspection</td>
                             <td className="val">
-                              {v(report.stageOfInspection)}
+                              Period of Inspection:<br />
+                              <span style={{ color: "#c53030", fontWeight: 700 }}>{v(report.periodOfInspection)}</span>
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Equipment Used</td>
-                            <td className="val">{v(report.equipmentUsed)}</td>
-                            <td className="lbl">Couplant</td>
-                            <td className="val">{v(report.couplant)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Area Scanned</td>
-                            <td className="val" colSpan={3}>
-                              {v(report.areaScanned)}
+                            <td className="val" style={{ padding: 0 }}>
+                              <div style={{ padding: "4px 6px", borderBottom: "1px solid #d9e1ea" }}>
+                                Material: <strong>{v(report.material)}</strong>
+                              </div>
+                              <div style={{ padding: "4px 6px" }}>
+                                Equipment Used: <strong>{v(report.equipmentUsed)}</strong>
+                              </div>
+                            </td>
+                            <td className="val" style={{ verticalAlign: "top" }}>
+                              Scanning technique:<br />
+                              <strong>{v(report.scanningTechnique)}</strong>
+                            </td>
+                            <td className="val" style={{ verticalAlign: "top" }}>
+                              Stage of Inspection:<br />
+                              <strong>{v(report.stageOfInspection)}</strong>
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Acceptance Standard</td>
+                            <td className="val" style={{ padding: 0 }}>
+                              <div style={{ padding: "4px 6px", borderBottom: "1px solid #d9e1ea" }}>
+                                Couplant: <strong>{v(report.couplant)}</strong>
+                              </div>
+                              <div style={{ padding: "4px 6px" }}>
+                                Reference datum:<br />
+                                <strong>{v(report.referenceDatum)}</strong>
+                              </div>
+                            </td>
+                            <td className="val" style={{ verticalAlign: "top" }}>
+                              Area scanned:<br />
+                              <strong>{v(report.areaScanned)}</strong>
+                            </td>
+                            <td className="val" style={{ verticalAlign: "top" }}>
+                              Acceptance Standard:<br />
+                              <strong>{v(report.acceptanceStandard)}</strong>
+                            </td>
+                          </tr>
+                          <tr>
                             <td className="val">
-                              {v(report.acceptanceStandard)}
+                              Test Setup<br />
+                              For Angle Range: <strong>{v(ts.angleRange)}</strong><br />
+                              For Normal Range: <strong>{v(ts.normalRange)}</strong>
                             </td>
-                            <td className="lbl">Reference Datum</td>
-                            <td className="val">{v(report.referenceDatum)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-
-                      {/* Test Setup */}
-                      <table
-                        className="report-table"
-                        style={{ marginBottom: 3 }}
-                      >
-                        <tbody>
-                          <tr>
-                            <td className="section-hdr" colSpan={4}>
-                              TEST SETUP
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">For Angle — Range</td>
-                            <td className="val">{v(ts.angleRange)}</td>
-                            <td className="lbl">For Normal — Range</td>
-                            <td className="val">{v(ts.normalRange)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Std Cal Block (Angle)</td>
                             <td className="val">
-                              {v(ts.standardCalBlock?.angle)}
+                              Standard Cal Block:<br />
+                              For Angle: <strong>{v(ts.standardCalBlock?.angle)}</strong><br />
+                              For Normal: <strong>{v(ts.standardCalBlock?.normal)}</strong>
                             </td>
-                            <td className="lbl">Std Cal Block (Normal)</td>
                             <td className="val">
-                              {v(ts.standardCalBlock?.normal)}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Idtn. Ref Block (Angle)</td>
-                            <td className="val">
-                              {v(ts.identificationNoOfRefBlock?.angle)}
-                            </td>
-                            <td className="lbl">Idtn. Ref Block (Normal)</td>
-                            <td className="val">
-                              {v(ts.identificationNoOfRefBlock?.normal)}
+                              Idtn. No of Ref Block:<br />
+                              <span style={{ color: "#c53030", fontWeight: 700 }}>For Angle: {v(ts.identificationNoOfRefBlock?.angle)}</span><br />
+                              <span style={{ color: "#c53030", fontWeight: 700 }}>For Normal: {v(ts.identificationNoOfRefBlock?.normal)}</span>
                             </td>
                           </tr>
                         </tbody>
