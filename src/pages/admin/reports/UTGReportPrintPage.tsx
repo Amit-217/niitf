@@ -531,55 +531,6 @@ export const UTGReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {techList.length > 0 && (
-                        <table className="report-table mt-n1">
-                          <tbody>
-                            <tr>
-                              <td className="col-hdr" style={{ width: "22%" }}>
-                                Search Unit
-                              </td>
-                              <td className="col-hdr" style={{ width: "12%" }}>
-                                Angle
-                              </td>
-                              <td className="col-hdr" style={{ width: "18%" }}>
-                                Sr. No.
-                              </td>
-                              <td className="col-hdr" style={{ width: "18%" }}>
-                                Crystal Size
-                              </td>
-                              <td className="col-hdr" style={{ width: "15%" }}>
-                                Wave Mode
-                              </td>
-                              <td className="col-hdr" style={{ width: "15%" }}>
-                                Frequency
-                              </td>
-                            </tr>
-                            {techList.map((t: any, i: number) => (
-                              <tr key={i}>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(t.searchUnit)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(t.angle)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(t.srNo)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(t.crystalSize)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(t.waveMode)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(t.frequency)}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      )}
-
                       {/* ── OBSERVATIONS ── */}
                       <table className="obs-table mt-n1">
                         <tbody>

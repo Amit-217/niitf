@@ -521,10 +521,9 @@ export const UTGReportFormPage: React.FC = () => {
           basicCalibrationBlock: resolve(eqCalibBlock, eqCalibBlockOther),
         },
         searchUnitDetails: searchUnits
-          .filter((u) => u.searchUnit.trim() || u.model.trim())
+          .filter((u) => u.searchUnit.trim())
           .map((u) => ({
             searchUnit: u.searchUnit,
-            model: u.model,
             angle: u.angle,
             srNo: u.srNo,
             crystalSize: resolve(u.crystalSize, u.crystalSizeOther),
@@ -533,16 +532,6 @@ export const UTGReportFormPage: React.FC = () => {
           })),
         techniqueDetails: {
           utMethod: resolve(utMethod, utMethodOther),
-          techniques: techniques
-            .filter((t) => t.searchUnit.trim() || t.angle.trim())
-            .map((t) => ({
-              searchUnit: t.searchUnit,
-              angle: t.angle,
-              srNo: t.srNo,
-              crystalSize: resolve(t.crystalSize, t.crystalSizeOther),
-              waveMode: t.waveMode,
-              frequency: resolve(t.frequency, t.frequencyOther),
-            })),
         },
         observations: observations
           .filter((o) => o.itemName.trim())
@@ -736,6 +725,16 @@ export const UTGReportFormPage: React.FC = () => {
             />
           </div>
           <div>
+            <label className={labelClass}>Inspection Time</label>
+            <input
+              type="text"
+              value={jobInspectionTime}
+              onChange={(e) => setJobInspectionTime(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. 02:00 PM to 05:00 PM"
+            />
+          </div>
+          <div>
             <label className={labelClass}>Acceptance Criteria</label>
             <SelectWithOther
               value={jobAcceptanceCriteria}
@@ -749,16 +748,6 @@ export const UTGReportFormPage: React.FC = () => {
                 "Other",
               ]}
               placeholder="Select Acceptance Criteria"
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Inspection Time</label>
-            <input
-              type="text"
-              value={jobInspectionTime}
-              onChange={(e) => setJobInspectionTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 02:00 PM to 05:00 PM"
             />
           </div>
           <div>
@@ -906,10 +895,7 @@ export const UTGReportFormPage: React.FC = () => {
             <thead>
               <tr className="bg-gray-50 text-xs text-gray-600 uppercase">
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Search Unit
-                </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
-                  Model
+                  Search Unit / Model
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
                   Angle
@@ -940,22 +926,8 @@ export const UTGReportFormPage: React.FC = () => {
                         updateSearchUnit(idx, "searchUnit", e.target.value)
                       }
                       className={inputClass}
-                      placeholder="e.g. Modsonic"
+                      placeholder="e.g. Modsonic / Normal"
                     />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={u.model}
-                      onChange={(e) =>
-                        updateSearchUnit(idx, "model", e.target.value)
-                      }
-                      className={inputClass}
-                    >
-                      <option value="">Select...</option>
-                      <option>T/R</option>
-                      <option>Normal</option>
-                      <option>Angle</option>
-                    </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
                     <select
