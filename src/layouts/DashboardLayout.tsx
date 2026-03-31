@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
     Menu, X, Bell, User, LogOut, LayoutDashboard,
@@ -22,7 +22,7 @@ export const DashboardLayout: React.FC = () => {
     const [isNotificationsLoading, setIsNotificationsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [notifications, setNotifications] = useState<any[]>([]);
-    const [hiddenSyntheticNotificationIds, setHiddenSyntheticNotificationIds] = useState<string[]>([]);
+    const [dismissedNotificationIds, setDismissedNotificationIds] = useState<string[]>([]);
     const [myTaskCount, setMyTaskCount] = useState(0);
     
     // Sub-menu states
@@ -55,7 +55,7 @@ export const DashboardLayout: React.FC = () => {
     const role = user?.role || 'EMPLOYEE';
     const basePath = role === 'STUDENT' ? 'student' : (role === 'ADMIN' || role === 'SUPER_ADMIN' ? 'admin' : 'employee');
     const currentUserId = user?.userId || user?.id || user?._id || '';
-    const hiddenSyntheticNotificationsStorageKey = `hidden-task-notifications:${currentUserId || 'guest'}`;
+    const dismissedNotificationsStorageKey = `dismissed-notifications:${currentUserId || 'guest'}`;
 
     const normalizeNotificationId = (value: any) => {
         if (!value) return '';
@@ -107,7 +107,7 @@ export const DashboardLayout: React.FC = () => {
         if (!isCreator && !isAssigned) return null;
 
         let type = 'TASK_ASSIGNED';
-        let title = 'Task assigned';
+        let title = 'Task assigned to you';
         let message = `You have been assigned to "${task?.title || 'a task'}".`;
 
         if (String(task?.status || '') === 'COMPLETED') {
@@ -118,13 +118,10 @@ export const DashboardLayout: React.FC = () => {
             type = 'TASK_UPDATE';
             title = 'Task in progress';
             message = `"${task?.title || 'A task'}" is now in progress.`;
-        } else if (isCreator) {
-            title = 'Task created';
-            message = `You created "${task?.title || 'a task'}".`;
         }
 
         return {
-            _id: `task-feed-${taskId}-${type}-${eventKey}`,
+            _id: `client-task-${taskId}-${type}-${eventKey}`,
             recipientId: currentUserId,
             actorId: normalizeNotificationId(task?.createdBy),
             taskId: task,
@@ -136,27 +133,15 @@ export const DashboardLayout: React.FC = () => {
         };
     };
 
-    const isSyntheticNotificationId = (value: any) => {
-        const id = normalizeNotificationId(value);
-        return id.startsWith('task-feed-') || id.startsWith('client-task-') || id.startsWith('client-task-summary-');
-    };
-
+    // Close profile dropdown on outside click
     useEffect(() => {
         try {
-            const raw = localStorage.getItem(hiddenSyntheticNotificationsStorageKey);
-            setHiddenSyntheticNotificationIds(raw ? JSON.parse(raw) : []);
+            const raw = localStorage.getItem(dismissedNotificationsStorageKey);
+            setDismissedNotificationIds(raw ? JSON.parse(raw) : []);
         } catch {
-            setHiddenSyntheticNotificationIds([]);
+            setDismissedNotificationIds([]);
         }
-    }, [hiddenSyntheticNotificationsStorageKey]);
-
-    const persistHiddenSyntheticNotificationIds = useCallback((updater: string[] | ((prev: string[]) => string[])) => {
-        setHiddenSyntheticNotificationIds((prev) => {
-            const next = typeof updater === 'function' ? updater(prev) : updater;
-            localStorage.setItem(hiddenSyntheticNotificationsStorageKey, JSON.stringify(next));
-            return next;
-        });
-    }, [hiddenSyntheticNotificationsStorageKey]);
+    }, [dismissedNotificationsStorageKey]);
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
@@ -171,45 +156,82 @@ export const DashboardLayout: React.FC = () => {
         return () => document.removeEventListener('mousedown', handler);
     }, []);
 
-    const fetchNotifications = useCallback(async () => {
+    const fetchNotifications = async () => {
         setIsNotificationsLoading(true);
         try {
-            const res = await getMyNotifications({ limit: 12 });
-            const fetched = Array.isArray(res.data) ? res.data : [];
-            const uniqueNotifications = fetched.filter((item: any, index: number, items: any[]) => {
-                const id = normalizeNotificationId(item?._id);
-                if (!id) return true;
-                return items.findIndex((candidate: any) => normalizeNotificationId(candidate?._id) === id) === index;
-            });
-            let visibleNotifications = uniqueNotifications
-                .sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+            let fetched: any[] = [];
+            try {
+                const res = await getMyNotifications({ limit: 8 });
+                fetched = Array.isArray(res.data) ? res.data : [];
+            } catch {
+                fetched = [];
+            }
 
-            if (visibleNotifications.length === 0 && currentUserId && (role === 'ADMIN' || role === 'SUPER_ADMIN' || role === 'EMPLOYEE')) {
+            let mergedNotifications = [...fetched];
+
+            if ((role === 'ADMIN' || role === 'SUPER_ADMIN' || role === 'EMPLOYEE') && currentUserId) {
                 try {
                     const tasksRes = await getAllTasks();
                     const allTasks = Array.isArray(tasksRes.data) ? tasksRes.data : [];
-                    const fallbackNotifications = allTasks
+                    const userTasks = allTasks.filter((task: any) => {
+                        const isCreator = normalizeNotificationId(task?.createdBy) === currentUserId;
+                        const isAssigned = Array.isArray(task?.assignedTo) && task.assignedTo.some((assigned: any) => normalizeNotificationId(assigned) === currentUserId);
+                        return isCreator || isAssigned;
+                    });
+
+                    let fallbackTaskNotifications = userTasks
                         .map((task: any) => buildTaskFeedNotification(task))
                         .filter(Boolean)
-                        .filter((item: any) => !hiddenSyntheticNotificationIds.includes(normalizeNotificationId(item._id)))
-                        .sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
-                        .slice(0, 12);
+                        .filter((item: any) => {
+                            const taskId = normalizeNotificationId(item.taskId?._id || item.taskId);
+                            const type = String(item.type || '');
+                            return !mergedNotifications.some((existing: any) => {
+                                const existingTaskId = normalizeNotificationId(existing.taskId?._id || existing.taskId);
+                                return existingTaskId === taskId && String(existing.type || '') === type;
+                            });
+                        });
 
-                    visibleNotifications = fallbackNotifications;
+                    if (!fallbackTaskNotifications.length && userTasks.length > 0) {
+                        const latestTask = userTasks[0];
+                        fallbackTaskNotifications = [{
+                            _id: `client-task-summary-${normalizeNotificationId(latestTask._id)}-${currentUserId}`,
+                            recipientId: currentUserId,
+                            actorId: normalizeNotificationId(latestTask.createdBy),
+                            taskId: latestTask,
+                            type: 'TASK_ASSIGNED',
+                            title: 'Assigned tasks',
+                            message: `You have ${userTasks.length} assigned task${userTasks.length === 1 ? '' : 's'}.`,
+                            readAt: null,
+                            createdAt: latestTask.updatedAt || latestTask.createdAt || new Date().toISOString(),
+                        }];
+                    }
+
+                    mergedNotifications = [...mergedNotifications, ...fallbackTaskNotifications];
                 } catch {
-                    visibleNotifications = [];
+                    // Ignore fallback failures and keep the backend notifications.
                 }
             }
 
-            setNotifications(visibleNotifications);
+            const dismissedSet = new Set(dismissedNotificationIds.map(normalizeNotificationId));
+            const visibleNotifications = mergedNotifications
+                .filter((item: any) => !dismissedSet.has(normalizeNotificationId(item._id)))
+                .sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+
+            const fallbackTaskNotifications = mergedNotifications
+                .filter((item: any) => isTaskNotification(item))
+                .sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+
+            setNotifications(
+                visibleNotifications.length > 0 ? visibleNotifications : fallbackTaskNotifications
+            );
         } catch {
             setNotifications([]);
         } finally {
             setIsNotificationsLoading(false);
         }
-    }, [currentUserId, hiddenSyntheticNotificationIds, role]);
+    };
 
-    const fetchMyTaskCount = useCallback(async () => {
+    const fetchMyTaskCount = async () => {
         if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
             setMyTaskCount(0);
             return;
@@ -231,7 +253,7 @@ export const DashboardLayout: React.FC = () => {
         } catch {
             setMyTaskCount(0);
         }
-    }, [role, currentUserId]);
+    };
 
     useEffect(() => {
         fetchNotifications();
@@ -259,35 +281,51 @@ export const DashboardLayout: React.FC = () => {
             window.removeEventListener('focus', handleWindowFocus);
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
-    }, [fetchMyTaskCount, fetchNotifications]);
+    }, [role, currentUserId]);
 
     const unreadCount = notifications.filter((item) => !item.readAt).length;
 
+    const persistDismissedNotificationIds = (nextIds: string[]) => {
+        setDismissedNotificationIds(nextIds);
+        localStorage.setItem(dismissedNotificationsStorageKey, JSON.stringify(nextIds));
+    };
+
+    const getTaskIdFromNotification = (notification: any) =>
+        normalizeNotificationId(notification?.taskId?._id || notification?.taskId);
+
     const dismissNotificationLocally = (notification: any) => {
         const notificationId = normalizeNotificationId(notification?._id);
-        if (!notificationId) return;
+        const taskId = getTaskIdFromNotification(notification);
+        const relatedIds = notifications
+            .filter((item) => {
+                if (normalizeNotificationId(item._id) === notificationId) return true;
+                if (!taskId) return false;
+                return getTaskIdFromNotification(item) === taskId;
+            })
+            .map((item) => normalizeNotificationId(item._id));
 
-        if (isSyntheticNotificationId(notificationId)) {
-            persistHiddenSyntheticNotificationIds((prev) => [...new Set([...prev, notificationId])]);
-        }
+        persistDismissedNotificationIds([
+            ...new Set([...dismissedNotificationIds, ...relatedIds]),
+        ]);
 
         setNotifications((prev) =>
-            prev.filter((item) => normalizeNotificationId(item._id) !== notificationId)
+            prev.filter((item) => {
+                const itemId = normalizeNotificationId(item._id);
+                if (itemId === notificationId) return false;
+                if (!taskId) return true;
+                return getTaskIdFromNotification(item) !== taskId;
+            })
         );
     };
 
     const handleMarkAllRead = async () => {
         try {
             await markAllNotificationsRead();
-            const syntheticIds = notifications
-                .map((item) => normalizeNotificationId(item?._id))
-                .filter((id) => isSyntheticNotificationId(id));
-
-            if (syntheticIds.length > 0) {
-                persistHiddenSyntheticNotificationIds((prev) => [...new Set([...prev, ...syntheticIds])]);
-            }
-
-            setNotifications([]);
+            const allIds = notifications.map((item) => normalizeNotificationId(item._id));
+            persistDismissedNotificationIds([
+                ...new Set([...dismissedNotificationIds, ...allIds]),
+            ]);
+            setNotifications((prev) => prev.map((item) => ({ ...item, readAt: item.readAt || new Date().toISOString() })));
         } catch {
             toast.error('Failed to clear notifications');
         }
@@ -302,32 +340,26 @@ export const DashboardLayout: React.FC = () => {
     };
 
     const handleVisitNotification = async (notification: any) => {
-        const isSyntheticTaskFeed = isSyntheticNotificationId(notification._id);
         try {
+            const isSyntheticTaskFeed = String(notification._id || '').startsWith('task-feed-');
             if (!isSyntheticTaskFeed) {
                 await markNotificationRead(notification._id);
             }
+            dismissNotificationLocally(notification);
+            if (notification.taskId?._id || notification.taskId) {
+                navigate(`/${basePath}/my-tasks`, {
+                    state: { taskId: notification.taskId?._id || notification.taskId }
+                });
+            }
         } catch {
-            // Ignore read failures and still allow the notification to open.
-        }
-
-        dismissNotificationLocally(notification);
-        setIsNotificationOpen(false);
-
-        if (notification.taskId?._id || notification.taskId) {
-            const taskPath = role === 'ADMIN' || role === 'SUPER_ADMIN'
-                ? `/${basePath}/my-tasks`
-                : `/${basePath}/tasks`;
-            navigate(taskPath, {
-                state: { taskId: notification.taskId?._id || notification.taskId }
-            });
+            toast.error('Failed to open notification');
         }
     };
 
     const handleCloseNotification = async (notification: any) => {
         const notificationId = normalizeNotificationId(notification._id);
         try {
-            if (!isSyntheticNotificationId(notificationId)) {
+            if (!String(notificationId).startsWith('task-feed-')) {
                 await markNotificationRead(notificationId);
             }
         } catch {
@@ -335,7 +367,6 @@ export const DashboardLayout: React.FC = () => {
         }
 
         dismissNotificationLocally(notification);
-        setIsNotificationOpen(false);
     };
 
     const groupedNotifications = notifications.reduce(
@@ -352,6 +383,7 @@ export const DashboardLayout: React.FC = () => {
         },
         { assigned: [] as any[], updates: [] as any[], other: [] as any[] }
     );
+    const taskNotificationCount = groupedNotifications.assigned.length + groupedNotifications.updates.length;
     const bellNotificationCount = unreadCount;
 
     const handleLogout = () => {
@@ -409,9 +441,9 @@ export const DashboardLayout: React.FC = () => {
             key: 'customerManagement',
             icon: Building2,
             links: [
-                { name: 'Quotations', path: `/${basePath}/quotations`, icon: FileText },
-                { name: 'All Reports', path: `/${basePath}/reports`, icon: FileBarChart2 },
                 { name: 'Customer', path: `/${basePath}/customers`, icon: Users },
+                { name: 'All Reports', path: `/${basePath}/reports`, icon: FileBarChart2 },
+                { name: 'Quotations', path: `/${basePath}/quotations`, icon: FileText },
             ]
         }
     ];
@@ -459,6 +491,15 @@ export const DashboardLayout: React.FC = () => {
                             className="text-gray-500 hover:text-primary-600 relative p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 transition-colors"
                         >
                             <Bell size={18} />
+                            {taskNotificationCount > 0 && (
+                                <span
+                                    className="absolute -bottom-1 -left-1 inline-flex items-center gap-0.5 rounded-full bg-primary-600 px-1.5 py-0.5 text-[9px] font-black text-white shadow-md ring-2 ring-white"
+                                    title={`${taskNotificationCount} task notification${taskNotificationCount === 1 ? '' : 's'}`}
+                                >
+                                    <ListTodo size={9} />
+                                    <span>{taskNotificationCount}</span>
+                                </span>
+                            )}
                             {bellNotificationCount > 0 && (
                                 <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1.5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-md ring-2 ring-white">
                                     {bellNotificationCount > 99 ? '99+' : bellNotificationCount}

@@ -6,8 +6,8 @@ export const createTrainingQuotation = (data: any) => {
     return api.post('/quotations/training', data);
 };
 
-export const getAllTrainingQuotations = () => {
-    return api.get('/quotations/training');
+export const getAllTrainingQuotations = (params?: { customerId?: string; limit?: number; page?: number; search?: string }) => {
+    return api.get('/quotations/training', { params });
 };
 
 export const getTrainingQuotationById = (id: string) => {
@@ -28,8 +28,8 @@ export const createServiceQuotation = (data: any) => {
     return api.post('/quotations/service', data);
 };
 
-export const getAllServiceQuotations = () => {
-    return api.get('/quotations/service');
+export const getAllServiceQuotations = (params?: { customerId?: string; limit?: number; page?: number; search?: string }) => {
+    return api.get('/quotations/service', { params });
 };
 
 export const getServiceQuotationById = (id: string) => {

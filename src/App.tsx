@@ -289,7 +289,14 @@ function App() {
         <Route path="/reports/public/tpi-ivr/:id" element={<TPIIVRReportPrintPage />} />
         <Route path="/reports/public/awsd/:id" element={<AWSDReportPrintPage />} />
 
-        <Route path="/reports/quotations/:type/:id/print" element={<QuotationPrintPage />} />
+        <Route
+          path="/admin/quotations/:type/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+              <QuotationPrintPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Login />} />
