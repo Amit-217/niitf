@@ -289,19 +289,12 @@ function App() {
         <Route path="/reports/public/tpi-ivr/:id" element={<TPIIVRReportPrintPage />} />
         <Route path="/reports/public/awsd/:id" element={<AWSDReportPrintPage />} />
 
-        <Route
-          path="/admin/quotations/:type/:id/print"
-          element={
-            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
-              <QuotationPrintPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/reports/quotations/:type/:id/print" element={<QuotationPrintPage />} />
 
         {/* Fallback */}
         <Route path="*" element={<Login />} />
       </Routes>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} limit={3} />
     </BrowserRouter>
   );
 }
