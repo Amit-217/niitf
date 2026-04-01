@@ -11,7 +11,7 @@ import { getApiErrorMessage } from "../../../api/error";
 import api from "../../../api/axios";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 
-// â"€â"€â"€ Styles â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Styles Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
 
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
@@ -20,7 +20,7 @@ const sectionClass = "bg-white rounded-xl border border-gray-200 p-5 mb-5";
 const sectionTitleClass =
   "text-sm font-semibold text-indigo-700 uppercase tracking-wide mb-4 pb-2 border-b border-gray-100";
 
-// â"€â"€â"€ SelectWithCustom â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ SelectWithCustom Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
 
 interface SelectWithCustomProps {
   id?: string;
@@ -67,7 +67,7 @@ const SelectWithCustom: React.FC<SelectWithCustomProps> = ({
   </div>
 );
 
-// â"€â"€â"€ Types â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Types Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
 
 interface ObsRow {
   srNo: number;
@@ -75,8 +75,8 @@ interface ObsRow {
   drawingOrJointNo: string;
   size: string;
   quantity: string;
+  interpretation: string;
   evaluation: string;
-  remark: string;
 }
 
 const emptyObs = (): ObsRow => ({
@@ -85,11 +85,11 @@ const emptyObs = (): ObsRow => ({
   drawingOrJointNo: "",
   size: "",
   quantity: "",
+  interpretation: "",
   evaluation: "",
-  remark: "",
 });
 
-// â"€â"€â"€ Page â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Page Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
 
 export const PTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
@@ -104,7 +104,7 @@ export const PTReportFormPage: React.FC = () => {
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
   const [customerName, setCustomerName] = useState(state?.customerName ?? "");
 
-  // â"€â"€ Job Details â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Job Details Ã¢"â‚¬Ã¢"â‚¬
   const [reportNo, setReportNo] = useState("");
   const jobCustomer = customerName;
   const [jobClient, setJobClient] = useState("");
@@ -127,11 +127,11 @@ export const PTReportFormPage: React.FC = () => {
   const [jobSurfaceTemp, setJobSurfaceTemp] = useState("");
   const [jobWeldingProcess, setJobWeldingProcess] = useState("");
 
-  // â"€â"€ Method Details â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Method Details Ã¢"â‚¬Ã¢"â‚¬
   const [penetrantMethod, setPenetrantMethod] = useState("");
   const [removalMethod, setRemovalMethod] = useState("");
 
-  // â"€â"€ Consumables â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Consumables Ã¢"â‚¬Ã¢"â‚¬
   const [penMfr, setPenMfr] = useState("");
   const [penMfrCustom, setPenMfrCustom] = useState("");
   const [penBatch, setPenBatch] = useState("");
@@ -147,7 +147,7 @@ export const PTReportFormPage: React.FC = () => {
   const [cleanBatch, setCleanBatch] = useState("");
   const [cleanExpiry, setCleanExpiry] = useState("");
 
-  // â"€â"€ Method Description â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Method Description Ã¢"â‚¬Ã¢"â‚¬
   const [dwellTime, setDwellTime] = useState("");
   const [lightIntensity, setLightIntensity] = useState("");
   const [developingTime, setDevelopingTime] = useState("");
@@ -155,11 +155,12 @@ export const PTReportFormPage: React.FC = () => {
   const [lightEquipCustom, setLightEquipCustom] = useState("");
   const [postCleaning, setPostCleaning] = useState("");
   const [dryingTime, setDryingTime] = useState("");
+  const [dryingTimeCustom, setDryingTimeCustom] = useState("");
 
-  // â"€â"€ Observations â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
-  // ── Users for inspector dropdown ──
+  // â”€â”€ Users for inspector dropdown â”€â”€
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
   useEffect(() => {
     api
@@ -168,7 +169,7 @@ export const PTReportFormPage: React.FC = () => {
       .catch(() => {});
   }, []);
 
-  // â"€â"€ Final Section â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Final Section Ã¢"â‚¬Ã¢"â‚¬
   const [inspectorName, setInspectorName] = useState("");
   const [inspectorQual, setInspectorQual] = useState("PT NDE Level II");
   const [inspectorIdNo, setInspectorIdNo] = useState("");
@@ -195,7 +196,11 @@ export const PTReportFormPage: React.FC = () => {
     getPTReportById(id)
       .then((res: any) => {
         const r = (res as any).data ?? res;
-        setCustomerId(typeof r.customerId === "object" ? r.customerId?._id ?? "" : r.customerId ?? "");
+        setCustomerId(
+          typeof r.customerId === "object"
+            ? (r.customerId?._id ?? "")
+            : (r.customerId ?? ""),
+        );
         setCustomerName(r.jobDetails?.customer ?? "");
         setReportNo(r.reportNo ?? "");
         const jd = r.jobDetails ?? {};
@@ -272,7 +277,10 @@ export const PTReportFormPage: React.FC = () => {
         setLightEquip(le);
         setLightEquipCustom(leC);
         setPostCleaning(mdesc.postCleaning ?? "");
-        setDryingTime(mdesc.dryingTime ?? "");
+        const dtOpts = ["10 Min", "NA", "Other"];
+        const [dt, dtC] = fromOther(mdesc.dryingTime, dtOpts);
+        setDryingTime(dt);
+        setDryingTimeCustom(dtC);
         if (r.observations?.length) {
           setObservations(
             r.observations.map((o: any) => ({
@@ -281,8 +289,8 @@ export const PTReportFormPage: React.FC = () => {
               drawingOrJointNo: o.drawingOrJointNo ?? "",
               size: o.size ?? "",
               quantity: String(o.quantity ?? ""),
-              evaluation: o.evaluation ?? "",
-              remark: o.remark ?? o.result ?? "",
+              interpretation: o.interpretation ?? "",
+              evaluation: o.evaluation ?? o.remark ?? o.result ?? "",
             })),
           );
         }
@@ -328,7 +336,7 @@ export const PTReportFormPage: React.FC = () => {
         .map((row, i) => ({ ...row, srNo: i + 1 })),
     );
 
-  // â"€â"€ Submit â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Submit Ã¢"â‚¬Ã¢"â‚¬
   const handleSubmit = async (status: "draft" | "final") => {
     if (!customerId) {
       toast.error("Customer ID is missing.");
@@ -390,7 +398,7 @@ export const PTReportFormPage: React.FC = () => {
           developingTime,
           lightEquipmentUsed: resolve(lightEquip, lightEquipCustom),
           postCleaning,
-          dryingTime,
+          dryingTime: resolve(dryingTime, dryingTimeCustom),
         },
         observations: observations
           .filter((o) => o.jobDescription.trim())
@@ -400,8 +408,8 @@ export const PTReportFormPage: React.FC = () => {
             drawingOrJointNo: o.drawingOrJointNo,
             size: o.size,
             quantity: Number(o.quantity) || 0,
+            interpretation: o.interpretation || "",
             evaluation: o.evaluation || "",
-            remark: o.remark || "",
           })),
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
@@ -473,7 +481,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Missing Customer Banner ── */}
+      {/* â”€â”€ Missing Customer Banner â”€â”€ */}
       {!customerId && (
         <CustomerPickerBanner
           onCustomerSelected={(id, name) => {
@@ -512,7 +520,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Job Details â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Job Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -720,7 +728,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Method Details â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Method Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -755,7 +763,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Consumables Details â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Consumables Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Consumables Details</h2>
         <div className="overflow-x-auto">
@@ -850,7 +858,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Method Description â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Method Description Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Description</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -908,18 +916,18 @@ export const PTReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Drying Time</label>
-            <input
-              type="text"
+            <SelectWithCustom
               value={dryingTime}
-              onChange={(e) => setDryingTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 10 Min / NA"
+              onChange={setDryingTime}
+              customValue={dryingTimeCustom}
+              onCustomChange={setDryingTimeCustom}
+              options={["10 Min", "NA", "Other"]}
             />
           </div>
         </div>
       </div>
 
-      {/* â"€â"€ Observations â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4">
           <h2
@@ -956,6 +964,9 @@ export const PTReportFormPage: React.FC = () => {
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-center w-16">
                   Qty
+                </th>
+                <th className="border border-gray-200 px-2 py-2 text-left">
+                  Interpretation
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
                   Evaluation
@@ -1010,6 +1021,19 @@ export const PTReportFormPage: React.FC = () => {
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
                     <select
+                      value={row.interpretation}
+                      onChange={(e) =>
+                        updateObs(idx, "interpretation", e.target.value)
+                      }
+                      className={inputClass}
+                    >
+                      <option value="">Select...</option>
+                      <option>No relevant Indication Found</option>
+                      <option>Relevant Indication Found</option>
+                    </select>
+                  </td>
+                  <td className="border border-gray-200 px-1 py-1">
+                    <select
                       value={row.evaluation}
                       onChange={(e) =>
                         updateObs(idx, "evaluation", e.target.value)
@@ -1017,8 +1041,8 @@ export const PTReportFormPage: React.FC = () => {
                       className={inputClass}
                     >
                       <option value="">Select...</option>
-                      <option>No relevant Indication Found</option>
-                      <option>Relevant Indication Found</option>
+                      <option>Accepted</option>
+                      <option>Rejected</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
@@ -1039,7 +1063,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Examined By â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Examined By Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* NIIT Inspector */}
@@ -1101,7 +1125,7 @@ export const PTReportFormPage: React.FC = () => {
               Customer
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {customerName || "—"}
+              {customerName || "â€”"}
             </p>
             <div className="space-y-2">
               <div>
@@ -1148,7 +1172,7 @@ export const PTReportFormPage: React.FC = () => {
               Client / TPI
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {jobClient || "—"}
+              {jobClient || "â€”"}
             </p>
             <div className="space-y-2">
               <div>
@@ -1192,7 +1216,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Action Buttons â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Action Buttons Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className="flex items-center justify-end gap-3 pb-8">
         <button
           type="button"

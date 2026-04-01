@@ -12,7 +12,7 @@ import { getApiErrorMessage } from "../../../api/error";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 import api from "../../../api/axios";
 
-// â”€â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Styles Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
@@ -21,7 +21,7 @@ const sectionClass = "bg-white rounded-xl border border-gray-200 p-5 mb-5";
 const sectionTitleClass =
   "text-sm font-semibold text-indigo-700 uppercase tracking-wide mb-4 pb-2 border-b border-gray-100";
 
-// â”€â”€â”€ SelectWithCustom â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ SelectWithCustom Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 interface SelectWithCustomProps {
   id?: string;
@@ -68,7 +68,7 @@ const SelectWithCustom: React.FC<SelectWithCustomProps> = ({
   </div>
 );
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Types Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 interface ObsRow {
   srNo: number;
@@ -76,8 +76,8 @@ interface ObsRow {
   drawingOrJointNo: string;
   size: string;
   quantity: string;
+  interpretation: string;
   evaluation: string;
-  remark: string;
 }
 
 const emptyObs = (): ObsRow => ({
@@ -86,8 +86,8 @@ const emptyObs = (): ObsRow => ({
   drawingOrJointNo: "",
   size: "",
   quantity: "",
+  interpretation: "",
   evaluation: "",
-  remark: "",
 });
 
 const emptySearchUnit = (): UTSearchUnit => ({
@@ -114,7 +114,7 @@ const emptyCalib = (): CalibRow => ({
   refDb: "",
 });
 
-// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Page Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 export const UTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
@@ -129,7 +129,7 @@ export const UTReportFormPage: React.FC = () => {
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
   const [customerName, setCustomerName] = useState(state?.customerName ?? "");
 
-  // — Job Details —
+  // â€” Job Details â€”
   const [reportNo, setReportNo] = useState("");
   const jobCustomer = customerName;
   const [jobClient, setJobClient] = useState("");
@@ -150,9 +150,8 @@ export const UTReportFormPage: React.FC = () => {
   const [jobSurface, setJobSurface] = useState("");
   const [jobJointType, setJobJointType] = useState("");
   const [jobSurfaceTemp, setJobSurfaceTemp] = useState("");
-  const [jobWeldingProcess, setJobWeldingProcess] = useState("");
 
-  // â”€â”€ Equipment Details â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Equipment Details Ã¢â€â‚¬Ã¢â€â‚¬
   const [eqType, setEqType] = useState("");
   const [eqTypeCustom, setEqTypeCustom] = useState("");
   const [eqSrNo, setEqSrNo] = useState("");
@@ -162,12 +161,12 @@ export const UTReportFormPage: React.FC = () => {
   const [eqCouplant, setEqCouplant] = useState("");
   const [eqBasicCalib, setEqBasicCalib] = useState("");
 
-  // â”€â”€ Search Units â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Search Units Ã¢â€â‚¬Ã¢â€â‚¬
   const [searchUnits, setSearchUnits] = useState<UTSearchUnit[]>([
     emptySearchUnit(),
   ]);
 
-  // â”€â”€ Technique Details â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Technique Details Ã¢â€â‚¬Ã¢â€â‚¬
   const [utMethod, setUtMethod] = useState("");
   const [refCalibBlock, setRefCalibBlock] = useState("");
   const [refCalibBlockCustom, setRefCalibBlockCustom] = useState("");
@@ -176,16 +175,16 @@ export const UTReportFormPage: React.FC = () => {
   const [scanningSens, setScanningSens] = useState("");
   const [scanningSensCustom, setScanningSensCustom] = useState("");
 
-  // â”€â”€ Angle Probe Calibration â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Angle Probe Calibration Ã¢â€â‚¬Ã¢â€â‚¬
   const [calib0, setCalib0] = useState<CalibRow>(emptyCalib());
   const [calib45, setCalib45] = useState<CalibRow>(emptyCalib());
   const [calib60, setCalib60] = useState<CalibRow>(emptyCalib());
   const [calib70, setCalib70] = useState<CalibRow>(emptyCalib());
 
-  // â”€â”€ Observations â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Observations Ã¢â€â‚¬Ã¢â€â‚¬
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
-  // ── Users for inspector dropdown ──
+  // â”€â”€ Users for inspector dropdown â”€â”€
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
   useEffect(() => {
     api
@@ -194,7 +193,7 @@ export const UTReportFormPage: React.FC = () => {
       .catch(() => {});
   }, []);
 
-  // â”€â”€ Final Section â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Final Section Ã¢â€â‚¬Ã¢â€â‚¬
   const [inspectorName, setInspectorName] = useState("");
   const [inspectorQual, setInspectorQual] = useState("UT NDE Level II");
   const [inspectorIdNo, setInspectorIdNo] = useState("");
@@ -208,7 +207,7 @@ export const UTReportFormPage: React.FC = () => {
   const [clientIdNo, setClientIdNo] = useState("");
   const [clientDate, setClientDate] = useState("");
 
-  // â”€â”€ Helpers â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Helpers Ã¢â€â‚¬Ã¢â€â‚¬
   const resolve = (val: string, custom: string) =>
     val === "Other" && custom.trim() ? custom.trim() : val;
 
@@ -244,7 +243,7 @@ export const UTReportFormPage: React.FC = () => {
     val: string,
   ) => setter((prev) => ({ ...prev, [key]: val }));
 
-  // â”€â”€ Load existing report in edit mode â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Load existing report in edit mode Ã¢â€â‚¬Ã¢â€â‚¬
   useEffect(() => {
     if (!id) return;
     const toDate = (d?: string | null) => (d ? d.split("T")[0] : "");
@@ -258,7 +257,12 @@ export const UTReportFormPage: React.FC = () => {
     getUTReportById(id)
       .then((res: any) => {
         const r = (res as any).data ?? res;
-        if (r.customerId) setCustomerId(typeof r.customerId === "object" ? r.customerId?._id ?? "" : r.customerId);
+        if (r.customerId)
+          setCustomerId(
+            typeof r.customerId === "object"
+              ? (r.customerId?._id ?? "")
+              : r.customerId,
+          );
         if (r.jobDetails?.customer) setCustomerName(r.jobDetails.customer);
         setReportNo(r.reportNo ?? "");
 
@@ -303,7 +307,6 @@ export const UTReportFormPage: React.FC = () => {
         setJobSurface(jd.surfaceCondition ?? "");
         setJobJointType(jd.typeOfJoint ?? "");
         setJobSurfaceTemp(jd.surfaceTemperature ?? "");
-        setJobWeldingProcess(jd.weldingProcess ?? "");
 
         const eq = r.equipmentDetails ?? {};
         const [eqT, eqTC] = fromOther(eq.equipmentType, [
@@ -343,9 +346,9 @@ export const UTReportFormPage: React.FC = () => {
         setUtCalibMethod(td.utCalibrationMethod ?? "");
         setScanningDb(td.scanningDb ?? "");
         const scanningSensOpts = [
-          "Ø 2.5 mm SDH",
-          "Ø 3mm SDH",
-          "1” BWE set @ 80% of FSH on Job",
+          "Ã˜ 2.5 mm SDH",
+          "Ã˜ 3mm SDH",
+          "1â€ BWE set @ 80% of FSH on Job",
           "Other",
         ];
         const [ss, ssC] = fromOther(td.scanningSensitivity, scanningSensOpts);
@@ -366,8 +369,8 @@ export const UTReportFormPage: React.FC = () => {
               drawingOrJointNo: o.drawingOrJointNo ?? "",
               size: o.size ?? "",
               quantity: String(o.quantity ?? ""),
-              evaluation: o.evaluation ?? "",
-              remark: o.remark ?? "",
+              interpretation: o.interpretation ?? "",
+              evaluation: o.evaluation ?? o.remark ?? o.result ?? "",
             })),
           );
         }
@@ -392,7 +395,7 @@ export const UTReportFormPage: React.FC = () => {
       .catch(() => toast.error("Failed to load report."));
   }, [id]);
 
-  // â”€â”€ Submit â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Submit Ã¢â€â‚¬Ã¢â€â‚¬
   const handleSubmit = async (status: "draft" | "final") => {
     if (!isEditMode && !customerId) {
       toast.error("Please select a customer first.");
@@ -421,7 +424,6 @@ export const UTReportFormPage: React.FC = () => {
           surfaceCondition: jobSurface,
           typeOfJoint: jobJointType || undefined,
           surfaceTemperature: jobSurfaceTemp,
-          weldingProcess: jobWeldingProcess || undefined,
         },
         equipmentDetails: {
           equipmentType: resolve(eqType, eqTypeCustom) || undefined,
@@ -456,8 +458,8 @@ export const UTReportFormPage: React.FC = () => {
             drawingOrJointNo: o.drawingOrJointNo,
             size: o.size,
             quantity: Number(o.quantity) || 0,
+            interpretation: o.interpretation || "",
             evaluation: o.evaluation || "",
-            remark: o.remark || "",
           })),
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
@@ -503,10 +505,10 @@ export const UTReportFormPage: React.FC = () => {
   };
 
   const calibAngles = [
-    { label: "0Â°", state: calib0, setter: setCalib0 },
-    { label: "45Â°", state: calib45, setter: setCalib45 },
-    { label: "60Â°", state: calib60, setter: setCalib60 },
-    { label: "70Â°", state: calib70, setter: setCalib70 },
+    { label: "0Ã‚Â°", state: calib0, setter: setCalib0 },
+    { label: "45Ã‚Â°", state: calib45, setter: setCalib45 },
+    { label: "60Ã‚Â°", state: calib60, setter: setCalib60 },
+    { label: "70Ã‚Â°", state: calib70, setter: setCalib70 },
   ];
 
   return (
@@ -527,7 +529,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Missing Customer Banner ── */}
+      {/* â”€â”€ Missing Customer Banner â”€â”€ */}
       {!customerId && (
         <CustomerPickerBanner
           onCustomerSelected={(id, name) => {
@@ -566,7 +568,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Job Details â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Job Details Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -766,26 +768,10 @@ export const UTReportFormPage: React.FC = () => {
               <option>Other</option>
             </select>
           </div>
-          <div>
-            <label className={labelClass}>Welding Process</label>
-            <select
-              value={jobWeldingProcess}
-              onChange={(e) => setJobWeldingProcess(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>SMAW</option>
-              <option>GMAW</option>
-              <option>FCAW</option>
-              <option>SAW</option>
-              <option>GTAW</option>
-              <option>MAG</option>
-            </select>
-          </div>
         </div>
       </div>
 
-      {/* â”€â”€ Equipment Details â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Equipment Details Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Equipment Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -863,7 +849,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Search Unit Details â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Search Unit Details Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4">
           <h2
@@ -925,9 +911,9 @@ export const UTReportFormPage: React.FC = () => {
                       onChange={(e) => updateUnit(idx, "angle", e.target.value)}
                       className={inputClass}
                     >
-                      <option>45Â°</option>
-                      <option>60Â°</option>
-                      <option>70Â°</option>
+                      <option>45Ã‚Â°</option>
+                      <option>60Ã‚Â°</option>
+                      <option>70Ã‚Â°</option>
                       <option>Normal</option>
                       <option>TR</option>
                     </select>
@@ -949,11 +935,11 @@ export const UTReportFormPage: React.FC = () => {
                       className={inputClass}
                     >
                       <option>8x9 mm / 20x22mm</option>
-                      <option>Ã˜10 mm / Ã˜24 mm</option>
+                      <option>ÃƒËœ10 mm / ÃƒËœ24 mm</option>
                       <option>8x9 mm</option>
                       <option>20x22mm</option>
-                      <option>Ã˜10 mm</option>
-                      <option>Ã˜24 mm</option>
+                      <option>ÃƒËœ10 mm</option>
+                      <option>ÃƒËœ24 mm</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -999,7 +985,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Technique Details â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Technique Details Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Technique Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1057,8 +1043,8 @@ export const UTReportFormPage: React.FC = () => {
               customValue={scanningSensCustom}
               onCustomChange={setScanningSensCustom}
               options={[
-                "Ã˜ 2.5 mm SDH",
-                "Ã˜ 3mm SDH",
+                "ÃƒËœ 2.5 mm SDH",
+                "ÃƒËœ 3mm SDH",
                 '1" BWE set @ 80% of FSH on Job',
                 "Other",
               ]}
@@ -1067,7 +1053,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Angle Probe Calibration â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Angle Probe Calibration Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Angle Probe Calibration Detail</h2>
         <div className="overflow-x-auto">
@@ -1123,7 +1109,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Observations â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Observations Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4">
           <h2
@@ -1160,6 +1146,9 @@ export const UTReportFormPage: React.FC = () => {
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-center w-16">
                   Qty
+                </th>
+                <th className="border border-gray-200 px-2 py-2 text-left">
+                  Interpretation
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
                   Evaluation
@@ -1214,6 +1203,19 @@ export const UTReportFormPage: React.FC = () => {
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
                     <select
+                      value={row.interpretation}
+                      onChange={(e) =>
+                        updateObs(idx, "interpretation", e.target.value)
+                      }
+                      className={inputClass}
+                    >
+                      <option value="">Select...</option>
+                      <option>No relevant Indication Found</option>
+                      <option>Relevant Indication Found</option>
+                    </select>
+                  </td>
+                  <td className="border border-gray-200 px-1 py-1">
+                    <select
                       value={row.evaluation}
                       onChange={(e) =>
                         updateObs(idx, "evaluation", e.target.value)
@@ -1221,8 +1223,8 @@ export const UTReportFormPage: React.FC = () => {
                       className={inputClass}
                     >
                       <option value="">Select...</option>
-                      <option>No relevant Indication Found</option>
-                      <option>Relevant Indication Found</option>
+                      <option>Accepted</option>
+                      <option>Rejected</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
@@ -1243,7 +1245,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Examined By â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Examined By Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
@@ -1303,7 +1305,7 @@ export const UTReportFormPage: React.FC = () => {
               Customer
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {customerName || "—"}
+              {customerName || "â€”"}
             </p>
             <div className="space-y-2">
               <div>
@@ -1349,7 +1351,7 @@ export const UTReportFormPage: React.FC = () => {
               Client / TPI
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {jobClient || "—"}
+              {jobClient || "â€”"}
             </p>
             <div className="space-y-2">
               <div>
@@ -1393,7 +1395,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Action Buttons â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Action Buttons Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div className="flex items-center justify-end gap-3 pb-8">
         <button
           type="button"

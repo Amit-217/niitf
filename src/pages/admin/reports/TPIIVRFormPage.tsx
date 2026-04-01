@@ -73,12 +73,7 @@ const emptyItem = (): InspectionItemRow => ({
   qtyAccepted: '', qtyHold: '', qtyReject: '', inspectionType: '',
 });
 
-const defaultRefDocs = (): RefDocRow[] => [
-  { document: 'Drawing', referenceNumber: '', revNo: '' },
-  { document: 'QAP / ITP', referenceNumber: '', revNo: '' },
-  { document: 'Test Procedure', referenceNumber: '', revNo: '' },
-  { document: 'Others', referenceNumber: '', revNo: '' },
-];
+const emptyRefDoc = (): RefDocRow => ({ document: '', referenceNumber: '', revNo: '' });
 
 const emptyCalib = (): CalibRow => ({
   equipment: '', idNumber: '', calibrationDate: '', dueDate: '', nablCertified: '',
@@ -139,7 +134,7 @@ export const TPIIVRFormPage: React.FC = () => {
   const [conclusionOther, setConclusionOther] = useState('');
 
   // ── Reference Documents ──
-  const [refDocs, setRefDocs] = useState<RefDocRow[]>(defaultRefDocs());
+  const [refDocs, setRefDocs] = useState<RefDocRow[]>([emptyRefDoc()]);
 
   // ── Calibration Status ──
   const [calibRows, setCalibRows] = useState<CalibRow[]>([emptyCalib()]);
@@ -197,7 +192,7 @@ export const TPIIVRFormPage: React.FC = () => {
       const conclusionOpts = ['Ultrasonic Testing witness done & found accepted.', 'Dimensional Inspection done & found accepted.', 'Visual Inspection done & found accepted.', 'Inspection done & found accepted.', 'Inspection done & found rejected.', 'On Hold - pending clarification.', 'Other'];
       const [con, conO] = fromOther(r.conclusion, conclusionOpts);
       setConclusion(con); setConclusionOther(conO);
-      if (r.referenceDocuments?.length) setRefDocs(r.referenceDocuments);
+      setRefDocs(r.referenceDocuments?.length ? r.referenceDocuments : [emptyRefDoc()]);
       if (r.calibrationStatus?.length) {
         setCalibRows(r.calibrationStatus.map((c: any) => ({
           equipment: c.equipment ?? '', idNumber: c.idNumber ?? '',
@@ -221,6 +216,8 @@ export const TPIIVRFormPage: React.FC = () => {
 
   const updateRefDoc = (idx: number, key: keyof RefDocRow, val: string) =>
     setRefDocs(prev => prev.map((r, i) => i === idx ? { ...r, [key]: val } : r));
+  const addRefDoc = () => setRefDocs(prev => [...prev, emptyRefDoc()]);
+  const removeRefDoc = (idx: number) => setRefDocs(prev => prev.filter((_, i) => i !== idx));
 
   const updateCalib = (idx: number, key: keyof CalibRow, val: string) =>
     setCalibRows(prev => prev.map((r, i) => i === idx ? { ...r, [key]: val } : r));
@@ -337,7 +334,7 @@ export const TPIIVRFormPage: React.FC = () => {
 
       {/* ── I.R. No. ── */}
       <div className={sectionClass}>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div>
             <label className={labelClass}>I.R No. {isEditMode ? "" : "(Auto-generated)"}</label>
             <input
@@ -353,6 +350,10 @@ export const TPIIVRFormPage: React.FC = () => {
             <input type="text" value={irRev} onChange={e => setIrRev(e.target.value)} className={inputClass} placeholder="e.g. Rev.00" />
           </div>
           <div>
+            <label className={labelClass}>Date of Inspection</label>
+            <input type="date" value={dtOfInspection} onChange={e => setDtOfInspection(e.target.value)} className={inputClass} />
+          </div>
+          <div>
             <label className={labelClass}>Format No.</label>
             <input type="text" className={inputClass} defaultValue="NIIT-16 Rev.01" readOnly />
           </div>
@@ -363,10 +364,6 @@ export const TPIIVRFormPage: React.FC = () => {
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Date of Inspection</label>
-            <input type="date" value={dtOfInspection} onChange={e => setDtOfInspection(e.target.value)} className={inputClass} />
-          </div>
           <div>
             <label className={labelClass}>Client</label>
             <input type="text" value={client} onChange={e => setClient(e.target.value)} className={inputClass} placeholder="e.g. Metso Minerals (I) Pvt. Ltd." />
@@ -403,7 +400,7 @@ export const TPIIVRFormPage: React.FC = () => {
             <label className={labelClass}>PO Date</label>
             <input type="date" value={poDate} onChange={e => setPoDate(e.target.value)} className={inputClass} />
           </div>
-          <div className="sm:col-span-2">
+          <div>
             <label className={labelClass}>Inspection Stage</label>
             <SelectWithOther
               value={inspectionStage} onChange={setInspectionStage}
@@ -589,25 +586,40 @@ export const TPIIVRFormPage: React.FC = () => {
 
       {/* ── Reference Documents ── */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Reference Documents for Inspection</h2>
+        <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+          <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">Reference Documents for Inspection</h2>
+          <button type="button" onClick={addRefDoc} className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 rounded-lg px-3 py-1.5 hover:bg-indigo-50 transition-colors">
+            <Plus className="w-3 h-3" /> Add Row
+          </button>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="bg-gray-50">
-                <th className="border border-gray-200 px-3 py-2 text-left font-medium text-gray-700 w-40">Document</th>
-                <th className="border border-gray-200 px-3 py-2 text-left font-medium text-gray-700">Reference Number</th>
-                <th className="border border-gray-200 px-3 py-2 text-left font-medium text-gray-700 w-32">Rev. No.</th>
+              <tr className="bg-gray-50 text-xs text-gray-600 uppercase">
+                <th className="border border-gray-200 px-2 py-2 text-left w-40">Document</th>
+                <th className="border border-gray-200 px-2 py-2 text-left">Reference Number</th>
+                <th className="border border-gray-200 px-2 py-2 text-left w-32">Rev. No.</th>
+                <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
             </thead>
             <tbody>
               {refDocs.map((doc, idx) => (
-                <tr key={idx}>
-                  <td className="border border-gray-200 px-3 py-2 font-medium text-gray-600">{doc.document}</td>
-                  <td className="border border-gray-200 px-2 py-1">
+                <tr key={idx} className="hover:bg-gray-50">
+                  <td className="border border-gray-200 px-1 py-1">
+                    <input type="text" value={doc.document} onChange={e => updateRefDoc(idx, 'document', e.target.value)} className={inputClass} placeholder="e.g. Drawing" />
+                  </td>
+                  <td className="border border-gray-200 px-1 py-1">
                     <input type="text" value={doc.referenceNumber} onChange={e => updateRefDoc(idx, 'referenceNumber', e.target.value)} className={inputClass} placeholder="e.g. xxxx" />
                   </td>
-                  <td className="border border-gray-200 px-2 py-1">
+                  <td className="border border-gray-200 px-1 py-1">
                     <input type="text" value={doc.revNo} onChange={e => updateRefDoc(idx, 'revNo', e.target.value)} className={inputClass} placeholder="e.g. 00" />
+                  </td>
+                  <td className="border border-gray-200 px-1 py-1 text-center">
+                    {refDocs.length > 1 && (
+                      <button type="button" onClick={() => removeRefDoc(idx)} className="text-red-400 hover:text-red-600">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

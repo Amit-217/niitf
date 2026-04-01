@@ -21,9 +21,12 @@ const PRINT_STYLES = `
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; }
-    #report-root { background: #fff !important; padding: 0 !important; }
-    #report-root > div { width: 210mm !important; min-height: 297mm !important; margin: 0 auto !important; padding: 3mm !important; box-sizing: border-box !important; box-shadow: none !important; }
+    #report-root { background: #fff !important; padding: 0 !important; display: flex !important; flex-direction: column !important; }
+    #report-root > div { width: 210mm !important; min-height: 297mm !important; margin: 0 auto !important; padding: 3mm 3mm 45mm 3mm !important; box-sizing: border-box !important; box-shadow: none !important; position: relative !important; }
     .report { margin: 0 !important; box-shadow: none !important; width: calc(100% / 0.92) !important; transform: scale(0.92); transform-origin: top left; }
+    .print-fixed-footer { position: absolute !important; bottom: 0 !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; background: transparent !important; margin: 0 !important; }
+    .print-fixed-footer-inner { width: 193.2mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
+    .tfoot-content { visibility: hidden !important; }
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
@@ -50,9 +53,9 @@ const PRINT_STYLES = `
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
-  .bw .accept-badge { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
-  .bw .reject-badge { background: #fff !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
-  .bw .neutral-badge { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .accept-badge { background: transparent !important; color: #000 !important; border: none !important; }
+  .bw .reject-badge { background: transparent !important; color: #000 !important; border: none !important; }
+  .bw .neutral-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .report-table td, .bw .report-table th { border-color: #888 !important; }
   .bw .obs-table td, .bw .obs-table th { border-color: #888 !important; }
   .bw .obs-table th { background: #fff !important; color: #000 !important; }
@@ -214,6 +217,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
+          <br />
+          Powered by: viplora.tech
         </div>
         <div className="qr-wrap">
           <QRCodeSVG value={qrUrl} size={48} />
@@ -330,61 +335,74 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               <tbody style={{ display: "table-row-group" }}>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body">
-                      <div className="rpt-title">Inspection Visit Report</div>
-                      <div
-                        style={{
-                          padding: "5px 10px",
-                          fontSize: "10px",
-                          borderBottom: "1px solid #d9e1ea",
-                          background: "#f8fafc",
-                        }}
-                      >
-                        <strong>Client:</strong> {v(report.client)} &nbsp;&nbsp;{" "}
-                        <strong>Inspection Location:</strong>{" "}
-                        {v(report.inspectionLocation)}
-                      </div>
+                      <div className="report-body">
+                        <div className="rpt-title">Inspection Visit Report</div>
 
-                      {/* ── JOB DETAILS ── */}
-                      <table className="report-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "32%" }} />
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "32%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td colSpan={4} className="section-hdr">
-                              JOB DETAILS
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Project</td>
-                            <td className="val">{v(report.project)}</td>
-                            <td className="lbl">Part Name</td>
-                            <td className="val">{v(report.partName)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Appd. QAP No.</td>
-                            <td className="val">{v(report.appdQapNo)}</td>
-                            <td className="lbl">Appd. QAP Date</td>
-                            <td className="val">{fmtDate(report.appdQapDt)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Client PO No.</td>
-                            <td className="val">{v(report.clientPoNo)}</td>
-                            <td className="lbl">PO Date</td>
-                            <td className="val">{fmtDate(report.poDate)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">PO Amed. No.</td>
-                            <td className="val">{v(report.poAmedNo)}</td>
-                            <td className="lbl">Inspection Stage</td>
-                            <td className="val">{v(report.inspectionStage)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                        {/* ── JOB DETAILS ── */}
+                        <table className="report-table mt-n1">
+                          <colgroup>
+                            <col style={{ width: "15%" }} />
+                            <col style={{ width: "23%" }} />
+                            <col style={{ width: "12%" }} />
+                            <col style={{ width: "18%" }} />
+                            <col style={{ width: "32%" }} />
+                          </colgroup>
+                          <tbody>
+                            <tr>
+                              <td colSpan={5} className="section-hdr">
+                                JOB DETAILS
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="lbl">I.R No:</td>
+                              <td className="val" style={{ fontWeight: 600 }}>{v(report.irNo)}</td>
+                              <td className="val" style={{ fontWeight: 600, textAlign: 'center' }}><span style={{ fontSize: '10px', fontWeight: 600 }}>IR Rev.: </span>{v(report.irRev)}</td>
+                              <td className="lbl">Dt. of Inspection</td>
+                              <td className="val" style={{ color: "#e11d48", fontWeight: 600 }}>{fmtDate(report.dtOfInspection)}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        <table className="report-table mt-n1">
+                          <colgroup>
+                            <col style={{ width: "15%" }} />
+                            <col style={{ width: "35%" }} />
+                            <col style={{ width: "18%" }} />
+                            <col style={{ width: "32%" }} />
+                          </colgroup>
+                          <tbody>
+                            <tr>
+                              <td className="lbl">Client:-</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.client)}</td>
+                              <td className="lbl">Inspection location</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.inspectionLocation)}</td>
+                            </tr>
+                            <tr>
+                              <td className="lbl">Project</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.project)}</td>
+                              <td className="lbl">Appd. QAP No</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.appdQapNo)}</td>
+                            </tr>
+                            <tr>
+                              <td className="lbl">Client PO No</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.clientPoNo)}</td>
+                              <td className="lbl">Appd. QAP Dt.</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{fmtDate(report.appdQapDt)}</td>
+                            </tr>
+                            <tr>
+                              <td className="lbl">PO Amed. No</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.poAmedNo)}</td>
+                              <td className="lbl">Part Name</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.partName)}</td>
+                            </tr>
+                            <tr>
+                              <td className="lbl">PO Date</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{fmtDate(report.poDate)}</td>
+                              <td className="lbl">Inspection Stage</td>
+                              <td className="val" style={{ color: "#e11d48" }}>{v(report.inspectionStage)}</td>
+                            </tr>
+                          </tbody>
+                        </table>
 
                       {/* ── CLIENT & VENDOR DETAILS ── */}
                       <table className="report-table mt-n1">
@@ -527,21 +545,31 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="col-hdr" style={{ width: "8%" }}>
+                            <td className="col-hdr" style={{ width: "8%" }} rowSpan={2}>
                               PO Line No.
                             </td>
                             <td
                               className="col-hdr"
                               style={{ width: "24%", textAlign: "left" }}
+                              rowSpan={2}
                             >
                               Description
                             </td>
                             <td
                               className="col-hdr"
                               style={{ width: "16%", textAlign: "left" }}
+                              rowSpan={2}
                             >
                               Drg No. / Heat No.
                             </td>
+                            <td className="col-hdr" colSpan={5} style={{ textAlign: "center" }}>
+                              Quantity in Nos.
+                            </td>
+                            <td className="col-hdr" style={{ width: "14%" }} rowSpan={2}>
+                              Insp. Type
+                            </td>
+                          </tr>
+                          <tr>
                             <td className="col-hdr" style={{ width: "8%" }}>
                               Offered
                             </td>
@@ -556,9 +584,6 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             </td>
                             <td className="col-hdr" style={{ width: "7%" }}>
                               Reject
-                            </td>
-                            <td className="col-hdr" style={{ width: "14%" }}>
-                              Insp. Type
                             </td>
                           </tr>
                           {items.length === 0 ? (
@@ -777,7 +802,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                                 textAlign: "center",
                               }}
                             >
-                              FOR VENDOR
+                              FOR VENDOR{v(vd.vendor) ? `: ${v(vd.vendor)}` : ""}
                             </td>
                             <td
                               style={{
@@ -788,10 +813,6 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             >
                               FOR NIIT SURVEYOR, BARAMATI
                             </td>
-                          </tr>
-                          <tr>
-                            <td style={{ height: 32 }}></td>
-                            <td style={{ height: 32 }}></td>
                           </tr>
                           <tr>
                             <td>Name: {v(sigs.vendor?.name)}</td>
@@ -815,17 +836,27 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               <tfoot style={{ display: "table-footer-group" }}>
                 <tr>
                   <td style={{ padding: 0 }}>
-                    <div className="tfoot-content" style={{ height: "15mm" }}></div>
+                    <div
+                      className="tfoot-content"
+                      style={{ height: "15mm" }}
+                    ></div>
                   </td>
                 </tr>
               </tfoot>
             </table>
           </div>
-          
-          <div className={`no-print ${bwMode ? 'bw' : ''}`} style={{ position: "absolute", bottom: "5mm", left: "5mm", right: "5mm" }}>
+
+          <div
+            className={`no-print ${bwMode ? "bw" : ""}`}
+            style={{
+              position: "absolute",
+              bottom: "5mm",
+              left: "5mm",
+              right: "5mm",
+            }}
+          >
             <ReportFooter />
           </div>
-
         </div>
       </div>
 
