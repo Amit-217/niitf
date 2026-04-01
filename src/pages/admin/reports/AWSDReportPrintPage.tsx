@@ -42,16 +42,16 @@ const PRINT_STYLES = `
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .report-table td, .report-table th { border: 1px solid #555; padding: 2px 3px; vertical-align: middle; word-break: break-word; font-size: 11px; }
 
-  .section-hdr { background: #185FA5; color: #fff; font-weight: bold; font-size: 11px; text-align: center; letter-spacing: 0.5px; padding: 2px 3px; }
-  .col-hdr { background: #e8ecf0; font-weight: bold; font-size: 10px; text-align: center; vertical-align: middle; }
-  .col-hdr-db { background: #dbeafe; font-weight: bold; font-size: 10px; text-align: center; vertical-align: middle; }
-  .col-hdr-disc { background: #fef3c7; font-weight: bold; font-size: 10px; text-align: center; vertical-align: middle; }
+  .section-hdr { background: #fff; color: #000; font-weight: bold; font-size: 11px; text-align: center; letter-spacing: 0.5px; padding: 2px 3px; }
+  .col-hdr { background: #fff; font-weight: bold; font-size: 10px; text-align: center; vertical-align: middle; }
+  .col-hdr-db { background: #fff; font-weight: bold; font-size: 10px; text-align: center; vertical-align: middle; }
+  .col-hdr-disc { background: #fff; font-weight: bold; font-size: 10px; text-align: center; vertical-align: middle; }
 
-  .lbl { background: #f5f7fa; font-weight: 600; font-size: 10px; }
+  .lbl { background: #fff; font-weight: 600; font-size: 10px; }
   .val { font-size: 11px; }
 
   .title-cell { text-align: center; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; text-decoration: underline; padding: 4px 0; }
-  .company-name { font-size: 15px; font-weight: bold; text-transform: uppercase; text-align: center; color: #1a3c8f; }
+  .company-name { font-size: 15px; font-weight: bold; text-transform: uppercase; text-align: center; color: #000; }
   .company-sub { font-size: 9px; text-align: center; color: #333; line-height: 1.4; }
   .company-iso { font-size: 9px; text-align: center; font-weight: bold; color: #333; }
 
@@ -106,6 +106,7 @@ export const AWSDReportPrintPage: React.FC = () => {
 
   const [report, setReport] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [bwMode] = useState(false);
 
   const goBack = () => {
     if (locState?.customerId) {
@@ -442,14 +443,12 @@ export const AWSDReportPrintPage: React.FC = () => {
                         <td
                           className="col-hdr-db"
                           colSpan={4}
-                          style={{ background: "#dbeafe" }}
                         >
                           DECIBELS
                         </td>
                         <td
                           className="col-hdr-disc"
                           colSpan={5}
-                          style={{ background: "#fef3c7" }}
                         >
                           DISCONTINUITY
                         </td>
@@ -465,7 +464,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                       <tr>
                         <td
                           className="col-hdr-db"
-                          style={{ width: "5.5%", background: "#dbeafe" }}
+                          style={{ width: "5.5%" }}
                         >
                           a.
                           <br />
@@ -473,7 +472,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                         </td>
                         <td
                           className="col-hdr-db"
-                          style={{ width: "5.5%", background: "#dbeafe" }}
+                          style={{ width: "5.5%" }}
                         >
                           b.
                           <br />
@@ -481,7 +480,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                         </td>
                         <td
                           className="col-hdr-db"
-                          style={{ width: "6%", background: "#dbeafe" }}
+                          style={{ width: "6%" }}
                         >
                           c.
                           <br />
@@ -489,7 +488,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                         </td>
                         <td
                           className="col-hdr-db"
-                          style={{ width: "5.5%", background: "#dbeafe" }}
+                          style={{ width: "5.5%" }}
                         >
                           d.
                           <br />
@@ -497,13 +496,13 @@ export const AWSDReportPrintPage: React.FC = () => {
                         </td>
                         <td
                           className="col-hdr-disc"
-                          style={{ width: "5%", background: "#fef3c7" }}
+                          style={{ width: "5%" }}
                         >
                           Length
                         </td>
                         <td
                           className="col-hdr-disc"
-                          style={{ width: "5.5%", background: "#fef3c7" }}
+                          style={{ width: "5.5%" }}
                         >
                           Angular
                           <br />
@@ -511,7 +510,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                         </td>
                         <td
                           className="col-hdr-disc"
-                          style={{ width: "6%", background: "#fef3c7" }}
+                          style={{ width: "6%" }}
                         >
                           Depth
                           <br />
@@ -519,14 +518,14 @@ export const AWSDReportPrintPage: React.FC = () => {
                         </td>
                         <td
                           className="col-hdr-disc"
-                          style={{ width: "4.5%", background: "#fef3c7" }}
+                          style={{ width: "4.5%" }}
                         >
                           From
                           <br />X
                         </td>
                         <td
                           className="col-hdr-disc"
-                          style={{ width: "4.5%", background: "#fef3c7" }}
+                          style={{ width: "4.5%" }}
                         >
                           From
                           <br />Y
@@ -550,31 +549,31 @@ export const AWSDReportPrintPage: React.FC = () => {
                               <td>{v(o.transducerAngle)}</td>
                               <td>{v(o.fromFace)}</td>
                               <td>{v(o.leg)}</td>
-                              <td style={{ background: "#f0f7ff" }}>
+                              <td style={{}}>
                                 {v(o.decibels?.indicationLevel)}
                               </td>
-                              <td style={{ background: "#f0f7ff" }}>
+                              <td style={{}}>
                                 {v(o.decibels?.referenceLevel)}
                               </td>
-                              <td style={{ background: "#f0f7ff" }}>
+                              <td style={{}}>
                                 {v(o.decibels?.attenuationFactor)}
                               </td>
-                              <td style={{ background: "#f0f7ff" }}>
+                              <td style={{}}>
                                 {v(o.decibels?.indicationRating)}
                               </td>
-                              <td style={{ background: "#fffbeb" }}>
+                              <td style={{}}>
                                 {v(o.discontinuity?.length)}
                               </td>
-                              <td style={{ background: "#fffbeb" }}>
+                              <td style={{}}>
                                 {v(o.discontinuity?.angularDistance)}
                               </td>
-                              <td style={{ background: "#fffbeb" }}>
+                              <td style={{}}>
                                 {v(o.discontinuity?.depthFromA)}
                               </td>
-                              <td style={{ background: "#fffbeb" }}>
+                              <td style={{}}>
                                 {v(o.discontinuity?.distanceFromX)}
                               </td>
-                              <td style={{ background: "#fffbeb" }}>
+                              <td style={{}}>
                                 {v(o.discontinuity?.distanceFromY)}
                               </td>
                               <td
