@@ -95,7 +95,7 @@ interface ObsRow {
   srNo: number;
   itemName: string;
   measuredThickness: string;
-  remark: string;
+  evaluation: string;
 }
 
 const emptySearchUnit = (): SearchUnitRow => ({
@@ -125,7 +125,7 @@ const emptyObs = (): ObsRow => ({
   srNo: 1,
   itemName: "",
   measuredThickness: "",
-  remark: "",
+  evaluation: "",
 });
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -450,7 +450,7 @@ export const UTGReportFormPage: React.FC = () => {
               srNo: o.srNo,
               itemName: o.itemName ?? "",
               measuredThickness: o.measuredThickness ?? "",
-              remark: o.remark ?? "",
+              evaluation: o.evaluation ?? o.remark ?? o.result ?? "",
             })),
           );
         }
@@ -521,10 +521,9 @@ export const UTGReportFormPage: React.FC = () => {
           basicCalibrationBlock: resolve(eqCalibBlock, eqCalibBlockOther),
         },
         searchUnitDetails: searchUnits
-          .filter((u) => u.searchUnit.trim() || u.model.trim())
+          .filter((u) => u.searchUnit.trim())
           .map((u) => ({
             searchUnit: u.searchUnit,
-            model: u.model,
             angle: u.angle,
             srNo: u.srNo,
             crystalSize: resolve(u.crystalSize, u.crystalSizeOther),
@@ -533,16 +532,6 @@ export const UTGReportFormPage: React.FC = () => {
           })),
         techniqueDetails: {
           utMethod: resolve(utMethod, utMethodOther),
-          techniques: techniques
-            .filter((t) => t.searchUnit.trim() || t.angle.trim())
-            .map((t) => ({
-              searchUnit: t.searchUnit,
-              angle: t.angle,
-              srNo: t.srNo,
-              crystalSize: resolve(t.crystalSize, t.crystalSizeOther),
-              waveMode: t.waveMode,
-              frequency: resolve(t.frequency, t.frequencyOther),
-            })),
         },
         observations: observations
           .filter((o) => o.itemName.trim())
@@ -550,7 +539,7 @@ export const UTGReportFormPage: React.FC = () => {
             srNo: o.srNo,
             itemName: o.itemName,
             measuredThickness: o.measuredThickness,
-            remark: o.remark,
+            evaluation: o.evaluation,
           })),
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
@@ -736,6 +725,16 @@ export const UTGReportFormPage: React.FC = () => {
             />
           </div>
           <div>
+            <label className={labelClass}>Inspection Time</label>
+            <input
+              type="text"
+              value={jobInspectionTime}
+              onChange={(e) => setJobInspectionTime(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. 02:00 PM to 05:00 PM"
+            />
+          </div>
+          <div>
             <label className={labelClass}>Acceptance Criteria</label>
             <SelectWithOther
               value={jobAcceptanceCriteria}
@@ -749,16 +748,6 @@ export const UTGReportFormPage: React.FC = () => {
                 "Other",
               ]}
               placeholder="Select Acceptance Criteria"
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Inspection Time</label>
-            <input
-              type="text"
-              value={jobInspectionTime}
-              onChange={(e) => setJobInspectionTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 02:00 PM to 05:00 PM"
             />
           </div>
           <div>
@@ -906,10 +895,7 @@ export const UTGReportFormPage: React.FC = () => {
             <thead>
               <tr className="bg-gray-50 text-xs text-gray-600 uppercase">
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Search Unit
-                </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
-                  Model
+                  Search Unit / Model
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
                   Angle
@@ -940,22 +926,8 @@ export const UTGReportFormPage: React.FC = () => {
                         updateSearchUnit(idx, "searchUnit", e.target.value)
                       }
                       className={inputClass}
-                      placeholder="e.g. Modsonic"
+                      placeholder="e.g. Modsonic / Normal"
                     />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={u.model}
-                      onChange={(e) =>
-                        updateSearchUnit(idx, "model", e.target.value)
-                      }
-                      className={inputClass}
-                    >
-                      <option value="">Select...</option>
-                      <option>T/R</option>
-                      <option>Normal</option>
-                      <option>Angle</option>
-                    </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
                     <select
@@ -1038,133 +1010,7 @@ export const UTGReportFormPage: React.FC = () => {
 
       {/* ── Technique Details ── */}
       <div className={sectionClass}>
-        <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
-            Technique Details
-          </h2>
-          <button
-            type="button"
-            onClick={addTechnique}
-            className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 rounded-lg px-3 py-1.5 hover:bg-indigo-50 transition-colors"
-          >
-            <Plus className="w-3 h-3" /> Add Row
-          </button>
-        </div>
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse min-w-[800px]">
-            <thead>
-              <tr className="bg-gray-50 text-xs text-gray-600 uppercase">
-                <th className="border border-gray-200 px-2 py-2 text-left">
-                  Search Unit
-                </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
-                  Angle
-                </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
-                  Sr. No.
-                </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
-                  Crystal Size
-                </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
-                  Wave Mode
-                </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
-                  Frequency
-                </th>
-                <th className="border border-gray-200 px-2 py-2 w-8"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {techniques.map((t, idx) => (
-                <tr key={idx} className="hover:bg-gray-50">
-                  <td className="border border-gray-200 px-1 py-1">
-                    <input
-                      type="text"
-                      value={t.searchUnit}
-                      onChange={(e) =>
-                        updateTechnique(idx, "searchUnit", e.target.value)
-                      }
-                      className={inputClass}
-                      placeholder="e.g. Modsonic"
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={t.angle}
-                      onChange={(e) =>
-                        updateTechnique(idx, "angle", e.target.value)
-                      }
-                      className={inputClass}
-                    >
-                      <option value="">Select...</option>
-                      <option>Normal (0°)</option>
-                      <option>45°</option>
-                      <option>60°</option>
-                      <option>70°</option>
-                    </select>
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <input
-                      type="text"
-                      value={t.srNo}
-                      onChange={(e) =>
-                        updateTechnique(idx, "srNo", e.target.value)
-                      }
-                      className={inputClass}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 min-w-[140px]">
-                    <SelectWithOther
-                      value={t.crystalSize}
-                      onChange={(v) => updateTechnique(idx, "crystalSize", v)}
-                      otherValue={t.crystalSizeOther}
-                      onOtherChange={(v) =>
-                        updateTechnique(idx, "crystalSizeOther", v)
-                      }
-                      options={["Ø5mm", "Ø10mm", "8x9 mm", "20x22 mm", "Other"]}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={t.waveMode}
-                      onChange={(e) =>
-                        updateTechnique(idx, "waveMode", e.target.value)
-                      }
-                      className={inputClass}
-                    >
-                      <option value="">Select...</option>
-                      <option>Longitudinal</option>
-                      <option>Shear</option>
-                    </select>
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 min-w-[130px]">
-                    <SelectWithOther
-                      value={t.frequency}
-                      onChange={(v) => updateTechnique(idx, "frequency", v)}
-                      otherValue={t.frequencyOther}
-                      onOtherChange={(v) =>
-                        updateTechnique(idx, "frequencyOther", v)
-                      }
-                      options={["2 MHz", "4 MHz", "5 MHz", "Other"]}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 text-center">
-                    {techniques.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeTechnique(idx)}
-                        className="text-red-400 hover:text-red-600"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <h2 className={sectionTitleClass}>Technique Details</h2>
         <div className="max-w-sm">
           <label className={labelClass}>UT Method</label>
           <SelectWithOther
@@ -1207,7 +1053,10 @@ export const UTGReportFormPage: React.FC = () => {
                   Item Name
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Measured Thickness
+                  Measured Thickness (mm)
+                </th>
+                <th className="border border-gray-200 px-2 py-2 text-left w-32">
+                  Evaluation
                 </th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
@@ -1239,6 +1088,19 @@ export const UTGReportFormPage: React.FC = () => {
                       className={inputClass}
                       placeholder="e.g. 12.5"
                     />
+                  </td>
+                  <td className="border border-gray-200 px-1 py-1">
+                    <select
+                      value={row.evaluation}
+                      onChange={(e) =>
+                        updateObs(idx, "evaluation", e.target.value)
+                      }
+                      className={inputClass}
+                    >
+                      <option value="">Select...</option>
+                      <option>Accepted</option>
+                      <option>Not Accepted</option>
+                    </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
                     {observations.length > 1 && (

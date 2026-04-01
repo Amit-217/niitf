@@ -20,13 +20,16 @@ const PRINT_STYLES = `
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; }
-    #report-root { background: #fff !important; padding: 0 !important; }
+    #report-root { background: #fff !important; padding: 0 !important; display: flex !important; flex-direction: column !important; }
     #report-root > div {
       width: 210mm !important; min-height: 297mm !important;
-      margin: 0 auto !important; padding: 0 3mm 0 3mm !important; /* Top padding moved to thead, bottom to tfoot */
-      box-sizing: border-box !important; box-shadow: none !important;
+      margin: 0 auto !important; padding: 0 3mm 45mm 3mm !important; /* Reserved 45mm at bottom for footer */
+      box-sizing: border-box !important; box-shadow: none !important; position: relative !important;
     }
     .report { margin: 0 !important; box-shadow: none !important; width: calc(100% / 0.92) !important; transform: scale(0.92); transform-origin: top left; }
+    .print-fixed-footer { position: absolute !important; bottom: 0 !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; background: transparent !important; margin: 0 !important; }
+    .print-fixed-footer-inner { width: 193.2mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
+    .tfoot-content { visibility: hidden !important; }
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
@@ -53,9 +56,9 @@ const PRINT_STYLES = `
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
-  .bw .accept-badge { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
-  .bw .reject-badge { background: #fff !important; color: #000 !important; border: 1px solid #444 !important; border-left: 3px solid #000 !important; }
-  .bw .neutral-badge { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
+  .bw .accept-badge { background: transparent !important; color: #000 !important; border: none !important; }
+  .bw .reject-badge { background: transparent !important; color: #000 !important; border: none !important; }
+  .bw .neutral-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .report-table td, .bw .report-table th { border-color: #888 !important; }
   .bw .obs-table td, .bw .obs-table th { border-color: #888 !important; }
   .bw .obs-table th { background: #fff !important; color: #000 !important; }
@@ -68,7 +71,7 @@ const PRINT_STYLES = `
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 5px 6px; vertical-align: middle; word-break: break-word; font-size: 11px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 10px; text-align: center; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 10px; white-space: nowrap; width: 22%; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 10px; width: 22%; }
   .val { font-size: 11px; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 5px 5px; font-size: 11px; vertical-align: top; word-break: break-word; }
@@ -77,10 +80,10 @@ const PRINT_STYLES = `
   .sign-table td { border: 1px solid #d9e1ea; padding: 5px 6px; font-size: 11px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .std-tag { display: inline-block; background: #e7f1fb; color: #0c447c; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; margin-bottom: 2px; font-weight: 700; }
-  .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
-  .accept-badge { background: #eaf4de; color: #27500a; }
-  .reject-badge { background: #fcebeb; color: #7a1f1f; }
-  .neutral-badge { background: #edf0f5; color: #334155; }
+  .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
+  .accept-badge { color: #27500a; }
+  .reject-badge { color: #7a1f1f; }
+  .neutral-badge { color: #334155; }
   .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 9px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
@@ -252,12 +255,16 @@ export const MPTReportPrintPage = () => {
 
   const standards = splitTags(jd.referenceStd);
   const acceptance = splitTags(jd.acceptanceCriteria);
-  const technique = v(
-    me.magnetizingMethod || me.magnetizationType || me.method,
-  );
+  const getEvaluation = (o: (typeof obs)[number]) => {
+    const legacy = o as (typeof obs)[number] & {
+      result?: string;
+      remark?: string;
+    };
+    return legacy.evaluation || legacy.result || legacy.remark || "";
+  };
 
   const rejectedCount = obs.filter((o) =>
-    /reject|repair|fail|not ok/i.test(v(o.result || o.remark || o.evaluation)),
+    /reject|repair|fail|not ok/i.test(v(getEvaluation(o) || o.interpretation)),
   ).length;
   const conclusionText =
     v((report as unknown as { conclusion?: string }).conclusion) ||
@@ -270,13 +277,13 @@ export const MPTReportPrintPage = () => {
     <>
       <div className="footer">
         <div className="footer-text-block">
-          Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office,
-          MIDC, Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91
-          7875154431
+          Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office, MIDC,
+          Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
           <br />
-          Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 |
-          Website: www.niitindt.com | Email: niit04@gmail.com |
-          info@niitindt.com
+          Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
+          www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
+          <br />
+          Powered by: viplora.tech
         </div>
         <div className="qr-wrap">
           <QRCodeSVG value={qrUrl} size={48} />
@@ -286,7 +293,6 @@ export const MPTReportPrintPage = () => {
         Format No: <span>FMT-NDT-01</span>
         &nbsp;|&nbsp; Rev. No: <span>00</span>
         &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
-        &nbsp;|&nbsp; Page: <span>1 of 1</span>
       </div>
     </>
   );
@@ -355,11 +361,19 @@ export const MPTReportPrintPage = () => {
           }}
         >
           <div className={`report${bwMode ? " bw" : ""}`}>
-            <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0, margin: 0, padding: 0 }}>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                borderSpacing: 0,
+                margin: 0,
+                padding: 0,
+              }}
+            >
               <thead style={{ display: "table-header-group" }}>
                 <tr>
                   <td style={{ padding: "5mm 0 0 0" }}>
-                    {/* ── HEADER ── */}
+                    {/* â”€â”€ HEADER â”€â”€ */}
                     <div className="rpt-header">
                       <div className="logo-box">
                         <img src="/logo.png" alt="NIIT Logo" />
@@ -369,9 +383,10 @@ export const MPTReportPrintPage = () => {
                           National Industrial Inspection &amp; Training
                         </div>
                         <div className="sub">
-                          THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING | NDT
-                          CONSULTANCY | PHYSICAL CALIBRATION | FACTORY INSPECTION UNDER
-                          MAHARASHTRA FACTORY ACT | QUALITY MANAGEMENT SYSTEM TRAINING
+                          THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING |
+                          NDT CONSULTANCY | PHYSICAL CALIBRATION | FACTORY
+                          INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY
+                          MANAGEMENT SYSTEM TRAINING
                         </div>
                         <div className="iso">
                           (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
@@ -390,7 +405,7 @@ export const MPTReportPrintPage = () => {
                         Magnetic Particle Examination Report
                       </div>
 
-                      {/* ── 1. Scope & Reference Standards ── */}
+                      {/* â”€â”€ 1. Scope & Reference Standards â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -407,14 +422,16 @@ export const MPTReportPrintPage = () => {
                           <tr>
                             <td className="lbl">Customer</td>
                             <td className="val">{v(jd.customer) || "-"}</td>
-                            <td className="lbl">Client / TPI</td>
-                            <td className="val">{v(jd.client) || "-"}</td>
-                          </tr>
-                          <tr>
                             <td className="lbl">Report No.</td>
                             <td className="val">{v(report.reportNo) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Client</td>
+                            <td className="val">{v(jd.client) || "-"}</td>
                             <td className="lbl">Report Date</td>
-                            <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
+                            <td className="val">
+                              {fmtDate(jd.reportDate) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Reference Std.</td>
@@ -422,58 +439,81 @@ export const MPTReportPrintPage = () => {
                               {standards.length > 0 ? (
                                 standards.join(", ")
                               ) : (
-                                <span style={{ color: "#6b7280", fontStyle: "italic" }}>
+                                <span
+                                  style={{
+                                    color: "#6b7280",
+                                    fontStyle: "italic",
+                                  }}
+                                >
                                   Not specified
                                 </span>
                               )}
                             </td>
+                            <td className="lbl">Inspection Date</td>
+                            <td className="val">
+                              {dateRange(
+                                jd.inspectionDate,
+                                jd.inspectionEndDate,
+                              ) || "-"}
+                            </td>
+                          </tr>
+                          <tr>
                             <td className="lbl">Acceptance Criteria</td>
                             <td className="val">
                               {acceptance.length > 0 ? (
                                 acceptance.join(", ")
                               ) : (
-                                <span style={{ color: "#6b7280", fontStyle: "italic" }}>
+                                <span
+                                  style={{
+                                    color: "#6b7280",
+                                    fontStyle: "italic",
+                                  }}
+                                >
                                   Not specified
                                 </span>
                               )}
                             </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Inspection Date</td>
-                            <td className="val">
-                              {dateRange(jd.inspectionDate, jd.inspectionEndDate) || "-"}
-                            </td>
                             <td className="lbl">Inspection Time</td>
-                            <td className="val">{v(jd.inspectionTime) || "-"}</td>
+                            <td className="val">
+                              {v(jd.inspectionTime) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Stage of Inspection</td>
-                            <td className="val">{v(jd.stageOfInspection) || "-"}</td>
-                            <td className="lbl">Type of Joint</td>
-                            <td className="val">{v(jd.typeOfJoint) || "-"}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Welding Process</td>
-                            <td className="val">{v(jd.weldingProcess) || "-"}</td>
+                            <td className="val">
+                              {v(jd.stageOfInspection) || "-"}
+                            </td>
                             <td className="lbl">Material</td>
                             <td className="val">{v(jd.material) || "-"}</td>
                           </tr>
                           <tr>
+                            <td className="lbl">Extent of Examination</td>
+                            <td className="val">
+                              {v(jd.extentOfExamination) || "-"}
+                            </td>
                             <td className="lbl">Thickness</td>
                             <td className="val">{v(jd.thickness) || "-"}</td>
-                            <td className="lbl">Surface Condition</td>
-                            <td className="val">{v(jd.surfaceCondition) || "-"}</td>
                           </tr>
                           <tr>
-                            <td className="lbl">Technique</td>
-                            <td colSpan={3} className="val">
-                              {technique || "-"}
+                            <td className="lbl">Type of Joint</td>
+                            <td className="val">{v(jd.typeOfJoint) || "-"}</td>
+                            <td className="lbl">Surface condition</td>
+                            <td className="val">
+                              {v(jd.surfaceCondition) || "-"}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl"></td>
+                            <td className="val"></td>
+                            <td className="lbl">Welding Process</td>
+                            <td className="val">
+                              {v(jd.weldingProcess) || "-"}
                             </td>
                           </tr>
                         </tbody>
                       </table>
 
-                      {/* ── 2. Equipment Details ── */}
+                      {/* â”€â”€ 2. Equipment Details â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -488,27 +528,33 @@ export const MPTReportPrintPage = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Equipment Type</td>
-                            <td className="val">{v(eq.equipmentType) || "-"}</td>
-                            <td className="lbl">Make</td>
-                            <td className="val">{v(eq.make) || "-"}</td>
+                            <td className="lbl">Equip. Type</td>
+                            <td className="val">
+                              {v(eq.equipmentType) || "-"}
+                            </td>
+                            <td className="lbl">Sr. no.</td>
+                            <td className="val">{v(eq.srNo) || "-"}</td>
                           </tr>
                           <tr>
-                            <td className="lbl">Serial No.</td>
-                            <td className="val">{v(eq.srNo) || "-"}</td>
-                            <td className="lbl">Calibration Due</td>
-                            <td className="val">{fmtDate(eq.calibrationDue) || "-"}</td>
+                            <td className="lbl">Make</td>
+                            <td className="val">{v(eq.make) || "-"}</td>
+                            <td className="lbl">Calibration due</td>
+                            <td className="val">
+                              {fmtDate(eq.calibrationDue) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Yoke Spacing</td>
                             <td className="val">{v(eq.yokeSpacing) || "-"}</td>
                             <td className="lbl">Pie Gauge Calibration</td>
-                            <td className="val">{v(eq.pieGaugeCalibration) || "-"}</td>
+                            <td className="val">
+                              {v(eq.pieGaugeCalibration) || "-"}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
 
-                      {/* ── 4. Medium Details ── */}
+                      {/* â”€â”€ 4. Medium Details â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "20%" }} />
@@ -524,34 +570,38 @@ export const MPTReportPrintPage = () => {
                           </tr>
                           <tr>
                             <td className="col-hdr">Material</td>
-                            <td className="col-hdr">Manufacturer / Batch No.</td>
+                            <td className="col-hdr">Manufacture</td>
+                            <td className="col-hdr">Batch No</td>
                             <td className="col-hdr">Expiry Date</td>
-                            <td className="col-hdr">Type</td>
                           </tr>
                           <tr>
                             <td className="lbl">Black Ink</td>
                             <td className="val">
-                              {`${v(md.blackInk?.manufacturer)}${md.blackInk?.manufacturer && md.blackInk?.batchNo ? " / " : ""}${v(md.blackInk?.batchNo)}` ||
-                                "-"}
+                              {v(md.blackInk?.manufacturer) || "-"}
                             </td>
-                            <td className="val">{v(md.blackInk?.expiryDate) || "-"}</td>
-                            <td className="val">Ink</td>
+                            <td className="val">
+                              {v(md.blackInk?.batchNo) || "-"}
+                            </td>
+                            <td className="val">
+                              {v(md.blackInk?.expiryDate) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">White Contrast</td>
                             <td className="val">
-                              {`${v(md.whiteContrast?.manufacturer)}${md.whiteContrast?.manufacturer && md.whiteContrast?.batchNo ? " / " : ""}${v(md.whiteContrast?.batchNo)}` ||
-                                "-"}
+                              {v(md.whiteContrast?.manufacturer) || "-"}
+                            </td>
+                            <td className="val">
+                              {v(md.whiteContrast?.batchNo) || "-"}
                             </td>
                             <td className="val">
                               {v(md.whiteContrast?.expiryDate) || "-"}
                             </td>
-                            <td className="val">Contrast</td>
                           </tr>
                         </tbody>
                       </table>
 
-                      {/* ── 5. Method Description ── */}
+                      {/* â”€â”€ 5. Method Description â”€â”€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -562,38 +612,54 @@ export const MPTReportPrintPage = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              5. Method Description
+                              Method Discription
                             </td>
                           </tr>
                           <tr>
                             <td className="lbl">Method</td>
                             <td className="val">{v(me.method) || "-"}</td>
                             <td className="lbl">Light Intensity</td>
-                            <td className="val">{v(me.lightIntensity) || "-"}</td>
+                            <td className="val">
+                              {v(me.lightIntensity) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Magnetization Type</td>
-                            <td className="val">{v(me.magnetizationType) || "-"}</td>
+                            <td className="val">
+                              {v(me.magnetizationType) || "-"}
+                            </td>
                             <td className="lbl">Light Equip. Used</td>
-                            <td className="val">{v(me.lightEquipmentUsed) || "-"}</td>
+                            <td className="val">
+                              {v(me.lightEquipmentUsed) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Magnetizing Method</td>
-                            <td className="val">{v(me.magnetizingMethod) || "-"}</td>
+                            <td className="val">
+                              {v(me.magnetizingMethod) || "-"}
+                            </td>
                             <td className="lbl">Bath Concentration</td>
-                            <td className="val">{v(me.bathConcentration) || "-"}</td>
+                            <td className="val">
+                              {v(me.bathConcentration) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Demagnetization</td>
-                            <td className="val">{v(me.demagnetization) || "-"}</td>
-                            <td className="lbl">Field Direction Verified By</td>
+                            <td className="val">
+                              {v(me.demagnetization) || "-"}
+                            </td>
+                            <td className="lbl">
+                              Magnetic Field Direction Verified by
+                            </td>
                             <td className="val">
                               {v(me.magneticFieldDirectionVerifiedBy) || "-"}
                             </td>
                           </tr>
                           <tr>
                             <td className="lbl">Gauss Meter Reading</td>
-                            <td className="val">{v(me.gaussMeterReading) || "-"}</td>
+                            <td className="val">
+                              {v(me.gaussMeterReading) || "-"}
+                            </td>
                             <td className="lbl">Current</td>
                             <td className="val">{v(me.current) || "-"}</td>
                           </tr>
@@ -606,7 +672,7 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* ── 6. Observations ── */}
+                      {/* â”€â”€ 6. Observations â”€â”€ */}
                       <table className="obs-table mt-n1">
                         <tbody>
                           <tr>
@@ -615,11 +681,11 @@ export const MPTReportPrintPage = () => {
                             </td>
                           </tr>
                           <tr>
-                            <th style={{ width: "6%" }}>Sr.</th>
+                            <th style={{ width: "6%" }}>Sr. No.</th>
                             <th>Job Description</th>
                             <th>Drg No. / Joint No.</th>
                             <th style={{ width: "10%" }}>Size</th>
-                            <th style={{ width: "7%" }}>Qty</th>
+                            <th style={{ width: "10%" }}>Quantity in Nos.</th>
                             <th>Interpretation</th>
                             <th style={{ width: "13%" }}>Evaluation</th>
                           </tr>
@@ -648,14 +714,18 @@ export const MPTReportPrintPage = () => {
                                 <td style={{ textAlign: "center" }}>
                                   {o.quantity ?? "-"}
                                 </td>
-                                <td>{v(o.evaluation) || "-"}</td>
                                 <td>
                                   <span
-                                    className={resultClass(
-                                      o.result || o.remark || o.evaluation,
-                                    )}
+                                    className={resultClass(o.interpretation)}
                                   >
-                                    {v(o.result) || "N/A"}
+                                    {v(o.interpretation) || "N/A"}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span
+                                    className={resultClass(getEvaluation(o))}
+                                  >
+                                    {v(getEvaluation(o)) || "Accepted"}
                                   </span>
                                 </td>
                               </tr>
@@ -664,7 +734,7 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* ── 7. Conclusion ── */}
+                      {/* â”€â”€ 7. Conclusion â”€â”€ */}
                       <table className="report-table mt-n1">
                         <tbody>
                           <tr>
@@ -674,14 +744,14 @@ export const MPTReportPrintPage = () => {
                           </tr>
                           <tr>
                             <td className="lbl" style={{ width: "22%" }}>
-                              Overall Result
+                              Overall Evaluation
                             </td>
                             <td className="val">{conclusionText}</td>
                           </tr>
                         </tbody>
                       </table>
 
-                      {/* ── 8. Signatures ── */}
+                      {/* â”€â”€ 8. Signatures â”€â”€ */}
                       <table className="sign-table mt-n1">
                         <colgroup>
                           <col style={{ width: "33.3%" }} />
@@ -690,14 +760,26 @@ export const MPTReportPrintPage = () => {
                         </colgroup>
                         <tbody>
                           <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER: <span>{v(fs.customer?.name)}</span></td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT / TPI: <span>{v(fs.clientOrTPI?.name)}</span></td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              EXAMINED BY
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              CUSTOMER:
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              CLIENT / TPI:
+                            </td>
                           </tr>
                           <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>National Industrial Inspection And Training</td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.customer)}</td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.client)}</td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              National Industrial Inspection And Training
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              {v(jd.customer)}
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              {v(jd.client)}
+                            </td>
                           </tr>
                           <tr>
                             <td>Name: {v(inspectors[0]?.name) || "-"}</td>
@@ -705,22 +787,32 @@ export const MPTReportPrintPage = () => {
                             <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
                           </tr>
                           <tr>
+                            <td>MT NDE Level II:</td>
                             <td>
-                              {v(inspectors[0]?.qualification) || "-"}
-                              {inspectors[0]?.designation ? ` / ${inspectors[0].designation}` : ""}
+                              Designation:{" "}
+                              {v(
+                                (
+                                  fs.customer as unknown as {
+                                    designation?: string;
+                                  }
+                                )?.designation,
+                              )}
                             </td>
-                            <td>Designation: {v(fs.customer?.designation) || "-"}</td>
-                            <td>Designation: {v(fs.clientOrTPI?.designation) || "-"}</td>
+                            <td>
+                              Designation:{" "}
+                              {v(
+                                (
+                                  fs.clientOrTPI as unknown as {
+                                    designation?: string;
+                                  }
+                                )?.designation,
+                              )}
+                            </td>
                           </tr>
                           <tr>
                             <td style={{ height: 28 }}>Signature:</td>
-                            <td>Signature:</td>
-                            <td>Signature:</td>
-                          </tr>
-                          <tr>
-                            <td style={{ height: 28 }}></td>
-                            <td></td>
-                            <td></td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
                           </tr>
                           <tr>
                             <td>I.D. No.: {v(inspectors[0]?.idNo) || "-"}</td>
@@ -730,7 +822,9 @@ export const MPTReportPrintPage = () => {
                           <tr>
                             <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
                             <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
-                            <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
+                            <td>
+                              Date: {fmtDate(fs.clientOrTPI?.date) || "-"}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -752,8 +846,8 @@ export const MPTReportPrintPage = () => {
                           </tbody>
                         </table>
                       )}
-
-                    </div>{/* ── end report-body ── */}
+                    </div>
+                    {/* â”€â”€ end report-body â”€â”€ */}
                   </td>
                 </tr>
               </tbody>
@@ -761,23 +855,36 @@ export const MPTReportPrintPage = () => {
               <tfoot style={{ display: "table-footer-group" }}>
                 <tr>
                   <td style={{ padding: 0 }}>
-                    <div className="tfoot-content" style={{ height: "15mm" }}></div>
+                    <div
+                      className="tfoot-content"
+                      style={{ height: "15mm" }}
+                    ></div>
                   </td>
                 </tr>
               </tfoot>
             </table>
           </div>
-          
-          <div className={`no-print ${bwMode ? 'bw' : ''}`} style={{ position: "absolute", bottom: "5mm", left: "5mm", right: "5mm" }}>
+
+          <div
+            className={`no-print ${bwMode ? "bw" : ""}`}
+            style={{
+              position: "absolute",
+              bottom: "5mm",
+              left: "5mm",
+              right: "5mm",
+            }}
+          >
             <ReportFooter />
           </div>
-
         </div>
       </div>
 
       {/* The fixed footer that only appears in print on every page at the bottom */}
       <div className="print-fixed-footer">
-        <div className={`print-fixed-footer-inner ${bwMode ? "bw" : ""}`} style={{ border: 'none', boxShadow: 'none' }}>
+        <div
+          className={`print-fixed-footer-inner ${bwMode ? "bw" : ""}`}
+          style={{ border: "none", boxShadow: "none" }}
+        >
           <ReportFooter />
         </div>
       </div>

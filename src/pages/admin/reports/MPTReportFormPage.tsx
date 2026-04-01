@@ -13,7 +13,7 @@ import { getApiErrorMessage } from "../../../api/error";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 import api from "../../../api/axios";
 
-// â"€â"€â"€ Styles â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Styles Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
 
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
@@ -22,7 +22,7 @@ const sectionClass = "bg-white rounded-xl border border-gray-200 p-5 mb-5";
 const sectionTitleClass =
   "text-sm font-semibold text-indigo-700 uppercase tracking-wide mb-4 pb-2 border-b border-gray-100";
 
-// â"€â"€â"€ SelectWithOther â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ SelectWithOther Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
 
 interface SelectWithOtherProps {
   id: string;
@@ -69,7 +69,7 @@ const SelectWithOther: React.FC<SelectWithOtherProps> = ({
   </div>
 );
 
-// â"€â"€â"€ Form State â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Form State Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
 
 interface ObsRow extends Omit<MPTObservation, "quantity"> {
   quantity: string;
@@ -85,9 +85,8 @@ const emptyObs = (): ObsRow => ({
   drawingOrJointNo: "",
   size: "",
   quantity: "",
+  interpretation: "",
   evaluation: "",
-  result: "",
-  remark: "",
 });
 
 const emptyInspector = (): InspRow => ({
@@ -113,7 +112,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
   const [customerName, setCustomerName] = useState(state?.customerName ?? "");
 
-  // â"€â"€ Job Details â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Job Details Ã¢"â‚¬Ã¢"â‚¬
   const [reportNo, setReportNo] = useState("");
   const jobCustomer = customerName;
   const [jobClient, setJobClient] = useState("");
@@ -128,14 +127,13 @@ export const MPTReportFormPage: React.FC = () => {
   const [jobInspectionTime, setJobInspectionTime] = useState("");
   const [jobStageOfInspection, setJobStageOfInspection] = useState("");
   const [jobMaterial, setJobMaterial] = useState("");
-  const [jobExtentOfExamination, setJobExtentOfExamination] = useState("");
-  const [jobExtentOther, setJobExtentOther] = useState("");
   const [jobThickness, setJobThickness] = useState("");
   const [jobTypeOfJoint, setJobTypeOfJoint] = useState("");
   const [jobSurfaceCondition, setJobSurfaceCondition] = useState("");
+  const [jobExtentOfExamination, setJobExtentOfExamination] = useState("");
   const [jobWeldingProcess, setJobWeldingProcess] = useState("");
 
-  // â"€â"€ Equipment Details â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Equipment Details Ã¢"â‚¬Ã¢"â‚¬
   const [eqType, setEqType] = useState("");
   const [eqSrNo, setEqSrNo] = useState("");
   const [eqMake, setEqMake] = useState("");
@@ -144,7 +142,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [eqYokeSpacing, setEqYokeSpacing] = useState("");
   const [eqPieGauge, setEqPieGauge] = useState("");
 
-  // â"€â"€ Medium Details â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Medium Details Ã¢"â‚¬Ã¢"â‚¬
   const [biManufacturer, setBiManufacturer] = useState("");
   const [biManufacturerOther, setBiManufacturerOther] = useState("");
   const [biBatchNo, setBiBatchNo] = useState("");
@@ -154,7 +152,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [wcBatchNo, setWcBatchNo] = useState("");
   const [wcExpiryDate, setWcExpiryDate] = useState("");
 
-  // â"€â"€ Method Description â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Method Description Ã¢"â‚¬Ã¢"â‚¬
   const [method, setMethod] = useState("");
   const [lightIntensity, setLightIntensity] = useState("");
   const [magnetizationType, setMagnetizationType] = useState("");
@@ -170,10 +168,10 @@ export const MPTReportFormPage: React.FC = () => {
   const [currentTypeOther, setCurrentTypeOther] = useState("");
   const [postCleaning, setPostCleaning] = useState("");
 
-  // â"€â"€ Observations â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
-  // â"€â"€ Final Section â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Final Section Ã¢"â‚¬Ã¢"â‚¬
   const [custName, setCustName] = useState("");
   const [custDesig, setCustDesig] = useState("");
   const [custSig, setCustSig] = useState("");
@@ -207,7 +205,11 @@ export const MPTReportFormPage: React.FC = () => {
     getMPTReportById(id)
       .then((res: any) => {
         const r = (res as any).data ?? res;
-        setCustomerId(typeof r.customerId === "object" ? r.customerId?._id ?? "" : r.customerId ?? "");
+        setCustomerId(
+          typeof r.customerId === "object"
+            ? (r.customerId?._id ?? "")
+            : (r.customerId ?? ""),
+        );
         setCustomerName(r.jobDetails?.customer ?? "");
         setReportNo(r.reportNo ?? "");
         const jd = r.jobDetails ?? {};
@@ -233,17 +235,10 @@ export const MPTReportFormPage: React.FC = () => {
         setJobInspectionTime(jd.inspectionTime ?? "");
         setJobStageOfInspection(jd.stageOfInspection ?? "");
         setJobMaterial(jd.material ?? "");
-        const [ext, extO] = fromOther(jd.extentOfExamination, [
-          "10%",
-          "100%",
-          "To the maximum extent possible",
-          "Other",
-        ]);
-        setJobExtentOfExamination(ext);
-        setJobExtentOther(extO);
         setJobThickness(jd.thickness ?? "");
         setJobTypeOfJoint(jd.typeOfJoint ?? "");
         setJobSurfaceCondition(jd.surfaceCondition ?? "");
+        setJobExtentOfExamination(jd.extentOfExamination ?? "");
         setJobWeldingProcess(jd.weldingProcess ?? "");
         const eq = r.equipmentDetails ?? {};
         setEqType(eq.equipmentType ?? "");
@@ -318,9 +313,8 @@ export const MPTReportFormPage: React.FC = () => {
               drawingOrJointNo: o.drawingOrJointNo ?? "",
               size: o.size ?? "",
               quantity: String(o.quantity ?? ""),
-              evaluation: o.evaluation ?? "",
-              result: o.result ?? "",
-              remark: o.remark ?? "",
+              interpretation: o.interpretation ?? "",
+              evaluation: o.evaluation ?? o.result ?? o.remark ?? "",
             })),
           );
         }
@@ -353,7 +347,7 @@ export const MPTReportFormPage: React.FC = () => {
       .catch(() => toast.error("Failed to load report."));
   }, [id]);
 
-  // â"€â"€ Helpers â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Helpers Ã¢"â‚¬Ã¢"â‚¬
   const resolveCustom = (val: string, other: string) =>
     val === "Other" && other.trim() ? other.trim() : val;
 
@@ -387,7 +381,7 @@ export const MPTReportFormPage: React.FC = () => {
   const removeInspector = (idx: number) =>
     setInspectors((prev) => prev.filter((_, i) => i !== idx));
 
-  // â"€â"€ Submit â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬ Submit Ã¢"â‚¬Ã¢"â‚¬
   const handleSubmit = async (status: "draft" | "final") => {
     if (!customerId && !id) {
       toast.error("Customer ID is missing. Go back and try again.");
@@ -418,13 +412,10 @@ export const MPTReportFormPage: React.FC = () => {
           inspectionTime: jobInspectionTime,
           stageOfInspection: jobStageOfInspection || undefined,
           material: jobMaterial,
-          extentOfExamination: resolveCustom(
-            jobExtentOfExamination,
-            jobExtentOther,
-          ),
           thickness: jobThickness,
           typeOfJoint: jobTypeOfJoint || undefined,
           surfaceCondition: jobSurfaceCondition,
+          extentOfExamination: jobExtentOfExamination,
           weldingProcess: jobWeldingProcess || undefined,
         },
         equipmentDetails: {
@@ -472,9 +463,8 @@ export const MPTReportFormPage: React.FC = () => {
             drawingOrJointNo: o.drawingOrJointNo,
             size: o.size,
             quantity: Number(o.quantity) || 0,
+            interpretation: o.interpretation || "",
             evaluation: o.evaluation || "",
-            result: o.result || "",
-            remark: o.remark || "",
           })),
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
@@ -517,7 +507,7 @@ export const MPTReportFormPage: React.FC = () => {
     }
   };
 
-  // â"€â"€â"€ Render â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+  // Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Render Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
 
   const manufacturerOptions = [
     "Pradeep",
@@ -546,7 +536,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Missing Customer Banner ── */}
+      {/* â”€â”€ Missing Customer Banner â”€â”€ */}
       {!customerId && (
         <CustomerPickerBanner
           onCustomerSelected={(id, name) => {
@@ -584,7 +574,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Job Details â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Job Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -601,6 +591,18 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
+            <label className={labelClass} htmlFor="jobClient">
+              Client / TPI
+            </label>
+            <input
+              id="jobClient"
+              type="text"
+              value={jobClient}
+              onChange={(e) => setJobClient(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
             <label className={labelClass} htmlFor="reportNo2">
               Report No.
             </label>
@@ -613,18 +615,6 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobClient">
-              Client
-            </label>
-            <input
-              id="jobClient"
-              type="text"
-              value={jobClient}
-              onChange={(e) => setJobClient(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
             <label className={labelClass} htmlFor="jobReportDate">
               Report Date
             </label>
@@ -633,30 +623,6 @@ export const MPTReportFormPage: React.FC = () => {
               type="date"
               value={jobReportDate}
               onChange={(e) => setJobReportDate(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobInspectionDate">
-              Inspection Start Date
-            </label>
-            <input
-              id="jobInspectionDate"
-              type="date"
-              value={jobInspectionDate}
-              onChange={(e) => setJobInspectionDate(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobInspectionEndDate">
-              Inspection End Date
-            </label>
-            <input
-              id="jobInspectionEndDate"
-              type="date"
-              value={jobInspectionEndDate}
-              onChange={(e) => setJobInspectionEndDate(e.target.value)}
               className={inputClass}
             />
           </div>
@@ -694,6 +660,30 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
+            <label className={labelClass} htmlFor="jobInspectionDate">
+              Inspection Start Date
+            </label>
+            <input
+              id="jobInspectionDate"
+              type="date"
+              value={jobInspectionDate}
+              onChange={(e) => setJobInspectionDate(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="jobInspectionEndDate">
+              Inspection End Date
+            </label>
+            <input
+              id="jobInspectionEndDate"
+              type="date"
+              value={jobInspectionEndDate}
+              onChange={(e) => setJobInspectionEndDate(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
             <label className={labelClass} htmlFor="jobInspectionTime">
               Inspection Time
             </label>
@@ -723,34 +713,16 @@ export const MPTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobMaterial">
-              Material
-            </label>
-            <input
-              id="jobMaterial"
-              type="text"
-              value={jobMaterial}
-              onChange={(e) => setJobMaterial(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. As per Drawing"
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobExtent">
+            <label className={labelClass} htmlFor="jobExt">
               Extent of Examination
             </label>
-            <SelectWithOther
-              id="jobExtent"
+            <input
+              id="jobExt"
+              type="text"
               value={jobExtentOfExamination}
-              onChange={setJobExtentOfExamination}
-              otherValue={jobExtentOther}
-              onOtherChange={setJobExtentOther}
-              options={[
-                "10%",
-                "100%",
-                "To the maximum extent possible",
-                "Other",
-              ]}
+              onChange={(e) => setJobExtentOfExamination(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. 10% / 100% / To the maximum extent possible / Custom"
             />
           </div>
           <div>
@@ -818,7 +790,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Equipment Details â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Equipment Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Equipment Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -904,7 +876,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Medium Details â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Medium Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Medium Details</h2>
         <div className="overflow-x-auto">
@@ -997,7 +969,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Method Description â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Method Description Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Description</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1174,7 +1146,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Observations â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
@@ -1263,9 +1235,9 @@ export const MPTReportFormPage: React.FC = () => {
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
                     <select
-                      value={row.evaluation}
+                      value={row.interpretation}
                       onChange={(e) =>
-                        updateObs(idx, "evaluation", e.target.value)
+                        updateObs(idx, "interpretation", e.target.value)
                       }
                       className={inputClass}
                     >
@@ -1276,8 +1248,10 @@ export const MPTReportFormPage: React.FC = () => {
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
                     <select
-                      value={row.result}
-                      onChange={(e) => updateObs(idx, "result", e.target.value)}
+                      value={row.evaluation}
+                      onChange={(e) =>
+                        updateObs(idx, "evaluation", e.target.value)
+                      }
                       className={inputClass}
                     >
                       <option value="">Select...</option>
@@ -1303,7 +1277,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Examined By â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Examined By Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* NIIT Inspector(s) */}
@@ -1426,7 +1400,7 @@ export const MPTReportFormPage: React.FC = () => {
               Customer
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {customerName || "—"}
+              {customerName || "â€”"}
             </p>
             <div className="space-y-2">
               <div>
@@ -1483,7 +1457,7 @@ export const MPTReportFormPage: React.FC = () => {
               Client / TPI
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {jobClient || "—"}
+              {jobClient || "â€”"}
             </p>
             <div className="space-y-2">
               <div>
@@ -1536,7 +1510,7 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â"€â"€ Action Buttons â"€â"€ */}
+      {/* Ã¢"â‚¬Ã¢"â‚¬ Action Buttons Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className="flex items-center justify-end gap-3 pb-8">
         <button
           type="button"
