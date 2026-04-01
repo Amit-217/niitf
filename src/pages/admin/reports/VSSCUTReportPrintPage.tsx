@@ -49,6 +49,8 @@ const PRINT_STYLES = `
   .bw .logo-box { background: #fff !important; }
   .bw .section-hdr { background: #fff !important; color: #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
+  .bw .calib-table th { background: #fff !important; color: #000 !important; }
+  .bw .calib-table td:first-child { background: #fff !important; }
   .bw .rpt-title { background: #fff !important; color: #000 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
