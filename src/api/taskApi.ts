@@ -30,10 +30,16 @@ export const updateTaskStatus = (id: string, status: 'ASSIGNED' | 'IN_PROGRESS' 
 export const deleteTask = (id: string) =>
     api.delete(`/tasks/${id}`);
 
+export const archiveTask = (id: string) =>
+    api.patch(`/tasks/${id}/archive`);
+
+export const unarchiveTask = (id: string) =>
+    api.put(`/tasks/${id}`, { isArchived: false });
+
 // --- Task Endpoints (Shared) ---
 
-export const getAllTasks = () =>
-    api.get('/tasks');
+export const getAllTasks = (params?: any) =>
+    api.get('/tasks', { params });
 
 export const getTaskById = (id: string) =>
     api.get(`/tasks/${id}`);

@@ -101,7 +101,7 @@ export const AdvancesPage = () => {
         <div className="space-y-6">
             <div>
                 <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2"><Wallet className="text-primary-600" size={26} /> Salary Advances</h1>
-                <p className="text-sm text-gray-500 mt-1">Record disbursements and set repayment schedules</p>
+                <p className="hidden sm:block text-sm text-gray-500 mt-1">Record disbursements and set repayment schedules</p>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

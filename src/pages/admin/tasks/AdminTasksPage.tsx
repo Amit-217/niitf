@@ -2,14 +2,16 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  Plus,
   ListTodo,
-  Search,
   CalendarDays,
-  X,
   Edit2,
   Trash2,
+  Plus,
+  Search,
   MessageSquare,
+  X,
+  Archive,
+  RefreshCw,
   Send,
   ArrowRight,
 } from "lucide-react";
@@ -20,6 +22,8 @@ import {
   submitTaskUpdate,
   getTaskUpdates,
   deleteTask,
+  archiveTask,
+  unarchiveTask,
 } from "../../../api/taskApi";
 import api from "../../../api/axios";
 
@@ -38,6 +42,7 @@ interface Task {
   dueDate?: string;
   assignedTo: User[];
   createdBy: User;
+  isArchived: boolean;
 }
 
 const inputClass =
@@ -52,6 +57,9 @@ export const AdminTasksPage = () => {
   const [employees, setEmployees] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const isMyTasksMode = new URLSearchParams(location.search).get("mine") === "1";
+  const [viewArchived, setViewArchived] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED' | 'ASSIGNED'>(isMyTasksMode ? 'IN_PROGRESS' : 'ALL');
 
   // Drawer states
   const [isCreateDrawerOpen, setCreateDrawerOpen] = useState(false);
@@ -67,7 +75,6 @@ export const AdminTasksPage = () => {
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
   const currentUserId =
     currentUser?.userId || currentUser?.id || currentUser?._id || "";
-  const isMyTasksMode = new URLSearchParams(location.search).get("mine") === "1";
 
   // Create/Edit Form states
   const [taskForm, setTaskForm] = useState({
@@ -82,8 +89,9 @@ export const AdminTasksPage = () => {
   const fetchTasks = async () => {
     setIsLoading(true);
     try {
-      const res = await getAllTasks();
-      setTasks(res.data || []);
+      const res = await getAllTasks({ isArchived: viewArchived });
+      const allTasks = res.data?.data || (Array.isArray(res.data) ? res.data : []);
+      setTasks(allTasks);
     } catch (error) {
       toast.error("Failed to load tasks");
     } finally {
@@ -102,7 +110,7 @@ export const AdminTasksPage = () => {
 
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [viewArchived]);
 
   useEffect(() => {
     if (isCreateDrawerOpen) {
@@ -233,7 +241,7 @@ export const AdminTasksPage = () => {
       });
       toast.success("Follow-up sent");
       setFollowUpMessage("");
-      window.dispatchEvent(new Event('notifications:refresh'));
+      window.dispatchEvent(new Event("notifications:refresh"));
       const res = await getTaskUpdates(selectedTask._id);
       setTaskUpdates(res.data || []);
       fetchTasks();
@@ -253,6 +261,30 @@ export const AdminTasksPage = () => {
       fetchTasks();
     } catch (error: any) {
       toast.error(error.message || "Failed to delete task");
+    }
+  };
+
+  const handleUnarchiveTask = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to reopen this task?")) return;
+    try {
+      await unarchiveTask(id);
+      toast.success("Task reopened successfully");
+      fetchTasks();
+    } catch (err) {
+      toast.error("Failed to reopen task");
+    }
+  };
+
+  const handleArchiveTask = async (taskId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to archive this task? It will no longer be visible in active lists.")) return;
+    try {
+      await archiveTask(taskId);
+      toast.success("Task archived successfully!");
+      fetchTasks();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to archive task");
     }
   };
 
@@ -301,11 +333,14 @@ export const AdminTasksPage = () => {
 
   // Filter tasks
   const filteredTasks = tasks.filter(
-    (t) =>
-      t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.assignedTo.some((emp) =>
-        emp.name.toLowerCase().includes(searchQuery.toLowerCase()),
-      ),
+    (t) => {
+      const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          t.assignedTo.some((emp) =>
+            emp.name.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+      const matchesStatus = statusFilter === 'ALL' || t.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    }
   );
   const myTasks = tasks.filter((task) => {
     return task.assignedTo.some((emp) => String(emp?._id || emp) === String(currentUserId));
@@ -332,12 +367,9 @@ export const AdminTasksPage = () => {
         onClick={() => onClick(task)}
         className="group relative bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden flex flex-col h-full"
       >
-        {/* Status Gradient Top Line */}
         <div className={`h-1.5 w-full bg-gradient-to-r ${cfg.gradient}`} />
-
         <div className="p-5 flex flex-col h-full">
-          {/* Header */}
-            <div className="flex justify-between items-start mb-4">
+          <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-2.5">
               <div
                 className={`w-9 h-9 rounded-xl bg-gradient-to-br ${cfg.gradient} flex items-center justify-center text-white shadow-sm`}
@@ -357,14 +389,15 @@ export const AdminTasksPage = () => {
               <div className="flex items-center gap-1 sm:gap-2">
                 <button
                   onClick={(e) => handleOpenEdit(task, e)}
+                  title="Edit Task"
                   className="p-2 sm:p-1.5 rounded-xl border border-gray-100 sm:border-none text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors"
                 >
                   <Edit2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                 </button>
                 <button
                   onClick={(e) => handleDeleteTask(task._id, e)}
-                  className="p-2 sm:p-1.5 rounded-xl border border-gray-100 sm:border-none text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                   title="Delete Task"
+                  className="p-2 sm:p-1.5 rounded-xl border border-gray-100 sm:border-none text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                 >
                   <Trash2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                 </button>
@@ -372,26 +405,29 @@ export const AdminTasksPage = () => {
             )}
           </div>
 
-          {/* Progress Badge */}
-          <div className="mb-4">
+          <div className="flex items-center justify-between mb-4">
             <span
               className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black border uppercase tracking-wider ${cfg.bg} ${cfg.text} ${cfg.border}`}
             >
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${cfg.dot} animate-pulse`}
-              />
+              <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot} animate-pulse`} />
               {task.status.replace("_", " ")}
             </span>
+            {task.status === "COMPLETED" && !task.isArchived && (
+              <button
+                onClick={(e) => handleArchiveTask(task._id, e)}
+                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 text-[9px] font-black uppercase tracking-wider hover:bg-amber-100 transition-all shadow-sm group/archive"
+              >
+                <Archive size={12} className="group-hover/archive:scale-110 transition-transform" />
+                Archive Task
+              </button>
+            )}
           </div>
 
-          {/* Description */}
           <p className="text-xs text-gray-500 line-clamp-3 mb-5 leading-relaxed flex-1">
             {task.description}
           </p>
 
-          {/* Footer Info */}
           <div className="pt-4 mt-auto border-t border-gray-100 flex items-center justify-between">
-            {/* Assignees */}
             <div className="flex -space-x-2.5">
               {task.assignedTo.slice(0, 3).map((emp) => (
                 <div
@@ -409,7 +445,6 @@ export const AdminTasksPage = () => {
               )}
             </div>
 
-            {/* Due Date */}
             {task.dueDate && (
               <div className="flex flex-col items-end">
                 <span className="text-[9px] font-bold text-gray-300 uppercase tracking-widest mb-0.5">
@@ -434,13 +469,12 @@ export const AdminTasksPage = () => {
 
   return (
     <div className="space-y-6 relative">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <ListTodo className="text-primary-600" /> {isMyTasksMode ? 'My Tasks' : 'Admin Task'}
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">
             {isMyTasksMode
               ? 'Only the tasks assigned to your account are shown here.'
               : 'Manage, assign, and follow up on employee tasks. Completion is confirmed from the employee workspace.'}
@@ -470,6 +504,31 @@ export const AdminTasksPage = () => {
             className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-violet-500/10 focus:border-violet-400 outline-none bg-white shadow-sm transition-all text-sm"
           />
         </div>
+        <div className="flex bg-gray-100/50 p-1 rounded-2xl self-stretch md:self-auto border border-gray-100 shadow-inner">
+          {['ALL', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED'].map((status) => (
+            <button
+              key={status}
+              onClick={() => setStatusFilter(status as any)}
+              className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all ${statusFilter === status ? 'bg-white shadow-sm text-violet-700 ring-1 ring-black/5' : 'text-gray-400 hover:text-gray-600'}`}
+            >
+              {status.replace('_', ' ')}
+            </button>
+          ))}
+        </div>
+        <div className="flex bg-gray-100 p-1.5 rounded-2xl self-stretch md:self-auto">
+          <button
+            onClick={() => setViewArchived(false)}
+            className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${!viewArchived ? 'bg-white shadow-sm text-violet-700' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            Active Tasks
+          </button>
+          <button
+            onClick={() => setViewArchived(true)}
+            className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${viewArchived ? 'bg-white shadow-sm text-amber-700' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            Archived
+          </button>
+        </div>
       </div>
 
       {/* Grid View */}
@@ -484,12 +543,12 @@ export const AdminTasksPage = () => {
           </p>
         </div>
       ) : visibleTasks.length === 0 ? (
-        <div className="text-center p-20 bg-white rounded-3xl border border-gray-100 shadow-sm">
+        <div className="hidden sm:block text-center p-20 bg-white rounded-3xl border border-gray-100 shadow-sm">
           <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Search className="text-gray-300" size={32} />
           </div>
           <h3 className="text-lg font-bold text-gray-900">No tasks found</h3>
-          <p className="text-gray-500 text-sm mt-1 max-w-xs mx-auto">
+          <p className="hidden sm:block text-gray-500 text-sm mt-1 max-w-xs mx-auto">
             {isMyTasksMode
               ? 'No tasks are assigned to you yet.'
               : "We couldn't find any tasks matching your criteria. Try adjusting your search query."}
@@ -695,12 +754,38 @@ export const AdminTasksPage = () => {
                   {selectedTask.title}
                 </h2>
               </div>
-              <button
-                onClick={() => setViewDrawerOpen(false)}
-                className="text-gray-400 hover:text-gray-600 mt-1"
-              >
-                ✖
-              </button>
+              <div className="flex items-start gap-2">
+                {selectedTask.status === "COMPLETED" && !selectedTask.isArchived && (
+                  <button
+                    onClick={(e) => {
+                      handleArchiveTask(selectedTask._id, e);
+                      setViewDrawerOpen(false);
+                    }}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-xs font-bold hover:bg-amber-100 transition-all shadow-sm"
+                  >
+                    <Archive size={14} />
+                    Archive
+                  </button>
+                )}
+                {selectedTask.isArchived && (
+                  <button
+                    onClick={(e) => {
+                      handleUnarchiveTask(selectedTask._id, e);
+                      setViewDrawerOpen(false);
+                    }}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold hover:bg-emerald-100 transition-all shadow-sm"
+                  >
+                    <RefreshCw size={14} />
+                    Reopen Task
+                  </button>
+                )}
+                <button
+                  onClick={() => setViewDrawerOpen(false)}
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto">
@@ -857,7 +942,7 @@ export const AdminTasksPage = () => {
                 <h2 className="text-xl font-bold text-gray-900 mt-1">
                   {selectedMyTask ? selectedMyTask.title : "My Tasks"}
                 </h2>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="hidden sm:block text-sm text-gray-500 mt-1">
                   {selectedMyTask
                     ? "Standalone details for the task assigned to you."
                     : "Only tasks assigned to your account are shown here."}

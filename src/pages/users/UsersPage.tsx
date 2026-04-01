@@ -318,7 +318,7 @@ export const UsersPage: React.FC = () => {
                         </span>
                         User Management
                     </h1>
-                    <p className="text-gray-500 text-sm mt-1">Manage all system users, roles, and access.</p>
+                    <p className="hidden sm:block text-gray-500 text-sm mt-1">Manage all system users, roles, and access.</p>
                 </div>
                 <button onClick={() => setModal({ type: 'create' })} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200">
                     <Plus size={17} /> Add New User

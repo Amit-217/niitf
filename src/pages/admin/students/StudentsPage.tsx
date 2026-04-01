@@ -179,7 +179,7 @@ export const StudentsPage = () => {
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Users className="text-primary-600" /> Students
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">
             Manage all enrolled students — {total} total
           </p>
         </div>

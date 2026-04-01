@@ -365,7 +365,7 @@ export const AdmissionsPage = () => {
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <BookOpen className="text-primary-600" /> Admissions
           </h1>
-          <p className="text-sm text-gray-500 mt-1">{total} total admissions</p>
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">{total} total admissions</p>
         </div>
         <button
           onClick={() => setCreateOpen(true)}
