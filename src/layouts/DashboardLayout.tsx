@@ -341,6 +341,8 @@ export const DashboardLayout: React.FC = () => {
     navigate("/login");
   };
 
+  const isAdminRole = role === "ADMIN" || role === "SUPER_ADMIN";
+
   const groups =
     role === "STUDENT"
       ? [
@@ -358,13 +360,13 @@ export const DashboardLayout: React.FC = () => {
           },
         ]
       : [
-          {
-            name: "User Management",
-            key: "userManagement",
-            icon: Users,
-            links: [
-              ...(role === "ADMIN" || role === "SUPER_ADMIN"
-                ? [
+          ...(isAdminRole
+            ? [
+                {
+                  name: "User Management",
+                  key: "userManagement",
+                  icon: Users,
+                  links: [
                     { name: "Users", path: `/${basePath}/users`, icon: Users },
                     {
                       name: "Salary Generation",
@@ -396,42 +398,36 @@ export const DashboardLayout: React.FC = () => {
                       path: `/${basePath}/payroll/advances`,
                       icon: Briefcase,
                     },
-                  ]
-                : [
+                  ],
+                },
+                {
+                  name: "Student Management",
+                  key: "studentManagement",
+                  icon: GraduationCap,
+                  links: [
+                    { name: "Courses", path: `/${basePath}/courses`, icon: BookOpen },
+                    { name: "Batches", path: `/${basePath}/batches`, icon: Clock },
+                    { name: "Students", path: `/${basePath}/students`, icon: Users },
                     {
-                      name: "My Tasks",
-                      path: `/${basePath}/tasks`,
-                      icon: ListTodo,
+                      name: "Admissions",
+                      path: `/${basePath}/admissions`,
+                      icon: GraduationCap,
                     },
-                  ]),
-            ],
-          },
-          {
-            name: "Student Management",
-            key: "studentManagement",
-            icon: GraduationCap,
-            links: [
-              { name: "Courses", path: `/${basePath}/courses`, icon: BookOpen },
-              { name: "Batches", path: `/${basePath}/batches`, icon: Clock },
-              { name: "Students", path: `/${basePath}/students`, icon: Users },
-              {
-                name: "Admissions",
-                path: `/${basePath}/admissions`,
-                icon: GraduationCap,
-              },
-              { name: "CBT Tests", path: `/${basePath}/tests`, icon: FileText },
-              {
-                name: "Enquiries",
-                path: `/${basePath}/enquiries`,
-                icon: CircleHelp,
-              },
-              {
-                name: "Test Login Portal",
-                path: "/student-login",
-                icon: BookOpen,
-              },
-            ],
-          },
+                    { name: "CBT Tests", path: `/${basePath}/tests`, icon: FileText },
+                    {
+                      name: "Enquiries",
+                      path: `/${basePath}/enquiries`,
+                      icon: CircleHelp,
+                    },
+                    {
+                      name: "Test Login Portal",
+                      path: "/student-login",
+                      icon: BookOpen,
+                    },
+                  ],
+                },
+              ]
+            : []),
           {
             name: "Customer Management",
             key: "customerManagement",
