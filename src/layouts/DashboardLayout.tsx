@@ -463,15 +463,11 @@ export const DashboardLayout: React.FC = () => {
             path: `/${basePath}/dashboard`,
             icon: LayoutDashboard,
           },
-          ...(role === "ADMIN" || role === "SUPER_ADMIN"
-            ? [
-                {
-                  name: "My Tasks",
-                  path: `/${basePath}/my-tasks`,
-                  icon: ListTodo,
-                },
-              ]
-            : []),
+          {
+            name: "My Tasks",
+            path: `/${basePath}/my-tasks`,
+            icon: ListTodo,
+          },
           { name: "Settings", path: `/${basePath}/settings`, icon: Briefcase },
         ];
 
