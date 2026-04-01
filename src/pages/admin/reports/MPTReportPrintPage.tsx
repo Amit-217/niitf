@@ -673,8 +673,8 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* â"€â"€ 6. Observations â"€â"€ */}
-                      <table className="obs-table mt-n1">
+                      {/* -- 6. Observations -- */}
+                      <table className="obs-table mt-n1" style={{ breakBefore: "page", pageBreakBefore: "always" }}>
                         <tbody>
                           <tr>
                             <td colSpan={7} className="section-hdr">

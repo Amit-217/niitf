@@ -196,6 +196,27 @@ function App() {
         >
           <Route path="dashboard" element={<EmployeeDashboard />} />
           <Route path="tasks" element={<EmployeeTasksPage />} />
+          <Route path="my-tasks" element={<MyTasksPage />} />
+          <Route path="customers" element={<CustomersPage />} />
+          <Route path="customers/:id" element={<CustomerDetailPage />} />
+          <Route path="quotations" element={<QuotationsListPage />} />
+          <Route path="quotations/:type/new" element={<QuotationFormPage />} />
+          <Route path="quotations/:type/:id/edit" element={<QuotationFormPage />} />
+          <Route path="reports" element={<ReportsListPage />} />
+          <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
+          <Route path="reports/mpt/:id/edit" element={<MPTReportFormPage />} />
+          <Route path="reports/pt/new" element={<PTReportFormPage />} />
+          <Route path="reports/pt/:id/edit" element={<PTReportFormPage />} />
+          <Route path="reports/ut/new" element={<UTReportFormPage />} />
+          <Route path="reports/ut/:id/edit" element={<UTReportFormPage />} />
+          <Route path="reports/vssc-ut/new" element={<VSSCUTReportFormPage />} />
+          <Route path="reports/vssc-ut/:id/edit" element={<VSSCUTReportFormPage />} />
+          <Route path="reports/utg/new" element={<UTGReportFormPage />} />
+          <Route path="reports/utg/:id/edit" element={<UTGReportFormPage />} />
+          <Route path="reports/tpi-ivr/new" element={<TPIIVRFormPage />} />
+          <Route path="reports/tpi-ivr/:id/edit" element={<TPIIVRFormPage />} />
+          <Route path="reports/awsd/new" element={<AWSDReportFormPage />} />
+          <Route path="reports/awsd/:id/edit" element={<AWSDReportFormPage />} />
           <Route path="courses" element={<CoursesPage />} />
           <Route path="batches" element={<BatchesPage />} />
           <Route path="enquiries" element={<EnquiriesPage />} />

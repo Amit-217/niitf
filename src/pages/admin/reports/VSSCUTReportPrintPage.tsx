@@ -49,6 +49,8 @@ const PRINT_STYLES = `
   .bw .logo-box { background: #fff !important; }
   .bw .section-hdr { background: #fff !important; color: #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
+  .bw .calib-table th { background: #fff !important; color: #000 !important; }
+  .bw .calib-table td:first-child { background: #fff !important; }
   .bw .rpt-title { background: #fff !important; color: #000 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
@@ -524,7 +526,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       {/* Calibration Table */}
                       <table
                         className="calib-table mt-n1"
-                        style={{ marginBottom: 3 }}
+                        style={{ marginBottom: 3, breakBefore: "page", pageBreakBefore: "always" }}
                       >
                         <thead>
                           <tr style={{ background: "#f8fafc" }}>

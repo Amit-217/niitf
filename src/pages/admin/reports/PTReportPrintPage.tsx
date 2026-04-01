@@ -563,7 +563,7 @@ export const PTReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* â"€â"€ OBSERVATIONS â"€â"€ */}
-                      <table className="obs-table mt-n1">
+                      <table className="obs-table mt-n1" style={{ breakBefore: "page", pageBreakBefore: "always" }}>
                         <tbody>
                           <tr>
                             <td colSpan={7} className="section-hdr">
