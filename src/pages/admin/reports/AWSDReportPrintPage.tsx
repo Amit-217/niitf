@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import { getAWSDReportById } from "../../../api/customerApi";
 
-// â”€â”€â”€ Print Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Print Styles â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 const PRINT_STYLES = `
   @page { size: A4 landscape; margin: 0; }
@@ -35,11 +35,11 @@ const PRINT_STYLES = `
   }
   * { box-sizing: border-box; }
 
-  /* â”€â”€ Main border table â”€â”€ */
+  /* â"€â"€ Main border table â"€â"€ */
   .outer-table { width: 100%; border-collapse: collapse; border: 1.5px solid #000; }
   .outer-table td, .outer-table th { border: 1px solid #555; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
 
-  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #555; padding: 2px 3px; vertical-align: middle; word-break: break-word; font-size: 11px; }
 
   .section-hdr { background: #fff; color: #000; font-weight: bold; font-size: 11px; text-align: center; letter-spacing: 0.5px; padding: 2px 3px; }
@@ -59,9 +59,9 @@ const PRINT_STYLES = `
   .obs-table td, .obs-table th { border: 1px solid #555; padding: 1px 2px; font-size: 11px; vertical-align: middle; text-align: center; word-break: break-word; }
   .obs-table td.tl { text-align: left; }
 
-  .cert-para { font-size: 11px; font-style: italic; color: #333; padding: 3px 4px; border: 1px solid #555; margin-top: -1px; line-height: 1.4; }
+  .cert-para { font-size: 11px; font-style: italic; color: #333; padding: 3px 4px; border: 1px solid #555; margin-top: -1px; line-height: 1.4; break-inside: avoid; page-break-inside: avoid; }
 
-  .sign-table { width: 100%; border-collapse: collapse; }
+  .sign-table { width: 100%; border-collapse: collapse; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #555; padding: 3px 5px; font-size: 11px; vertical-align: top; }
 
   .mt-n1 { margin-top: -1px; }
@@ -79,7 +79,7 @@ const PRINT_STYLES = `
   }
 `;
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 const v = (s?: string | number | null) =>
   s !== undefined && s !== null ? String(s) : "";
@@ -91,7 +91,7 @@ const fmtDate = (d?: string | null) => {
   return `${String(dt.getDate()).padStart(2, "0")}.${String(dt.getMonth() + 1).padStart(2, "0")}.${dt.getFullYear()}`;
 };
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Component â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 export const AWSDReportPrintPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -195,7 +195,7 @@ export const AWSDReportPrintPage: React.FC = () => {
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
-      {/* â”€â”€ Report Content â”€â”€ */}
+      {/* â"€â"€ Report Content â"€â"€ */}
       <div
         id="report-root"
         style={{
@@ -228,7 +228,7 @@ export const AWSDReportPrintPage: React.FC = () => {
             <thead style={{ display: "table-header-group" }}>
               <tr>
                 <td style={{ padding: "5mm 0 0 0" }}>
-                  {/* â”€â”€ HEADER â”€â”€ */}
+                  {/* â"€â"€ HEADER â"€â"€ */}
                   <table
                     style={{
                       width: "100%",
@@ -340,7 +340,7 @@ export const AWSDReportPrintPage: React.FC = () => {
             <tbody style={{ display: "table-row-group" }}>
               <tr>
                 <td style={{ padding: 0, verticalAlign: "top" }}>
-                  {/* â”€â”€ JOB INFORMATION â”€â”€ */}
+                  {/* â"€â"€ JOB INFORMATION â"€â"€ */}
                   <table className="report-table mt-n1">
                     <colgroup>
                       <col style={{ width: "14%" }} />
@@ -374,7 +374,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                       </tr>
                       <tr>
                         <td className="lbl">
-                          Quality Requirements â€” Section
+                          Quality Requirements â€" Section
                         </td>
                         <td className="val" colSpan={3}>
                           {v(report.qualityRequirementsSection)}
@@ -387,7 +387,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                     </tbody>
                   </table>
 
-                  {/* â”€â”€ OBSERVATIONS â”€â”€ */}
+                  {/* â"€â"€ OBSERVATIONS â"€â"€ */}
                   <table className="obs-table mt-n1">
                     <tbody>
                       <tr>
@@ -590,17 +590,17 @@ export const AWSDReportPrintPage: React.FC = () => {
                     </tbody>
                   </table>
 
-                  {/* â”€â”€ CERTIFICATION TEXT â”€â”€ */}
+                  {/* -- CERTIFICATION TEXT + SIGNATURES -- */}
                   <div className="cert-para">
                     We, the undersigned, certify that the statements in this
                     record are correct and that the welds were prepared and
                     tested in conformance with the requirements of Clause 8,
                     Part F of AWS D1.1/D1.1M,&nbsp;
                     <strong>({v(cert.year) || "____"})</strong> Structural
-                    Welding Codeâ€”Steel.
+                    Welding Codeâ€"Steel.
                   </div>
 
-                  {/* â”€â”€ CERTIFICATION / SIGNATURES â”€â”€ */}
+                  {/* -- CERTIFICATION / SIGNATURES -- */}
                   <table className="sign-table mt-n1">
                     <colgroup>
                       <col style={{ width: "14%" }} />
