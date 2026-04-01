@@ -526,7 +526,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       {/* Calibration Table */}
                       <table
                         className="calib-table mt-n1"
-                        style={{ marginBottom: 3 }}
+                        style={{ marginBottom: 3, breakBefore: "page", pageBreakBefore: "always" }}
                       >
                         <thead>
                           <tr style={{ background: "#f8fafc" }}>

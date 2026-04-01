@@ -388,7 +388,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                   </table>
 
                   {/* â"€â"€ OBSERVATIONS â"€â"€ */}
-                  <table className="obs-table mt-n1">
+                  <table className="obs-table mt-n1" style={{ breakBefore: "page", pageBreakBefore: "always" }}>
                     <tbody>
                       <tr>
                         <td colSpan={16} className="section-hdr">

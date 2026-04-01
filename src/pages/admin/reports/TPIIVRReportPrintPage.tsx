@@ -537,7 +537,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* ── INSPECTION ITEMS ── */}
-                      <table className="items-table mt-n1">
+                      <table className="items-table mt-n1" style={{ breakBefore: "page", pageBreakBefore: "always" }}>
                         <tbody>
                           <tr>
                             <td colSpan={9} className="section-hdr">
