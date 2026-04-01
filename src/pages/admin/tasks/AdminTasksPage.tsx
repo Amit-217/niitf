@@ -339,7 +339,8 @@ export const AdminTasksPage = () => {
             emp.name.toLowerCase().includes(searchQuery.toLowerCase())
           );
       const matchesStatus = statusFilter === 'ALL' || t.status === statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesArchived = (t.isArchived || false) === viewArchived;
+      return matchesSearch && matchesStatus && matchesArchived;
     }
   );
   const myTasks = tasks.filter((task) => {
@@ -419,6 +420,15 @@ export const AdminTasksPage = () => {
               >
                 <Archive size={12} className="group-hover/archive:scale-110 transition-transform" />
                 Archive Task
+              </button>
+            )}
+            {task.isArchived && (
+              <button
+                onClick={(e) => handleUnarchiveTask(task._id, e)}
+                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-black uppercase tracking-wider hover:bg-emerald-100 transition-all shadow-sm group/reopen"
+              >
+                <RefreshCw size={12} className="group-hover/reopen:rotate-180 transition-transform duration-500" />
+                Reopen Task
               </button>
             )}
           </div>
