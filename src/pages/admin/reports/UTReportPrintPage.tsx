@@ -19,26 +19,27 @@ const PRINT_STYLES = `
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
   @media screen { body.autoprint-mode { opacity: 0; } }
   @media print {
-    body.autoprint-mode { opacity: 1; }
+    body.autoprint-mode { opacity: 1; overflow: hidden !important; height: 297mm !important; }
     .no-print { display: none !important; }
-    body { margin: 0; background: #fff; }
-    #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
+    body { margin: 0; background: #fff; height: 297mm !important; overflow: hidden !important; }
+    #report-root { background: #fff !important; padding: 0 !important; display: block !important; height: 297mm !important; overflow: hidden !important; }
     #report-root > div {
-      width: 210mm !important; height: 297mm !important;
-      margin: 0 !important; padding: 5mm 5mm 30mm 5mm !important;
+      width: 210mm !important; height: 287mm !important;
+      margin: 0 !important; padding: 5mm 5mm 45mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       overflow: hidden !important; break-inside: avoid !important;
+      page-break-after: avoid !important;
     }
     .report { 
       margin: 0 !important; box-shadow: none !important; 
       width: 100% !important; 
-      transform: scale(0.96); transform-origin: top center;
+      transform: scale(0.92); transform-origin: top center;
     }
     .print-fixed-footer { position: absolute !important; bottom: 5mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; background: transparent !important; margin: 0 !important; }
     .print-fixed-footer-inner { width: 200mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
     .tfoot-content { display: none !important; }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
   .report { background: #fff; border: none; border-radius: 6px; overflow: hidden; }
   .rpt-header { background: #185FA5; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
