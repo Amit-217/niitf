@@ -17,22 +17,20 @@ const PRINT_STYLES = `
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
   @media screen { body.autoprint-mode { opacity: 0; } }
   @media print {
-    body.autoprint-mode { opacity: 1; overflow: hidden !important; height: 297mm !important; }
+    body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
-    body { margin: 0; background: #fff; height: 297mm !important; overflow: hidden !important; }
-    #report-root { background: #fff !important; padding: 0 !important; display: block !important; height: 297mm !important; overflow: hidden !important; }
+    body { margin: 0; background: #fff; min-height: 297mm !important; }
+    #report-root { background: #fff !important; padding: 0 !important; display: block !important; min-height: 297mm !important; }
     #report-root > div {
-      width: 210mm !important; height: 297mm !important;
+      width: 210mm !important; min-height: 297mm !important;
       margin: 0 !important; padding: 5mm 5mm 50mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
-      overflow: hidden !important; break-inside: avoid !important;
-      page-break-after: avoid !important;
+      break-inside: avoid !important;
+      page-break-after: auto !important;
     }
     .report { 
       margin: 0 !important; box-shadow: none !important; 
       width: 100% !important; 
-      zoom: 0.88;
-      transform: scale(0.88); transform-origin: top center;
     }
     .print-fixed-footer { position: absolute !important; bottom: 5mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; background: transparent !important; margin: 0 !important; }
     .print-fixed-footer-inner { width: 200mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
