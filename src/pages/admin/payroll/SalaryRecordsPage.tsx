@@ -264,7 +264,7 @@ export const SalaryRecordsPage = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2"><CreditCard className="text-primary-600" size={26} /> Payroll Records</h1>
-                    <p className="text-sm text-gray-500 mt-1">Review, generate, and process monthly payouts</p>
+                    <p className="hidden sm:block text-sm text-gray-500 mt-1">Review, generate, and process monthly payouts</p>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -485,7 +485,7 @@ export const SalaryRecordsPage = () => {
                             <div>
                                 <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-black">Salary Breakdown</p>
                                 <h3 className="text-2xl font-black text-gray-900 mt-1">{selectedRecord.employeeId?.name || 'Employee'}</h3>
-                                <p className="text-sm text-gray-500 mt-1">{selectedRecord.employeeId?.empId || 'N/A'} - {formatMonthLabel(selectedRecord.month)}</p>
+                                <p className="hidden sm:block text-sm text-gray-500 mt-1">{selectedRecord.employeeId?.empId || 'N/A'} - {formatMonthLabel(selectedRecord.month)}</p>
                             </div>
                             <button
                                 onClick={() => setSelectedRecord(null)}

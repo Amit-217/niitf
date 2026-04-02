@@ -193,7 +193,7 @@ export const CustomersPage = () => {
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Building2 className="text-primary-600" /> Customers
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">
             Manage company customers — {total} total
           </p>
         </div>

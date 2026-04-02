@@ -1155,7 +1155,7 @@ export const TestsPage = () => {
                     <h4 className="font-bold text-gray-900">
                       Offline Manifest
                     </h4>
-                    <p className="text-sm text-gray-500 mt-1 max-w-xs mx-auto">
+                    <p className="hidden sm:block text-sm text-gray-500 mt-1 max-w-xs mx-auto">
                       This exam is conducted offline. Use the analytics tab to
                       view manual score records.
                     </p>

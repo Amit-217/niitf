@@ -277,7 +277,7 @@ export const ReportsListPage = () => {
                                             </div>
                                             <div>
                                                 <h4 className="text-lg font-bold text-gray-800">No matching reports</h4>
-                                                <p className="text-sm text-gray-500 mt-1">Try adjusting your keywords or adding a new report for {activeInfo.fullLabel}.</p>
+                                                <p className="hidden sm:block text-sm text-gray-500 mt-1">Try adjusting your keywords or adding a new report for {activeInfo.fullLabel}.</p>
                                             </div>
                                         </div>
                                     </td>

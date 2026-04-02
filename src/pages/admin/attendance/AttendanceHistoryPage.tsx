@@ -115,7 +115,7 @@ export const AttendanceHistoryPage = () => {
                         <History className="text-primary-600" size={26} />
                         Attendance History
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">Employee raw records with present, absent, leave, and holiday counts.</p>
+                    <p className="hidden sm:block text-sm text-gray-500 mt-1">Employee raw records with present, absent, leave, and holiday counts.</p>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -156,7 +156,7 @@ export const AttendanceHistoryPage = () => {
                 <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/80 flex items-center justify-between">
                     <div>
                         <h3 className="text-lg font-black text-gray-900">Employee Raw Records</h3>
-                        <p className="text-sm text-gray-500 mt-1">View monthly attendance totals and the yearly leave cap before opening a raw entry report.</p>
+                        <p className="hidden sm:block text-sm text-gray-500 mt-1">View monthly attendance totals and the yearly leave cap before opening a raw entry report.</p>
                     </div>
                     {loading && <Loader2 size={18} className="animate-spin text-primary-500" />}
                 </div>
@@ -233,7 +233,7 @@ export const AttendanceHistoryPage = () => {
                             <div>
                                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Attendance Report</p>
                                 <h3 className="text-2xl font-black text-gray-900 mt-1">{selectedEmployee.name}</h3>
-                                <p className="text-sm text-gray-500 mt-1">{selectedEmployee.empId} - {month}</p>
+                                <p className="hidden sm:block text-sm text-gray-500 mt-1">{selectedEmployee.empId} - {month}</p>
                             </div>
                             <button
                                 type="button"

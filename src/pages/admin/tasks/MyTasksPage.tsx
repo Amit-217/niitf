@@ -11,12 +11,14 @@ import {
   MessageSquare, 
   Bell, 
   Info,
+  Archive,
   Send
 } from 'lucide-react';
 import {
   getAllTasks,
   submitTaskUpdate,
-  getTaskUpdates
+  getTaskUpdates,
+  archiveTask
 } from '../../../api/taskApi';
 import api from '../../../api/axios';
 
@@ -64,7 +66,7 @@ export const MyTasksPage = () => {
   const [statusDraft, setStatusDraft] = useState<'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED'>('ASSIGNED');
   const [updates, setUpdates] = useState<any[]>([]);
   const [isSubmitting, setSubmitting] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED'>('IN_PROGRESS');
 
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const currentUserId = currentUser?.userId || currentUser?.id || currentUser?._id || null;
@@ -75,7 +77,7 @@ export const MyTasksPage = () => {
     if (!silent) setIsLoading(true);
     try {
       const res = await getAllTasks();
-      const allTasks = Array.isArray(res.data) ? res.data : [];
+      const allTasks = res.data?.data || (Array.isArray(res.data) ? res.data : []);
       const mine = allTasks.filter((task: Task) =>
         (task.assignedTo || []).some((emp: any) => String(emp?._id || emp) === String(currentUserId)),
       );
@@ -114,9 +116,21 @@ export const MyTasksPage = () => {
     try {
       const res = await getTaskUpdates(task._id);
       setUpdates(res.data || []);
-    } catch (e) {
+    } catch (error: any) {
       console.error('History load failed');
       setUpdates([]);
+    }
+  };
+
+  const handleArchiveTask = async (taskId: string) => {
+    if (!window.confirm('Are you sure you want to archive this task? It will disappear from active/completed lists.')) return;
+    try {
+      await archiveTask(taskId);
+      toast.success('Task archived!');
+      setTaskModalOpen(false);
+      fetchMyTasks(true);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to archive task');
     }
   };
 
@@ -308,7 +322,18 @@ export const MyTasksPage = () => {
             <div className="px-6 py-5 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white flex justify-between items-start gap-4">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-violet-100/80">Admin Task Detail</p>
-                <h2 className="font-black text-xl mt-1 line-clamp-1">{selectedTask.title}</h2>
+                <div className="flex items-center gap-3 mt-1">
+                  <h2 className="font-black text-xl line-clamp-1">{selectedTask.title}</h2>
+                  {selectedTask.status === 'COMPLETED' && (
+                    <button
+                      onClick={() => handleArchiveTask(selectedTask._id)}
+                      className="px-2.5 py-1 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all"
+                    >
+                      <Archive size={12} />
+                      Archive
+                    </button>
+                  )}
+                </div>
                 <p className="text-violet-50 text-xs mt-1">Review instructions and submit updates or finalize your personal task.</p>
               </div>
               <button 
