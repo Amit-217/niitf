@@ -448,7 +448,7 @@ export const BatchesPage: React.FC = () => {
         search,
         status: statusFilter,
       });
-      const [bRes, cRes] = await Promise.all([
+      const [bRes, cRes]: any[] = await Promise.all([
         api.get(`/batches?${params.toString()}`),
         api.get("/courses?limit=100"),
       ]);

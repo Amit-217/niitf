@@ -166,7 +166,7 @@ export const SalaryConfigPage = () => {
                     <Settings2 className="text-primary-600" size={26} />
                     Salary Configuration
                 </h1>
-                <p className="text-sm text-gray-500 mt-1">Manage salary settings from the raw records table below</p>
+                <p className="hidden sm:block text-sm text-gray-500 mt-1">Manage salary settings from the raw records table below</p>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

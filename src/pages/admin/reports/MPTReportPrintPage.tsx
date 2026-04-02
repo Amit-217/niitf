@@ -44,15 +44,15 @@ const PRINT_STYLES = `
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 8px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
-  .bw .rpt-header { background: #fff !important; border-bottom: 2px solid #000 !important; }
+  .bw .rpt-header { background: #fff !important; border-bottom: 1px solid #444 !important; }
   .bw .hdr-center { color: #000 !important; }
   .bw .hdr-center .org { color: #000 !important; }
   .bw .hdr-center .sub { color: #333 !important; }
   .bw .hdr-center .iso { color: #000 !important; }
-  .bw .logo-box { background: transparent !important; border: none !important; width: 110px !important; height: 110px !important; }
-  .bw .section-hdr { background: #fff !important; color: #000 !important; border-left: 3px solid #000 !important; }
+  .bw .logo-box { background: #fff !important; }
+  .bw .section-hdr { background: #fff !important; color: #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
@@ -68,7 +68,7 @@ const PRINT_STYLES = `
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
-  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 5px 6px; vertical-align: middle; word-break: break-word; font-size: 11px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 10px; text-align: center; color: #0C447C; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 10px; width: 22%; }
@@ -76,7 +76,8 @@ const PRINT_STYLES = `
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 5px 5px; font-size: 11px; vertical-align: top; word-break: break-word; }
   .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; }
-  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
+  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 5px 6px; font-size: 11px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .std-tag { display: inline-block; background: #e7f1fb; color: #0c447c; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; margin-bottom: 2px; font-weight: 700; }
@@ -283,7 +284,7 @@ export const MPTReportPrintPage = () => {
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
           <br />
-          Powered by: viplora.tech
+          Powered by: Viplora Tech
         </div>
         <div className="qr-wrap">
           <QRCodeSVG value={qrUrl} size={48} />
@@ -373,7 +374,7 @@ export const MPTReportPrintPage = () => {
               <thead style={{ display: "table-header-group" }}>
                 <tr>
                   <td style={{ padding: "5mm 0 0 0" }}>
-                    {/* â”€â”€ HEADER â”€â”€ */}
+                    {/* â"€â"€ HEADER â"€â"€ */}
                     <div className="rpt-header">
                       <div className="logo-box">
                         <img src="/logo.png" alt="NIIT Logo" />
@@ -405,7 +406,7 @@ export const MPTReportPrintPage = () => {
                         Magnetic Particle Examination Report
                       </div>
 
-                      {/* â”€â”€ 1. Scope & Reference Standards â”€â”€ */}
+                      {/* â"€â"€ 1. Scope & Reference Standards â"€â"€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -513,7 +514,7 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* â”€â”€ 2. Equipment Details â”€â”€ */}
+                      {/* â"€â"€ 2. Equipment Details â"€â"€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -554,7 +555,7 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* â”€â”€ 4. Medium Details â”€â”€ */}
+                      {/* â"€â"€ 4. Medium Details â"€â"€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "20%" }} />
@@ -601,7 +602,7 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* â”€â”€ 5. Method Description â”€â”€ */}
+                      {/* â"€â"€ 5. Method Description â"€â"€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -672,8 +673,8 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* â”€â”€ 6. Observations â”€â”€ */}
-                      <table className="obs-table mt-n1">
+                      {/* -- 6. Observations -- */}
+                      <table className="obs-table mt-n1" style={{ breakBefore: "page", pageBreakBefore: "always" }}>
                         <tbody>
                           <tr>
                             <td colSpan={7} className="section-hdr">
@@ -734,7 +735,8 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* â”€â”€ 7. Conclusion â”€â”€ */}
+                      {/* -- 7. Conclusion + 8. Signatures -- */}
+                      <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
                       <table className="report-table mt-n1">
                         <tbody>
                           <tr>
@@ -751,7 +753,7 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* â”€â”€ 8. Signatures â”€â”€ */}
+                      {/* â"€â"€ 8. Signatures â"€â"€ */}
                       <table className="sign-table mt-n1">
                         <colgroup>
                           <col style={{ width: "33.3%" }} />
@@ -828,6 +830,7 @@ export const MPTReportPrintPage = () => {
                           </tr>
                         </tbody>
                       </table>
+                      </div>
 
                       {inspectors.length > 1 && (
                         <table className="sign-table mt-n1">
@@ -847,7 +850,7 @@ export const MPTReportPrintPage = () => {
                         </table>
                       )}
                     </div>
-                    {/* â”€â”€ end report-body â”€â”€ */}
+                    {/* -- end report-body -- */}
                   </td>
                 </tr>
               </tbody>

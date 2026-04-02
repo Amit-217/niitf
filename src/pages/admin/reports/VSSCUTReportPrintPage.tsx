@@ -41,15 +41,17 @@ const PRINT_STYLES = `
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 8px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
-  .bw .rpt-header { background: #fff !important; border-bottom: 2px solid #000 !important; }
+  .bw .rpt-header { background: #fff !important; border-bottom: 1px solid #444 !important; }
   .bw .hdr-center { color: #000 !important; }
   .bw .hdr-center .org { color: #000 !important; }
   .bw .hdr-center .sub { color: #333 !important; }
   .bw .hdr-center .iso { color: #000 !important; }
-  .bw .logo-box { background: transparent !important; border: none !important; width: 110px !important; height: 110px !important; }
-  .bw .section-hdr { background: #fff !important; color: #000 !important; border-left: 3px solid #000 !important; }
+  .bw .logo-box { background: #fff !important; }
+  .bw .section-hdr { background: #fff !important; color: #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
+  .bw .calib-table th { background: #fff !important; color: #000 !important; }
+  .bw .calib-table td:first-child { background: #fff !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
@@ -65,14 +67,14 @@ const PRINT_STYLES = `
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
-  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 4px 6px; vertical-align: middle; word-break: break-word; font-size: 11px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 10px; text-align: center; color: #0C447C; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 10px; white-space: nowrap; }
   .val { font-size: 11px; }
   .mt-n1 { margin-top: -1px; }
   .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
-  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 4px 6px; font-size: 11px; vertical-align: top; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 3px; font-size: 11px; text-align: center; vertical-align: middle; }
@@ -221,7 +223,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
           <br />
-          Powered by: viplora.tech
+          Powered by: Viplora Tech
         </div>
         <div className="qr-wrap">
           <QRCodeSVG value={qrUrl} size={48} />
@@ -524,7 +526,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       {/* Calibration Table */}
                       <table
                         className="calib-table mt-n1"
-                        style={{ marginBottom: 3 }}
+                        style={{ marginBottom: 3, breakBefore: "page", pageBreakBefore: "always" }}
                       >
                         <thead>
                           <tr style={{ background: "#f8fafc" }}>
@@ -699,7 +701,8 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* Disposition & Evaluation */}
+                      {/* Disposition & Evaluation + Signatures */}
+                      <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
                       <table
                         className="report-table"
                         style={{ marginBottom: 3 }}
@@ -796,6 +799,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
+                      </div>
                     </div>
                     {/* ── end report-body ── */}
                   </td>

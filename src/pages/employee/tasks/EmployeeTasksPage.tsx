@@ -33,6 +33,7 @@ interface Task {
   startDate: string;
   dueDate?: string;
   createdBy: User;
+  assignedTo: User[];
 }
 
 const getStatusBadge = (status: string) => {
@@ -63,7 +64,7 @@ export const EmployeeTasksPage = () => {
   const [statusDraft, setStatusDraft] = useState<'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED'>('ASSIGNED');
   const [updates, setUpdates] = useState<any[]>([]);
   const [isSubmitting, setSubmitting] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED'>('IN_PROGRESS');
 
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const currentUserId = currentUser?.userId || currentUser?.id || currentUser?._id || null;
@@ -74,8 +75,11 @@ export const EmployeeTasksPage = () => {
     if (!silent) setIsLoading(true);
     try {
       const res = await getAllTasks();
-      const allTasks = Array.isArray(res.data) ? res.data : [];
-      setTasks(allTasks);
+      const allTasks = res.data?.data || (Array.isArray(res.data) ? res.data : []);
+      const mine = allTasks.filter((task: Task) =>
+        (task.assignedTo || []).some((emp: any) => String(emp?._id || emp) === String(currentUserId)),
+      );
+      setTasks(mine);
     } catch (error) {
       if (!silent) toast.error('Failed to load tasks');
     } finally {

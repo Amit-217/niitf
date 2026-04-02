@@ -24,7 +24,6 @@ import {
   getPassages,
   sendExamInvites,
   Test,
-  TestPayload,
   Question,
   Passage,
 } from "../../../api/testApi";
@@ -81,9 +80,6 @@ export const TestsPage = () => {
   const [passages, setPassages] = useState<Passage[]>([]);
   const [passagesLoading, setPassagesLoading] = useState(false);
   const [addingQ, setAddingQ] = useState(false);
-  const [analytics, setAnalytics] = useState<any[]>([]);
-  const [isAnalyticsOpen, setAnalyticsOpen] = useState(false);
-  const [analyticsTest, setAnalyticsTest] = useState<Test | null>(null);
   // Question Paper Review Modal
   const [isQuestionPaperOpen, setQuestionPaperOpen] = useState(false);
   const [questionPaperTest, setQuestionPaperTest] = useState<Test | null>(null);
@@ -315,16 +311,7 @@ export const TestsPage = () => {
     }
   };
 
-  const openAnalytics = async (t: Test) => {
-    setAnalyticsTest(t);
-    try {
-      const res: any = await api.get(`/admin/tests/${t._id}/analytics`);
-      setAnalytics(res.data);
-      setAnalyticsOpen(true);
-    } catch {
-      toast.error("Error");
-    }
-  };
+
 
   const handleAddQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -790,85 +777,9 @@ export const TestsPage = () => {
         </div>
       )}
 
-      {isAnalyticsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
-            onClick={() => {
-              setAnalyticsOpen(false);
-            }}
-          />
-          <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex justify-between items-start shrink-0">
-              <div>
-                <h2 className="text-lg font-bold text-white">
-                  Performance Analytics
-                </h2>
-                <p className="text-violet-200 text-sm mt-0.5">
-                  Top missed questions for {analyticsTest?.testName}
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  setAnalyticsOpen(false);
-                  setAnalyticsTest(null);
-                }}
-                className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors"
-              >
-                <X size={18} />
-              </button>
-            </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/50">
-              {analytics.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-3">
-                  <AlertCircle size={40} className="opacity-20" />
-                  <p className="text-sm font-medium italic">
-                    No performance data available yet.
-                  </p>
-                </div>
-              ) : (
-                analytics.map((item, idx) => (
-                  <div
-                    key={item.questionId}
-                    className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex items-start justify-between gap-4 mb-4">
-                      <div className="flex gap-2.5">
-                        <span className="w-6 h-6 shrink-0 bg-violet-100 text-violet-700 text-[10px] font-bold rounded-lg flex items-center justify-center">
-                          Q{idx + 1}
-                        </span>
-                        <p className="text-sm font-bold text-gray-800 leading-tight">
-                          {item.questionText}
-                        </p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <span className="text-[10px] font-black text-red-600 bg-red-50 px-2 py-1 rounded-full uppercase">
-                          {Math.round(item.incorrectPercentage)}% Fail
-                        </span>
-                      </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <div className="flex justify-between text-[10px] font-black uppercase text-gray-400 tracking-tighter">
-                        <span>Error Frequency</span>
-                        <span>{item.incorrectCount} Students</span>
-                      </div>
-                      <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                        <div
-                          className="bg-gradient-to-r from-amber-400 to-red-500 h-full rounded-full transition-all duration-1000"
-                          style={{ width: `${item.incorrectPercentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
-      {viewTest && !isAnalyticsOpen && (
+      {viewTest && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
@@ -1155,7 +1066,7 @@ export const TestsPage = () => {
                     <h4 className="font-bold text-gray-900">
                       Offline Manifest
                     </h4>
-                    <p className="text-sm text-gray-500 mt-1 max-w-xs mx-auto">
+                    <p className="hidden sm:block text-sm text-gray-500 mt-1 max-w-xs mx-auto">
                       This exam is conducted offline. Use the analytics tab to
                       view manual score records.
                     </p>

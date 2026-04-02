@@ -12,7 +12,7 @@ import {
   PTReport,
 } from "../../../api/customerApi";
 
-// â”€â”€â”€ Print Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Print Styles â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
@@ -66,15 +66,15 @@ const PRINT_STYLES = `
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 8px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
-  .bw .rpt-header { background: #fff !important; border-bottom: 2px solid #000 !important; }
+  .bw .rpt-header { background: #fff !important; border-bottom: 1px solid #444 !important; }
   .bw .hdr-center { color: #000 !important; }
   .bw .hdr-center .org { color: #000 !important; }
   .bw .hdr-center .sub { color: #333 !important; }
   .bw .hdr-center .iso { color: #000 !important; }
-  .bw .logo-box { background: transparent !important; border: none !important; width: 110px !important; height: 110px !important; }
-  .bw .section-hdr { background: #fff !important; color: #000 !important; border-left: 3px solid #000 !important; }
+  .bw .logo-box { background: #fff !important; }
+  .bw .section-hdr { background: #fff !important; color: #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; border-bottom: 2px solid #555 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
@@ -97,7 +97,7 @@ const PRINT_STYLES = `
     background: #185FA5; color: #fff; font-size: 11px; font-weight: 700;
     padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase;
   }
-  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th {
     border: 1px solid #d9e1ea; padding: 4px 6px;
     vertical-align: middle; word-break: break-word; font-size: 11px;
@@ -108,7 +108,8 @@ const PRINT_STYLES = `
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 4px 5px; font-size: 11px; vertical-align: top; word-break: break-word; }
   .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; }
-  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
+  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 4px 6px; font-size: 11px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
@@ -131,7 +132,7 @@ const PRINT_STYLES = `
   }
 `;
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 const v = (s?: string) => s || "";
 const fmtDate = (d?: string) => {
@@ -141,7 +142,7 @@ const fmtDate = (d?: string) => {
   return `${String(dt.getDate()).padStart(2, "0")}.${String(dt.getMonth() + 1).padStart(2, "0")}.${dt.getFullYear()}`;
 };
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Component â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 export const PTReportPrintPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -255,7 +256,7 @@ export const PTReportPrintPage: React.FC = () => {
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
           <br />
-          Powered by: viplora.tech
+          Powered by: Viplora Tech
         </div>
         <div className="qr-wrap">
           <QRCodeSVG value={qrUrl} size={48} />
@@ -316,7 +317,7 @@ export const PTReportPrintPage: React.FC = () => {
         </button>
       </div>
 
-      {/* â”€â”€ Report Content â”€â”€ */}
+      {/* â"€â"€ Report Content â"€â"€ */}
       <div
         id="report-root"
         style={{
@@ -380,7 +381,7 @@ export const PTReportPrintPage: React.FC = () => {
                         Liquid Penetrant Test Report
                       </div>
 
-                      {/* â”€â”€ JOB DETAILS â”€â”€ */}
+                      {/* â"€â"€ JOB DETAILS â"€â"€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -456,7 +457,7 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* â”€â”€ METHOD DETAILS â”€â”€ */}
+                      {/* â"€â"€ METHOD DETAILS â"€â"€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -487,7 +488,7 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* â”€â”€ CONSUMABLES DETAILS â”€â”€ */}
+                      {/* â"€â"€ CONSUMABLES DETAILS â"€â"€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "14%" }} />
@@ -524,7 +525,7 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* â”€â”€ METHOD DESCRIPTION â”€â”€ */}
+                      {/* â"€â"€ METHOD DESCRIPTION â"€â"€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -561,8 +562,8 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* â”€â”€ OBSERVATIONS â”€â”€ */}
-                      <table className="obs-table mt-n1">
+                      {/* â"€â"€ OBSERVATIONS â"€â"€ */}
+                      <table className="obs-table mt-n1" style={{ breakBefore: "page", pageBreakBefore: "always" }}>
                         <tbody>
                           <tr>
                             <td colSpan={7} className="section-hdr">
@@ -632,7 +633,7 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* â”€â”€ EXAMINED BY â”€â”€ */}
+                      {/* â"€â"€ EXAMINED BY â"€â"€ */}
                       <table className="sign-table mt-n1">
                         <colgroup>
                           <col style={{ width: "33.3%" }} />
@@ -705,7 +706,7 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
                     </div>
-                    {/* â”€â”€ end report-body â”€â”€ */}
+                    {/* â"€â"€ end report-body â"€â"€ */}
                   </td>
                 </tr>
               </tbody>

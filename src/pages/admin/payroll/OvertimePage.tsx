@@ -141,7 +141,7 @@ export const OvertimePage = () => {
             <div className="flex justify-between items-start">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2"><Clock className="text-primary-600" size={26} /> Overtime Management</h1>
-                    <p className="text-sm text-gray-500 mt-1">Record and manage employee overtime hours</p>
+                    <p className="hidden sm:block text-sm text-gray-500 mt-1">Record and manage employee overtime hours</p>
                 </div>
             </div>
 
