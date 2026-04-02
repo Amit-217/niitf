@@ -80,16 +80,7 @@ interface SearchUnitRow {
   frequencyOther: string;
 }
 
-interface TechniqueRow {
-  searchUnit: string;
-  angle: string;
-  srNo: string;
-  crystalSize: string;
-  crystalSizeOther: string;
-  waveMode: string;
-  frequency: string;
-  frequencyOther: string;
-}
+
 
 interface ObsRow {
   srNo: number;
@@ -110,16 +101,7 @@ const emptySearchUnit = (): SearchUnitRow => ({
   frequencyOther: "",
 });
 
-const emptyTechnique = (): TechniqueRow => ({
-  searchUnit: "",
-  angle: "",
-  srNo: "",
-  crystalSize: "",
-  crystalSizeOther: "",
-  waveMode: "",
-  frequency: "",
-  frequencyOther: "",
-});
+
 
 const emptyObs = (): ObsRow => ({
   srNo: 1,
@@ -186,9 +168,7 @@ export const UTGReportFormPage: React.FC = () => {
   ]);
 
   // ── Technique Details ──
-  const [techniques, setTechniques] = useState<TechniqueRow[]>([
-    emptyTechnique(),
-  ]);
+
   const [utMethod, setUtMethod] = useState("");
   const [utMethodOther, setUtMethodOther] = useState("");
 
@@ -238,14 +218,7 @@ export const UTGReportFormPage: React.FC = () => {
   const removeSearchUnit = (idx: number) =>
     setSearchUnits((prev) => prev.filter((_, i) => i !== idx));
 
-  const updateTechnique = (idx: number, key: keyof TechniqueRow, val: string) =>
-    setTechniques((prev) =>
-      prev.map((r, i) => (i === idx ? { ...r, [key]: val } : r)),
-    );
-  const addTechnique = () =>
-    setTechniques((prev) => [...prev, emptyTechnique()]);
-  const removeTechnique = (idx: number) =>
-    setTechniques((prev) => prev.filter((_, i) => i !== idx));
+
 
   const updateObs = (idx: number, key: keyof ObsRow, val: string) =>
     setObservations((prev) =>
@@ -415,35 +388,6 @@ export const UTGReportFormPage: React.FC = () => {
         ]);
         setUtMethod(utm);
         setUtMethodOther(utmO);
-        if (td.techniques?.length) {
-          setTechniques(
-            td.techniques.map((t: any) => {
-              const [cs, csO] = fromOther(t.crystalSize, [
-                "Ø5mm",
-                "Ø10mm",
-                "8x9 mm",
-                "20x22 mm",
-                "Other",
-              ]);
-              const [fr, frO] = fromOther(t.frequency, [
-                "2 MHz",
-                "4 MHz",
-                "5 MHz",
-                "Other",
-              ]);
-              return {
-                searchUnit: t.searchUnit ?? "",
-                angle: t.angle ?? "",
-                srNo: t.srNo ?? "",
-                crystalSize: cs,
-                crystalSizeOther: csO,
-                waveMode: t.waveMode ?? "",
-                frequency: fr,
-                frequencyOther: frO,
-              };
-            }),
-          );
-        }
         if (r.observations?.length) {
           setObservations(
             r.observations.map((o: any) => ({
