@@ -29,10 +29,8 @@ import {
 } from "lucide-react";
 import {
   getCustomerById,
-  getQuotations,
   createQuotation,
   updateQuotation,
-  deleteQuotation,
   getInvoices,
   createInvoice,
   updateInvoice,
@@ -266,12 +264,7 @@ const REPORT_TYPES: { key: ReportSubType; label: string; fullLabel: string; icon
   { key: "awsd", label: "AWS D1.1", fullLabel: "UT of Welds (AWS D1.1)", icon: GitBranch, color: "bg-orange-50", textColor: "text-orange-600" },
 ];
 
-const QUOTATION_STATUSES = [
-  { key: "Draft", color: "bg-gray-50", textColor: "text-gray-600" },
-  { key: "Sent", color: "bg-blue-50", textColor: "text-blue-600" },
-  { key: "Accepted", color: "bg-green-50", textColor: "text-green-700" },
-  { key: "Rejected", color: "bg-red-50", textColor: "text-red-600" },
-];
+
 
 const QUOTATION_TYPES = [
   { key: "service", label: "Service", fullLabel: "Service Quotation", color: "bg-blue-50", textColor: "text-blue-600" },

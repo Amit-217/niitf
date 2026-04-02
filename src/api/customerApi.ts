@@ -171,6 +171,8 @@ export interface MPTObservation {
   quantity: number;
   interpretation: string;
   evaluation: string;
+  remark?: string;
+  result?: string;
 }
 
 export interface MPTInspector {
@@ -271,6 +273,8 @@ export interface PTObservation {
   quantity: number;
   interpretation: string;
   evaluation: string;
+  remark?: string;
+  result?: string;
 }
 
 export interface PTReportPayload {
@@ -355,6 +359,8 @@ export interface UTObservation {
   quantity: number;
   interpretation: string;
   evaluation: string;
+  remark?: string;
+  result?: string;
 }
 
 export interface UTReportPayload {
@@ -493,6 +499,7 @@ export interface VSSCUTReportPayload {
   };
   disposition?: string;
   evaluation?: string;
+  remarks?: string;
   finalSection?: {
     inspector?: { name?: string; qualification?: string; idNo?: string; date?: string }[];
     qc?: { name?: string; idNo?: string; date?: string };

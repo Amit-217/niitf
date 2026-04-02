@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, CircleHelp, CheckCircle, FileText, PlayCircle } from 'lucide-react';
+import { Clock, FileText, PlayCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 
 export const EmployeeDashboard: React.FC = () => {
     const navigate = useNavigate();
-    const userStr = localStorage.getItem('user');
-    const user = userStr ? JSON.parse(userStr) : null;
+
     const [availableTests, setAvailableTests] = useState<any[]>([]);
 
     useEffect(() => {

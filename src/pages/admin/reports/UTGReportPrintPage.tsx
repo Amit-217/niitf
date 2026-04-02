@@ -205,7 +205,7 @@ export const UTGReportPrintPage: React.FC = () => {
   const eq = report.equipmentDetails ?? {};
   const sud = report.searchUnitDetails ?? [];
   const td = report.techniqueDetails ?? {};
-  const techList = td.techniques ?? [];
+
   const obs = report.observations ?? [];
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, User, Briefcase, Clock, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { X, Briefcase, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import api from '../api/axios';
 
 interface StaffProfileProps {

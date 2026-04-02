@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-    Users, Plus, Search, Filter, Edit2, Trash2, ShieldOff,
+    Users, Plus, Search, Edit2, Trash2, ShieldOff,
     ShieldCheck, X, Loader2, Eye, EyeOff, UserCheck,
-    ChevronDown, AlertTriangle, Crown, Shield, User, RefreshCw,
-    Mail, Phone, Hash, Calendar
+    AlertTriangle, Crown, Shield, User,
+    Mail, Phone
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../../api/axios';
