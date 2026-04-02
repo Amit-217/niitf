@@ -14,69 +14,66 @@ const PRINT_STYLES = `
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
   @media screen { body.autoprint-mode { opacity: 0; } }
   @media print {
-    body.autoprint-mode { opacity: 1; }
+    body.autoprint-mode { opacity: 1; overflow: hidden !important; height: 210mm !important; }
     .no-print { display: none !important; }
-    body { margin: 0; background: #fff; }
-    #report-root { padding: 0 !important; background: #fff !important; }
+    body { margin: 0; background: #fff; height: 210mm !important; overflow: hidden !important; }
+    #report-root { background: #fff !important; padding: 0 !important; display: block !important; height: 210mm !important; overflow: hidden !important; }
     #report-root > div {
-      box-shadow: none !important;
-      margin: 0 auto !important;
-      width: 297mm !important;
-      min-height: 210mm !important;
-      padding: 0 5mm 0 5mm !important;
-      box-sizing: border-box !important;
+      width: 297mm !important; height: 200mm !important;
+      margin: 0 !important; padding: 5mm 5mm 45mm 5mm !important;
+      box-sizing: border-box !important; position: relative !important;
+      overflow: hidden !important; break-inside: avoid !important;
+      page-break-after: avoid !important;
     }
-  }
-  body {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  * { box-sizing: border-box; }
-
-  /* â"€â"€ Main border table â"€â"€ */
-  .outer-table { width: 100%; border-collapse: collapse; border: 1.5px solid #000; }
-  .outer-table td, .outer-table th { border: 1px solid #555; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-
-  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .report-table td, .report-table th { border: 1px solid #555; padding: 2px 3px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-
-  .section-hdr { background: #fff; color: #000; font-weight: bold; font-size: 11px; text-align: center; letter-spacing: 0.5px; padding: 2px 3px; }
-  .col-hdr { background: #fff; font-weight: bold; font-size: 10px; text-align: center; vertical-align: middle; }
-  .col-hdr-db { background: #fff; font-weight: bold; font-size: 10px; text-align: center; vertical-align: middle; }
-  .col-hdr-disc { background: #fff; font-weight: bold; font-size: 10px; text-align: center; vertical-align: middle; }
-
-  .lbl { background: #fff; font-weight: 600; font-size: 10px; }
-  .val { font-size: 11px; }
-
-  .title-cell { text-align: center; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; text-decoration: underline; padding: 4px 0; }
-  .company-name { font-size: 15px; font-weight: bold; text-transform: uppercase; text-align: center; color: #000; }
-  .company-sub { font-size: 9px; text-align: center; color: #333; line-height: 1.4; }
-  .company-iso { font-size: 9px; text-align: center; font-weight: bold; color: #333; }
-
-  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .obs-table td, .obs-table th { border: 1px solid #555; padding: 1px 2px; font-size: 11px; vertical-align: middle; text-align: center; word-break: break-word; }
-  .obs-table td.tl { text-align: left; }
-
-  .cert-para { font-size: 11px; font-style: italic; color: #333; padding: 3px 4px; border: 1px solid #555; margin-top: -1px; line-height: 1.4; break-inside: avoid; page-break-inside: avoid; }
-
-  .sign-table { width: 100%; border-collapse: collapse; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #555; padding: 3px 5px; font-size: 11px; vertical-align: top; }
-
-  .mt-n1 { margin-top: -1px; }
-  .footer-text { font-size: 9px; text-align: center; color: #555; margin-top: 3px; }
-  .reject-cell { font-weight: bold; color: #b91c1c; }
-
-  @media print {
-    .print-fixed-footer { position: fixed !important; bottom: 8mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; z-index: 99999 !important; background: transparent !important; }
+    .report { 
+      margin: 0 !important; box-shadow: none !important; 
+      width: 100% !important; 
+      transform: scale(0.91); transform-origin: top center;
+    }
+    /* Fixed footer for print - appears at bottom of every page */
+    .print-fixed-footer { position: absolute !important; bottom: 4mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; background: transparent !important; margin: 0 !important; }
     .print-fixed-footer-inner { width: 287mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
-    .tfoot-content { visibility: hidden !important; }
+    .tfoot-content { display: none !important; }
   }
-  @media screen {
-    .print-fixed-footer { display: none; }
-    .tfoot-content { visibility: visible; }
-  }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  * { box-sizing: border-box; }
+  .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
+  .rpt-header { background: #185FA5; padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+  .logo-box { width: 70px; height: 70px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
+  .logo-box img { width: 100%; height: 100%; object-fit: contain; }
+  .hdr-center { flex: 1; text-align: center; color: #fff; }
+  .hdr-center .org { font-size: 15px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .sub { font-size: 9px; color: #d7e8fb; margin-top: 2px; line-height: 1.4; }
+  .hdr-center .iso { font-size: 9px; color: #eef6ff; font-weight: 700; margin-top: 2px; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 6px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 4px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; }
+  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 9.5px; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 9px; text-align: center; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 9px; white-space: nowrap; }
+  .val { font-size: 9.5px; color: #000; }
+  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 9.5px; vertical-align: middle; text-align: center; word-break: break-word; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
+  .cert-para { font-size: 9.5px; font-style: italic; color: #333; padding: 4px 6px; border: 1px solid #d9e1ea; margin-top: -1px; line-height: 1.4; break-inside: avoid; }
+  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 9.5px; vertical-align: top; }
+  .mt-n1 { margin-top: -1px; }
+  .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10.5px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
+  .accept-badge { color: #000; }
+  .reject-badge { color: #000; }
+  .neutral-badge { color: #000; }
+  .footer { background: #f8fafc; padding: 6px 10px; font-size: 9px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; text-align: center; }
+  
+  /* B&W mode */
+  .bw .rpt-header { background: #fff !important; border-bottom: 2px solid #000 !important; }
+  .bw .hdr-center { color: #000 !important; }
+  .bw .section-hdr { background: #fff !important; color: #000 !important; border: 1px solid #000 !important; }
+  .bw .col-hdr, .bw th { background: #fff !important; color: #000 !important; border-color: #000 !important; }
+  .bw .report-table td, .bw .obs-table td { border-color: #000 !important; }
+  .bw .lbl { background: #fff !important; color: #000 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border-bottom: 1.5px solid #000 !important; }
+
 `;
 
 // â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
@@ -182,11 +179,13 @@ export const AWSDReportPrintPage: React.FC = () => {
   const cert = report.certification ?? {};
 
   const ReportFooter = () => (
-    <div className="footer-text">
+    <div className="footer">
       Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
-      Baramati, Dist-Pune 413133 &nbsp;|&nbsp; Ph. +91 9860186056, +91
-      7875154431 &nbsp;|&nbsp; Reg. Office: A/p - Kuthare, Tal - Patan,
-      Dist-Satara 415112 &nbsp;|&nbsp; Website: www.niitindt.com &nbsp;|&nbsp;
+      Baramati, Dist-Pune 413133 | Ph. +91 9860186056, +91
+      7875154431
+      <br />
+      Reg. Office: A/p - Kuthare, Tal - Patan,
+      Dist-Satara 415112 | Website: www.niitindt.com |
       Email: niit04@gmail.com
     </div>
   );
@@ -229,110 +228,28 @@ export const AWSDReportPrintPage: React.FC = () => {
               <tr>
                 <td style={{ padding: "5mm 0 0 0" }}>
                   {/* â"€â"€ HEADER â"€â"€ */}
-                  <table
-                    style={{
-                      width: "100%",
-                      borderCollapse: "collapse",
-                      border: "1.5px solid #444",
-                      marginBottom: -1,
-                    }}
-                  >
-                    <tbody>
-                      <tr>
-                        {/* Logo */}
-                        <td
-                          rowSpan={2}
-                          style={{
-                            width: "10%",
-                            textAlign: "center",
-                            verticalAlign: "middle",
-                            border: "1px solid #444",
-                            padding: 4,
-                          }}
-                        >
-                          <div
-                            style={{
-                              border: "2px solid #1a3c8f",
-                              borderRadius: 4,
-                              width: 48,
-                              height: 48,
-                              margin: "0 auto",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: 11,
-                              color: "#1a3c8f",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            NIIT
-                            <br />
-                            LOGO
-                          </div>
-                        </td>
-                        {/* Company info */}
-                        <td
-                          style={{
-                            textAlign: "center",
-                            verticalAlign: "middle",
-                            border: "1px solid #444",
-                            padding: "2px 6px",
-                          }}
-                        >
-                          <div className="company-name">
-                            National Industrial Inspection &amp; Training
-                          </div>
-                          <div className="company-sub">
-                            THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING
-                            | NDT CONSULTANCY | PHYSICAL CALIBRATION | FACTORY
-                            INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY
-                            MANAGEMENT SYSTEM TRAINING
-                          </div>
-                          <div className="company-iso">
-                            (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
-                          </div>
-                        </td>
-                        {/* Format info */}
-                        <td
-                          rowSpan={2}
-                          style={{
-                            width: "20%",
-                            verticalAlign: "middle",
-                            border: "1px solid #444",
-                            padding: "3px 6px",
-                            fontSize: "11px",
-                            lineHeight: 1.9,
-                          }}
-                        >
-                          <div>
-                            <strong>Report No:</strong> {v(report.reportNo)}
-                          </div>
-                          <div>
-                            <strong>Format No:</strong> FMT-NDT-AWSD-01
-                          </div>
-                          <div>
-                            <strong>Rev. No:</strong> 00
-                          </div>
-                          <div>
-                            <strong>Page No:</strong> 1/1
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            textAlign: "center",
-                            border: "1px solid #444",
-                            padding: "3px 6px",
-                          }}
-                        >
-                          <div className="title-cell">
-                            Report of UT of Welds (AWS D1.1)
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <div className="rpt-header">
+                    <div className="logo-box">
+                      <img src="/logo.png" alt="NIIT Logo" />
+                    </div>
+                    <div className="hdr-center">
+                      <div className="org">National Industrial Inspection &amp; Training</div>
+                      <div className="sub">
+                        THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING |
+                        NDT CONSULTANCY | PHYSICAL CALIBRATION | FACTORY
+                        INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY
+                        MANAGEMENT SYSTEM TRAINING
+                      </div>
+                      <div className="iso">(AN ISO 9001:2015 CERTIFIED ORGANIZATION)</div>
+                    </div>
+                    <div style={{ width: '180px', color: '#fff', fontSize: '10px', lineHeight: 1.8, paddingLeft: 10, borderLeft: '1px solid rgba(255,255,255,0.2)' }}>
+                      <div><strong>Report No:</strong> {v(report.reportNo)}</div>
+                      <div><strong>Format No:</strong> FMT-NDT-AWSD-01</div>
+                      <div><strong>Rev. No:</strong> 00</div>
+                      <div><strong>Page No:</strong> 1/1</div>
+                    </div>
+                  </div>
+                  <div className="rpt-title">Report of UT of Welds (AWS D1.1)</div>
                 </td>
               </tr>
             </thead>
@@ -388,7 +305,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                   </table>
 
                   {/* â"€â"€ OBSERVATIONS â"€â"€ */}
-                  <table className="obs-table mt-n1" style={{ breakBefore: "page", pageBreakBefore: "always" }}>
+                  <table className="obs-table mt-n1">
                     <tbody>
                       <tr>
                         <td colSpan={16} className="section-hdr">
@@ -440,18 +357,8 @@ export const AWSDReportPrintPage: React.FC = () => {
                         >
                           Leg
                         </td>
-                        <td
-                          className="col-hdr-db"
-                          colSpan={4}
-                        >
-                          DECIBELS
-                        </td>
-                        <td
-                          className="col-hdr-disc"
-                          colSpan={5}
-                        >
-                          DISCONTINUITY
-                        </td>
+                        <td className="col-hdr" colSpan={4}>DECIBELS</td>
+                        <td className="col-hdr" colSpan={5}>DISCONTINUITY</td>
                         <td
                           className="col-hdr"
                           rowSpan={2}
@@ -462,74 +369,15 @@ export const AWSDReportPrintPage: React.FC = () => {
                       </tr>
                       {/* Header row 2 */}
                       <tr>
-                        <td
-                          className="col-hdr-db"
-                          style={{ width: "5.5%" }}
-                        >
-                          a.
-                          <br />
-                          Ind. Level
-                        </td>
-                        <td
-                          className="col-hdr-db"
-                          style={{ width: "5.5%" }}
-                        >
-                          b.
-                          <br />
-                          Ref. Level
-                        </td>
-                        <td
-                          className="col-hdr-db"
-                          style={{ width: "6%" }}
-                        >
-                          c.
-                          <br />
-                          Atten. Factor
-                        </td>
-                        <td
-                          className="col-hdr-db"
-                          style={{ width: "5.5%" }}
-                        >
-                          d.
-                          <br />
-                          Ind. Rating
-                        </td>
-                        <td
-                          className="col-hdr-disc"
-                          style={{ width: "5%" }}
-                        >
-                          Length
-                        </td>
-                        <td
-                          className="col-hdr-disc"
-                          style={{ width: "5.5%" }}
-                        >
-                          Angular
-                          <br />
-                          Dist.
-                        </td>
-                        <td
-                          className="col-hdr-disc"
-                          style={{ width: "6%" }}
-                        >
-                          Depth
-                          <br />
-                          from A
-                        </td>
-                        <td
-                          className="col-hdr-disc"
-                          style={{ width: "4.5%" }}
-                        >
-                          From
-                          <br />X
-                        </td>
-                        <td
-                          className="col-hdr-disc"
-                          style={{ width: "4.5%" }}
-                        >
-                          From
-                          <br />Y
-                        </td>
+                        <td className="col-hdr" style={{ width: "5.5%" }}>a.<br />Ind. Level</td>
+                        <td className="col-hdr" style={{ width: "5.5%" }}>b.<br />Ref. Level</td>
+                        <td className="col-hdr" style={{ width: "6%" }}>c.<br />Atten. Factor</td>
+                        <td className="col-hdr" style={{ width: "5.5%" }}>d.<br />Ind. Rating</td>
+                        <td className="col-hdr" style={{ width: "5%" }}>Length</td>
+                        <td className="col-hdr" style={{ width: "5.5%" }}>Angular<br />Dist.</td>
+                        <td className="col-hdr" style={{ width: "6%" }}>Depth<br />from A</td>
+                        <td className="col-hdr" style={{ width: "4.5%" }}>From<br />X</td>
+                        <td className="col-hdr" style={{ width: "4.5%" }}>From<br />Y</td>
                       </tr>
 
                       {/* Empty rows if no data */}

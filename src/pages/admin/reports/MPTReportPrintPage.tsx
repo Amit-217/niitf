@@ -17,25 +17,32 @@ const PRINT_STYLES = `
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
   @media screen { body.autoprint-mode { opacity: 0; } }
   @media print {
-    body.autoprint-mode { opacity: 1; }
+    body.autoprint-mode { opacity: 1; overflow: hidden !important; height: 297mm !important; }
     .no-print { display: none !important; }
-    body { margin: 0; background: #fff; }
-    #report-root { background: #fff !important; padding: 0 !important; display: flex !important; flex-direction: column !important; }
+    body { margin: 0; background: #fff; height: 297mm !important; overflow: hidden !important; }
+    #report-root { background: #fff !important; padding: 0 !important; display: block !important; height: 297mm !important; overflow: hidden !important; }
     #report-root > div {
-      width: 210mm !important; min-height: 297mm !important;
-      margin: 0 auto !important; padding: 0 3mm 45mm 3mm !important; /* Reserved 45mm at bottom for footer */
-      box-sizing: border-box !important; box-shadow: none !important; position: relative !important;
+      width: 210mm !important; height: 297mm !important;
+      margin: 0 !important; padding: 5mm 5mm 50mm 5mm !important;
+      box-sizing: border-box !important; position: relative !important;
+      overflow: hidden !important; break-inside: avoid !important;
+      page-break-after: avoid !important;
     }
-    .report { margin: 0 !important; box-shadow: none !important; width: calc(100% / 0.92) !important; transform: scale(0.92); transform-origin: top left; }
-    .print-fixed-footer { position: absolute !important; bottom: 0 !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; background: transparent !important; margin: 0 !important; }
-    .print-fixed-footer-inner { width: 193.2mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
-    .tfoot-content { visibility: hidden !important; }
+    .report { 
+      margin: 0 !important; box-shadow: none !important; 
+      width: 100% !important; 
+      zoom: 0.88;
+      transform: scale(0.88); transform-origin: top center;
+    }
+    .print-fixed-footer { position: absolute !important; bottom: 5mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; background: transparent !important; margin: 0 !important; }
+    .print-fixed-footer-inner { width: 200mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
+    .tfoot-content { display: none !important; }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: none; border-radius: 6px; overflow: hidden; }
-  .rpt-header { background: #185FA5; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
-  .logo-box { width: 90px; height: 90px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 3px; }
+  .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
+  .rpt-header { background: #185FA5; padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+  .logo-box { width: 70px; height: 70px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #fff; }
   .hdr-center .org { font-size: 15px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
@@ -69,32 +76,27 @@ const PRINT_STYLES = `
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 5px 6px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 10px; text-align: center; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 10px; width: 22%; }
-  .val { font-size: 11px; }
+  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 9.5px; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 9px; text-align: center; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 9px; width: 22%; }
+  .val { font-size: 9.5px; color: #000; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 5px 5px; font-size: 11px; vertical-align: top; word-break: break-word; }
-  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; }
+  .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 9.5px; vertical-align: top; word-break: break-word; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9px; font-weight: 700; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #d9e1ea; padding: 5px 6px; font-size: 11px; vertical-align: top; }
+  .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 9.5px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .std-tag { display: inline-block; background: #e7f1fb; color: #0c447c; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; margin-bottom: 2px; font-weight: 700; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
-  .accept-badge { color: #27500a; }
-  .reject-badge { color: #7a1f1f; }
-  .neutral-badge { color: #334155; }
+  .accept-badge { color: #000; }
+  .reject-badge { color: #000; }
+  .neutral-badge { color: #000; }
   .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 9px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
-  @media print {
-    .print-fixed-footer { position: fixed !important; bottom: 10mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; z-index: 99999 !important; background: transparent !important; }
-    .print-fixed-footer-inner { width: 193.2mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
-    .tfoot-content { visibility: hidden !important; }
-  }
   @media screen {
     .print-fixed-footer { display: none; }
     .tfoot-content { visibility: visible; }
@@ -674,7 +676,7 @@ export const MPTReportPrintPage = () => {
                       </table>
 
                       {/* -- 6. Observations -- */}
-                      <table className="obs-table mt-n1" style={{ breakBefore: "page", pageBreakBefore: "always" }}>
+                      <table className="obs-table mt-n1">
                         <tbody>
                           <tr>
                             <td colSpan={7} className="section-hdr">
