@@ -60,6 +60,7 @@ export const AdminTasksPage = () => {
   const isMyTasksMode = new URLSearchParams(location.search).get("mine") === "1";
   const [viewArchived, setViewArchived] = useState(false);
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED' | 'ASSIGNED'>(isMyTasksMode ? 'IN_PROGRESS' : 'ALL');
+  const [processingTasks, setProcessingTasks] = useState<Set<string>>(new Set());
 
   // Drawer states
   const [isCreateDrawerOpen, setCreateDrawerOpen] = useState(false);
@@ -267,24 +268,57 @@ export const AdminTasksPage = () => {
   const handleUnarchiveTask = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!window.confirm("Are you sure you want to reopen this task?")) return;
+    setProcessingTasks(prev => new Set(prev).add(id));
     try {
-      await unarchiveTask(id);
-      toast.success("Task reopened successfully");
-      fetchTasks();
+      await updateTask(id, { isArchived: false, status: 'IN_PROGRESS' });
+      toast.success("Task reopened and set to In Progress");
+      await fetchTasks();
     } catch (err) {
       toast.error("Failed to reopen task");
+    } finally {
+      setProcessingTasks(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  };
+
+  const handleReopenTask = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to reopen this completed task for further work?")) return;
+    setProcessingTasks(prev => new Set(prev).add(id));
+    try {
+      await updateTask(id, { status: "IN_PROGRESS", isArchived: false });
+      toast.success("Task reopened and set to In Progress");
+      await fetchTasks();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to reopen task");
+    } finally {
+      setProcessingTasks(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     }
   };
 
   const handleArchiveTask = async (taskId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!window.confirm("Are you sure you want to archive this task? It will no longer be visible in active lists.")) return;
+    setProcessingTasks(prev => new Set(prev).add(taskId));
     try {
       await archiveTask(taskId);
       toast.success("Task archived successfully!");
-      fetchTasks();
+      await fetchTasks();
     } catch (error: any) {
       toast.error(error.message || "Failed to archive task");
+    } finally {
+      setProcessingTasks(prev => {
+        const next = new Set(prev);
+        next.delete(taskId);
+        return next;
+      });
     }
   };
 
@@ -414,20 +448,44 @@ export const AdminTasksPage = () => {
               {task.status.replace("_", " ")}
             </span>
             {task.status === "COMPLETED" && !task.isArchived && (
-              <button
-                onClick={(e) => handleArchiveTask(task._id, e)}
-                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 text-[9px] font-black uppercase tracking-wider hover:bg-amber-100 transition-all shadow-sm group/archive"
-              >
-                <Archive size={12} className="group-hover/archive:scale-110 transition-transform" />
-                Archive Task
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={(e) => handleArchiveTask(task._id, e)}
+                  disabled={processingTasks.has(task._id)}
+                  className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 text-[9px] font-black uppercase tracking-wider hover:bg-amber-100 transition-all shadow-sm group/archive disabled:opacity-50"
+                >
+                  {processingTasks.has(task._id) ? (
+                    <RefreshCw size={12} className="animate-spin" />
+                  ) : (
+                    <Archive size={12} className="group-hover/archive:scale-110 transition-transform" />
+                  )}
+                  Archive Task
+                </button>
+                <button
+                  onClick={(e) => handleReopenTask(task._id, e)}
+                  disabled={processingTasks.has(task._id)}
+                  className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-black uppercase tracking-wider hover:bg-emerald-100 transition-all shadow-sm group/reopen disabled:opacity-50"
+                >
+                  {processingTasks.has(task._id) ? (
+                    <RefreshCw size={12} className="animate-spin" />
+                  ) : (
+                    <RefreshCw size={12} className="group-hover/reopen:rotate-180 transition-transform duration-500" />
+                  )}
+                  Reopen Task
+                </button>
+              </div>
             )}
             {task.isArchived && (
               <button
                 onClick={(e) => handleUnarchiveTask(task._id, e)}
-                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-black uppercase tracking-wider hover:bg-emerald-100 transition-all shadow-sm group/reopen"
+                disabled={processingTasks.has(task._id)}
+                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-black uppercase tracking-wider hover:bg-emerald-100 transition-all shadow-sm group/reopen disabled:opacity-50"
               >
-                <RefreshCw size={12} className="group-hover/reopen:rotate-180 transition-transform duration-500" />
+                {processingTasks.has(task._id) ? (
+                  <RefreshCw size={12} className="animate-spin" />
+                ) : (
+                  <RefreshCw size={12} className="group-hover/reopen:rotate-180 transition-transform duration-500" />
+                )}
                 Reopen Task
               </button>
             )}
@@ -766,16 +824,30 @@ export const AdminTasksPage = () => {
               </div>
               <div className="flex items-start gap-2">
                 {selectedTask.status === "COMPLETED" && !selectedTask.isArchived && (
-                  <button
-                    onClick={(e) => {
-                      handleArchiveTask(selectedTask._id, e);
-                      setViewDrawerOpen(false);
-                    }}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-xs font-bold hover:bg-amber-100 transition-all shadow-sm"
-                  >
-                    <Archive size={14} />
-                    Archive
-                  </button>
+                  <>
+                    <button
+                      onClick={(e) => {
+                        handleArchiveTask(selectedTask._id, e);
+                        setViewDrawerOpen(false);
+                      }}
+                      disabled={processingTasks.has(selectedTask._id)}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-xs font-bold hover:bg-amber-100 transition-all shadow-sm disabled:opacity-50"
+                    >
+                      <Archive size={14} />
+                      Archive
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        handleReopenTask(selectedTask._id, e);
+                        setViewDrawerOpen(false);
+                      }}
+                      disabled={processingTasks.has(selectedTask._id)}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold hover:bg-emerald-100 transition-all shadow-sm disabled:opacity-50"
+                    >
+                      <RefreshCw size={14} />
+                      Reopen Task
+                    </button>
+                  </>
                 )}
                 {selectedTask.isArchived && (
                   <button
@@ -783,7 +855,8 @@ export const AdminTasksPage = () => {
                       handleUnarchiveTask(selectedTask._id, e);
                       setViewDrawerOpen(false);
                     }}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold hover:bg-emerald-100 transition-all shadow-sm"
+                    disabled={processingTasks.has(selectedTask._id)}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold hover:bg-emerald-100 transition-all shadow-sm disabled:opacity-50"
                   >
                     <RefreshCw size={14} />
                     Reopen Task
