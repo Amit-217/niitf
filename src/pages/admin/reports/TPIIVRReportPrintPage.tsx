@@ -37,17 +37,17 @@ const PRINT_STYLES = `
     .print-fixed-footer-inner { width: 200mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
     .tfoot-content { display: none !important; }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
   .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
-  .rpt-header { background: #185FA5; padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+  .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
   .logo-box { width: 70px; height: 70px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
-  .hdr-center { flex: 1; text-align: center; color: #fff; }
-  .hdr-center .org { font-size: 15px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 9px; color: #d7e8fb; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 9px; color: #eef6ff; font-weight: 700; margin-top: 2px; }
-  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 8px; text-align: center; padding: 3px 8px; }
+  .hdr-center { flex: 1; text-align: center; color: #0C447C; }
+  .hdr-center .org { font-size: 17px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
+  .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
+  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
   .bw .rpt-header { background: #fff !important; border-bottom: 1px solid #444 !important; }
@@ -74,19 +74,19 @@ const PRINT_STYLES = `
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .bw .items-table td, .bw .items-table th { border-color: #888 !important; }
   .bw .activities-box { border-color: #888 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 9.5px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 9px; text-align: center; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 9px; white-space: nowrap; }
-  .val { font-size: 9.5px; color: #000; }
+  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; white-space: nowrap; }
+  .val { font-size: 11px; color: #000; }
   .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .items-table td, .items-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 9.5px; vertical-align: middle; word-break: break-word; text-align: center; }
   .items-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
   .items-table td.text-left { text-align: left; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #d9e1ea; padding: 4px 6px; font-size: 11px; vertical-align: top; }
+  .sign-table td { border: 1px solid #d9e1ea; padding: 4px 6px; font-size: 12px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
@@ -94,7 +94,7 @@ const PRINT_STYLES = `
   .neutral-badge { color: #000; }
   .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
   .activities-box { border: 1px solid #d9e1ea; padding: 6px 8px; font-size: 11px; min-height: 40px; white-space: pre-wrap; word-break: break-word; }
-  .footer { background: #f8fafc; padding: 6px 10px; font-size: 9px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
@@ -324,13 +324,12 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                       </div>
                       <div className="hdr-center">
                         <div className="org">
-                          National Industrial Inspection &amp; Training
+                          National Industrial Inspection and Training
                         </div>
                         <div className="sub">
-                          THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING |
-                          NDT CONSULTANCY | PHYSICAL CALIBRATION | FACTORY
-                          INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY
-                          MANAGEMENT SYSTEM TRAINING
+                          THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT
+                          TRAINING | NDT CONSULTANCY | FACTORY INSPECTION UNDER
+                          MAHARASHTRA FACTORY ACT{" "}
                         </div>
                         <div className="iso">
                           (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
@@ -343,74 +342,90 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               <tbody style={{ display: "table-row-group" }}>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
-                      <div className="report-body">
-                        <div className="rpt-title">Inspection Visit Report</div>
+                    <div className="report-body">
+                      <div className="rpt-title">Inspection Visit Report</div>
 
-                        {/* ── JOB DETAILS ── */}
-                        <table className="report-table mt-n1">
-                          <colgroup>
-                            <col style={{ width: "15%" }} />
-                            <col style={{ width: "23%" }} />
-                            <col style={{ width: "12%" }} />
-                            <col style={{ width: "18%" }} />
-                            <col style={{ width: "32%" }} />
-                          </colgroup>
-                          <tbody>
-                            <tr>
-                              <td colSpan={5} className="section-hdr">
-                                JOB DETAILS
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="lbl">I.R No:</td>
-                              <td className="val" style={{ fontWeight: 600 }}>{v(report.irNo)}</td>
-                              <td className="val" style={{ fontWeight: 600, textAlign: 'center' }}><span style={{ fontSize: '10px', fontWeight: 600 }}>IR Rev.: </span>{v(report.irRev)}</td>
-                              <td className="lbl">Dt. of Inspection</td>
-                              <td className="val" style={{ fontWeight: 600 }}>{fmtDate(report.dtOfInspection)}</td>
-                            </tr>
-                          </tbody>
-                        </table>
+                      {/* ── JOB DETAILS ── */}
+                      <table className="report-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "15%" }} />
+                          <col style={{ width: "23%" }} />
+                          <col style={{ width: "12%" }} />
+                          <col style={{ width: "18%" }} />
+                          <col style={{ width: "32%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td colSpan={5} className="section-hdr">
+                              JOB DETAILS
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">I.R No:</td>
+                            <td className="val" style={{ fontWeight: 600 }}>
+                              {v(report.irNo)}
+                            </td>
+                            <td
+                              className="val"
+                              style={{ fontWeight: 600, textAlign: "center" }}
+                            >
+                              <span
+                                style={{ fontSize: "10px", fontWeight: 600 }}
+                              >
+                                IR Rev.:{" "}
+                              </span>
+                              {v(report.irRev)}
+                            </td>
+                            <td className="lbl">Dt. of Inspection</td>
+                            <td className="val" style={{ fontWeight: 600 }}>
+                              {fmtDate(report.dtOfInspection)}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-                        <table className="report-table mt-n1">
-                          <colgroup>
-                            <col style={{ width: "15%" }} />
-                            <col style={{ width: "35%" }} />
-                            <col style={{ width: "18%" }} />
-                            <col style={{ width: "32%" }} />
-                          </colgroup>
-                          <tbody>
-                            <tr>
-                              <td className="lbl">Client:-</td>
-                              <td className="val">{v(report.client)}</td>
-                              <td className="lbl">Inspection location</td>
-                              <td className="val">{v(report.inspectionLocation)}</td>
-                            </tr>
-                            <tr>
-                              <td className="lbl">Project</td>
-                              <td className="val">{v(report.project)}</td>
-                              <td className="lbl">Appd. QAP No</td>
-                              <td className="val">{v(report.appdQapNo)}</td>
-                            </tr>
-                            <tr>
-                              <td className="lbl">Client PO No</td>
-                              <td className="val">{v(report.clientPoNo)}</td>
-                              <td className="lbl">Appd. QAP Dt.</td>
-                              <td className="val">{fmtDate(report.appdQapDt)}</td>
-                            </tr>
-                            <tr>
-                              <td className="lbl">PO Amed. No</td>
-                              <td className="val">{v(report.poAmedNo)}</td>
-                              <td className="lbl">Part Name</td>
-                              <td className="val">{v(report.partName)}</td>
-                            </tr>
-                            <tr>
-                              <td className="lbl">PO Date</td>
-                              <td className="val">{fmtDate(report.poDate)}</td>
-                              <td className="lbl">Inspection Stage</td>
-                              <td className="val">{v(report.inspectionStage)}</td>
-                            </tr>
-                          </tbody>
-                        </table>
+                      <table className="report-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "15%" }} />
+                          <col style={{ width: "35%" }} />
+                          <col style={{ width: "18%" }} />
+                          <col style={{ width: "32%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td className="lbl">Client:-</td>
+                            <td className="val">{v(report.client)}</td>
+                            <td className="lbl">Inspection location</td>
+                            <td className="val">
+                              {v(report.inspectionLocation)}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Project</td>
+                            <td className="val">{v(report.project)}</td>
+                            <td className="lbl">Appd. QAP No</td>
+                            <td className="val">{v(report.appdQapNo)}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Client PO No</td>
+                            <td className="val">{v(report.clientPoNo)}</td>
+                            <td className="lbl">Appd. QAP Dt.</td>
+                            <td className="val">{fmtDate(report.appdQapDt)}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">PO Amed. No</td>
+                            <td className="val">{v(report.poAmedNo)}</td>
+                            <td className="lbl">Part Name</td>
+                            <td className="val">{v(report.partName)}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">PO Date</td>
+                            <td className="val">{fmtDate(report.poDate)}</td>
+                            <td className="lbl">Inspection Stage</td>
+                            <td className="val">{v(report.inspectionStage)}</td>
+                          </tr>
+                        </tbody>
+                      </table>
 
                       {/* ── CLIENT & VENDOR DETAILS ── */}
                       <table className="report-table mt-n1">
@@ -553,7 +568,11 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="col-hdr" style={{ width: "8%" }} rowSpan={2}>
+                            <td
+                              className="col-hdr"
+                              style={{ width: "8%" }}
+                              rowSpan={2}
+                            >
                               PO Line No.
                             </td>
                             <td
@@ -570,10 +589,18 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             >
                               Drg No. / Heat No.
                             </td>
-                            <td className="col-hdr" colSpan={5} style={{ textAlign: "center" }}>
+                            <td
+                              className="col-hdr"
+                              colSpan={5}
+                              style={{ textAlign: "center" }}
+                            >
                               Quantity in Nos.
                             </td>
-                            <td className="col-hdr" style={{ width: "14%" }} rowSpan={2}>
+                            <td
+                              className="col-hdr"
+                              style={{ width: "14%" }}
+                              rowSpan={2}
+                            >
                               Insp. Type
                             </td>
                           </tr>
@@ -810,7 +837,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                                 textAlign: "center",
                               }}
                             >
-                              FOR VENDOR{v(vd.vendor) ? `: ${v(vd.vendor)}` : ""}
+                              FOR VENDOR
+                              {v(vd.vendor) ? `: ${v(vd.vendor)}` : ""}
                             </td>
                             <td
                               style={{
