@@ -185,12 +185,10 @@ export const AWSDReportPrintPage: React.FC = () => {
   const ReportFooter = () => (
     <div className="footer">
       Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
-      Baramati, Dist-Pune 413133 | Ph. +91 9860186056, +91
-      7875154431
+      Baramati, Dist-Pune 413133 | Ph. +91 9860186056, +91 7875154431
       <br />
-      Reg. Office: A/p - Kuthare, Tal - Patan,
-      Dist-Satara 415112 | Website: www.niitindt.com |
-      Email: niit04@gmail.com
+      Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
+      www.niitindt.com | Email: niit04@gmail.com
     </div>
   );
 
@@ -237,18 +235,46 @@ export const AWSDReportPrintPage: React.FC = () => {
                       <img src={niitLogo} alt="NIIT Logo" />
                     </div>
                     <div className="hdr-center">
-                      <div className="org">National Industrial Inspection &amp; Training</div>
-                      <div className="sub">THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING | NDT CONSULTANCY | PHYSICAL CALIBRATION | FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY MANAGEMENT SYSTEM TRAINING</div>
-                      <div className="iso">(AN ISO 9001:2015 CERTIFIED ORGANIZATION)</div>
+                      <div className="org">
+                        National Industrial Inspection &amp; Training
+                      </div>
+                      <div className="sub">
+                        THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING |
+                        NDT CONSULTANCY | PHYSICAL CALIBRATION | FACTORY
+                        INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY
+                        MANAGEMENT SYSTEM TRAINING
+                      </div>
+                      <div className="iso">
+                        (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
+                      </div>
                     </div>
-                    <div style={{ width: '180px', color: '#0C447C', fontSize: '10px', lineHeight: 1.8, paddingLeft: 10, borderLeft: '1px solid #b8cfe7' }}>
-                      <div><strong>Report No:</strong> {v(report.reportNo)}</div>
-                      <div><strong>Format No:</strong> FMT-NDT-AWSD-01</div>
-                      <div><strong>Rev. No:</strong> 00</div>
-                      <div><strong>Page No:</strong> 1/1</div>
+                    <div
+                      style={{
+                        width: "180px",
+                        color: "#0C447C",
+                        fontSize: "10px",
+                        lineHeight: 1.8,
+                        paddingLeft: 10,
+                        borderLeft: "1px solid #b8cfe7",
+                      }}
+                    >
+                      <div>
+                        <strong>Report No:</strong> {v(report.reportNo)}
+                      </div>
+                      <div>
+                        <strong>Format No:</strong> FMT-NDT-AWSD-01
+                      </div>
+                      <div>
+                        <strong>Rev. No:</strong> 00
+                      </div>
+                      <div>
+                        <strong>Page No:</strong> 1/1
+                      </div>
                     </div>
                   </div>
-                  <div className="rpt-title">Report of UT of Welds (AWS D1.1)</div>
+                  <div className="rpt-title">
+                    Report of UT of Welds (AWS D1.1)
+                  </div>
                 </td>
               </tr>
             </thead>
@@ -304,7 +330,10 @@ export const AWSDReportPrintPage: React.FC = () => {
                   </table>
 
                   {/* â"€â"€ OBSERVATIONS â"€â"€ */}
-                  <table className="obs-table mt-n1" style={{ pageBreakBefore: "always", breakBefore: "page" }}>
+                  <table
+                    className="obs-table mt-n1"
+                    style={{ pageBreakBefore: "always", breakBefore: "page" }}
+                  >
                     <tbody>
                       <tr>
                         <td colSpan={16} className="section-hdr">
@@ -356,8 +385,12 @@ export const AWSDReportPrintPage: React.FC = () => {
                         >
                           Leg
                         </td>
-                        <td className="col-hdr" colSpan={4}>DECIBELS</td>
-                        <td className="col-hdr" colSpan={5}>DISCONTINUITY</td>
+                        <td className="col-hdr" colSpan={4}>
+                          DECIBELS
+                        </td>
+                        <td className="col-hdr" colSpan={5}>
+                          DISCONTINUITY
+                        </td>
                         <td
                           className="col-hdr"
                           rowSpan={2}
@@ -368,15 +401,47 @@ export const AWSDReportPrintPage: React.FC = () => {
                       </tr>
                       {/* Header row 2 */}
                       <tr>
-                        <td className="col-hdr" style={{ width: "5.5%" }}>a.<br />Ind. Level</td>
-                        <td className="col-hdr" style={{ width: "5.5%" }}>b.<br />Ref. Level</td>
-                        <td className="col-hdr" style={{ width: "6%" }}>c.<br />Atten. Factor</td>
-                        <td className="col-hdr" style={{ width: "5.5%" }}>d.<br />Ind. Rating</td>
-                        <td className="col-hdr" style={{ width: "5%" }}>Length</td>
-                        <td className="col-hdr" style={{ width: "5.5%" }}>Angular<br />Dist.</td>
-                        <td className="col-hdr" style={{ width: "6%" }}>Depth<br />from A</td>
-                        <td className="col-hdr" style={{ width: "4.5%" }}>From<br />X</td>
-                        <td className="col-hdr" style={{ width: "4.5%" }}>From<br />Y</td>
+                        <td className="col-hdr" style={{ width: "5.5%" }}>
+                          a.
+                          <br />
+                          Ind. Level
+                        </td>
+                        <td className="col-hdr" style={{ width: "5.5%" }}>
+                          b.
+                          <br />
+                          Ref. Level
+                        </td>
+                        <td className="col-hdr" style={{ width: "6%" }}>
+                          c.
+                          <br />
+                          Atten. Factor
+                        </td>
+                        <td className="col-hdr" style={{ width: "5.5%" }}>
+                          d.
+                          <br />
+                          Ind. Rating
+                        </td>
+                        <td className="col-hdr" style={{ width: "5%" }}>
+                          Length
+                        </td>
+                        <td className="col-hdr" style={{ width: "5.5%" }}>
+                          Angular
+                          <br />
+                          Dist.
+                        </td>
+                        <td className="col-hdr" style={{ width: "6%" }}>
+                          Depth
+                          <br />
+                          from A
+                        </td>
+                        <td className="col-hdr" style={{ width: "4.5%" }}>
+                          From
+                          <br />X
+                        </td>
+                        <td className="col-hdr" style={{ width: "4.5%" }}>
+                          From
+                          <br />Y
+                        </td>
                       </tr>
 
                       {/* Empty rows if no data */}
@@ -408,9 +473,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                               <td style={{}}>
                                 {v(o.decibels?.indicationRating)}
                               </td>
-                              <td style={{}}>
-                                {v(o.discontinuity?.length)}
-                              </td>
+                              <td style={{}}>{v(o.discontinuity?.length)}</td>
                               <td style={{}}>
                                 {v(o.discontinuity?.angularDistance)}
                               </td>

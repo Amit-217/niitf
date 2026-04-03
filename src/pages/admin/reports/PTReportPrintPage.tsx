@@ -573,7 +573,13 @@ export const PTReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* â"€â"€ OBSERVATIONS â"€â"€ */}
-                      <table className="obs-table mt-n1" style={{ pageBreakBefore: "always", breakBefore: "page" }}>
+                      <table
+                        className="obs-table mt-n1"
+                        style={{
+                          pageBreakBefore: "always",
+                          breakBefore: "page",
+                        }}
+                      >
                         <tbody>
                           <tr>
                             <td colSpan={7} className="section-hdr">
@@ -746,15 +752,12 @@ export const PTReportPrintPage: React.FC = () => {
           </colgroup>
           <tbody>
             <tr>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                EXAMINED BY
-              </td>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
               <td style={{ fontWeight: 600, fontSize: "11px" }}>
                 CUSTOMER: <span>{v(fs.customer?.name)}</span>
               </td>
               <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                CLIENT / TPI:{" "}
-                <span>{v(fs.clientOrTPI?.name)}</span>
+                CLIENT / TPI: <span>{v(fs.clientOrTPI?.name)}</span>
               </td>
             </tr>
             <tr>
@@ -769,23 +772,17 @@ export const PTReportPrintPage: React.FC = () => {
               </td>
             </tr>
             <tr>
-              <td style={{ minHeight: 14 }}>
-                Name: {v(inspector.name)}
-              </td>
+              <td style={{ minHeight: 14 }}>Name: {v(inspector.name)}</td>
               <td>Name: {v(fs.customer?.name)}</td>
               <td>Name: {v(fs.clientOrTPI?.name)}</td>
             </tr>
             <tr>
               <td>
                 {v(inspector.qualification)}
-                {inspector.designation
-                  ? ` / ${inspector.designation}`
-                  : ""}
+                {inspector.designation ? ` / ${inspector.designation}` : ""}
               </td>
               <td>Designation: {v(fs.customer?.designation)}</td>
-              <td>
-                Designation: {v(fs.clientOrTPI?.designation)}
-              </td>
+              <td>Designation: {v(fs.clientOrTPI?.designation)}</td>
             </tr>
             <tr>
               <td style={{ height: 28 }}>Signature:</td>
