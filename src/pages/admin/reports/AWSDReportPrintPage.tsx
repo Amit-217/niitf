@@ -6,6 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { getAWSDReportById } from "../../../api/customerApi";
+import niitLogo from "../../../assets/logo.png";
 
 // â"€â"€â"€ Print Styles â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
@@ -29,34 +30,38 @@ const PRINT_STYLES = `
       margin: 0 !important; box-shadow: none !important; 
       width: 100% !important; 
     }
-    /* Fixed footer for print - appears at bottom of every page */
-    .print-fixed-footer { position: absolute !important; bottom: 4mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; background: transparent !important; margin: 0 !important; }
-    .print-fixed-footer-inner { width: 287mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
-    .tfoot-content { display: none !important; }
+    .print-fixed-footer {
+      position: fixed !important;
+      bottom: 5mm !important;
+      left: 5mm !important;
+      right: 5mm !important;
+      background: #fff !important;
+    }
+    .screen-sign-table { display: none !important; }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
   .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
   .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 70px; height: 70px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
+  .logo-box { width: 96px; height: 96px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 17px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 6px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 4px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; }
+  .hdr-center .org { font-size: 18px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .sub { font-size: 11px; color: #374151; margin-top: 2px; line-height: 1.4; }
+  .hdr-center .iso { font-size: 11px; color: #0C447C; font-weight: 700; margin-top: 2px; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 6px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 4px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; white-space: nowrap; }
-  .val { font-size: 11px; color: #000; }
+  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 12px; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 12px; text-align: center; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 12px; white-space: nowrap; }
+  .val { font-size: 12px; color: #000; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 9.5px; vertical-align: middle; text-align: center; word-break: break-word; }
-  .obs-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
-  .cert-para { font-size: 9.5px; font-style: italic; color: #333; padding: 4px 6px; border: 1px solid #d9e1ea; margin-top: -1px; line-height: 1.4; break-inside: avoid; }
+  .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 11px; vertical-align: middle; text-align: center; word-break: break-word; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; }
+  .cert-para { font-size: 11px; font-style: italic; color: #333; padding: 4px 6px; border: 1px solid #d9e1ea; margin-top: -1px; line-height: 1.4; break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
+  .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 13px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10.5px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
@@ -229,7 +234,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                   {/* â"€â"€ HEADER â"€â"€ */}
                   <div className="rpt-header">
                     <div className="logo-box">
-                      <img src="/logo.png" alt="NIIT Logo" />
+                      <img src={niitLogo} alt="NIIT Logo" />
                     </div>
                     <div className="hdr-center">
                       <div className="org">National Industrial Inspection &amp; Training</div>
@@ -299,7 +304,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                   </table>
 
                   {/* â"€â"€ OBSERVATIONS â"€â"€ */}
-                  <table className="obs-table mt-n1">
+                  <table className="obs-table mt-n1" style={{ pageBreakBefore: "always", breakBefore: "page" }}>
                     <tbody>
                       <tr>
                         <td colSpan={16} className="section-hdr">

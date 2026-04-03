@@ -11,6 +11,7 @@ import {
   getPublicPTReportById,
   PTReport,
 } from "../../../api/customerApi";
+import niitLogo from "../../../assets/logo.png";
 
 // â"€â"€â"€ Print Styles â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
@@ -25,22 +26,28 @@ const PRINT_STYLES = `
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; min-height: 297mm !important; }
     #report-root > div {
       width: 210mm !important; min-height: 297mm !important;
-      margin: 0 !important; padding: 5mm 5mm 50mm 5mm !important;
+      margin: 0 !important; padding: 5mm 5mm 70mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       break-inside: avoid !important;
       page-break-after: auto !important;
+      box-shadow: none !important;
     }
-    .report { 
-      margin: 0 !important; box-shadow: none !important; 
-      width: 100% !important; 
+    .report {
+      margin: 0 !important; box-shadow: none !important;
+      width: 100% !important;
     }
-    .print-fixed-footer { position: absolute !important; bottom: 5mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; background: transparent !important; margin: 0 !important; }
-    .print-fixed-footer-inner { width: 200mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
-    .tfoot-content { display: none !important; }
+    .screen-sign-table { display: none !important; }
+    .print-fixed-footer {
+      position: fixed !important;
+      bottom: 5mm !important;
+      left: 5mm !important;
+      right: 5mm !important;
+      background: #fff !important;
+    }
   }
   body {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
+    font-size: 13px;
     color: #0f172a;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -61,12 +68,12 @@ const PRINT_STYLES = `
     align-items: center;
     gap: 10px;
   }
-  .logo-box { width: 80px; height: 80px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
+  .logo-box { width: 96px; height: 96px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 17px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
+  .hdr-center .org { font-size: 18px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .sub { font-size: 11px; color: #374151; margin-top: 2px; line-height: 1.4; }
+  .hdr-center .iso { font-size: 11px; color: #0C447C; font-weight: 700; margin-top: 2px; }
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
@@ -94,27 +101,27 @@ const PRINT_STYLES = `
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .rpt-title {
     background: #E6F1FB; text-align: center; padding: 7px;
-    font-size: 15px; font-weight: 700; color: #0C447C;
+    font-size: 16px; font-weight: 700; color: #0C447C;
     text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7;
   }
   .section-hdr {
-    background: #185FA5; color: #fff; font-size: 12px; font-weight: 700;
+    background: #185FA5; color: #fff; font-size: 13px; font-weight: 700;
     padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase;
   }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
     .report-table td, .report-table th {
       border: 1px solid #d9e1ea; padding: 2px 4px;
-      vertical-align: middle; word-break: break-word; font-size: 11px;
+      vertical-align: middle; word-break: break-word; font-size: 12px;
     }
-    .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
-    .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; }
-    .val { font-size: 11px; color: #000; }
+    .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 12px; text-align: center; color: #0C447C; }
+    .lbl { background: #f7fafc; font-weight: 600; font-size: 12px; }
+    .val { font-size: 12px; color: #000; }
     .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 9.5px; vertical-align: top; word-break: break-word; }
-    .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9px; font-weight: 700; }
+    .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 11px; vertical-align: top; word-break: break-word; }
+    .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; }
     .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
     .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-    .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
+    .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 13px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
@@ -130,8 +137,9 @@ const PRINT_STYLES = `
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
   @media screen {
+    .print-blank-row { display: none; }
     .print-fixed-footer { display: none; }
-    .tfoot-content { visibility: visible; }
+    .print-sign-table { display: none; }
   }
 `;
 
@@ -356,7 +364,7 @@ export const PTReportPrintPage: React.FC = () => {
                   <td style={{ padding: "5mm 0 0 0" }}>
                     <div className="rpt-header">
                       <div className="logo-box">
-                        <img src="/logo.png" alt="NIIT Logo" />
+                        <img src={niitLogo} alt="NIIT Logo" />
                       </div>
                       <div className="hdr-center">
                         <div className="org">
@@ -565,7 +573,7 @@ export const PTReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* â"€â"€ OBSERVATIONS â"€â"€ */}
-                      <table className="obs-table mt-n1">
+                      <table className="obs-table mt-n1" style={{ pageBreakBefore: "always", breakBefore: "page" }}>
                         <tbody>
                           <tr>
                             <td colSpan={7} className="section-hdr">
@@ -636,7 +644,7 @@ export const PTReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* â"€â"€ EXAMINED BY â"€â"€ */}
-                      <table className="sign-table mt-n1">
+                      <table className="sign-table mt-n1 screen-sign-table">
                         <colgroup>
                           <col style={{ width: "33.3%" }} />
                           <col style={{ width: "33.3%" }} />
@@ -712,16 +720,6 @@ export const PTReportPrintPage: React.FC = () => {
                   </td>
                 </tr>
               </tbody>
-              <tfoot style={{ display: "table-footer-group" }}>
-                <tr>
-                  <td style={{ padding: 0 }}>
-                    <div
-                      className="tfoot-content"
-                      style={{ height: "15mm" }}
-                    ></div>
-                  </td>
-                </tr>
-              </tfoot>
             </table>
           </div>
 
@@ -739,14 +737,79 @@ export const PTReportPrintPage: React.FC = () => {
         </div>
       </div>
 
-      {/* The fixed footer that only appears in print on every page at the bottom */}
-      <div className="print-fixed-footer">
-        <div
-          className={`print-fixed-footer-inner ${bwMode ? "bw" : ""}`}
-          style={{ border: "none", boxShadow: "none" }}
-        >
-          <ReportFooter />
-        </div>
+      <div className={`print-fixed-footer${bwMode ? " bw" : ""}`}>
+        <table className="sign-table">
+          <colgroup>
+            <col style={{ width: "33.3%" }} />
+            <col style={{ width: "33.3%" }} />
+            <col style={{ width: "33.4%" }} />
+          </colgroup>
+          <tbody>
+            <tr>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                EXAMINED BY
+              </td>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                CUSTOMER: <span>{v(fs.customer?.name)}</span>
+              </td>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                CLIENT / TPI:{" "}
+                <span>{v(fs.clientOrTPI?.name)}</span>
+              </td>
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                National Industrial Inspection And Training
+              </td>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                {v(jd.customer)}
+              </td>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                {v(jd.client)}
+              </td>
+            </tr>
+            <tr>
+              <td style={{ minHeight: 14 }}>
+                Name: {v(inspector.name)}
+              </td>
+              <td>Name: {v(fs.customer?.name)}</td>
+              <td>Name: {v(fs.clientOrTPI?.name)}</td>
+            </tr>
+            <tr>
+              <td>
+                {v(inspector.qualification)}
+                {inspector.designation
+                  ? ` / ${inspector.designation}`
+                  : ""}
+              </td>
+              <td>Designation: {v(fs.customer?.designation)}</td>
+              <td>
+                Designation: {v(fs.clientOrTPI?.designation)}
+              </td>
+            </tr>
+            <tr>
+              <td style={{ height: 28 }}>Signature:</td>
+              <td>Signature:</td>
+              <td>Signature:</td>
+            </tr>
+            <tr>
+              <td style={{ height: 28 }}></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>I.D. No.: {v(inspector.idNo)}</td>
+              <td>I.D. No.: {v(fs.customer?.idNo)}</td>
+              <td>I.D. No.: {v(fs.clientOrTPI?.idNo)}</td>
+            </tr>
+            <tr>
+              <td>Date: {fmtDate(inspector.date)}</td>
+              <td>Date: {fmtDate(fs.customer?.date)}</td>
+              <td>Date: {fmtDate(fs.clientOrTPI?.date)}</td>
+            </tr>
+          </tbody>
+        </table>
+        <ReportFooter />
       </div>
     </>
   );
