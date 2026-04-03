@@ -11,44 +11,49 @@ import {
   getPublicMPTReportById,
   MPTReport,
 } from "../../../api/customerApi";
+import niitLogo from "../../../assets/logo.png";
 
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
   @media screen { body.autoprint-mode { opacity: 0; } }
   @media print {
-    body.autoprint-mode { opacity: 1; overflow: hidden !important; height: 297mm !important; }
+    body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
-    body { margin: 0; background: #fff; height: 297mm !important; overflow: hidden !important; }
-    #report-root { background: #fff !important; padding: 0 !important; display: block !important; height: 297mm !important; overflow: hidden !important; }
+    body { margin: 0; background: #fff; min-height: 297mm !important; }
+    #report-root { background: #fff !important; padding: 0 !important; display: block !important; min-height: 297mm !important; }
     #report-root > div {
-      width: 210mm !important; height: 297mm !important;
-      margin: 0 !important; padding: 5mm 8mm 50mm 8mm !important;
+      width: 210mm !important; min-height: 297mm !important;
+      margin: 0 !important; padding: 5mm 5mm 70mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
-      overflow: hidden !important; break-inside: avoid !important;
-      page-break-after: avoid !important;
+      break-inside: avoid !important;
+      page-break-after: auto !important;
+      box-shadow: none !important;
     }
-    .report { 
-      margin: 0 !important; box-shadow: none !important; 
-      width: 100% !important; 
-      zoom: 0.92;
-      transform: scale(0.92); transform-origin: top center;
+    .report {
+      margin: 0 !important; box-shadow: none !important;
+      width: 100% !important;
     }
-    .print-fixed-footer { position: absolute !important; bottom: 5mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; background: transparent !important; margin: 0 !important; }
-    .print-fixed-footer-inner { width: 200mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
-    .tfoot-content { display: none !important; }
+    .screen-sign-table { display: none !important; }
+    .print-fixed-footer {
+      position: fixed !important;
+      bottom: 5mm !important;
+      left: 5mm !important;
+      right: 5mm !important;
+      background: #fff !important;
+    }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 10.5px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: none; border-radius: 6px; overflow: hidden; }
-  .rpt-header { background: #185FA5; padding: 8px 10px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
-  .logo-box { width: 80px; height: 80px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
+  .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
+  .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+  .logo-box { width: 70px; height: 70px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
-  .hdr-center { flex: 1; text-align: center; color: #fff; }
-  .hdr-center .org { font-size: 15px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 9px; color: #d7e8fb; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 9px; color: #eef6ff; font-weight: 700; margin-top: 2px; }
-  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 8px; text-align: center; padding: 3px 8px; }
+  .hdr-center { flex: 1; text-align: center; color: #0C447C; }
+  .hdr-center .org { font-size: 17px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
+  .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
+  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
   .bw .rpt-header { background: #fff !important; border-bottom: 1px solid #444 !important; }
@@ -73,19 +78,19 @@ const PRINT_STYLES = `
   .bw .lbl { color: #000 !important; background: #fff !important; }
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 3px 5px; vertical-align: middle; word-break: break-word; font-size: 10px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 9.5px; text-align: center; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 10px; width: 22%; }
-  .val { font-size: 10.5px; color: #000; }
+  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
+  .val { font-size: 11px; color: #000; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 3px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
   .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #d9e1ea; padding: 3px 5px; font-size: 10px; vertical-align: top; }
+  .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .std-tag { display: inline-block; background: #e7f1fb; color: #0c447c; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; margin-bottom: 2px; font-weight: 700; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
@@ -93,13 +98,14 @@ const PRINT_STYLES = `
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
   .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
-  .footer { background: #f8fafc; padding: 6px 10px; font-size: 9px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
   @media screen {
+    .print-blank-row { display: none; }
     .print-fixed-footer { display: none; }
-    .tfoot-content { visibility: visible; }
+    .print-sign-table { display: none; }
   }
 `;
 
@@ -379,17 +385,16 @@ export const MPTReportPrintPage = () => {
                     {/* â"€â"€ HEADER â"€â"€ */}
                     <div className="rpt-header">
                       <div className="logo-box">
-                        <img src="/logo.png" alt="NIIT Logo" />
+                        <img src={niitLogo} alt="NIIT Logo" />
                       </div>
                       <div className="hdr-center">
                         <div className="org">
-                          National Industrial Inspection &amp; Training
+                          National Industrial Inspection and Training
                         </div>
                         <div className="sub">
-                          THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING |
-                          NDT CONSULTANCY | PHYSICAL CALIBRATION | FACTORY
-                          INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY
-                          MANAGEMENT SYSTEM TRAINING
+                          THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT
+                          TRAINING | NDT CONSULTANCY | FACTORY INSPECTION UNDER
+                          MAHARASHTRA FACTORY ACT
                         </div>
                         <div className="iso">
                           (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
@@ -405,7 +410,7 @@ export const MPTReportPrintPage = () => {
                   <td style={{ padding: 0, verticalAlign: "top" }}>
                     <div className="report-body">
                       <div className="rpt-title">
-                        Magnetic Particle Examination Report
+                        Magnetic Particle Testing Report
                       </div>
 
                       {/* â"€â"€ 1. Scope & Reference Standards â"€â"€ */}
@@ -676,7 +681,13 @@ export const MPTReportPrintPage = () => {
                       </table>
 
                       {/* -- 6. Observations -- */}
-                      <table className="obs-table mt-n1">
+                      <table
+                        className="obs-table mt-n1"
+                        style={{
+                          pageBreakBefore: "always",
+                          breakBefore: "page",
+                        }}
+                      >
                         <tbody>
                           <tr>
                             <td colSpan={7} className="section-hdr">
@@ -737,26 +748,44 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* -- 7. Conclusion + 8. Signatures -- */}
-                      <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
-                      <table className="report-table mt-n1">
-                        <tbody>
-                          <tr>
-                            <td colSpan={2} className="section-hdr">
-                              7. Conclusion
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl" style={{ width: "22%" }}>
-                              Overall Evaluation
-                            </td>
-                            <td className="val">{conclusionText}</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      {/* -- 7. Conclusion -- */}
+                      <div
+                        style={{
+                          breakInside: "avoid",
+                          pageBreakInside: "avoid",
+                        }}
+                      >
+                        <table className="report-table mt-n1">
+                          <tbody>
+                            <tr>
+                              <td colSpan={2} className="section-hdr">
+                                7. Conclusion
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="lbl" style={{ width: "22%" }}>
+                                Overall Evaluation
+                              </td>
+                              <td className="val">{conclusionText}</td>
+                            </tr>
+                            <tr className="print-blank-row">
+                              <td style={{ height: 20 }} colSpan={2}></td>
+                            </tr>
+                            <tr className="print-blank-row">
+                              <td style={{ height: 20 }} colSpan={2}></td>
+                            </tr>
+                            <tr className="print-blank-row">
+                              <td style={{ height: 20 }} colSpan={2}></td>
+                            </tr>
+                            <tr className="print-blank-row">
+                              <td style={{ height: 20 }} colSpan={2}></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
 
-                      {/* â"€â"€ 8. Signatures â"€â"€ */}
-                      <table className="sign-table mt-n1">
+                      {/* -- 8. Signatures (screen only, hidden on print) -- */}
+                      <table className="sign-table mt-n1 screen-sign-table">
                         <colgroup>
                           <col style={{ width: "33.3%" }} />
                           <col style={{ width: "33.3%" }} />
@@ -832,10 +861,9 @@ export const MPTReportPrintPage = () => {
                           </tr>
                         </tbody>
                       </table>
-                      </div>
 
                       {inspectors.length > 1 && (
-                        <table className="sign-table mt-n1">
+                        <table className="sign-table mt-n1 screen-sign-table">
                           <tbody>
                             {inspectors.slice(1).map((inspector, index) => (
                               <tr key={`${inspector.idNo}-${index}`}>
@@ -856,17 +884,6 @@ export const MPTReportPrintPage = () => {
                   </td>
                 </tr>
               </tbody>
-
-              <tfoot style={{ display: "table-footer-group" }}>
-                <tr>
-                  <td style={{ padding: 0 }}>
-                    <div
-                      className="tfoot-content"
-                      style={{ height: "15mm" }}
-                    ></div>
-                  </td>
-                </tr>
-              </tfoot>
             </table>
           </div>
 
@@ -884,14 +901,72 @@ export const MPTReportPrintPage = () => {
         </div>
       </div>
 
-      {/* The fixed footer that only appears in print on every page at the bottom */}
-      <div className="print-fixed-footer">
-        <div
-          className={`print-fixed-footer-inner ${bwMode ? "bw" : ""}`}
-          style={{ border: "none", boxShadow: "none" }}
-        >
-          <ReportFooter />
-        </div>
+      <div className={`print-fixed-footer${bwMode ? " bw" : ""}`}>
+        <table className="sign-table">
+          <colgroup>
+            <col style={{ width: "33.3%" }} />
+            <col style={{ width: "33.3%" }} />
+            <col style={{ width: "33.4%" }} />
+          </colgroup>
+          <tbody>
+            <tr>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER:</td>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                CLIENT / TPI:
+              </td>
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                National Industrial Inspection And Training
+              </td>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                {v(jd.customer)}
+              </td>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                {v(jd.client)}
+              </td>
+            </tr>
+            <tr>
+              <td>Name: {v(inspectors[0]?.name) || "-"}</td>
+              <td>Name: {v(fs.customer?.name) || "-"}</td>
+              <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
+            </tr>
+            <tr>
+              <td>MT NDE Level II:</td>
+              <td>
+                Designation:{" "}
+                {v(
+                  (fs.customer as unknown as { designation?: string })
+                    ?.designation,
+                )}
+              </td>
+              <td>
+                Designation:{" "}
+                {v(
+                  (fs.clientOrTPI as unknown as { designation?: string })
+                    ?.designation,
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td style={{ height: 28 }}>Signature:</td>
+              <td style={{ height: 28 }}>Signature:</td>
+              <td style={{ height: 28 }}>Signature:</td>
+            </tr>
+            <tr>
+              <td>I.D. No.: {v(inspectors[0]?.idNo) || "-"}</td>
+              <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
+              <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
+            </tr>
+            <tr>
+              <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
+              <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
+              <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
+            </tr>
+          </tbody>
+        </table>
+        <ReportFooter />
       </div>
     </>
   );
