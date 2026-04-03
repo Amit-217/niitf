@@ -24,8 +24,8 @@ const PRINT_STYLES = `
     body { margin: 0; background: #fff; min-height: 297mm !important; }
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; min-height: 297mm !important; }
     #report-root > div {
-      width: 210mm !important; min-height: 297mm !important;
-      margin: 0 !important; padding: 5mm 5mm 50mm 5mm !important;
+      width: 210mm !important; height: 297mm !important;
+      margin: 0 !important; padding: 5mm 8mm 50mm 8mm !important;
       box-sizing: border-box !important; position: relative !important;
       break-inside: avoid !important;
       page-break-after: auto !important;
@@ -33,6 +33,8 @@ const PRINT_STYLES = `
     .report { 
       margin: 0 !important; box-shadow: none !important; 
       width: 100% !important; 
+      zoom: 0.92;
+      transform: scale(0.92); transform-origin: top center;
     }
     .print-fixed-footer { position: absolute !important; bottom: 5mm !important; left: 0 !important; width: 100% !important; display: flex !important; justify-content: center !important; background: transparent !important; margin: 0 !important; }
     .print-fixed-footer-inner { width: 200mm !important; transform: none !important; background: transparent !important; margin: 0 auto !important; }
@@ -104,18 +106,18 @@ const PRINT_STYLES = `
   }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
     .report-table td, .report-table th {
-      border: 1px solid #d9e1ea; padding: 2px 4px;
-      vertical-align: middle; word-break: break-word; font-size: 9.5px;
+      border: 1px solid #d9e1ea; padding: 3px 5px;
+      vertical-align: middle; word-break: break-word; font-size: 10px;
     }
-    .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 9px; text-align: center; color: #0C447C; }
-    .lbl { background: #f7fafc; font-weight: 600; font-size: 9px; }
-    .val { font-size: 9.5px; color: #000; }
+    .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 9.5px; text-align: center; color: #0C447C; }
+    .lbl { background: #f7fafc; font-weight: 600; font-size: 10px; }
+    .val { font-size: 10.5px; color: #000; }
     .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 9.5px; vertical-align: top; word-break: break-word; }
-    .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9px; font-weight: 700; }
+    .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 3px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
+    .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
     .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
     .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-    .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 9.5px; vertical-align: top; }
+    .sign-table td { border: 1px solid #d9e1ea; padding: 3px 5px; font-size: 10px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
