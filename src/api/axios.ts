@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 
 // ─── Create axios instance ────────────────────────────────────────────────────
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+    baseURL: import.meta.env.VITE_API_URL,
     headers: { 'Content-Type': 'application/json' },
 });
 
@@ -106,7 +106,7 @@ api.interceptors.response.use(
             try {
                 // ── Call the refresh endpoint ────────────────────────────────
                 const refreshResponse = await axios.post(
-                    'http://localhost:3000/api/auth/refresh',
+                    `${import.meta.env.VITE_API_URL}/auth/refresh`,
                     { refreshToken: getRefreshToken() },
                     { headers: { 'Content-Type': 'application/json' } }
                 );
