@@ -28,7 +28,6 @@ const PRINT_STYLES = `
       width: 210mm !important; min-height: 297mm !important;
       margin: 0 !important; padding: 5mm 5mm 70mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
-      break-inside: avoid !important;
       page-break-after: auto !important;
       box-shadow: none !important;
     }
@@ -572,14 +571,7 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* â"€â"€ OBSERVATIONS â"€â"€ */}
-                      <table
-                        className="obs-table mt-n1"
-                        style={{
-                          pageBreakBefore: "always",
-                          breakBefore: "page",
-                        }}
-                      >
+                      <table className="obs-table mt-n1">
                         <tbody>
                           <tr>
                             <td colSpan={7} className="section-hdr">

@@ -27,7 +27,6 @@ const PRINT_STYLES = `
       width: 210mm !important; min-height: 297mm !important;
       margin: 0 !important; padding: 5mm !important;
       box-sizing: border-box !important; position: relative !important;
-      break-inside: avoid !important;
       page-break-after: auto !important;
       box-shadow: none !important;
     }

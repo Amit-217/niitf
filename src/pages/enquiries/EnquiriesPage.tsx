@@ -49,9 +49,6 @@ interface Enquiry {
 
 // ── Config ─────────────────────────────────────────────────────────────────
 
-
-
-
 const SOURCES = ["Walk-in", "Call", "Website", "Reference"] as const;
 const STATUSES = ["New", "Follow-up", "Converted", "Not Interested"] as const;
 

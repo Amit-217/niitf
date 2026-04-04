@@ -23,7 +23,6 @@ const PRINT_STYLES = `
       width: 297mm !important; min-height: 200mm !important;
       margin: 0 !important; padding: 5mm 5mm 45mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
-      break-inside: avoid !important;
       page-break-after: auto !important;
     }
     .report { 
@@ -329,11 +328,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                     </tbody>
                   </table>
 
-                  {/* â"€â"€ OBSERVATIONS â"€â"€ */}
-                  <table
-                    className="obs-table mt-n1"
-                    style={{ pageBreakBefore: "always", breakBefore: "page" }}
-                  >
+                  <table className="obs-table mt-n1">
                     <tbody>
                       <tr>
                         <td colSpan={16} className="section-hdr">
