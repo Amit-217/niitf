@@ -541,7 +541,7 @@ export const MPTReportFormPage: React.FC = () => {
         </button>
         <div>
           <h1 className="text-xl font-bold text-gray-900">
-            {isEditMode ? "Edit" : "New"} Magnetic Particle Testing Report
+            Magnetic Particle Testing Report
           </h1>
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
