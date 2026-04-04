@@ -44,6 +44,10 @@ const PRINT_STYLES = `
     .report { overflow: visible !important; }
     .report-body { overflow: visible !important; }
     tfoot { display: table-footer-group !important; }
+    .report-footer-wrap {
+      break-inside: avoid !important;
+      page-break-inside: avoid !important;
+    }
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
@@ -234,8 +238,8 @@ export const VSSCUTReportPrintPage: React.FC = () => {
     <>
       <div className="footer">
         <div className="footer-text-block">
-          Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
-          Baramati, Dist-Pune 413133 | Ph: +91 9608168056, +91 7875154431
+          Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office, MIDC,
+          Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
@@ -301,7 +305,6 @@ export const VSSCUTReportPrintPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Report Content */}
       <div
         id="report-root"
         style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
@@ -356,75 +359,73 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               <tfoot style={{ display: "table-footer-group" }}>
                 <tr>
                   <td style={{ padding: 0 }}>
-                    <table className="sign-table mt-n1">
-                      <colgroup>
-                        <col style={{ width: "33.3%" }} />
-                        <col style={{ width: "33.3%" }} />
-                        <col style={{ width: "33.4%" }} />
-                      </colgroup>
-                      <tbody>
-                        <tr>
-                          <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                            EXAMINED BY
-                          </td>
-                          <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                            CUSTOMER:
-                          </td>
-                          <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                            CLIENT / TPI:
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                            National Industrial Inspection And Training
-                          </td>
-                          <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                            {v(report.customer)}
-                          </td>
-                          <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                            -
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Name: {v(inspector.name) || "-"}</td>
-                          <td>Name: {v(fs.qc?.name) || "-"}</td>
-                          <td>Name: {v(fs.rqs?.name) || "-"}</td>
-                        </tr>
-                        <tr>
-                          <td>
-                            {v(inspector.qualification) || "UT NDE Level II"}
-                            {inspector.designation
-                              ? ` / ${inspector.designation}`
-                              : ""}
-                          </td>
-                          <td>
-                            Designation: {v(fs.qc?.designation) || "-"}
-                          </td>
-                          <td>
-                            Designation: {v(fs.rqs?.designation) || "-"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style={{ height: 28 }}>Signature:</td>
-                          <td style={{ height: 28 }}>Signature:</td>
-                          <td style={{ height: 28 }}>Signature:</td>
-                        </tr>
-                        <tr>
-                          <td>I.D. No.: {v(inspector.idNo) || "-"}</td>
-                          <td>I.D. No.: {v(fs.qc?.idNo) || "-"}</td>
-                          <td>I.D. No.: {v(fs.rqs?.idNo) || "-"}</td>
-                        </tr>
-                        <tr>
-                          <td>Date: {fmtDate(inspector.date) || "-"}</td>
-                          <td>Date: {fmtDate(fs.qc?.date) || "-"}</td>
-                          <td>Date: {fmtDate(fs.rqs?.date) || "-"}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <div
-                      className="tfoot-spacer"
-                      style={{ height: "28mm" }}
-                    ></div>
+                    <div className="report-footer-wrap">
+                      <table className="sign-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.4%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              EXAMINED BY
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              CUSTOMER:
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              CLIENT / TPI:
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              National Industrial Inspection And Training
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              {v(report.customer)}
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              -
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Name: {v(inspector.name) || "-"}</td>
+                            <td>Name: {v(fs.qc?.name) || "-"}</td>
+                            <td>Name: {v(fs.rqs?.name) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              {v(inspector.qualification) || "UT NDE Level II"}
+                              {inspector.designation
+                                ? ` / ${inspector.designation}`
+                                : ""}
+                            </td>
+                            <td>Designation: {v(fs.qc?.designation) || "-"}</td>
+                            <td>Designation: {v(fs.rqs?.designation) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                          </tr>
+                          <tr>
+                            <td>I.D. No.: {v(inspector.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(fs.qc?.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(fs.rqs?.idNo) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td>Date: {fmtDate(inspector.date) || "-"}</td>
+                            <td>Date: {fmtDate(fs.qc?.date) || "-"}</td>
+                            <td>Date: {fmtDate(fs.rqs?.date) || "-"}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div
+                        className="tfoot-spacer"
+                        style={{ height: "28mm" }}
+                      ></div>
+                    </div>
                   </td>
                 </tr>
               </tfoot>
@@ -601,7 +602,12 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body" style={{ borderTop: "none" }}>
                       {/* Angle Probe Calibration */}
                       <table
                         className="report-table"
@@ -646,7 +652,12 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body" style={{ borderTop: "none" }}>
                       {/* Calibration Table */}
                       <table
                         className="calib-table mt-n1"
@@ -786,7 +797,12 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body" style={{ borderTop: "none" }}>
                       {/* Normal Probe Calibration */}
                       <table
                         className="report-table"
@@ -824,8 +840,13 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-
-                      {/* Disposition & Evaluation + Signatures */}
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body" style={{ borderTop: "none" }}>
+                      {/* Disposition & Evaluation */}
                       <div
                         style={{
                           breakInside: "avoid",
@@ -865,7 +886,6 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         </table>
                       </div>
                     </div>
-                    {/* ── end report-body ── */}
                   </td>
                 </tr>
               </tbody>
