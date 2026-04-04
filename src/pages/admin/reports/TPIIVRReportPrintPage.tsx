@@ -335,7 +335,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <div className="sub">
                           THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT
                           TRAINING | NDT CONSULTANCY
-                          <br />FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT{" "}
+                          <br />
+                          FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT{" "}
                         </div>
                         <div className="iso">
                           (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
@@ -722,7 +723,10 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             ))
                           )}
                           {[...Array(4)].map((_, i) => (
-                            <tr key={`empty-item-${i}`} style={{ height: "24px" }}>
+                            <tr
+                              key={`empty-item-${i}`}
+                              style={{ height: "24px" }}
+                            >
                               <td></td>
                               <td></td>
                               <td></td>

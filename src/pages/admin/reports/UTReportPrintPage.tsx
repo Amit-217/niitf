@@ -349,7 +349,8 @@ export const UTReportPrintPage: React.FC = () => {
                         <div className="sub">
                           THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT
                           TRAINING | NDT CONSULTANCY
-                          <br />FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
+                          <br />
+                          FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
                         </div>
                         <div className="iso">
                           (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
@@ -801,7 +802,7 @@ export const UTReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* -- EXAMINED BY (screen only, hidden on print) -- */}
-                      </div>
+                    </div>
                     {/* â"€â"€ end report-body â"€â"€ */}
                   </td>
                 </tr>

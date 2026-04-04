@@ -239,7 +239,8 @@ export const AWSDReportPrintPage: React.FC = () => {
                       <div className="sub">
                         THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING |
                         NDT CONSULTANCY | PHYSICAL CALIBRATION
-                        <br />FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT |
+                        <br />
+                        FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT |
                         QUALITY MANAGEMENT SYSTEM TRAINING
                       </div>
                       <div className="iso">
@@ -313,9 +314,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                         <td className="val">{v(report.weldingProcess)}</td>
                       </tr>
                       <tr>
-                        <td className="lbl">
-                          Quality Requirements – Section
-                        </td>
+                        <td className="lbl">Quality Requirements – Section</td>
                         <td className="val" colSpan={3}>
                           {v(report.qualityRequirementsSection)}
                         </td>
@@ -439,7 +438,6 @@ export const AWSDReportPrintPage: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody>
-
                       {obs.map((o: any, i: number) => (
                         <tr key={i} style={{ height: "24px" }}>
                           <td>{v(o.lineNo)}</td>
@@ -447,18 +445,10 @@ export const AWSDReportPrintPage: React.FC = () => {
                           <td>{v(o.transducerAngle)}</td>
                           <td>{v(o.fromFace)}</td>
                           <td>{v(o.leg)}</td>
-                          <td style={{}}>
-                            {v(o.decibels?.indicationLevel)}
-                          </td>
-                          <td style={{}}>
-                            {v(o.decibels?.referenceLevel)}
-                          </td>
-                          <td style={{}}>
-                            {v(o.decibels?.attenuationFactor)}
-                          </td>
-                          <td style={{}}>
-                            {v(o.decibels?.indicationRating)}
-                          </td>
+                          <td style={{}}>{v(o.decibels?.indicationLevel)}</td>
+                          <td style={{}}>{v(o.decibels?.referenceLevel)}</td>
+                          <td style={{}}>{v(o.decibels?.attenuationFactor)}</td>
+                          <td style={{}}>{v(o.decibels?.indicationRating)}</td>
                           <td>{v(o.discontinuity?.length)}</td>
                           <td>{v(o.discontinuity?.angularDist)}</td>
                           <td>{v(o.discontinuity?.depthFromA)}</td>
