@@ -11,7 +11,6 @@ import {
   getPublicMPTReportById,
   MPTReport,
 } from "../../../api/customerApi";
-import niitLogo from "../../../assets/logo.png";
 
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
@@ -46,10 +45,10 @@ const PRINT_STYLES = `
   * { box-sizing: border-box; }
   .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
   .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 70px; height: 70px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
+  .logo-box { width: 120px; height: 120px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-8px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 17px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
   .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
   .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
@@ -384,7 +383,7 @@ export const MPTReportPrintPage = () => {
                     {/* â"€â"€ HEADER â"€â"€ */}
                     <div className="rpt-header">
                       <div className="logo-box">
-                        <img src={niitLogo} alt="NIIT Logo" />
+                        <img src="/logo.png" alt="NIIT Logo" />
                       </div>
                       <div className="hdr-center">
                         <div className="org">
@@ -392,8 +391,8 @@ export const MPTReportPrintPage = () => {
                         </div>
                         <div className="sub">
                           THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT
-                          TRAINING | NDT CONSULTANCY | FACTORY INSPECTION UNDER
-                          MAHARASHTRA FACTORY ACT
+                          TRAINING | NDT CONSULTANCY
+                          <br />FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
                         </div>
                         <div className="iso">
                           (AN ISO 9001:2015 CERTIFIED ORGANIZATION)

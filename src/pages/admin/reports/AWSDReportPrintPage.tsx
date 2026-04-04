@@ -6,7 +6,6 @@ import {
   useLocation,
 } from "react-router-dom";
 import { getAWSDReportById } from "../../../api/customerApi";
-import niitLogo from "../../../assets/logo.png";
 
 // â"€â"€â"€ Print Styles â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
@@ -42,10 +41,10 @@ const PRINT_STYLES = `
   * { box-sizing: border-box; }
   .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
   .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 70px; height: 70px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
+  .logo-box { width: 120px; height: 120px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-8px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 17px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
   .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
   .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 6px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
@@ -231,7 +230,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                   {/* â"€â"€ HEADER â"€â"€ */}
                   <div className="rpt-header">
                     <div className="logo-box">
-                      <img src={niitLogo} alt="NIIT Logo" />
+                      <img src="/logo.png" alt="NIIT Logo" />
                     </div>
                     <div className="hdr-center">
                       <div className="org">
@@ -239,9 +238,9 @@ export const AWSDReportPrintPage: React.FC = () => {
                       </div>
                       <div className="sub">
                         THIRD PARTY INSPECTION | NDT SERVICES &amp; TRAINING |
-                        NDT CONSULTANCY | PHYSICAL CALIBRATION | FACTORY
-                        INSPECTION UNDER MAHARASHTRA FACTORY ACT | QUALITY
-                        MANAGEMENT SYSTEM TRAINING
+                        NDT CONSULTANCY | PHYSICAL CALIBRATION
+                        <br />FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT |
+                        QUALITY MANAGEMENT SYSTEM TRAINING
                       </div>
                       <div className="iso">
                         (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
