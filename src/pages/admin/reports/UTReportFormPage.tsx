@@ -129,7 +129,7 @@ export const UTReportFormPage: React.FC = () => {
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
   const [customerName, setCustomerName] = useState(state?.customerName ?? "");
 
-  // â€” Job Details â€”
+  // — Job Details —
   const [reportNo, setReportNo] = useState("");
   const jobCustomer = customerName;
   const [jobClient, setJobClient] = useState("");
@@ -346,9 +346,9 @@ export const UTReportFormPage: React.FC = () => {
         setUtCalibMethod(td.utCalibrationMethod ?? "");
         setScanningDb(td.scanningDb ?? "");
         const scanningSensOpts = [
-          "Ã˜ 2.5 mm SDH",
-          "Ã˜ 3mm SDH",
-          "1â€ BWE set @ 80% of FSH on Job",
+          "Ø 2.5 mm SDH",
+          "Ø 3mm SDH",
+          '1" BWE set @ 80% of FSH on Job',
           "Other",
         ];
         const [ss, ssC] = fromOther(td.scanningSensitivity, scanningSensOpts);
@@ -395,7 +395,7 @@ export const UTReportFormPage: React.FC = () => {
       .catch(() => toast.error("Failed to load report."));
   }, [id]);
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Submit Ã¢â€â‚¬Ã¢â€â‚¬
+  // — Submit —
   const handleSubmit = async (status: "draft" | "final") => {
     if (!isEditMode && !customerId) {
       toast.error("Please select a customer first.");
@@ -505,10 +505,10 @@ export const UTReportFormPage: React.FC = () => {
   };
 
   const calibAngles = [
-    { label: "0Ã‚Â°", state: calib0, setter: setCalib0 },
-    { label: "45Ã‚Â°", state: calib45, setter: setCalib45 },
-    { label: "60Ã‚Â°", state: calib60, setter: setCalib60 },
-    { label: "70Ã‚Â°", state: calib70, setter: setCalib70 },
+    { label: "0°", state: calib0, setter: setCalib0 },
+    { label: "45°", state: calib45, setter: setCalib45 },
+    { label: "60°", state: calib60, setter: setCalib60 },
+    { label: "70°", state: calib70, setter: setCalib70 },
   ];
 
   return (
@@ -529,7 +529,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Missing Customer Banner â”€â”€ */}
+      {/* — Missing Customer Banner — */}
       {!customerId && (
         <CustomerPickerBanner
           onCustomerSelected={(id, name) => {
@@ -568,7 +568,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Job Details Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* — Job Details — */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1042,12 +1042,7 @@ export const UTReportFormPage: React.FC = () => {
               onChange={setScanningSens}
               customValue={scanningSensCustom}
               onCustomChange={setScanningSensCustom}
-              options={[
-                "ÃƒËœ 2.5 mm SDH",
-                "ÃƒËœ 3mm SDH",
-                '1" BWE set @ 80% of FSH on Job',
-                "Other",
-              ]}
+              options={["Ø 2.5 mm SDH", "Ø 3mm SDH", '1" BWE set @ 80% of FSH on Job', "Other"]}
             />
           </div>
         </div>
@@ -1305,7 +1300,7 @@ export const UTReportFormPage: React.FC = () => {
               Customer
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {customerName || "â€”"}
+              {customerName || "-"}
             </p>
             <div className="space-y-2">
               <div>
@@ -1351,7 +1346,7 @@ export const UTReportFormPage: React.FC = () => {
               Client / TPI
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {jobClient || "â€”"}
+              {jobClient || "-"}
             </p>
             <div className="space-y-2">
               <div>

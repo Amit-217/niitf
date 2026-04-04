@@ -10,24 +10,22 @@ import {
   getTPIIVRReportById,
   getPublicTPIIVRReportById,
 } from "../../../api/customerApi";
-import niitLogo from "../../../assets/logo.png";
 
 // ─── Print Styles ─────────────────────────────────────────────────────────────
 
 const PRINT_STYLES = `
-  @page { size: A4 portrait; margin: 0 0 70mm 0; }
+  @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
   @media screen { body.autoprint-mode { opacity: 0; } }
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; min-height: 297mm !important; }
-    #report-root { background: #fff !important; padding: 0 !important; display: block !important; min-height: 297mm !important; }
+    #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
-      width: 210mm !important; min-height: 297mm !important;
-      margin: 0 !important; padding: 5mm !important;
+      width: 210mm !important; 
+      margin: 0 !important; padding: 2mm 5mm 15mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
-      break-inside: avoid !important;
       page-break-after: auto !important;
       box-shadow: none !important;
     }
@@ -44,16 +42,16 @@ const PRINT_STYLES = `
       background: #fff !important;
     }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
   .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
   .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 96px; height: 96px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0px; }
+  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 18px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 11px; color: #374151; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 11px; color: #0C447C; font-weight: 700; margin-top: 2px; }
+  .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
+  .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
@@ -81,26 +79,26 @@ const PRINT_STYLES = `
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .bw .items-table td, .bw .items-table th { border-color: #888 !important; }
   .bw .activities-box { border-color: #888 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 12px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 12px; text-align: center; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 12px; white-space: nowrap; }
-  .val { font-size: 12px; color: #000; }
+  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
+  .val { font-size: 11px; color: #000; }
   .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .items-table td, .items-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 11px; vertical-align: middle; word-break: break-word; text-align: center; }
-  .items-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; }
+  .items-table td, .items-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 10px; vertical-align: middle; word-break: break-word; text-align: center; }
+  .items-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
   .items-table td.text-left { text-align: left; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #d9e1ea; padding: 4px 6px; font-size: 13px; vertical-align: top; }
+  .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
   .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
-  .activities-box { border: 1px solid #d9e1ea; padding: 6px 8px; font-size: 12px; min-height: 40px; white-space: pre-wrap; word-break: break-word; }
+  .activities-box { border: 1px solid #d9e1ea; padding: 6px 8px; font-size: 11px; min-height: 40px; white-space: pre-wrap; word-break: break-word; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -325,10 +323,10 @@ export const TPIIVRReportPrintPage: React.FC = () => {
             >
               <thead style={{ display: "table-header-group" }}>
                 <tr>
-                  <td style={{ padding: "5mm 0 0 0" }}>
+                  <td style={{ padding: "2mm 0 0 0" }}>
                     <div className="rpt-header">
                       <div className="logo-box">
-                        <img src={niitLogo} alt="NIIT Logo" />
+                        <img src="/logo.png" alt="NIIT Logo" />
                       </div>
                       <div className="hdr-center">
                         <div className="org">
@@ -336,8 +334,9 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         </div>
                         <div className="sub">
                           THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT
-                          TRAINING | NDT CONSULTANCY | FACTORY INSPECTION UNDER
-                          MAHARASHTRA FACTORY ACT{" "}
+                          TRAINING | NDT CONSULTANCY
+                          <br />
+                          FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT{" "}
                         </div>
                         <div className="iso">
                           (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
@@ -347,6 +346,64 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                   </td>
                 </tr>
               </thead>
+              <tfoot style={{ display: "table-footer-group" }}>
+                <tr>
+                  <td style={{ padding: 0 }}>
+                    <div className="report-footer-wrap">
+                      <table className="sign-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.4%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              FOR VENDOR:
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              CUSTOMER:
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              FOR NIIT SURVEYOR, BARAMATI:
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              {v(vd.vendor) || "-"}
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              {v(report.client) || "-"}
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              National Industrial Inspection And Training
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Name: {v(sigs.vendor?.name) || "-"}</td>
+                            <td>Name: -</td>
+                            <td>Name: {v(sigs.niit?.name) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                          </tr>
+                          <tr>
+                            <td>Date: {fmtDate(sigs.vendor?.date) || "-"}</td>
+                            <td>Date: -</td>
+                            <td>Date: {fmtDate(sigs.niit?.date) || "-"}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div
+                        className="tfoot-spacer"
+                        style={{ height: "28mm" }}
+                      ></div>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
               <tbody style={{ display: "table-row-group" }}>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
@@ -365,7 +422,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={5} className="section-hdr">
-                              JOB DETAILS
+                              1. JOB DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -443,8 +500,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         </colgroup>
                         <tbody>
                           <tr>
-                            <td className="section-hdr">CLIENT DETAILS</td>
-                            <td className="section-hdr">VENDOR DETAILS</td>
+                            <td className="section-hdr">2. CLIENT DETAILS</td>
+                            <td className="section-hdr">3. VENDOR DETAILS</td>
                           </tr>
                           <tr>
                             <td
@@ -569,10 +626,10 @@ export const TPIIVRReportPrintPage: React.FC = () => {
 
                       {/* ── INSPECTION ITEMS ── */}
                       <table className="items-table mt-n1">
-                        <tbody>
+                        <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={9} className="section-hdr">
-                              INSPECTION ITEMS
+                              4. INSPECTION ITEMS
                             </td>
                           </tr>
                           <tr>
@@ -629,6 +686,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                               Reject
                             </td>
                           </tr>
+                        </thead>
+                        <tbody>
                           {items.length === 0 ? (
                             <tr>
                               <td
@@ -668,6 +727,22 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                               </tr>
                             ))
                           )}
+                          {[...Array(4)].map((_, i) => (
+                            <tr
+                              key={`empty-item-${i}`}
+                              style={{ height: "24px" }}
+                            >
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
 
@@ -676,7 +751,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td className="section-hdr">
-                              INSPECTION ACTIVITIES
+                              5. INSPECTION ACTIVITIES
                             </td>
                           </tr>
                         </tbody>
@@ -685,7 +760,6 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         {v(report.inspectionActivities) || " "}
                       </div>
 
-                      {/* ── CONCLUSION ── */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -693,7 +767,12 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         </colgroup>
                         <tbody>
                           <tr>
-                            <td className="lbl">Conclusion</td>
+                            <td colSpan={2} className="section-hdr">
+                              6. Conclusion
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Overall Evaluation</td>
                             <td className="val">{v(report.conclusion)}</td>
                           </tr>
                         </tbody>
@@ -709,7 +788,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={3} className="section-hdr">
-                              REFERENCE DOCUMENTS FOR INSPECTION
+                              7. REFERENCE DOCUMENTS FOR INSPECTION
                             </td>
                           </tr>
                           <tr>
@@ -764,7 +843,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={5} className="section-hdr">
-                              CALIBRATION STATUS OF INSTRUMENTS
+                              8. CALIBRATION STATUS OF INSTRUMENTS
                             </td>
                           </tr>
                           <tr>
@@ -829,49 +908,6 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           )}
                         </tbody>
                       </table>
-
-                      {/* ── SIGNATURES ── */}
-                      <table className="sign-table mt-n1 screen-sign-table">
-                        <colgroup>
-                          <col style={{ width: "50%" }} />
-                          <col style={{ width: "50%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "11px",
-                                textAlign: "center",
-                              }}
-                            >
-                              FOR VENDOR
-                              {v(vd.vendor) ? `: ${v(vd.vendor)}` : ""}
-                            </td>
-                            <td
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "11px",
-                                textAlign: "center",
-                              }}
-                            >
-                              FOR NIIT SURVEYOR, BARAMATI
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Name: {v(sigs.vendor?.name)}</td>
-                            <td>Name: {v(sigs.niit?.name)}</td>
-                          </tr>
-                          <tr>
-                            <td>Signature:</td>
-                            <td>Signature:</td>
-                          </tr>
-                          <tr>
-                            <td>Date: {fmtDate(sigs.vendor?.date)}</td>
-                            <td>Date: {fmtDate(sigs.niit?.date)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
                     </div>
                     {/* ── end report-body ── */}
                   </td>
@@ -895,47 +931,6 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       </div>
 
       <div className={`print-fixed-footer${bwMode ? " bw" : ""}`}>
-        <table className="sign-table">
-          <colgroup>
-            <col style={{ width: "50%" }} />
-            <col style={{ width: "50%" }} />
-          </colgroup>
-          <tbody>
-            <tr>
-              <td
-                style={{
-                  fontWeight: 600,
-                  fontSize: "11px",
-                  textAlign: "center",
-                }}
-              >
-                FOR VENDOR
-                {v(vd.vendor) ? `: ${v(vd.vendor)}` : ""}
-              </td>
-              <td
-                style={{
-                  fontWeight: 600,
-                  fontSize: "11px",
-                  textAlign: "center",
-                }}
-              >
-                FOR NIIT SURVEYOR, BARAMATI
-              </td>
-            </tr>
-            <tr>
-              <td>Name: {v(sigs.vendor?.name)}</td>
-              <td>Name: {v(sigs.niit?.name)}</td>
-            </tr>
-            <tr>
-              <td>Signature:</td>
-              <td>Signature:</td>
-            </tr>
-            <tr>
-              <td>Date: {fmtDate(sigs.vendor?.date)}</td>
-              <td>Date: {fmtDate(sigs.niit?.date)}</td>
-            </tr>
-          </tbody>
-        </table>
         <ReportFooter />
       </div>
     </>

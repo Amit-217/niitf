@@ -102,11 +102,11 @@ const SKIPS: Array<{
   key: keyof Pick<ProbeModeFormData, "half" | "one" | "oneHalf" | "two">;
   label: string;
 }> = [
-  { key: "half", label: "½" },
-  { key: "one", label: "1" },
-  { key: "oneHalf", label: "1½" },
-  { key: "two", label: "2" },
-];
+    { key: "half", label: "½" },
+    { key: "one", label: "1" },
+    { key: "oneHalf", label: "1½" },
+    { key: "two", label: "2" },
+  ];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export const VSSCUTReportFormPage: React.FC = () => {
@@ -191,7 +191,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // ── Final Section ──
@@ -505,7 +505,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
         </button>
         <div>
           <h1 className="text-xl font-bold text-gray-900">
-            VSSC Ultrasonic Test Report
+            VSSC Ultrasonic Testing Report
           </h1>
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
