@@ -24,7 +24,7 @@ const PRINT_STYLES = `
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
       width: 210mm !important; 
-      margin: 0 !important; padding: 5mm 5mm 15mm 5mm !important;
+      margin: 0 !important; padding: 2mm 5mm 15mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       page-break-after: auto !important;
       box-shadow: none !important;
@@ -333,7 +333,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
             >
               <thead style={{ display: "table-header-group" }}>
                 <tr>
-                  <td style={{ padding: "5mm 0 0 0" }}>
+                  <td style={{ padding: "2mm 0 0 0" }}>
                     <div className="rpt-header">
                       <div className="logo-box">
                         <img src="/logo.png" alt="NIIT Logo" />

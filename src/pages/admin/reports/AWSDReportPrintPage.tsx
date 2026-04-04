@@ -20,7 +20,7 @@ const PRINT_STYLES = `
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; min-height: 210mm !important; }
     #report-root > div {
       width: 297mm !important; min-height: 200mm !important;
-      margin: 0 !important; padding: 5mm 5mm 45mm 5mm !important;
+      margin: 0 !important; padding: 2mm 5mm 15mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       page-break-after: auto !important;
     }
@@ -79,7 +79,7 @@ const PRINT_STYLES = `
 
 `;
 
-// â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 const v = (s?: string | number | null) =>
   s !== undefined && s !== null ? String(s) : "";
@@ -227,7 +227,7 @@ export const AWSDReportPrintPage: React.FC = () => {
           >
             <thead style={{ display: "table-header-group" }}>
               <tr>
-                <td style={{ padding: "5mm 0 0 0" }}>
+                <td style={{ padding: "2mm 0 0 0" }}>
                   {/* â"€â"€ HEADER â"€â"€ */}
                   <div className="rpt-header">
                     <div className="logo-box">
