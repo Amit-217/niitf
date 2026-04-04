@@ -1125,7 +1125,7 @@ export const PTReportFormPage: React.FC = () => {
               Customer
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {customerName || "â€”"}
+              {customerName || "-"}
             </p>
             <div className="space-y-2">
               <div>
@@ -1172,7 +1172,7 @@ export const PTReportFormPage: React.FC = () => {
               Client / TPI
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {jobClient || "â€”"}
+              {jobClient || "-"}
             </p>
             <div className="space-y-2">
               <div>

@@ -195,10 +195,10 @@ export const AWSDReportFormPage: React.FC = () => {
           setObservations(
             r.observations.map((o: any) => {
               const [ta, taO] = fromOther(o.transducerAngle, [
-                "45Â°",
-                "60Â°",
-                "70Â°",
-                "Normal (0Â°)",
+                "45°",
+                "60°",
+                "70°",
+                "Normal (0°)",
                 "Other",
               ]);
               return {
@@ -577,10 +577,10 @@ export const AWSDReportFormPage: React.FC = () => {
                         updateObs(idx, "transducerAngleOther", v)
                       }
                       options={[
-                        "45Â°",
-                        "60Â°",
-                        "70Â°",
-                        "Normal (0Â°)",
+                        "45°",
+                        "60°",
+                        "70°",
+                        "Normal (0°)",
                         "Other",
                       ]}
                     />
@@ -742,7 +742,7 @@ export const AWSDReportFormPage: React.FC = () => {
           We, the undersigned, certify that the statements in this record are
           correct and that the welds were prepared and tested in conformance
           with the requirements of Clause 8, Part F of AWS D1.1/D1.1M, (year)
-          Structural Welding Codeâ€”Steel.
+          Structural Welding Code — Steel.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>

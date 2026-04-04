@@ -131,6 +131,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [jobTypeOfJoint, setJobTypeOfJoint] = useState("");
   const [jobSurfaceCondition, setJobSurfaceCondition] = useState("");
   const [jobExtentOfExamination, setJobExtentOfExamination] = useState("");
+  const [jobExtentOfExaminationOther, setJobExtentOfExaminationOther] = useState("");
   const [jobWeldingProcess, setJobWeldingProcess] = useState("");
 
   // Ã¢"â‚¬Ã¢"â‚¬ Equipment Details Ã¢"â‚¬Ã¢"â‚¬
@@ -189,7 +190,7 @@ export const MPTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   useEffect(() => {
@@ -238,7 +239,14 @@ export const MPTReportFormPage: React.FC = () => {
         setJobThickness(jd.thickness ?? "");
         setJobTypeOfJoint(jd.typeOfJoint ?? "");
         setJobSurfaceCondition(jd.surfaceCondition ?? "");
-        setJobExtentOfExamination(jd.extentOfExamination ?? "");
+        const [ext, extO] = fromOther(jd.extentOfExamination, [
+          "10%",
+          "100%",
+          "To the maximum extent possible",
+          "Other",
+        ]);
+        setJobExtentOfExamination(ext);
+        setJobExtentOfExaminationOther(extO);
         setJobWeldingProcess(jd.weldingProcess ?? "");
         const eq = r.equipmentDetails ?? {};
         setEqType(eq.equipmentType ?? "");
@@ -322,13 +330,13 @@ export const MPTReportFormPage: React.FC = () => {
         setInspectors(
           fs.inspector?.length
             ? fs.inspector.map((i: any) => ({
-                name: i.name ?? "",
-                qualification: i.qualification || "MT NDE Level II",
-                designation: i.designation ?? "",
-                signature: i.signature ?? "",
-                idNo: i.idNo ?? "",
-                date: toDate(i.date),
-              }))
+              name: i.name ?? "",
+              qualification: i.qualification || "MT NDE Level II",
+              designation: i.designation ?? "",
+              signature: i.signature ?? "",
+              idNo: i.idNo ?? "",
+              date: toDate(i.date),
+            }))
             : [emptyInspector()],
         );
         const cust = fs.customer ?? {};
@@ -415,7 +423,10 @@ export const MPTReportFormPage: React.FC = () => {
           thickness: jobThickness,
           typeOfJoint: jobTypeOfJoint || undefined,
           surfaceCondition: jobSurfaceCondition,
-          extentOfExamination: jobExtentOfExamination,
+          extentOfExamination: resolveCustom(
+            jobExtentOfExamination,
+            jobExtentOfExaminationOther,
+          ),
           weldingProcess: jobWeldingProcess || undefined,
         },
         equipmentDetails: {
@@ -530,7 +541,7 @@ export const MPTReportFormPage: React.FC = () => {
         </button>
         <div>
           <h1 className="text-xl font-bold text-gray-900">
-            {isEditMode ? "Edit" : "New"} Magnetic Particle Examination Report
+            {isEditMode ? "Edit" : "New"} Magnetic Particle Testing Report
           </h1>
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
@@ -716,13 +727,19 @@ export const MPTReportFormPage: React.FC = () => {
             <label className={labelClass} htmlFor="jobExt">
               Extent of Examination
             </label>
-            <input
+            <SelectWithOther
               id="jobExt"
-              type="text"
               value={jobExtentOfExamination}
-              onChange={(e) => setJobExtentOfExamination(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 10% / 100% / To the maximum extent possible / Custom"
+              onChange={setJobExtentOfExamination}
+              otherValue={jobExtentOfExaminationOther}
+              onOtherChange={setJobExtentOfExaminationOther}
+              options={[
+                "10%",
+                "100%",
+                "To the maximum extent possible",
+                "Other",
+              ]}
+              placeholder="Select Extent..."
             />
           </div>
           <div>
@@ -1400,7 +1417,7 @@ export const MPTReportFormPage: React.FC = () => {
               Customer
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {customerName || "â€”"}
+              {customerName || "-"}
             </p>
             <div className="space-y-2">
               <div>
@@ -1457,7 +1474,7 @@ export const MPTReportFormPage: React.FC = () => {
               Client / TPI
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {jobClient || "â€”"}
+              {jobClient || "-"}
             </p>
             <div className="space-y-2">
               <div>
