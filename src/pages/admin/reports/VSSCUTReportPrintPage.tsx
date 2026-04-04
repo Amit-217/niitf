@@ -53,7 +53,7 @@ const PRINT_STYLES = `
   * { box-sizing: border-box; }
   .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
   .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 120px; height: 120px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-8px); }
+  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-8px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
   .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
