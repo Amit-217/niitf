@@ -41,6 +41,13 @@ const PRINT_STYLES = `
       right: 5mm !important;
       background: #fff !important;
     }
+    .report { overflow: visible !important; }
+    .report-body { overflow: visible !important; }
+    tfoot { display: table-footer-group !important; }
+    .report-footer-wrap {
+      break-inside: avoid !important;
+      page-break-inside: avoid !important;
+    }
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
@@ -229,7 +236,7 @@ export const UTGReportPrintPage: React.FC = () => {
     <>
       <div className="footer">
         <div className="footer-text-block">
-          Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
+          Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office, MIDC,
           Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
@@ -496,9 +503,14 @@ export const UTGReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body" style={{ borderTop: "none" }}>
                       {/* ── EQUIPMENT DETAILS ── */}
-                      <table className="report-table mt-n1">
+                      <table className="report-table">
                         <colgroup>
                           <col style={{ width: "18%" }} />
                           <col style={{ width: "32%" }} />
@@ -535,9 +547,14 @@ export const UTGReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body" style={{ borderTop: "none" }}>
                       {/* ── SEARCH UNIT DETAILS ── */}
-                      <table className="report-table mt-n1">
+                      <table className="report-table">
                         <tbody>
                           <tr>
                             <td colSpan={6} className="section-hdr">
@@ -604,9 +621,14 @@ export const UTGReportPrintPage: React.FC = () => {
                           )}
                         </tbody>
                       </table>
-
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body" style={{ borderTop: "none" }}>
                       {/* ── TECHNIQUE DETAILS ── */}
-                      <table className="report-table mt-n1">
+                      <table className="report-table">
                         <colgroup>
                           <col style={{ width: "22%" }} />
                           <col style={{ width: "78%" }} />
@@ -623,8 +645,13 @@ export const UTGReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-
-                      <table className="obs-table mt-n1">
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body" style={{ borderTop: "none" }}>
+                      <table className="obs-table">
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={4} className="section-hdr">
@@ -677,29 +704,15 @@ export const UTGReportPrintPage: React.FC = () => {
                               </tr>
                             ))
                           )}
-                          <tr className="print-blank-row">
-                            <td style={{ height: 20 }} colSpan={4}></td>
-                          </tr>
-                          <tr className="print-blank-row">
-                            <td style={{ height: 20 }} colSpan={4}></td>
-                          </tr>
-                          <tr className="print-blank-row">
-                            <td style={{ height: 20 }} colSpan={4}></td>
-                          </tr>
-                          <tr className="print-blank-row">
-                            <td style={{ height: 20 }} colSpan={4}></td>
-                          </tr>
                         </tbody>
                       </table>
                     </div>
-                    {/* ── end report-body ── */}
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          {/* ABSOLUTE BOTTOM FOOTER ON SCREEN */}
           <div
             className={`no-print ${bwMode ? "bw" : ""}`}
             style={{
