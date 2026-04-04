@@ -485,7 +485,7 @@ export const MPTReportPrintPage = () => {
                       </table>
                       <div
                         className="tfoot-spacer"
-                        style={{ height: "25mm" }}
+                        style={{ height: "28mm" }}
                       ></div>
                     </div>
                   </td>

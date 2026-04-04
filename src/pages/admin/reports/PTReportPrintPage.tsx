@@ -398,11 +398,10 @@ export const PTReportPrintPage: React.FC = () => {
                               EXAMINED BY
                             </td>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CUSTOMER: <span>{v(fs.customer?.name)}</span>
+                              CUSTOMER:
                             </td>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CLIENT / TPI:{" "}
-                              <span>{v(fs.clientOrTPI?.name)}</span>
+                              CLIENT / TPI:
                             </td>
                           </tr>
                           <tr>
@@ -417,49 +416,47 @@ export const PTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td style={{ minHeight: 14 }}>
-                              Name: {v(inspector.name)}
-                            </td>
-                            <td>Name: {v(fs.customer?.name)}</td>
-                            <td>Name: {v(fs.clientOrTPI?.name)}</td>
+                            <td>Name: {v(inspector.name) || "-"}</td>
+                            <td>Name: {v(fs.customer?.name) || "-"}</td>
+                            <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
                           </tr>
                           <tr>
                             <td>
-                              {v(inspector.qualification)}
+                              {v(inspector.qualification) || "PT NDE Level II"}
                               {inspector.designation
                                 ? ` / ${inspector.designation}`
                                 : ""}
                             </td>
-                            <td>Designation: {v(fs.customer?.designation)}</td>
                             <td>
-                              Designation: {v(fs.clientOrTPI?.designation)}
+                              Designation: {v(fs.customer?.designation) || "-"}
+                            </td>
+                            <td>
+                              Designation:{" "}
+                              {v(fs.clientOrTPI?.designation) || "-"}
                             </td>
                           </tr>
                           <tr>
                             <td style={{ height: 28 }}>Signature:</td>
-                            <td>Signature:</td>
-                            <td>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
                           </tr>
                           <tr>
-                            <td style={{ height: 28 }}></td>
-                            <td></td>
-                            <td></td>
+                            <td>I.D. No.: {v(inspector.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
                           </tr>
                           <tr>
-                            <td>I.D. No.: {v(inspector.idNo)}</td>
-                            <td>I.D. No.: {v(fs.customer?.idNo)}</td>
-                            <td>I.D. No.: {v(fs.clientOrTPI?.idNo)}</td>
-                          </tr>
-                          <tr>
-                            <td>Date: {fmtDate(inspector.date)}</td>
-                            <td>Date: {fmtDate(fs.customer?.date)}</td>
-                            <td>Date: {fmtDate(fs.clientOrTPI?.date)}</td>
+                            <td>Date: {fmtDate(inspector.date) || "-"}</td>
+                            <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
+                            <td>
+                              Date: {fmtDate(fs.clientOrTPI?.date) || "-"}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
                       <div
                         className="tfoot-spacer"
-                        style={{ height: "25mm" }}
+                        style={{ height: "28mm" }}
                       ></div>
                     </div>
                   </td>

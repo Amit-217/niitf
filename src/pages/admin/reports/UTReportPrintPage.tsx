@@ -42,6 +42,9 @@ const PRINT_STYLES = `
       right: 5mm !important;
       background: #fff !important;
     }
+    .report { overflow: visible !important; }
+    .report-body { overflow: visible !important; }
+    tfoot { display: table-footer-group !important; }
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
@@ -78,19 +81,19 @@ const PRINT_STYLES = `
   .bw .lbl { color: #000 !important; background: #fff !important; }
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 12px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 12px; text-align: center; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 12px; white-space: nowrap; }
-  .val { font-size: 12px; color: #000; }
+  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
+  .val { font-size: 11px; color: #000; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 3px 5px; font-size: 11px; vertical-align: top; word-break: break-word; }
-  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; }
+  .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 3px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #d9e1ea; padding: 3px 5px; font-size: 13px; vertical-align: top; }
+  .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
@@ -98,7 +101,7 @@ const PRINT_STYLES = `
   .neutral-badge { color: #000; }
   .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 4px; font-size: 13px; text-align: center; vertical-align: middle; }
+  .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 4px; font-size: 11px; text-align: center; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
@@ -376,11 +379,10 @@ export const UTReportPrintPage: React.FC = () => {
                               EXAMINED BY
                             </td>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CUSTOMER: <span>{v(fs.customer?.name)}</span>
+                              CUSTOMER:
                             </td>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CLIENT / TPI:{" "}
-                              <span>{v(fs.clientOrTPI?.name)}</span>
+                              CLIENT / TPI:
                             </td>
                           </tr>
                           <tr>
@@ -395,47 +397,47 @@ export const UTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td>Name: {v(inspector.name)}</td>
-                            <td>Name: {v(fs.customer?.name)}</td>
-                            <td>Name: {v(fs.clientOrTPI?.name)}</td>
+                            <td>Name: {v(inspector.name) || "-"}</td>
+                            <td>Name: {v(fs.customer?.name) || "-"}</td>
+                            <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
                           </tr>
                           <tr>
                             <td>
-                              {v(inspector.qualification)}
+                              {v(inspector.qualification) || "UT NDE Level II"}
                               {inspector.designation
                                 ? ` / ${inspector.designation}`
                                 : ""}
                             </td>
-                            <td>Designation: {v(fs.customer?.designation)}</td>
                             <td>
-                              Designation: {v(fs.clientOrTPI?.designation)}
+                              Designation: {v(fs.customer?.designation) || "-"}
+                            </td>
+                            <td>
+                              Designation:{" "}
+                              {v(fs.clientOrTPI?.designation) || "-"}
                             </td>
                           </tr>
                           <tr>
                             <td style={{ height: 28 }}>Signature:</td>
-                            <td>Signature:</td>
-                            <td>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
                           </tr>
                           <tr>
-                            <td style={{ height: 28 }}></td>
-                            <td></td>
-                            <td></td>
+                            <td>I.D. No.: {v(inspector.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
                           </tr>
                           <tr>
-                            <td>I.D. No.: {v(inspector.idNo)}</td>
-                            <td>I.D. No.: {v(fs.customer?.idNo)}</td>
-                            <td>I.D. No.: {v(fs.clientOrTPI?.idNo)}</td>
-                          </tr>
-                          <tr>
-                            <td>Date: {fmtDate(inspector.date)}</td>
-                            <td>Date: {fmtDate(fs.customer?.date)}</td>
-                            <td>Date: {fmtDate(fs.clientOrTPI?.date)}</td>
+                            <td>Date: {fmtDate(inspector.date) || "-"}</td>
+                            <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
+                            <td>
+                              Date: {fmtDate(fs.clientOrTPI?.date) || "-"}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
                       <div
                         className="tfoot-spacer"
-                        style={{ height: "25mm" }}
+                        style={{ height: "28mm" }}
                       ></div>
                     </div>
                   </td>

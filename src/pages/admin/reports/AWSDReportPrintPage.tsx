@@ -51,6 +51,7 @@ const PRINT_STYLES = `
   .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 4px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 12px; }
+  .report-table tr { break-inside: avoid; page-break-inside: avoid; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 12px; text-align: center; color: #0C447C; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 12px; white-space: nowrap; }
   .val { font-size: 12px; color: #000; }
@@ -532,7 +533,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                     </table>
                     <div
                       className="tfoot-spacer"
-                      style={{ height: "15mm" }}
+                      style={{ height: "20mm" }}
                     ></div>
                   </div>
                 </td>
