@@ -38,16 +38,16 @@ const PRINT_STYLES = `
     }
     .screen-sign-table { display: none !important; }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
   .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
   .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 96px; height: 96px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0px; }
+  .logo-box { width: 70px; height: 70px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 18px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 11px; color: #374151; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 11px; color: #0C447C; font-weight: 700; margin-top: 2px; }
+  .hdr-center .org { font-size: 17px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
+  .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 6px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 4px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -315,7 +315,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                       </tr>
                       <tr>
                         <td className="lbl">
-                          Quality Requirements â€" Section
+                          Quality Requirements – Section
                         </td>
                         <td className="val" colSpan={3}>
                           {v(report.qualityRequirementsSection)}
@@ -329,10 +329,10 @@ export const AWSDReportPrintPage: React.FC = () => {
                   </table>
 
                   <table className="obs-table mt-n1">
-                    <tbody>
+                    <thead style={{ display: "table-header-group" }}>
                       <tr>
                         <td colSpan={16} className="section-hdr">
-                          OBSERVATIONS
+                          6. OBSERVATIONS
                         </td>
                       </tr>
                       {/* Header row 1 */}
@@ -438,64 +438,48 @@ export const AWSDReportPrintPage: React.FC = () => {
                           <br />Y
                         </td>
                       </tr>
+                    </thead>
+                    <tbody>
 
-                      {/* Empty rows if no data */}
-                      {obs.length === 0
-                        ? Array.from({ length: 5 }).map((_, i) => (
-                            <tr key={i} style={{ height: 16 }}>
-                              <td>{i + 1}</td>
-                              {Array.from({ length: 15 }).map((__, j) => (
-                                <td key={j}></td>
-                              ))}
-                            </tr>
-                          ))
-                        : obs.map((o: any, i: number) => (
-                            <tr key={i} style={{ height: 16 }}>
-                              <td>{v(o.lineNo)}</td>
-                              <td>{v(o.indicationNo)}</td>
-                              <td>{v(o.transducerAngle)}</td>
-                              <td>{v(o.fromFace)}</td>
-                              <td>{v(o.leg)}</td>
-                              <td style={{}}>
-                                {v(o.decibels?.indicationLevel)}
-                              </td>
-                              <td style={{}}>
-                                {v(o.decibels?.referenceLevel)}
-                              </td>
-                              <td style={{}}>
-                                {v(o.decibels?.attenuationFactor)}
-                              </td>
-                              <td style={{}}>
-                                {v(o.decibels?.indicationRating)}
-                              </td>
-                              <td style={{}}>{v(o.discontinuity?.length)}</td>
-                              <td style={{}}>
-                                {v(o.discontinuity?.angularDistance)}
-                              </td>
-                              <td style={{}}>
-                                {v(o.discontinuity?.depthFromA)}
-                              </td>
-                              <td style={{}}>
-                                {v(o.discontinuity?.distanceFromX)}
-                              </td>
-                              <td style={{}}>
-                                {v(o.discontinuity?.distanceFromY)}
-                              </td>
-                              <td
-                                className={
-                                  o.interpretation === "Reject"
-                                    ? "reject-cell"
-                                    : ""
-                                }
-                              >
-                                {v(o.interpretation)}
-                              </td>
-                            </tr>
+                      {obs.map((o: any, i: number) => (
+                        <tr key={i} style={{ height: "24px" }}>
+                          <td>{v(o.lineNo)}</td>
+                          <td>{v(o.indicationNo)}</td>
+                          <td>{v(o.transducerAngle)}</td>
+                          <td>{v(o.fromFace)}</td>
+                          <td>{v(o.leg)}</td>
+                          <td style={{}}>
+                            {v(o.decibels?.indicationLevel)}
+                          </td>
+                          <td style={{}}>
+                            {v(o.decibels?.referenceLevel)}
+                          </td>
+                          <td style={{}}>
+                            {v(o.decibels?.attenuationFactor)}
+                          </td>
+                          <td style={{}}>
+                            {v(o.decibels?.indicationRating)}
+                          </td>
+                          <td>{v(o.discontinuity?.length)}</td>
+                          <td>{v(o.discontinuity?.angularDist)}</td>
+                          <td>{v(o.discontinuity?.depthFromA)}</td>
+                          <td>{v(o.discontinuity?.fromX)}</td>
+                          <td>{v(o.discontinuity?.fromY)}</td>
+                          <td>{v(o.interpretation)}</td>
+                        </tr>
+                      ))}
+                      {[...Array(4)].map((_, i) => (
+                        <tr key={`empty-obs-${i}`} style={{ height: "24px" }}>
+                          <td>{obs.length + i + 1}</td>
+                          {Array.from({ length: 15 }).map((__, j) => (
+                            <td key={j}></td>
                           ))}
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
 
-                  {/* -- CERTIFICATION TEXT + SIGNATURES -- */}
+                  {/* -- CERTIFICATION TEXT -- */}
                   <div className="cert-para">
                     We, the undersigned, certify that the statements in this
                     record are correct and that the welds were prepared and
@@ -504,52 +488,6 @@ export const AWSDReportPrintPage: React.FC = () => {
                     <strong>({v(cert.year) || "____"})</strong> Structural
                     Welding Codeâ€"Steel.
                   </div>
-
-                  {/* -- CERTIFICATION / SIGNATURES -- */}
-                  <table className="sign-table mt-n1">
-                    <colgroup>
-                      <col style={{ width: "14%" }} />
-                      <col style={{ width: "22%" }} />
-                      <col style={{ width: "4%" }} />
-                      <col style={{ width: "14%" }} />
-                      <col style={{ width: "22%" }} />
-                      <col style={{ width: "4%" }} />
-                      <col style={{ width: "10%" }} />
-                      <col style={{ width: "10%" }} />
-                    </colgroup>
-                    <tbody>
-                      <tr>
-                        <td className="lbl">Test Date</td>
-                        <td className="val">{fmtDate(cert.testDate)}</td>
-                        <td style={{ border: "none", padding: 0 }}></td>
-                        <td className="lbl">Manufacturer or Contractor</td>
-                        <td className="val">
-                          {v(cert.manufacturerOrContractor)}
-                        </td>
-                        <td style={{ border: "none", padding: 0 }}></td>
-                        <td className="lbl">Date</td>
-                        <td className="val">{fmtDate(cert.date)}</td>
-                      </tr>
-                      <tr>
-                        <td className="lbl">Inspected By</td>
-                        <td className="val">{v(cert.inspectedBy)}</td>
-                        <td style={{ border: "none", padding: 0 }}></td>
-                        <td className="lbl">Authorized By</td>
-                        <td className="val">{v(cert.authorizedBy)}</td>
-                        <td style={{ border: "none", padding: 0 }}></td>
-                        <td colSpan={2}></td>
-                      </tr>
-                      <tr>
-                        <td style={{ height: 22 }}>Signature:</td>
-                        <td></td>
-                        <td style={{ border: "none", padding: 0 }}></td>
-                        <td>Signature:</td>
-                        <td></td>
-                        <td style={{ border: "none", padding: 0 }}></td>
-                        <td colSpan={2}></td>
-                      </tr>
-                    </tbody>
-                  </table>
                 </td>
               </tr>
             </tbody>
@@ -557,10 +495,57 @@ export const AWSDReportPrintPage: React.FC = () => {
             <tfoot style={{ display: "table-footer-group" }}>
               <tr>
                 <td style={{ padding: 0 }}>
-                  <div
-                    className="tfoot-content"
-                    style={{ height: "15mm" }}
-                  ></div>
+                  <div className="report-footer-wrap">
+                    {/* -- CERTIFICATION / SIGNATURES -- */}
+                    <table className="sign-table mt-n1">
+                      <colgroup>
+                        <col style={{ width: "14%" }} />
+                        <col style={{ width: "22%" }} />
+                        <col style={{ width: "4%" }} />
+                        <col style={{ width: "14%" }} />
+                        <col style={{ width: "22%" }} />
+                        <col style={{ width: "4%" }} />
+                        <col style={{ width: "10%" }} />
+                        <col style={{ width: "10%" }} />
+                      </colgroup>
+                      <tbody>
+                        <tr>
+                          <td className="lbl">Test Date</td>
+                          <td className="val">{fmtDate(cert.testDate)}</td>
+                          <td style={{ border: "none", padding: 0 }}></td>
+                          <td className="lbl">Manufacturer or Contractor</td>
+                          <td className="val">
+                            {v(cert.manufacturerOrContractor)}
+                          </td>
+                          <td style={{ border: "none", padding: 0 }}></td>
+                          <td className="lbl">Date</td>
+                          <td className="val">{fmtDate(cert.date)}</td>
+                        </tr>
+                        <tr>
+                          <td className="lbl">Inspected By</td>
+                          <td className="val">{v(cert.inspectedBy)}</td>
+                          <td style={{ border: "none", padding: 0 }}></td>
+                          <td className="lbl">Authorized By</td>
+                          <td className="val">{v(cert.authorizedBy)}</td>
+                          <td style={{ border: "none", padding: 0 }}></td>
+                          <td colSpan={2}></td>
+                        </tr>
+                        <tr>
+                          <td style={{ height: 22 }}>Signature:</td>
+                          <td></td>
+                          <td style={{ border: "none", padding: 0 }}></td>
+                          <td>Signature:</td>
+                          <td></td>
+                          <td style={{ border: "none", padding: 0 }}></td>
+                          <td colSpan={2}></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div
+                      className="tfoot-spacer"
+                      style={{ height: "15mm" }}
+                    ></div>
+                  </div>
                 </td>
               </tr>
             </tfoot>
