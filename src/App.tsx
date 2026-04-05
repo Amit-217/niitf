@@ -247,7 +247,7 @@ function App() {
         <Route
           path="/admin/reports/mpt/:id/print"
           element={
-            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
               <MPTReportPrintPage />
             </ProtectedRoute>
           }
@@ -255,7 +255,7 @@ function App() {
         <Route
           path="/admin/reports/pt/:id/print"
           element={
-            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
               <PTReportPrintPage />
             </ProtectedRoute>
           }
@@ -263,7 +263,7 @@ function App() {
         <Route
           path="/admin/reports/ut/:id/print"
           element={
-            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
               <UTReportPrintPage />
             </ProtectedRoute>
           }
@@ -271,7 +271,7 @@ function App() {
         <Route
           path="/admin/reports/vssc-ut/:id/print"
           element={
-            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
               <VSSCUTReportPrintPage />
             </ProtectedRoute>
           }
@@ -279,7 +279,7 @@ function App() {
         <Route
           path="/admin/reports/utg/:id/print"
           element={
-            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
               <UTGReportPrintPage />
             </ProtectedRoute>
           }
@@ -287,7 +287,7 @@ function App() {
         <Route
           path="/admin/reports/tpi-ivr/:id/print"
           element={
-            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
               <TPIIVRReportPrintPage />
             </ProtectedRoute>
           }
@@ -295,7 +295,7 @@ function App() {
         <Route
           path="/admin/reports/awsd/:id/print"
           element={
-            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
               <AWSDReportPrintPage />
             </ProtectedRoute>
           }
@@ -309,6 +309,15 @@ function App() {
         <Route path="/reports/public/utg/:id" element={<UTGReportPrintPage />} />
         <Route path="/reports/public/tpi-ivr/:id" element={<TPIIVRReportPrintPage />} />
         <Route path="/reports/public/awsd/:id" element={<AWSDReportPrintPage />} />
+
+        <Route
+          path="/admin/quotations/:type/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
+              <QuotationPrintPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/reports/quotations/:type/:id/print" element={<QuotationPrintPage />} />
 
