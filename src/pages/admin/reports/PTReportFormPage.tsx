@@ -166,7 +166,7 @@ export const PTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // Ã¢"â‚¬Ã¢"â‚¬ Final Section Ã¢"â‚¬Ã¢"â‚¬
@@ -475,7 +475,7 @@ export const PTReportFormPage: React.FC = () => {
         </button>
         <div>
           <h1 className="text-xl font-bold text-gray-900">
-            Liquid Penetrant Test Report
+            Liquid Penetrant Testing Report
           </h1>
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
@@ -1125,7 +1125,7 @@ export const PTReportFormPage: React.FC = () => {
               Customer
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {customerName || "â€”"}
+              {customerName || "-"}
             </p>
             <div className="space-y-2">
               <div>
@@ -1172,7 +1172,7 @@ export const PTReportFormPage: React.FC = () => {
               Client / TPI
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              {jobClient || "â€”"}
+              {jobClient || "-"}
             </p>
             <div className="space-y-2">
               <div>

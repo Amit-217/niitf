@@ -11,7 +11,6 @@ import {
   getPublicVSSCUTReportById,
   VSSCUTReport,
 } from "../../../api/customerApi";
-import niitLogo from "../../../assets/logo.png";
 
 // ─── Print Styles ─────────────────────────────────────────────────────────────
 const PRINT_STYLES = `
@@ -22,12 +21,11 @@ const PRINT_STYLES = `
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; min-height: 297mm !important; }
-    #report-root { background: #fff !important; padding: 0 !important; display: block !important; min-height: 297mm !important; }
+    #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
-      width: 210mm !important; min-height: 297mm !important;
-      margin: 0 !important; padding: 5mm 5mm 70mm 5mm !important;
+      width: 210mm !important; 
+      margin: 0 !important; padding: 2mm 5mm 15mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
-      break-inside: avoid !important;
       page-break-after: auto !important;
       box-shadow: none !important;
     }
@@ -43,17 +41,24 @@ const PRINT_STYLES = `
       right: 5mm !important;
       background: #fff !important;
     }
+    .report { overflow: visible !important; }
+    .report-body { overflow: visible !important; }
+    tfoot { display: table-footer-group !important; }
+    .report-footer-wrap {
+      break-inside: avoid !important;
+      page-break-inside: avoid !important;
+    }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
   .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
   .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 96px; height: 96px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0px; }
+  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 18px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 11px; color: #374151; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 11px; color: #0C447C; font-weight: 700; margin-top: 2px; }
+  .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
+  .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
@@ -81,13 +86,13 @@ const PRINT_STYLES = `
   .bw .lbl { color: #000 !important; background: #fff !important; }
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 12px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 12px; text-align: center; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 12px; white-space: nowrap; }
-  .val { font-size: 12px; color: #000; }
+  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; white-space: nowrap; width: 22%; }
+  .val { font-size: 11px; color: #000; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
@@ -95,9 +100,9 @@ const PRINT_STYLES = `
   .neutral-badge { color: #000; }
   .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #d9e1ea; padding: 4px 6px; font-size: 13px; vertical-align: top; }
+  .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 3px; font-size: 13px; text-align: center; vertical-align: middle; }
+  .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 3px; font-size: 11px; text-align: center; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
@@ -233,8 +238,8 @@ export const VSSCUTReportPrintPage: React.FC = () => {
     <>
       <div className="footer">
         <div className="footer-text-block">
-          Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
-          Baramati, Dist-Pune 413133 | Ph: +91 9608168056, +91 7875154431
+          Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office, MIDC,
+          Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
@@ -300,7 +305,6 @@ export const VSSCUTReportPrintPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Report Content */}
       <div
         id="report-root"
         style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
@@ -329,10 +333,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
             >
               <thead style={{ display: "table-header-group" }}>
                 <tr>
-                  <td style={{ padding: "5mm 0 0 0" }}>
+                  <td style={{ padding: "2mm 0 0 0" }}>
                     <div className="rpt-header">
                       <div className="logo-box">
-                        <img src={niitLogo} alt="NIIT Logo" />
+                        <img src="/logo.png" alt="NIIT Logo" />
                       </div>
                       <div className="hdr-center">
                         <div className="org">
@@ -340,8 +344,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         </div>
                         <div className="sub">
                           THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT
-                          TRAINING | NDT CONSULTANCY | FACTORY INSPECTION UNDER
-                          MAHARASHTRA FACTORY ACT
+                          TRAINING | NDT CONSULTANCY
+                          <br />
+                          FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
                         </div>
                         <div className="iso">
                           (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
@@ -351,6 +356,79 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                   </td>
                 </tr>
               </thead>
+              <tfoot style={{ display: "table-footer-group" }}>
+                <tr>
+                  <td style={{ padding: 0 }}>
+                    <div className="report-footer-wrap">
+                      <table className="sign-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.4%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              EXAMINED BY
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              CUSTOMER:
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              CLIENT / TPI:
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              National Industrial Inspection And Training
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              {v(report.customer)}
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              -
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Name: {v(inspector.name) || "-"}</td>
+                            <td>Name: {v(fs.qc?.name) || "-"}</td>
+                            <td>Name: {v(fs.rqs?.name) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              {v(inspector.qualification) || "UT NDE Level II"}
+                              {inspector.designation
+                                ? ` / ${inspector.designation}`
+                                : ""}
+                            </td>
+                            <td>Designation: {v(fs.qc?.designation) || "-"}</td>
+                            <td>Designation: {v(fs.rqs?.designation) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                          </tr>
+                          <tr>
+                            <td>I.D. No.: {v(inspector.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(fs.qc?.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(fs.rqs?.idNo) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td>Date: {fmtDate(inspector.date) || "-"}</td>
+                            <td>Date: {fmtDate(fs.qc?.date) || "-"}</td>
+                            <td>Date: {fmtDate(fs.rqs?.date) || "-"}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div
+                        className="tfoot-spacer"
+                        style={{ height: "28mm" }}
+                      ></div>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
               <tbody style={{ display: "table-row-group" }}>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
@@ -524,7 +602,12 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body" style={{ borderTop: "none" }}>
                       {/* Angle Probe Calibration */}
                       <table
                         className="report-table"
@@ -569,7 +652,12 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body" style={{ borderTop: "none" }}>
                       {/* Calibration Table */}
                       <table
                         className="calib-table mt-n1"
@@ -709,7 +797,12 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body" style={{ borderTop: "none" }}>
                       {/* Normal Probe Calibration */}
                       <table
                         className="report-table"
@@ -747,8 +840,13 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-
-                      {/* Disposition & Evaluation + Signatures */}
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: 0, verticalAlign: "top" }}>
+                    <div className="report-body" style={{ borderTop: "none" }}>
+                      {/* Disposition & Evaluation */}
                       <div
                         style={{
                           breakInside: "avoid",
@@ -786,74 +884,8 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                             )}
                           </tbody>
                         </table>
-
-                        {/* Signature Section */}
-                        <table className="sign-table mt-n1 screen-sign-table">
-                          <colgroup>
-                            <col style={{ width: "33.3%" }} />
-                            <col style={{ width: "33.3%" }} />
-                            <col style={{ width: "33.4%" }} />
-                          </colgroup>
-                          <tbody>
-                            <tr>
-                              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                EXAMINED BY
-                              </td>
-                              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                CUSTOMER: <span>{v(fs.qc?.name)}</span>
-                              </td>
-                              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                CLIENT / TPI: <span>{v(fs.rqs?.name)}</span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                National Industrial Inspection And Training
-                              </td>
-                              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                {v(report.customer)}
-                              </td>
-                              <td
-                                style={{ fontWeight: 600, fontSize: "11px" }}
-                              ></td>
-                            </tr>
-                            <tr>
-                              <td style={{ minHeight: 14 }}>
-                                Name: {v(inspector.name)}
-                              </td>
-                              <td>Name: {v(fs.qc?.name)}</td>
-                              <td>Name: {v(fs.rqs?.name)}</td>
-                            </tr>
-                            <tr>
-                              <td>{v(inspector.qualification)}</td>
-                              <td>Designation:</td>
-                              <td>Designation:</td>
-                            </tr>
-                            <tr>
-                              <td style={{ height: 28 }}>Signature:</td>
-                              <td>Signature:</td>
-                              <td>Signature:</td>
-                            </tr>
-                            <tr>
-                              <td style={{ height: 28 }}></td>
-                              <td></td>
-                              <td></td>
-                            </tr>
-                            <tr>
-                              <td>I.D. No.: {v(inspector.idNo)}</td>
-                              <td>I.D. No.: {v(fs.qc?.idNo)}</td>
-                              <td>I.D. No.: {v(fs.rqs?.idNo)}</td>
-                            </tr>
-                            <tr>
-                              <td>Date: {fmtDate(inspector.date)}</td>
-                              <td>Date: {fmtDate(fs.qc?.date)}</td>
-                              <td>Date: {fmtDate(fs.rqs?.date)}</td>
-                            </tr>
-                          </tbody>
-                        </table>
                       </div>
                     </div>
-                    {/* ── end report-body ── */}
                   </td>
                 </tr>
               </tbody>
@@ -875,63 +907,6 @@ export const VSSCUTReportPrintPage: React.FC = () => {
       </div>
 
       <div className={`print-fixed-footer${bwMode ? " bw" : ""}`}>
-        <table className="sign-table">
-          <colgroup>
-            <col style={{ width: "33.3%" }} />
-            <col style={{ width: "33.3%" }} />
-            <col style={{ width: "33.4%" }} />
-          </colgroup>
-          <tbody>
-            <tr>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                CUSTOMER: <span>{v(fs.qc?.name)}</span>
-              </td>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                CLIENT / TPI: <span>{v(fs.rqs?.name)}</span>
-              </td>
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                National Industrial Inspection And Training
-              </td>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                {v(report.customer)}
-              </td>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}></td>
-            </tr>
-            <tr>
-              <td style={{ minHeight: 14 }}>Name: {v(inspector.name)}</td>
-              <td>Name: {v(fs.qc?.name)}</td>
-              <td>Name: {v(fs.rqs?.name)}</td>
-            </tr>
-            <tr>
-              <td>{v(inspector.qualification)}</td>
-              <td>Designation:</td>
-              <td>Designation:</td>
-            </tr>
-            <tr>
-              <td style={{ height: 28 }}>Signature:</td>
-              <td>Signature:</td>
-              <td>Signature:</td>
-            </tr>
-            <tr>
-              <td style={{ height: 28 }}></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>I.D. No.: {v(inspector.idNo)}</td>
-              <td>I.D. No.: {v(fs.qc?.idNo)}</td>
-              <td>I.D. No.: {v(fs.rqs?.idNo)}</td>
-            </tr>
-            <tr>
-              <td>Date: {fmtDate(inspector.date)}</td>
-              <td>Date: {fmtDate(fs.qc?.date)}</td>
-              <td>Date: {fmtDate(fs.rqs?.date)}</td>
-            </tr>
-          </tbody>
-        </table>
         <ReportFooter />
       </div>
     </>

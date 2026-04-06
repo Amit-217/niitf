@@ -9,6 +9,7 @@ export interface TaskPayload {
     startDate: string; // YYYY-MM-DD
     dueDate?: string;  // YYYY-MM-DD
     status?: 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED';
+    isArchived?: boolean;
 }
 
 export interface TaskUpdatePayload {
@@ -32,9 +33,6 @@ export const deleteTask = (id: string) =>
 
 export const archiveTask = (id: string) =>
     api.patch(`/tasks/${id}/archive`);
-
-export const unarchiveTask = (id: string) =>
-    api.put(`/tasks/${id}`, { isArchived: false });
 
 // --- Task Endpoints (Shared) ---
 

@@ -23,7 +23,6 @@ import {
   getTaskUpdates,
   deleteTask,
   archiveTask,
-  unarchiveTask,
 } from "../../../api/taskApi";
 import api from "../../../api/axios";
 

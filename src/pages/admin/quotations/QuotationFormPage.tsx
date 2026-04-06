@@ -45,6 +45,27 @@ export const QuotationFormPage: React.FC = () => {
     preparedBy: { name: 'Mr. Bajirao T. Kadam', designation: 'ASNT Level III (RT, UT, MT, PT, VT, ET, MFL)' }
   });
 
+  const [totals, setTotals] = useState({ subtotal: 0, gstAmount: 0, totalAmount: 0 });
+
+  useEffect(() => {
+    calculateTotals();
+    // eslint-disable-next-line
+  }, [formData.services, formData.extraCharges, formData.gstPercentage]);
+
+  const calculateTotals = () => {
+    let subtotal = formData.services.reduce((acc: number, cur: any) => acc + (parseFloat(cur.amount) || 0), 0);
+    if (type === 'service') {
+      const extras = formData.extraCharges || {};
+      subtotal += (parseFloat(extras.transportation) || 0);
+      subtotal += (parseFloat(extras.lodging) || 0);
+      subtotal += (parseFloat(extras.boarding) || 0);
+      subtotal += (parseFloat(extras.minimumVisit) || 0);
+    }
+    const gstAmount = (subtotal * (parseFloat(formData.gstPercentage) || 0)) / 100;
+    const totalAmount = subtotal + gstAmount;
+    setTotals({ subtotal, gstAmount, totalAmount });
+  };
+
   useEffect(() => {
     fetchInitData();
     // eslint-disable-next-line
@@ -70,7 +91,7 @@ export const QuotationFormPage: React.FC = () => {
         // Auto gen quotation number roughly if required, but backend usually requires unique string
         setFormData((prev: any) => ({
           ...prev,
-          quotationNo: `Q-${Date.now().toString().slice(-6)}`,
+          quotationNo: '', // Backend will generate formal number if empty
           ...(locationState?.customerId ? { customerId: locationState.customerId } : {}),
         }));
       }
@@ -79,6 +100,15 @@ export const QuotationFormPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getFinancialYear = () => {
+    const today = new Date();
+    const month = today.getMonth();
+    const year = today.getFullYear();
+    // FY starts in April
+    if (month >= 3) return `${year}-${year + 1}`;
+    return `${year - 1}-${year}`;
   };
 
   const handleServiceChange = (index: number, field: string, value: any) => {
@@ -102,8 +132,8 @@ export const QuotationFormPage: React.FC = () => {
       sacCode: '988393',
       quantity: 1,
       unit: 'Per',
-      price: 1500,
-      amount: 1500
+      price: 0,
+      amount: 0
     };
     setFormData({ ...formData, services: [...formData.services, row] });
   };
@@ -186,11 +216,21 @@ export const QuotationFormPage: React.FC = () => {
         
         {/* Core Info */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-           <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Core Info</h2>
+           <div className="flex items-center justify-between mb-4 pb-2 border-b">
+              <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest">Core Info</h2>
+              <span className="text-xs font-bold px-2 py-1 bg-violet-50 text-violet-700 rounded-lg animate-pulse">Auto-numbering Enabled</span>
+           </div>
+           
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Quotation No <span className="text-red-500">*</span></label>
-                <input required type="text" value={formData.quotationNo} onChange={(e) => setFormData({...formData, quotationNo: e.target.value})} className="w-full px-3 py-2 border rounded-lg" />
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Quotation No <span className="text-gray-400 font-normal">{isEditing ? '' : '(Auto-generated)'}</span></label>
+                <input 
+                  required 
+                  readOnly 
+                  type="text" 
+                  value={isEditing ? formData.quotationNo : `NIIT/${getFinancialYear()}/QTN/${new Date().getFullYear()}/... (Auto)`} 
+                  className="w-full px-3 py-2 border rounded-lg bg-gray-50 font-mono font-bold text-violet-700" 
+                />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Date <span className="text-red-500">*</span></label>
@@ -198,7 +238,20 @@ export const QuotationFormPage: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Customer <span className="text-red-500">*</span></label>
-                <select required value={formData.customerId} onChange={(e) => setFormData({...formData, customerId: e.target.value})} className="w-full px-3 py-2 border rounded-lg">
+                <select 
+                  required 
+                  value={formData.customerId} 
+                  onChange={(e) => {
+                    const custId = e.target.value;
+                    const selectedCust = customers.find(c => c._id === custId);
+                    setFormData({
+                      ...formData, 
+                      customerId: custId,
+                      contactPersons: selectedCust ? [{ ...formData.contactPersons[0], name: selectedCust.contactPerson || '' }] : formData.contactPersons
+                    });
+                  }} 
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                >
                    <option value="">Select Customer</option>
                    {customers.map(c => <option key={c._id} value={c._id}>{c.companyName}</option>)}
                 </select>
@@ -338,6 +391,39 @@ export const QuotationFormPage: React.FC = () => {
                   </div>
                </div>
              )}
+        </div>
+
+        {/* Signature Box */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+           <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Signature / Preparation Details</h2>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Prepared By (Name)</label>
+                <input type="text" value={formData.preparedBy.name} onChange={(e) => setFormData({...formData, preparedBy: {...formData.preparedBy, name: e.target.value}})} className="w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Designation</label>
+                <input type="text" value={formData.preparedBy.designation} onChange={(e) => setFormData({...formData, preparedBy: {...formData.preparedBy, designation: e.target.value}})} className="w-full px-3 py-2 border rounded-lg" />
+              </div>
+           </div>
+        </div>
+
+        {/* Totals Summary */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-end">
+           <div className="w-full md:w-80 space-y-3">
+              <div className="flex justify-between items-center text-gray-600">
+                 <span className="text-sm font-semibold">Subtotal</span>
+                 <span className="font-bold">₹ {totals.subtotal.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between items-center text-gray-600">
+                 <span className="text-sm font-semibold">GST ({formData.gstPercentage}%)</span>
+                 <span className="font-bold text-blue-600">₹ {totals.gstAmount.toLocaleString()}</span>
+              </div>
+              <div className="pt-3 border-t-2 border-gray-100 flex justify-between items-center text-gray-900">
+                 <span className="text-lg font-bold">Total Amount</span>
+                 <span className="text-2xl font-black text-primary-600 font-mono">₹ {totals.totalAmount.toLocaleString()}</span>
+              </div>
+           </div>
         </div>
 
         {/* Footer actions */}

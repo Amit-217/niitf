@@ -11,7 +11,6 @@ import {
   getPublicMPTReportById,
   MPTReport,
 } from "../../../api/customerApi";
-import niitLogo from "../../../assets/logo.png";
 
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
@@ -21,12 +20,11 @@ const PRINT_STYLES = `
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; min-height: 297mm !important; }
-    #report-root { background: #fff !important; padding: 0 !important; display: block !important; min-height: 297mm !important; }
+    #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
-      width: 210mm !important; min-height: 297mm !important;
-      margin: 0 !important; padding: 5mm 5mm 70mm 5mm !important;
+      width: 210mm !important; 
+      margin: 0 !important; padding: 2mm 5mm 15mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
-      break-inside: avoid !important;
       page-break-after: auto !important;
       box-shadow: none !important;
     }
@@ -47,10 +45,10 @@ const PRINT_STYLES = `
   * { box-sizing: border-box; }
   .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
   .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 70px; height: 70px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
+  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 17px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
   .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
   .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
@@ -381,11 +379,11 @@ export const MPTReportPrintPage = () => {
             >
               <thead style={{ display: "table-header-group" }}>
                 <tr>
-                  <td style={{ padding: "5mm 0 0 0" }}>
+                  <td style={{ padding: "2mm 0 0 0" }}>
                     {/* â"€â"€ HEADER â"€â"€ */}
                     <div className="rpt-header">
                       <div className="logo-box">
-                        <img src={niitLogo} alt="NIIT Logo" />
+                        <img src="/logo.png" alt="NIIT Logo" />
                       </div>
                       <div className="hdr-center">
                         <div className="org">
@@ -393,8 +391,9 @@ export const MPTReportPrintPage = () => {
                         </div>
                         <div className="sub">
                           THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT
-                          TRAINING | NDT CONSULTANCY | FACTORY INSPECTION UNDER
-                          MAHARASHTRA FACTORY ACT
+                          TRAINING | NDT CONSULTANCY
+                          <br />
+                          FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
                         </div>
                         <div className="iso">
                           (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
@@ -404,6 +403,94 @@ export const MPTReportPrintPage = () => {
                   </td>
                 </tr>
               </thead>
+              <tfoot style={{ display: "table-footer-group" }}>
+                <tr>
+                  <td style={{ padding: 0 }}>
+                    <div className="report-footer-wrap">
+                      <table className="sign-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.4%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              EXAMINED BY
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              CUSTOMER:
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              CLIENT / TPI:
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              National Industrial Inspection And Training
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              {v(jd.customer)}
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              {v(jd.client)}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Name: {v(inspectors[0]?.name) || "-"}</td>
+                            <td>Name: {v(fs.customer?.name) || "-"}</td>
+                            <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td>MT NDE Level II:</td>
+                            <td>
+                              Designation:{" "}
+                              {v(
+                                (
+                                  fs.customer as unknown as {
+                                    designation?: string;
+                                  }
+                                )?.designation,
+                              )}
+                            </td>
+                            <td>
+                              Designation:{" "}
+                              {v(
+                                (
+                                  fs.clientOrTPI as unknown as {
+                                    designation?: string;
+                                  }
+                                )?.designation,
+                              )}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 28 }}>Signature:</td>
+                          </tr>
+                          <tr>
+                            <td>I.D. No.: {v(inspectors[0]?.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
+                            <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
+                            <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
+                            <td>
+                              Date: {fmtDate(fs.clientOrTPI?.date) || "-"}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div
+                        className="tfoot-spacer"
+                        style={{ height: "28mm" }}
+                      ></div>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
 
               <tbody style={{ display: "table-row-group" }}>
                 <tr>
@@ -680,18 +767,11 @@ export const MPTReportPrintPage = () => {
                         </tbody>
                       </table>
 
-                      {/* -- 6. Observations -- */}
-                      <table
-                        className="obs-table mt-n1"
-                        style={{
-                          pageBreakBefore: "always",
-                          breakBefore: "page",
-                        }}
-                      >
-                        <tbody>
+                      <table className="obs-table mt-n1">
+                        <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={7} className="section-hdr">
-                              6. Observations
+                              6. OBSERVATIONS
                             </td>
                           </tr>
                           <tr>
@@ -703,6 +783,8 @@ export const MPTReportPrintPage = () => {
                             <th>Interpretation</th>
                             <th style={{ width: "13%" }}>Evaluation</th>
                           </tr>
+                        </thead>
+                        <tbody>
                           {obs.length === 0 ? (
                             <tr>
                               <td
@@ -745,6 +827,17 @@ export const MPTReportPrintPage = () => {
                               </tr>
                             ))
                           )}
+                          {[...Array(4)].map((_, i) => (
+                            <tr key={`empty-obs-${i}`}>
+                              <td style={{ height: "24px" }}></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
 
@@ -768,99 +861,9 @@ export const MPTReportPrintPage = () => {
                               </td>
                               <td className="val">{conclusionText}</td>
                             </tr>
-                            <tr className="print-blank-row">
-                              <td style={{ height: 20 }} colSpan={2}></td>
-                            </tr>
-                            <tr className="print-blank-row">
-                              <td style={{ height: 20 }} colSpan={2}></td>
-                            </tr>
-                            <tr className="print-blank-row">
-                              <td style={{ height: 20 }} colSpan={2}></td>
-                            </tr>
-                            <tr className="print-blank-row">
-                              <td style={{ height: 20 }} colSpan={2}></td>
-                            </tr>
                           </tbody>
                         </table>
                       </div>
-
-                      {/* -- 8. Signatures (screen only, hidden on print) -- */}
-                      <table className="sign-table mt-n1 screen-sign-table">
-                        <colgroup>
-                          <col style={{ width: "33.3%" }} />
-                          <col style={{ width: "33.3%" }} />
-                          <col style={{ width: "33.4%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              EXAMINED BY
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CUSTOMER:
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CLIENT / TPI:
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              National Industrial Inspection And Training
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              {v(jd.customer)}
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              {v(jd.client)}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Name: {v(inspectors[0]?.name) || "-"}</td>
-                            <td>Name: {v(fs.customer?.name) || "-"}</td>
-                            <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
-                          </tr>
-                          <tr>
-                            <td>MT NDE Level II:</td>
-                            <td>
-                              Designation:{" "}
-                              {v(
-                                (
-                                  fs.customer as unknown as {
-                                    designation?: string;
-                                  }
-                                )?.designation,
-                              )}
-                            </td>
-                            <td>
-                              Designation:{" "}
-                              {v(
-                                (
-                                  fs.clientOrTPI as unknown as {
-                                    designation?: string;
-                                  }
-                                )?.designation,
-                              )}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
-                          </tr>
-                          <tr>
-                            <td>I.D. No.: {v(inspectors[0]?.idNo) || "-"}</td>
-                            <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
-                            <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
-                          </tr>
-                          <tr>
-                            <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
-                            <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
-                            <td>
-                              Date: {fmtDate(fs.clientOrTPI?.date) || "-"}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
 
                       {inspectors.length > 1 && (
                         <table className="sign-table mt-n1 screen-sign-table">
@@ -902,70 +905,6 @@ export const MPTReportPrintPage = () => {
       </div>
 
       <div className={`print-fixed-footer${bwMode ? " bw" : ""}`}>
-        <table className="sign-table">
-          <colgroup>
-            <col style={{ width: "33.3%" }} />
-            <col style={{ width: "33.3%" }} />
-            <col style={{ width: "33.4%" }} />
-          </colgroup>
-          <tbody>
-            <tr>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER:</td>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                CLIENT / TPI:
-              </td>
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                National Industrial Inspection And Training
-              </td>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                {v(jd.customer)}
-              </td>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                {v(jd.client)}
-              </td>
-            </tr>
-            <tr>
-              <td>Name: {v(inspectors[0]?.name) || "-"}</td>
-              <td>Name: {v(fs.customer?.name) || "-"}</td>
-              <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
-            </tr>
-            <tr>
-              <td>MT NDE Level II:</td>
-              <td>
-                Designation:{" "}
-                {v(
-                  (fs.customer as unknown as { designation?: string })
-                    ?.designation,
-                )}
-              </td>
-              <td>
-                Designation:{" "}
-                {v(
-                  (fs.clientOrTPI as unknown as { designation?: string })
-                    ?.designation,
-                )}
-              </td>
-            </tr>
-            <tr>
-              <td style={{ height: 28 }}>Signature:</td>
-              <td style={{ height: 28 }}>Signature:</td>
-              <td style={{ height: 28 }}>Signature:</td>
-            </tr>
-            <tr>
-              <td>I.D. No.: {v(inspectors[0]?.idNo) || "-"}</td>
-              <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
-              <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
-            </tr>
-            <tr>
-              <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
-              <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
-              <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
-            </tr>
-          </tbody>
-        </table>
         <ReportFooter />
       </div>
     </>
