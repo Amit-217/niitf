@@ -61,15 +61,48 @@ interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
+const isTokenExpired = (token: string) => {
+  try {
+    const payload = token.split(".")[1];
+    if (!payload) return true;
+    const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const decoded = JSON.parse(atob(normalized));
+    if (!decoded?.exp) return false;
+    return Date.now() >= decoded.exp * 1000;
+  } catch {
+    return true;
+  }
+};
+
+const getSessionUser = () => {
+  const token = localStorage.getItem("accessToken");
+  const userStr = localStorage.getItem("user");
+
+  if (!token || !userStr || isTokenExpired(token)) {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    return null;
+  }
+
+  try {
+    return JSON.parse(userStr);
+  } catch {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    return null;
+  }
+};
+
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   allowedRoles,
 }) => {
-  const token = localStorage.getItem("accessToken");
-  const userStr = localStorage.getItem("user");
   const location = useLocation();
+  const user = getSessionUser();
 
-  if (!token || !userStr) {
+  if (!user) {
     const isStudentRoute =
       location.pathname.startsWith("/student") ||
       location.pathname.startsWith("/test/");
@@ -82,7 +115,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  const user = JSON.parse(userStr);
   const userRole = user.role || "EMPLOYEE";
 
   if (allowedRoles && !allowedRoles.includes(userRole)) {
@@ -98,14 +130,54 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   return <>{children}</>;
 };
 
+const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const user = getSessionUser();
+
+  if (!user) {
+    return <>{children}</>;
+  }
+
+  const role = user.role || "EMPLOYEE";
+  if (role === "ADMIN" || role === "SUPER_ADMIN") {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+  if (role === "STUDENT") {
+    return <Navigate to="/student/exam" replace />;
+  }
+  return <Navigate to="/employee/dashboard" replace />;
+};
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Auth Routes */}
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/student/login" element={<StudentLogin />} />
+        <Route
+          path="/"
+          element={
+            <PublicOnlyRoute>
+              <Login />
+            </PublicOnlyRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <PublicOnlyRoute>
+              <Login />
+            </PublicOnlyRoute>
+          }
+        />
+        <Route
+          path="/student/login"
+          element={
+            <PublicOnlyRoute>
+              <StudentLogin />
+            </PublicOnlyRoute>
+          }
+        />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -144,7 +216,10 @@ function App() {
           <Route path="users" element={<UsersPage />} />
           <Route path="courses" element={<CoursesPage />} />
           <Route path="attendance" element={<AttendancePage />} />
-          <Route path="attendance/history" element={<AttendanceHistoryPage />} />
+          <Route
+            path="attendance/history"
+            element={<AttendanceHistoryPage />}
+          />
           <Route path="payroll/config" element={<SalaryConfigPage />} />
           <Route path="payroll/overtime" element={<OvertimePage />} />
           <Route path="payroll/advances" element={<AdvancesPage />} />
@@ -158,11 +233,14 @@ function App() {
           <Route path="enquiries" element={<EnquiriesPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="customers/:id" element={<CustomerDetailPage />} />
-          
+
           <Route path="quotations" element={<QuotationsListPage />} />
           <Route path="quotations/:type/new" element={<QuotationFormPage />} />
-          <Route path="quotations/:type/:id/edit" element={<QuotationFormPage />} />
-          
+          <Route
+            path="quotations/:type/:id/edit"
+            element={<QuotationFormPage />}
+          />
+
           <Route path="reports" element={<ReportsListPage />} />
           <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
           <Route path="reports/mpt/:id/edit" element={<MPTReportFormPage />} />
@@ -170,14 +248,23 @@ function App() {
           <Route path="reports/pt/:id/edit" element={<PTReportFormPage />} />
           <Route path="reports/ut/new" element={<UTReportFormPage />} />
           <Route path="reports/ut/:id/edit" element={<UTReportFormPage />} />
-          <Route path="reports/vssc-ut/new" element={<VSSCUTReportFormPage />} />
-          <Route path="reports/vssc-ut/:id/edit" element={<VSSCUTReportFormPage />} />
+          <Route
+            path="reports/vssc-ut/new"
+            element={<VSSCUTReportFormPage />}
+          />
+          <Route
+            path="reports/vssc-ut/:id/edit"
+            element={<VSSCUTReportFormPage />}
+          />
           <Route path="reports/utg/new" element={<UTGReportFormPage />} />
           <Route path="reports/utg/:id/edit" element={<UTGReportFormPage />} />
           <Route path="reports/tpi-ivr/new" element={<TPIIVRFormPage />} />
           <Route path="reports/tpi-ivr/:id/edit" element={<TPIIVRFormPage />} />
           <Route path="reports/awsd/new" element={<AWSDReportFormPage />} />
-          <Route path="reports/awsd/:id/edit" element={<AWSDReportFormPage />} />
+          <Route
+            path="reports/awsd/:id/edit"
+            element={<AWSDReportFormPage />}
+          />
           <Route path="settings" element={<Settings />} />
           <Route
             path="*"
@@ -201,7 +288,10 @@ function App() {
           <Route path="customers/:id" element={<CustomerDetailPage />} />
           <Route path="quotations" element={<QuotationsListPage />} />
           <Route path="quotations/:type/new" element={<QuotationFormPage />} />
-          <Route path="quotations/:type/:id/edit" element={<QuotationFormPage />} />
+          <Route
+            path="quotations/:type/:id/edit"
+            element={<QuotationFormPage />}
+          />
           <Route path="reports" element={<ReportsListPage />} />
           <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
           <Route path="reports/mpt/:id/edit" element={<MPTReportFormPage />} />
@@ -209,14 +299,23 @@ function App() {
           <Route path="reports/pt/:id/edit" element={<PTReportFormPage />} />
           <Route path="reports/ut/new" element={<UTReportFormPage />} />
           <Route path="reports/ut/:id/edit" element={<UTReportFormPage />} />
-          <Route path="reports/vssc-ut/new" element={<VSSCUTReportFormPage />} />
-          <Route path="reports/vssc-ut/:id/edit" element={<VSSCUTReportFormPage />} />
+          <Route
+            path="reports/vssc-ut/new"
+            element={<VSSCUTReportFormPage />}
+          />
+          <Route
+            path="reports/vssc-ut/:id/edit"
+            element={<VSSCUTReportFormPage />}
+          />
           <Route path="reports/utg/new" element={<UTGReportFormPage />} />
           <Route path="reports/utg/:id/edit" element={<UTGReportFormPage />} />
           <Route path="reports/tpi-ivr/new" element={<TPIIVRFormPage />} />
           <Route path="reports/tpi-ivr/:id/edit" element={<TPIIVRFormPage />} />
           <Route path="reports/awsd/new" element={<AWSDReportFormPage />} />
-          <Route path="reports/awsd/:id/edit" element={<AWSDReportFormPage />} />
+          <Route
+            path="reports/awsd/:id/edit"
+            element={<AWSDReportFormPage />}
+          />
           <Route path="courses" element={<CoursesPage />} />
           <Route path="batches" element={<BatchesPage />} />
           <Route path="enquiries" element={<EnquiriesPage />} />
@@ -302,13 +401,28 @@ function App() {
         />
 
         {/* Public Report View Routes — no auth required */}
-        <Route path="/reports/public/mpt/:id" element={<MPTReportPrintPage />} />
+        <Route
+          path="/reports/public/mpt/:id"
+          element={<MPTReportPrintPage />}
+        />
         <Route path="/reports/public/pt/:id" element={<PTReportPrintPage />} />
         <Route path="/reports/public/ut/:id" element={<UTReportPrintPage />} />
-        <Route path="/reports/public/vssc-ut/:id" element={<VSSCUTReportPrintPage />} />
-        <Route path="/reports/public/utg/:id" element={<UTGReportPrintPage />} />
-        <Route path="/reports/public/tpi-ivr/:id" element={<TPIIVRReportPrintPage />} />
-        <Route path="/reports/public/awsd/:id" element={<AWSDReportPrintPage />} />
+        <Route
+          path="/reports/public/vssc-ut/:id"
+          element={<VSSCUTReportPrintPage />}
+        />
+        <Route
+          path="/reports/public/utg/:id"
+          element={<UTGReportPrintPage />}
+        />
+        <Route
+          path="/reports/public/tpi-ivr/:id"
+          element={<TPIIVRReportPrintPage />}
+        />
+        <Route
+          path="/reports/public/awsd/:id"
+          element={<AWSDReportPrintPage />}
+        />
 
         <Route
           path="/admin/quotations/:type/:id/print"
@@ -319,7 +433,10 @@ function App() {
           }
         />
 
-        <Route path="/reports/quotations/:type/:id/print" element={<QuotationPrintPage />} />
+        <Route
+          path="/reports/quotations/:type/:id/print"
+          element={<QuotationPrintPage />}
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Login />} />
