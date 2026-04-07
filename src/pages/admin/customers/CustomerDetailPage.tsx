@@ -317,6 +317,7 @@ export const CustomerDetailPage = () => {
   // Invoices
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [invoicesTotal, setInvoicesTotal] = useState(0);
+  const [countsLoaded, setCountsLoaded] = useState(false);
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Quotation | Invoice | null>(null);
@@ -457,9 +458,32 @@ export const CustomerDetailPage = () => {
 
   useEffect(() => { fetchCustomer(); }, [fetchCustomer]);
   useEffect(() => {
-    fetchMPTReports(); fetchPTReports(); fetchUTReports(); fetchVSSCUTReports();
-    fetchUTGReports(); fetchTPIIVRReports(); fetchAWSDReports();
-    fetchQuotations(); fetchInvoices();
+    let cancelled = false;
+    setCountsLoaded(false);
+
+    const loadAllCounts = async () => {
+      await Promise.all([
+        fetchMPTReports(),
+        fetchPTReports(),
+        fetchUTReports(),
+        fetchVSSCUTReports(),
+        fetchUTGReports(),
+        fetchTPIIVRReports(),
+        fetchAWSDReports(),
+        fetchQuotations(),
+        fetchInvoices(),
+      ]);
+
+      if (!cancelled) {
+        setCountsLoaded(true);
+      }
+    };
+
+    loadAllCounts();
+
+    return () => {
+      cancelled = true;
+    };
   }, [fetchMPTReports, fetchPTReports, fetchUTReports, fetchVSSCUTReports, fetchUTGReports, fetchTPIIVRReports, fetchAWSDReports, fetchQuotations, fetchInvoices]);
 
   // Keep history state in sync so browser back button restores the correct tab/inspection
@@ -744,7 +768,7 @@ export const CustomerDetailPage = () => {
                 {tab.label}
               </p>
               <p className={`text-3xl font-extrabold ${isActive ? "text-violet-900" : "text-gray-800"}`}>
-                {tab.count}
+                {countsLoaded ? tab.count : "-"}
               </p>
               {isActive && (
                 <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-violet-500 rounded-full" />
@@ -795,7 +819,7 @@ export const CustomerDetailPage = () => {
                       {rt.label}
                     </p>
                     <p className={`text-2xl font-extrabold mt-0.5 ${isSelected ? "text-indigo-900" : "text-gray-800"}`}>
-                      {reportCountByType[rt.key]}
+                      {countsLoaded ? reportCountByType[rt.key] : "-"}
                     </p>
                     <p className={`text-[9px] mt-1 leading-tight ${isSelected ? "text-indigo-500" : "text-gray-400"}`}>
                       {rt.fullLabel}
@@ -814,7 +838,7 @@ export const CustomerDetailPage = () => {
                 <div className="flex items-center justify-between px-5 py-3 bg-gray-50/50">
                   <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                     {REPORT_TYPES.find((r) => r.key === reportSubType)?.fullLabel} Reports
-                    <span className="ml-2 text-gray-400 font-normal normal-case">({reportCountByType[reportSubType]} records)</span>
+                    <span className="ml-2 text-gray-400 font-normal normal-case">({countsLoaded ? reportCountByType[reportSubType] : "-"} records)</span>
                   </p>
                   <button
                     onClick={() =>
@@ -923,7 +947,7 @@ export const CustomerDetailPage = () => {
                       {qt.fullLabel}
                     </p>
                     <p className={`text-2xl font-extrabold mt-0.5 ${isSelected ? "text-violet-900" : "text-gray-800"}`}>
-                      {count}
+                      {countsLoaded ? count : "-"}
                     </p>
                     {isSelected && (
                       <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-violet-500 rounded-full" />
