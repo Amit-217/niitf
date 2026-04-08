@@ -131,7 +131,8 @@ export const MPTReportFormPage: React.FC = () => {
   const [jobTypeOfJoint, setJobTypeOfJoint] = useState("");
   const [jobSurfaceCondition, setJobSurfaceCondition] = useState("");
   const [jobExtentOfExamination, setJobExtentOfExamination] = useState("");
-  const [jobExtentOfExaminationOther, setJobExtentOfExaminationOther] = useState("");
+  const [jobExtentOfExaminationOther, setJobExtentOfExaminationOther] =
+    useState("");
   const [jobWeldingProcess, setJobWeldingProcess] = useState("");
 
   // Ã¢"â‚¬Ã¢"â‚¬ Equipment Details Ã¢"â‚¬Ã¢"â‚¬
@@ -169,6 +170,10 @@ export const MPTReportFormPage: React.FC = () => {
   const [currentTypeOther, setCurrentTypeOther] = useState("");
   const [postCleaning, setPostCleaning] = useState("");
 
+  // ── Conclusion ──
+  const [conclusion, setConclusion] = useState("");
+  const [conclusionOther, setConclusionOther] = useState("");
+
   // Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
@@ -190,7 +195,7 @@ export const MPTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -313,6 +318,16 @@ export const MPTReportFormPage: React.FC = () => {
         setCurrentType(ct);
         setCurrentTypeOther(ctO);
         setPostCleaning(method.postCleaning ?? "");
+        const conclusionOpts = [
+          "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+          "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+          "Other",
+        ];
+        const [con, conO] = fromOther(r.conclusion ?? "", conclusionOpts);
+        setConclusion(con);
+        setConclusionOther(conO);
         if (r.observations?.length) {
           setObservations(
             r.observations.map((o: any) => ({
@@ -330,13 +345,13 @@ export const MPTReportFormPage: React.FC = () => {
         setInspectors(
           fs.inspector?.length
             ? fs.inspector.map((i: any) => ({
-              name: i.name ?? "",
-              qualification: i.qualification || "MT NDE Level II",
-              designation: i.designation ?? "",
-              signature: i.signature ?? "",
-              idNo: i.idNo ?? "",
-              date: toDate(i.date),
-            }))
+                name: i.name ?? "",
+                qualification: i.qualification || "MT NDE Level II",
+                designation: i.designation ?? "",
+                signature: i.signature ?? "",
+                idNo: i.idNo ?? "",
+                date: toDate(i.date),
+              }))
             : [emptyInspector()],
         );
         const cust = fs.customer ?? {};
@@ -477,6 +492,7 @@ export const MPTReportFormPage: React.FC = () => {
             interpretation: o.interpretation || "",
             evaluation: o.evaluation || "",
           })),
+        conclusion: resolveCustom(conclusion, conclusionOther) || undefined,
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
           customer: {
@@ -1291,6 +1307,28 @@ export const MPTReportFormPage: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* ── Conclusion ── */}
+      <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>Conclusion</h2>
+        <div>
+          <label className={labelClass}>Conclusion</label>
+          <SelectWithOther
+            id="conclusion"
+            value={conclusion}
+            onChange={setConclusion}
+            otherValue={conclusionOther}
+            onOtherChange={setConclusionOther}
+            options={[
+              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+              "Other",
+            ]}
+          />
         </div>
       </div>
 

@@ -231,6 +231,7 @@ export interface MPTReportPayload {
     currentType?: string;
     postCleaning?: string;
   };
+  conclusion?: string;
   observations?: MPTObservation[];
   finalSection?: {
     examinedBy?: string;
