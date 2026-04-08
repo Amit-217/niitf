@@ -233,6 +233,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
   const fs = (report as any).finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
   const ct = apc.calibTable ?? {};
+  const conclusionText =
+    v((report as unknown as { conclusion?: string }).conclusion) ||
+    "Examination completed as per applicable standards. No rejectable indications observed in inspected items.";
 
   const ReportFooter = () => (
     <>
@@ -882,6 +885,30 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                                 </td>
                               </tr>
                             )}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* -- Conclusion -- */}
+                      <div
+                        style={{
+                          breakInside: "avoid",
+                          pageBreakInside: "avoid",
+                        }}
+                      >
+                        <table className="report-table mt-n1">
+                          <tbody>
+                            <tr>
+                              <td colSpan={2} className="section-hdr">
+                                Conclusion
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="lbl" style={{ width: "22%" }}>
+                                Overall Evaluation
+                              </td>
+                              <td className="val">{conclusionText}</td>
+                            </tr>
                           </tbody>
                         </table>
                       </div>

@@ -231,6 +231,9 @@ export const UTGReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
+  const conclusionText =
+    v((report as unknown as { conclusion?: string }).conclusion) ||
+    "Examination completed as per applicable standards. No rejectable indications observed in inspected items.";
 
   const ReportFooter = () => (
     <>
@@ -706,6 +709,30 @@ export const UTGReportPrintPage: React.FC = () => {
                           )}
                         </tbody>
                       </table>
+
+                      {/* -- Conclusion -- */}
+                      <div
+                        style={{
+                          breakInside: "avoid",
+                          pageBreakInside: "avoid",
+                        }}
+                      >
+                        <table className="report-table mt-n1">
+                          <tbody>
+                            <tr>
+                              <td colSpan={2} className="section-hdr">
+                                Conclusion
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="lbl" style={{ width: "22%" }}>
+                                Overall Evaluation
+                              </td>
+                              <td className="val">{conclusionText}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </td>
                 </tr>

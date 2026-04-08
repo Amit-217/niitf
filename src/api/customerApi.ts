@@ -319,6 +319,7 @@ export interface PTReportPayload {
     dryingTime?: string;
   };
   observations?: PTObservation[];
+  conclusion?: string;
   finalSection?: {
     examinedBy?: string;
     inspector?: { name?: string; qualification?: string; designation?: string; idNo?: string; date?: string }[];
@@ -416,6 +417,7 @@ export interface UTReportPayload {
     customer?: { name?: string; designation?: string; signature?: string; idNo?: string; date?: string };
     clientOrTPI?: { name?: string; designation?: string; signature?: string; idNo?: string; date?: string };
   };
+  conclusion?: string;
 }
 
 export interface UTReport extends UTReportPayload {
@@ -500,6 +502,7 @@ export interface VSSCUTReportPayload {
   };
   disposition?: string;
   evaluation?: string;
+  conclusion?: string;
   remarks?: string;
   finalSection?: {
     inspector?: { name?: string; qualification?: string; idNo?: string; date?: string }[];
@@ -586,6 +589,7 @@ export interface UTGReportPayload {
     techniques?: UTGTechniqueRow[];
   };
   observations?: UTGObservation[];
+  conclusion?: string;
   finalSection?: {
     examinedBy?: string;
     inspector?: { name?: string; qualification?: string; signature?: string; idNo?: string; date?: string }[];

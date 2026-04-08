@@ -160,6 +160,10 @@ export const PTReportFormPage: React.FC = () => {
   // Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
+  // -- Conclusion --
+  const [conclusion, setConclusion] = useState("");
+  const [conclusionCustom, setConclusionCustom] = useState("");
+
   // â”€â”€ Users for inspector dropdown â”€â”€
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
   useEffect(() => {
@@ -294,6 +298,14 @@ export const PTReportFormPage: React.FC = () => {
             })),
           );
         }
+        const conclusionOpts = [
+          "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+          "Other",
+        ];
+        const [concl, conclC] = fromOther(r.conclusion ?? "", conclusionOpts);
+        setConclusion(concl);
+        setConclusionCustom(conclC);
         const fs = r.finalSection ?? {};
         const insp0 = fs.inspector?.[0] ?? {};
         setInspectorName(insp0.name ?? "");
@@ -411,6 +423,7 @@ export const PTReportFormPage: React.FC = () => {
             interpretation: o.interpretation || "",
             evaluation: o.evaluation || "",
           })),
+        conclusion: resolve(conclusion, conclusionCustom) || undefined,
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
           inspector: [
@@ -1060,6 +1073,25 @@ export const PTReportFormPage: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* ── Conclusion ── */}
+      <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>Conclusion</h2>
+        <div>
+          <label className={labelClass}>Conclusion</label>
+          <SelectWithCustom
+            value={conclusion}
+            onChange={setConclusion}
+            customValue={conclusionCustom}
+            onCustomChange={setConclusionCustom}
+            options={[
+              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+              "Other",
+            ]}
+          />
         </div>
       </div>
 
