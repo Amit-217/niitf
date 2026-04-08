@@ -38,6 +38,13 @@ const PRINT_STYLES = `
       right: 5mm !important;
       background: #fff !important;
     }
+    .report { overflow: visible !important; }
+    .report-body { overflow: visible !important; }
+    tfoot { display: table-footer-group !important; }
+    .report-footer-wrap {
+      break-inside: avoid !important;
+      page-break-inside: avoid !important;
+    }
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
@@ -275,28 +282,28 @@ export const AWSDReportPrintPage: React.FC = () => {
               <tr>
                 <td style={{ padding: "2mm 0 0 0" }}>
                   {/* â"€â"€ HEADER â"€â"€ */}
-                    <div className="rpt-header">
-                      <div className="logo-box">
-                        <img src="/logo.png" alt="NIIT Logo" />
+                  <div className="rpt-header">
+                    <div className="logo-box">
+                      <img src="/logo.png" alt="NIIT Logo" />
+                    </div>
+                    <div className="hdr-center">
+                      <div className="org">
+                        National Industrial Inspection and Training
                       </div>
-                      <div className="hdr-center">
-                        <div className="org">
-                          National Industrial Inspection and Training
-                        </div>
-                        <div className="sub">
-                          THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT
-                          TRAINING | NDT CONSULTANCY
-                          <br />
-                          FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
-                        </div>
-                        <div className="iso">
-                          (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
-                        </div>
+                      <div className="sub">
+                        THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING
+                        | NDT CONSULTANCY
+                        <br />
+                        FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
+                      </div>
+                      <div className="iso">
+                        (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
                       </div>
                     </div>
-                    <div className="rpt-title">
-                      Report of UT of Welds (AWS D1.1)
-                    </div>
+                  </div>
+                  <div className="rpt-title">
+                    Report of UT of Welds (AWS D1.1)
+                  </div>
                 </td>
               </tr>
             </thead>
@@ -307,66 +314,172 @@ export const AWSDReportPrintPage: React.FC = () => {
                   {/* â"€â"€ JOB INFORMATION (form-line style) â"€â"€ */}
                   <div className="form-block">
                     {/* Row 1: Project + Report No */}
-                    <div style={{ display: "flex", gap: "12px", marginBottom: "4px" }}>
-                      <div className="form-row" style={{ flex: 2, marginBottom: 0 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "12px",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      <div
+                        className="form-row"
+                        style={{ flex: 2, marginBottom: 0 }}
+                      >
                         <span className="form-label">Project</span>
                         <span className="form-val">{v(report.project)}</span>
                       </div>
-                      <div className="form-row" style={{ flex: 1, marginBottom: 0 }}>
+                      <div
+                        className="form-row"
+                        style={{ flex: 1, marginBottom: 0 }}
+                      >
                         <span className="form-label">Report no.</span>
-                        <span className="form-val">{v(report.reportNo || report.id)}</span>
+                        <span className="form-val">
+                          {v(report.reportNo || report.id)}
+                        </span>
                       </div>
                     </div>
                     {/* Row 2: Diagram + Fields */}
-                    <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "10px",
+                        alignItems: "flex-start",
+                      }}
+                    >
                       {/* Weld reference diagram - matches original AWS D1.1 sketch */}
-                      <div style={{ width: "108px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", paddingTop: "4px" }}>
-                        <svg width="108" height="72" viewBox="0 0 108 72" style={{ overflow: "visible" }}>
+                      <div
+                        style={{
+                          width: "108px",
+                          flexShrink: 0,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          paddingTop: "4px",
+                        }}
+                      >
+                        <svg
+                          width="108"
+                          height="72"
+                          viewBox="0 0 108 72"
+                          style={{ overflow: "visible" }}
+                        >
                           {/* Plate: parallelogram shape (slight perspective tilt) */}
-                          <polygon points="24,8 92,8 96,46 20,46" fill="white" stroke="#333" strokeWidth="1.2" />
+                          <polygon
+                            points="24,8 92,8 96,46 20,46"
+                            fill="white"
+                            stroke="#333"
+                            strokeWidth="1.2"
+                          />
 
                           {/* Cross "+" mark inside plate (left area - weld reference point) */}
-                          <line x1="33" y1="16" x2="33" y2="30" stroke="#333" strokeWidth="1" />
-                          <line x1="26" y1="23" x2="40" y2="23" stroke="#333" strokeWidth="1" />
+                          <line
+                            x1="33"
+                            y1="16"
+                            x2="33"
+                            y2="30"
+                            stroke="#333"
+                            strokeWidth="1"
+                          />
+                          <line
+                            x1="26"
+                            y1="23"
+                            x2="40"
+                            y2="23"
+                            stroke="#333"
+                            strokeWidth="1"
+                          />
 
                           {/* X label — outside shape on the LEFT with horizontal arrow line → */}
-                          <text x="1" y="28" style={{ fontSize: "10px", fontWeight: "bold", fontFamily: "Arial" }}>X</text>
-                          <line x1="9" y1="23" x2="19" y2="23" stroke="#333" strokeWidth="0.9" />
+                          <text
+                            x="1"
+                            y="28"
+                            style={{
+                              fontSize: "10px",
+                              fontWeight: "bold",
+                              fontFamily: "Arial",
+                            }}
+                          >
+                            X
+                          </text>
+                          <line
+                            x1="9"
+                            y1="23"
+                            x2="19"
+                            y2="23"
+                            stroke="#333"
+                            strokeWidth="0.9"
+                          />
                           {/* arrowhead pointing right into shape */}
                           <polygon points="20,21 20,25 24,23" fill="#333" />
 
                           {/* X label — inside shape on the RIGHT */}
-                          <text x="74" y="22" style={{ fontSize: "10px", fontWeight: "bold", fontFamily: "Arial" }}>X</text>
+                          <text
+                            x="74"
+                            y="22"
+                            style={{
+                              fontSize: "10px",
+                              fontWeight: "bold",
+                              fontFamily: "Arial",
+                            }}
+                          >
+                            X
+                          </text>
 
                           {/* Y label — below the shape, center */}
-                          <text x="50" y="64" style={{ fontSize: "10px", fontWeight: "bold", fontFamily: "Arial" }}>Y</text>
+                          <text
+                            x="50"
+                            y="64"
+                            style={{
+                              fontSize: "10px",
+                              fontWeight: "bold",
+                              fontFamily: "Arial",
+                            }}
+                          >
+                            Y
+                          </text>
                         </svg>
                       </div>
                       {/* Right: Form fields */}
                       <div style={{ flex: 1 }}>
                         <div className="form-row">
-                          <span className="form-label">Weld identification</span>
-                          <span className="form-val">{v(report.weldIdentification)}</span>
+                          <span className="form-label">
+                            Weld identification
+                          </span>
+                          <span className="form-val">
+                            {v(report.weldIdentification)}
+                          </span>
                         </div>
                         <div className="form-row">
                           <span className="form-label">Material thickness</span>
-                          <span className="form-val">{v(report.materialThickness)}</span>
+                          <span className="form-val">
+                            {v(report.materialThickness)}
+                          </span>
                         </div>
                         <div className="form-row">
                           <span className="form-label">Weld joint AWS</span>
-                          <span className="form-val">{v(report.weldJointAWS)}</span>
+                          <span className="form-val">
+                            {v(report.weldJointAWS)}
+                          </span>
                         </div>
                         <div className="form-row">
                           <span className="form-label">Welding process</span>
-                          <span className="form-val">{v(report.weldingProcess)}</span>
+                          <span className="form-val">
+                            {v(report.weldingProcess)}
+                          </span>
                         </div>
                         <div className="form-row">
-                          <span className="form-label">Quality requirements—section no.</span>
-                          <span className="form-val">{v(report.qualityRequirementsSection)}</span>
+                          <span className="form-label">
+                            Quality requirements—section no.
+                          </span>
+                          <span className="form-val">
+                            {v(report.qualityRequirementsSection)}
+                          </span>
                         </div>
                         <div className="form-row">
                           <span className="form-label">Remarks</span>
-                          <span className="form-val">{v(report.evaluation || report.remarks)}</span>
+                          <span className="form-val">
+                            {v(report.evaluation || report.remarks)}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -381,19 +494,47 @@ export const AWSDReportPrintPage: React.FC = () => {
                       </tr>
                       {/* Header row 1: Main group labels */}
                       <tr>
-                        <td className="col-hdr" rowSpan={3} style={{ width: "3.5%" }}>
-                          Line<br />number
+                        <td
+                          className="col-hdr"
+                          rowSpan={3}
+                          style={{ width: "3.5%" }}
+                        >
+                          Line
+                          <br />
+                          number
                         </td>
-                        <td className="col-hdr" rowSpan={3} style={{ width: "5.5%" }}>
-                          Indication<br />No.
+                        <td
+                          className="col-hdr"
+                          rowSpan={3}
+                          style={{ width: "5.5%" }}
+                        >
+                          Indication
+                          <br />
+                          No.
                         </td>
-                        <td className="col-hdr" rowSpan={3} style={{ width: "7%" }}>
-                          Transducer<br />angle
+                        <td
+                          className="col-hdr"
+                          rowSpan={3}
+                          style={{ width: "7%" }}
+                        >
+                          Transducer
+                          <br />
+                          angle
                         </td>
-                        <td className="col-hdr" rowSpan={3} style={{ width: "4.5%" }}>
-                          From<br />face
+                        <td
+                          className="col-hdr"
+                          rowSpan={3}
+                          style={{ width: "4.5%" }}
+                        >
+                          From
+                          <br />
+                          face
                         </td>
-                        <td className="col-hdr" rowSpan={3} style={{ width: "3.5%" }}>
+                        <td
+                          className="col-hdr"
+                          rowSpan={3}
+                          style={{ width: "3.5%" }}
+                        >
                           Leg
                         </td>
                         <td className="col-hdr" colSpan={4}>
@@ -402,32 +543,84 @@ export const AWSDReportPrintPage: React.FC = () => {
                         <td className="col-hdr" colSpan={5}>
                           Discontinuity
                         </td>
-                        <td className="col-hdr" rowSpan={3} style={{ width: "6%" }}>
+                        <td
+                          className="col-hdr"
+                          rowSpan={3}
+                          style={{ width: "6%" }}
+                        >
                           Remarks
                         </td>
                       </tr>
                       {/* Header row 2: Decibels sub-cols + Discontinuity sub-cols */}
                       <tr>
-                        <td className="col-hdr" rowSpan={2} style={{ width: "5.5%" }}>
-                          a.<br />Indication<br />level
+                        <td
+                          className="col-hdr"
+                          rowSpan={2}
+                          style={{ width: "5.5%" }}
+                        >
+                          a.
+                          <br />
+                          Indication
+                          <br />
+                          level
                         </td>
-                        <td className="col-hdr" rowSpan={2} style={{ width: "5.5%" }}>
-                          b.<br />Reference<br />level
+                        <td
+                          className="col-hdr"
+                          rowSpan={2}
+                          style={{ width: "5.5%" }}
+                        >
+                          b.
+                          <br />
+                          Reference
+                          <br />
+                          level
                         </td>
-                        <td className="col-hdr" rowSpan={2} style={{ width: "6%" }}>
-                          c.<br />Attenuation<br />factor
+                        <td
+                          className="col-hdr"
+                          rowSpan={2}
+                          style={{ width: "6%" }}
+                        >
+                          c.
+                          <br />
+                          Attenuation
+                          <br />
+                          factor
                         </td>
-                        <td className="col-hdr" rowSpan={2} style={{ width: "5.5%" }}>
-                          d.<br />Indication<br />rating
+                        <td
+                          className="col-hdr"
+                          rowSpan={2}
+                          style={{ width: "5.5%" }}
+                        >
+                          d.
+                          <br />
+                          Indication
+                          <br />
+                          rating
                         </td>
-                        <td className="col-hdr" rowSpan={2} style={{ width: "5%" }}>
+                        <td
+                          className="col-hdr"
+                          rowSpan={2}
+                          style={{ width: "5%" }}
+                        >
                           Length
                         </td>
-                        <td className="col-hdr" rowSpan={2} style={{ width: "5.5%" }}>
-                          Angular<br />distance
+                        <td
+                          className="col-hdr"
+                          rowSpan={2}
+                          style={{ width: "5.5%" }}
+                        >
+                          Angular
+                          <br />
+                          distance
                         </td>
-                        <td className="col-hdr" rowSpan={2} style={{ width: "6%" }}>
-                          Depth<br />from A
+                        <td
+                          className="col-hdr"
+                          rowSpan={2}
+                          style={{ width: "6%" }}
+                        >
+                          Depth
+                          <br />
+                          from A
                         </td>
                         <td className="col-hdr" colSpan={2}>
                           Distance
@@ -463,14 +656,16 @@ export const AWSDReportPrintPage: React.FC = () => {
                           <td>{v(o.interpretation)}</td>
                         </tr>
                       ))}
-                      {Array.from({ length: Math.max(4, 26 - obs.length) }).map((_, i) => (
-                        <tr key={`empty-obs-${i}`} style={{ height: "24px" }}>
-                          <td>{obs.length + i + 1}</td>
-                          {Array.from({ length: 14 }).map((__, j) => (
-                            <td key={j}></td>
-                          ))}
-                        </tr>
-                      ))}
+                      {Array.from({ length: Math.max(4, 26 - obs.length) }).map(
+                        (_, i) => (
+                          <tr key={`empty-obs-${i}`} style={{ height: "24px" }}>
+                            <td>{obs.length + i + 1}</td>
+                            {Array.from({ length: 14 }).map((__, j) => (
+                              <td key={j}></td>
+                            ))}
+                          </tr>
+                        ),
+                      )}
                     </tbody>
                   </table>
 
@@ -500,13 +695,27 @@ export const AWSDReportPrintPage: React.FC = () => {
                         <tr>
                           <td style={{ fontSize: "11px", padding: "4px 6px" }}>
                             Test date&nbsp;
-                            <span style={{ display: "inline-block", minWidth: "140px", borderBottom: "1px solid #555", verticalAlign: "bottom" }}>
+                            <span
+                              style={{
+                                display: "inline-block",
+                                minWidth: "140px",
+                                borderBottom: "1px solid #555",
+                                verticalAlign: "bottom",
+                              }}
+                            >
                               {fmtDate(cert.testDate)}
                             </span>
                           </td>
                           <td style={{ fontSize: "11px", padding: "4px 6px" }}>
                             Manufacturer or Contractor&nbsp;
-                            <span style={{ display: "inline-block", minWidth: "100px", borderBottom: "1px solid #555", verticalAlign: "bottom" }}>
+                            <span
+                              style={{
+                                display: "inline-block",
+                                minWidth: "100px",
+                                borderBottom: "1px solid #555",
+                                verticalAlign: "bottom",
+                              }}
+                            >
                               {v(cert.manufacturerOrContractor)}
                             </span>
                           </td>
@@ -514,20 +723,49 @@ export const AWSDReportPrintPage: React.FC = () => {
                         <tr>
                           <td style={{ fontSize: "11px", padding: "4px 6px" }}>
                             Inspected by&nbsp;
-                            <span style={{ display: "inline-block", minWidth: "150px", borderBottom: "1px solid #555", verticalAlign: "bottom" }}>
+                            <span
+                              style={{
+                                display: "inline-block",
+                                minWidth: "150px",
+                                borderBottom: "1px solid #555",
+                                verticalAlign: "bottom",
+                              }}
+                            >
                               {v(cert.inspectedBy)}
                             </span>
                           </td>
-                          <td style={{ fontSize: "11px", padding: "4px 6px", display: "flex", justifyContent: "space-between", gap: "8px" }}>
+                          <td
+                            style={{
+                              fontSize: "11px",
+                              padding: "4px 6px",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              gap: "8px",
+                            }}
+                          >
                             <span>
                               Authorized by&nbsp;
-                              <span style={{ display: "inline-block", minWidth: "80px", borderBottom: "1px solid #555", verticalAlign: "bottom" }}>
+                              <span
+                                style={{
+                                  display: "inline-block",
+                                  minWidth: "80px",
+                                  borderBottom: "1px solid #555",
+                                  verticalAlign: "bottom",
+                                }}
+                              >
                                 {v(cert.authorizedBy)}
                               </span>
                             </span>
                             <span>
                               Date&nbsp;
-                              <span style={{ display: "inline-block", minWidth: "60px", borderBottom: "1px solid #555", verticalAlign: "bottom" }}>
+                              <span
+                                style={{
+                                  display: "inline-block",
+                                  minWidth: "60px",
+                                  borderBottom: "1px solid #555",
+                                  verticalAlign: "bottom",
+                                }}
+                              >
                                 {fmtDate(cert.date)}
                               </span>
                             </span>
@@ -535,14 +773,23 @@ export const AWSDReportPrintPage: React.FC = () => {
                         </tr>
                       </tbody>
                     </table>
-                    <div style={{ fontSize: "9px", padding: "4px 6px", border: "1px solid #d9e1ea", marginTop: "-1px", lineHeight: 1.4 }}>
-                      <strong>Note:</strong> This form is applicable to Clause 8, Parts B or C (Statically
-                      and Cyclically Loaded Nontubular Structures). Do <strong>NOT</strong> use this
+                    <div
+                      style={{
+                        fontSize: "9px",
+                        padding: "4px 6px",
+                        border: "1px solid #d9e1ea",
+                        marginTop: "-1px",
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      <strong>Note:</strong> This form is applicable to Clause
+                      8, Parts B or C (Statically and Cyclically Loaded
+                      Nontubular Structures). Do <strong>NOT</strong> use this
                       form for Tubular Structures (Clause 10, Part A).
                     </div>
                     <div
                       className="tfoot-spacer"
-                      style={{ height: "20mm" }}
+                      style={{ height: "28mm" }}
                     ></div>
                   </div>
                 </td>

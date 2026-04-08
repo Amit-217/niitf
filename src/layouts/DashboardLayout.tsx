@@ -338,7 +338,7 @@ export const DashboardLayout: React.FC = () => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
     toast.info("Logged out successfully.");
-    navigate("/login");
+    navigate("/login", { replace: true });
   };
 
   const isAdminRole = role === "ADMIN" || role === "SUPER_ADMIN";
@@ -405,15 +405,31 @@ export const DashboardLayout: React.FC = () => {
                   key: "studentManagement",
                   icon: GraduationCap,
                   links: [
-                    { name: "Courses", path: `/${basePath}/courses`, icon: BookOpen },
-                    { name: "Batches", path: `/${basePath}/batches`, icon: Clock },
-                    { name: "Students", path: `/${basePath}/students`, icon: Users },
+                    {
+                      name: "Courses",
+                      path: `/${basePath}/courses`,
+                      icon: BookOpen,
+                    },
+                    {
+                      name: "Batches",
+                      path: `/${basePath}/batches`,
+                      icon: Clock,
+                    },
+                    {
+                      name: "Students",
+                      path: `/${basePath}/students`,
+                      icon: Users,
+                    },
                     {
                       name: "Admissions",
                       path: `/${basePath}/admissions`,
                       icon: GraduationCap,
                     },
-                    { name: "CBT Tests", path: `/${basePath}/tests`, icon: FileText },
+                    {
+                      name: "CBT Tests",
+                      path: `/${basePath}/tests`,
+                      icon: FileText,
+                    },
                     {
                       name: "Enquiries",
                       path: `/${basePath}/enquiries`,
