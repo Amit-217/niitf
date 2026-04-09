@@ -380,6 +380,8 @@ export const UTReportFormPage: React.FC = () => {
         }
 
         const conclusionOpts = [
+           "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
           "Examination completed as per applicable process. No rejectable indications observed in inspected items",
           "Examination completed as per applicable process. Rejectable indications observed in inspected items",
           "Other",
@@ -1265,9 +1267,11 @@ export const UTReportFormPage: React.FC = () => {
             customValue={conclusionCustom}
             onCustomChange={setConclusionCustom}
             options={[
-              'Examination completed as per applicable process. No rejectable indications observed in inspected items',
-              'Examination completed as per applicable process. Rejectable indications observed in inspected items',
-              'Other',
+               "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+          "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+          'Other',
             ]}
           />
         </div>

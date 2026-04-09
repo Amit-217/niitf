@@ -403,6 +403,8 @@ export const UTGReportFormPage: React.FC = () => {
           );
         }
         const conclusionOpts = [
+           "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
           "Examination completed as per applicable process. No rejectable indications observed in inspected items",
           "Examination completed as per applicable process. Rejectable indications observed in inspected items",
           "Other",
