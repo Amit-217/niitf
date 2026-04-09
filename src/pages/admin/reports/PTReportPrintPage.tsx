@@ -104,7 +104,7 @@ const PRINT_STYLES = `
   }
   .section-hdr {
     background: #185FA5; color: #fff; font-size: 13px; font-weight: 700;
-    padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase;
+    padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left;
   }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
     .report-table td, .report-table th {
@@ -254,6 +254,14 @@ export const PTReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
+  const rejectedCount = (report.observations ?? []).filter((o) =>
+    /reject|repair|fail|not ok/i.test(v(o.evaluation || o.remark || o.result || o.interpretation)),
+  ).length;
+  const conclusionText =
+    v((report as unknown as { conclusion?: string }).conclusion) ||
+    (rejectedCount > 0
+      ? `Examination completed. ${rejectedCount} rejectable indication(s) identified; repair and re-examination required before final acceptance.`
+      : "Examination completed as per applicable standards. No rejectable indications observed in inspected items.");
 
   const ReportFooter = () => (
     <>
@@ -481,7 +489,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              JOB DETAILS
+                              1. JOB DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -557,7 +565,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              METHOD DETAILS
+                              2. METHOD DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -588,7 +596,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              CONSUMABLES DETAILS
+                              3. CONSUMABLES DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -625,7 +633,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              METHOD DESCRIPTION
+                              4. METHOD DESCRIPTION
                             </td>
                           </tr>
                           <tr>
@@ -655,7 +663,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={7} className="section-hdr">
-                              6. OBSERVATIONS
+                              5. OBSERVATIONS
                             </td>
                           </tr>
                           <tr>
@@ -733,6 +741,30 @@ export const PTReportPrintPage: React.FC = () => {
                           ))}
                         </tbody>
                       </table>
+
+                      {/* -- Conclusion -- */}
+                      <div
+                        style={{
+                          breakInside: "avoid",
+                          pageBreakInside: "avoid",
+                        }}
+                      >
+                        <table className="report-table mt-n1">
+                          <tbody>
+                            <tr>
+                              <td colSpan={2} className="section-hdr">
+                                6. CONCLUSION
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="lbl" style={{ width: "22%" }}>
+                                Overall Evaluation
+                              </td>
+                              <td className="val">{conclusionText}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                     {/* â"€â"€ end report-body â"€â"€ */}
                   </td>

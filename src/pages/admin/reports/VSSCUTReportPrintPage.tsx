@@ -87,7 +87,7 @@ const PRINT_STYLES = `
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
@@ -233,6 +233,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
   const fs = (report as any).finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
   const ct = apc.calibTable ?? {};
+  const conclusionText =
+    v((report as unknown as { conclusion?: string }).conclusion) ||
+    "Examination completed as per applicable standards. No rejectable indications observed in inspected items.";
 
   const ReportFooter = () => (
     <>
@@ -618,7 +621,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td className="section-hdr" colSpan={6}>
-                              ANGLE PROBE CALIBRATION
+                              1. ANGLE PROBE CALIBRATION
                             </td>
                           </tr>
                           <tr>
@@ -811,7 +814,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td className="section-hdr" colSpan={4}>
-                              NORMAL PROBE CALIBRATION
+                              2. NORMAL PROBE CALIBRATION
                             </td>
                           </tr>
                           <tr>
@@ -882,6 +885,30 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                                 </td>
                               </tr>
                             )}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* -- Conclusion -- */}
+                      <div
+                        style={{
+                          breakInside: "avoid",
+                          pageBreakInside: "avoid",
+                        }}
+                      >
+                        <table className="report-table mt-n1">
+                          <tbody>
+                            <tr>
+                              <td colSpan={2} className="section-hdr">
+                                3. CONCLUSION
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="lbl" style={{ width: "22%" }}>
+                                Overall Evaluation
+                              </td>
+                              <td className="val">{conclusionText}</td>
+                            </tr>
                           </tbody>
                         </table>
                       </div>
