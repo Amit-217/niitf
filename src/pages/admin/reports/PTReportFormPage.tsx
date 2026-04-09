@@ -11,8 +11,6 @@ import { getApiErrorMessage } from "../../../api/error";
 import api from "../../../api/axios";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 
-// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Styles Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
-
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
 const labelClass = "block text-xs font-medium text-gray-700 mb-1";
@@ -170,7 +168,7 @@ export const PTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   // Ã¢"â‚¬Ã¢"â‚¬ Final Section Ã¢"â‚¬Ã¢"â‚¬
@@ -299,7 +297,7 @@ export const PTReportFormPage: React.FC = () => {
           );
         }
         const conclusionOpts = [
-           "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
           "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
           "Examination completed as per applicable process. No rejectable indications observed in inspected items",
           "Examination completed as per applicable process. Rejectable indications observed in inspected items",
@@ -1089,6 +1087,8 @@ export const PTReportFormPage: React.FC = () => {
             customValue={conclusionCustom}
             onCustomChange={setConclusionCustom}
             options={[
+              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
               "Examination completed as per applicable process. No rejectable indications observed in inspected items",
               "Examination completed as per applicable process. Rejectable indications observed in inspected items",
               "Other",

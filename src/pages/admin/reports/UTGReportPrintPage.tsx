@@ -85,7 +85,7 @@ const PRINT_STYLES = `
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
@@ -454,7 +454,7 @@ export const UTGReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              JOB DETAILS
+                              1. JOB DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -523,7 +523,7 @@ export const UTGReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              EQUIPMENT DETAILS
+                              2. EQUIPMENT DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -561,7 +561,7 @@ export const UTGReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={6} className="section-hdr">
-                              SEARCH UNIT DETAILS
+                              3. SEARCH UNIT DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -639,7 +639,7 @@ export const UTGReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={2} className="section-hdr">
-                              TECHNIQUE DETAILS
+                              4. TECHNIQUE DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -658,7 +658,7 @@ export const UTGReportPrintPage: React.FC = () => {
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              6. OBSERVATIONS
+                              5. OBSERVATIONS
                             </td>
                           </tr>
                           <tr>
@@ -721,7 +721,7 @@ export const UTGReportPrintPage: React.FC = () => {
                           <tbody>
                             <tr>
                               <td colSpan={2} className="section-hdr">
-                                Conclusion
+                                6. CONCLUSION
                               </td>
                             </tr>
                             <tr>

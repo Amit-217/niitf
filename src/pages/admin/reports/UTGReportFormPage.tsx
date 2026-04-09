@@ -80,8 +80,6 @@ interface SearchUnitRow {
   frequencyOther: string;
 }
 
-
-
 interface ObsRow {
   srNo: number;
   itemName: string;
@@ -100,8 +98,6 @@ const emptySearchUnit = (): SearchUnitRow => ({
   frequency: "",
   frequencyOther: "",
 });
-
-
 
 const emptyObs = (): ObsRow => ({
   srNo: 1,
@@ -221,8 +217,6 @@ export const UTGReportFormPage: React.FC = () => {
     setSearchUnits((prev) => [...prev, emptySearchUnit()]);
   const removeSearchUnit = (idx: number) =>
     setSearchUnits((prev) => prev.filter((_, i) => i !== idx));
-
-
 
   const updateObs = (idx: number, key: keyof ObsRow, val: string) =>
     setObservations((prev) =>
@@ -403,7 +397,7 @@ export const UTGReportFormPage: React.FC = () => {
           );
         }
         const conclusionOpts = [
-           "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
           "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
           "Examination completed as per applicable process. No rejectable indications observed in inspected items",
           "Examination completed as per applicable process. Rejectable indications observed in inspected items",
@@ -1090,6 +1084,8 @@ export const UTGReportFormPage: React.FC = () => {
             otherValue={conclusionOther}
             onOtherChange={setConclusionOther}
             options={[
+              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
               "Examination completed as per applicable process. No rejectable indications observed in inspected items",
               "Examination completed as per applicable process. Rejectable indications observed in inspected items",
               "Other",

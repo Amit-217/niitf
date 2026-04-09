@@ -104,7 +104,7 @@ const PRINT_STYLES = `
   }
   .section-hdr {
     background: #185FA5; color: #fff; font-size: 13px; font-weight: 700;
-    padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase;
+    padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left;
   }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
     .report-table td, .report-table th {
@@ -489,7 +489,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              JOB DETAILS
+                              1. JOB DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -565,7 +565,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              METHOD DETAILS
+                              2. METHOD DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -596,7 +596,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              CONSUMABLES DETAILS
+                              3. CONSUMABLES DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -633,7 +633,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              METHOD DESCRIPTION
+                              4. METHOD DESCRIPTION
                             </td>
                           </tr>
                           <tr>
@@ -663,7 +663,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={7} className="section-hdr">
-                              6. OBSERVATIONS
+                              5. OBSERVATIONS
                             </td>
                           </tr>
                           <tr>
@@ -753,7 +753,7 @@ export const PTReportPrintPage: React.FC = () => {
                           <tbody>
                             <tr>
                               <td colSpan={2} className="section-hdr">
-                                7. Conclusion
+                                6. CONCLUSION
                               </td>
                             </tr>
                             <tr>

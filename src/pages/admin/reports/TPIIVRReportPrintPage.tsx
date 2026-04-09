@@ -80,7 +80,7 @@ const PRINT_STYLES = `
   .bw .items-table td, .bw .items-table th { border-color: #888 !important; }
   .bw .activities-box { border-color: #888 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
@@ -90,6 +90,7 @@ const PRINT_STYLES = `
   .items-table td, .items-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 10px; vertical-align: middle; word-break: break-word; text-align: center; }
   .items-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
   .items-table td.text-left { text-align: left; }
+  .items-table td.section-hdr { text-align: left; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
