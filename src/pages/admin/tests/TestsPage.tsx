@@ -15,10 +15,12 @@ import {
   Mail,
   Users,
   BarChart3,
+  Pencil,
 } from "lucide-react";
 import {
   getTests,
   createTest,
+  updateTest,
   addQuestion,
   getQuestions,
   getPassages,
@@ -92,6 +94,16 @@ export const TestsPage = () => {
   const [resultsTest, setResultsTest] = useState<Test | null>(null);
   const [results, setResults] = useState<any[]>([]);
   const [isResultsLoading, setResultsLoading] = useState(false);
+  const [isEditOpen, setEditOpen] = useState(false);
+  const [editingTest, setEditingTest] = useState<Test | null>(null);
+  const [editForm, setEditForm] = useState({
+    testDate: "",
+    startTimeStr: "",
+    startAmPm: "AM",
+    endTimeStr: "",
+    endAmPm: "AM",
+  });
+  const [editSubmitting, setEditSubmitting] = useState(false);
 
   const handleSendInvites = async () => {
     if (!questionPaperTest) return;
@@ -375,6 +387,66 @@ export const TestsPage = () => {
     }
   };
 
+  const openEdit = (t: Test) => {
+    setEditingTest(t);
+    const start = t.startTime ? new Date(t.startTime) : new Date();
+    const end = t.endTime ? new Date(t.endTime) : new Date();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const toDateStr = (d: Date) =>
+      `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const toTime12h = (d: Date) => {
+      let h = d.getHours();
+      const m = d.getMinutes();
+      const ampm = h >= 12 ? "PM" : "AM";
+      if (h === 0) h = 12;
+      else if (h > 12) h -= 12;
+      return { timeStr: `${pad(h)}:${pad(m)}`, ampm };
+    };
+    const s = toTime12h(start);
+    const e = toTime12h(end);
+    setEditForm({
+      testDate: toDateStr(start),
+      startTimeStr: s.timeStr,
+      startAmPm: s.ampm,
+      endTimeStr: e.timeStr,
+      endAmPm: e.ampm,
+    });
+    setEditOpen(true);
+  };
+
+  const handleEditTest = async (ev: React.FormEvent) => {
+    ev.preventDefault();
+    if (!editingTest) return;
+    setEditSubmitting(true);
+    try {
+      const sFormatted = formatTime12h(editForm.startTimeStr);
+      const eFormatted = formatTime12h(editForm.endTimeStr);
+      if (!validateTime12h(sFormatted)) {
+        toast.error("Invalid Start Time. Hours must be 1–12.");
+        setEditSubmitting(false);
+        return;
+      }
+      if (!validateTime12h(eFormatted)) {
+        toast.error("Invalid End Time. Hours must be 1–12.");
+        setEditSubmitting(false);
+        return;
+      }
+      const sTime = to24h(sFormatted, editForm.startAmPm);
+      const eTime = to24h(eFormatted, editForm.endAmPm);
+      const startTime = new Date(`${editForm.testDate} ${sTime}`).toISOString();
+      const endTime = new Date(`${editForm.testDate} ${eTime}`).toISOString();
+      await updateTest(editingTest._id, { startTime, endTime });
+      toast.success("Test schedule updated!");
+      setEditOpen(false);
+      setEditingTest(null);
+      fetchTests();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update test");
+    } finally {
+      setEditSubmitting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -474,6 +546,14 @@ export const TestsPage = () => {
                       className="p-1.5 rounded-full text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
                     >
                       <BarChart3 size={16} />
+                    </button>
+                    {/* Edit Test Schedule */}
+                    <button
+                      title="Edit Date & Time"
+                      onClick={() => openEdit(t)}
+                      className="p-1.5 rounded-full text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+                    >
+                      <Pencil size={16} />
                     </button>
                   </td>
                 </tr>
@@ -778,6 +858,136 @@ export const TestsPage = () => {
       )}
 
 
+
+      {isEditOpen && editingTest && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+            onClick={() => setEditOpen(false)}
+          />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="bg-gradient-to-r from-violet-600 to-purple-700 px-6 py-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-bold text-white">Edit Test Schedule</h2>
+                  <p className="text-violet-200 text-sm mt-0.5">{editingTest.testName}</p>
+                </div>
+                <button
+                  onClick={() => setEditOpen(false)}
+                  className="p-1.5 rounded-lg text-violet-200 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+            <form onSubmit={handleEditTest} className="p-0 flex flex-col">
+              <div className="p-6 space-y-6">
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                    <div className="p-1.5 bg-blue-100 text-blue-600 rounded-lg">
+                      <Clock size={16} />
+                    </div>
+                    <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
+                      Schedule
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="col-span-2">
+                      <label className={labelClass}>Examination Date *</label>
+                      <div className="relative">
+                        <input
+                          type="date"
+                          required
+                          value={editForm.testDate}
+                          onChange={(e) => setEditForm({ ...editForm, testDate: e.target.value })}
+                          className={`${inputClass} pl-10`}
+                        />
+                        <BookOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                      </div>
+                    </div>
+                    <div className="relative group col-span-2 lg:col-span-1">
+                      <label className={labelClass}>Start Time *</label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          required
+                          value={editForm.startTimeStr}
+                          onBlur={(e) => setEditForm({ ...editForm, startTimeStr: formatTime12h(e.target.value) })}
+                          onChange={(e) => setEditForm({ ...editForm, startTimeStr: e.target.value })}
+                          className={`${inputClass} border-blue-100 bg-blue-50/10 focus:bg-white font-semibold w-16`}
+                          placeholder="09:30"
+                          maxLength={5}
+                        />
+                        <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold shrink-0">
+                          {["AM", "PM"].map((v) => (
+                            <button
+                              key={v}
+                              type="button"
+                              onClick={() => setEditForm({ ...editForm, startAmPm: v })}
+                              className={`px-2.5 sm:px-3 py-2 transition-colors ${editForm.startAmPm === v ? "bg-blue-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
+                            >
+                              {v}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="relative group col-span-2 lg:col-span-1">
+                      <label className={labelClass}>End Time *</label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          required
+                          value={editForm.endTimeStr}
+                          onBlur={(e) => setEditForm({ ...editForm, endTimeStr: formatTime12h(e.target.value) })}
+                          onChange={(e) => setEditForm({ ...editForm, endTimeStr: e.target.value })}
+                          className={`${inputClass} border-red-100 bg-red-50/10 focus:bg-white font-semibold w-16`}
+                          placeholder="11:30"
+                          maxLength={5}
+                        />
+                        <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold shrink-0">
+                          {["AM", "PM"].map((v) => (
+                            <button
+                              key={v}
+                              type="button"
+                              onClick={() => setEditForm({ ...editForm, endAmPm: v })}
+                              className={`px-2.5 sm:px-3 py-2 transition-colors ${editForm.endAmPm === v ? "bg-red-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
+                            >
+                              {v}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setEditOpen(false)}
+                  className="flex-1 py-3 px-4 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all"
+                >
+                  Discard
+                </button>
+                <button
+                  type="submit"
+                  disabled={editSubmitting}
+                  className="flex-[2] py-3 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-bold hover:from-violet-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-violet-200 disabled:opacity-70 group"
+                >
+                  {editSubmitting ? (
+                    <Loader2 className="animate-spin" size={18} />
+                  ) : (
+                    <>
+                      <Save size={18} className="group-hover:scale-110 transition-transform" /> Save Changes
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {viewTest && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">

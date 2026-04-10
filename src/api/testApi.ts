@@ -13,6 +13,8 @@ export interface Test {
     passingPercentage: number;
     mode: 'Online' | 'Offline';
     isActive: boolean;
+    startTime: string;
+    endTime: string;
     createdAt: string;
 }
 

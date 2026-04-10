@@ -8,6 +8,12 @@
   body {
     @apply antialiased text-gray-800 bg-gray-50 font-sans;
   }
+
+  /* Hide browser-native password reveal button (Edge/Chrome) */
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-ms-clear {
+    display: none;
+  }
 }
 
 @layer components {
