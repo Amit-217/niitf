@@ -85,7 +85,7 @@ const PRINT_STYLES = `
   .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; overflow: hidden; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
   .val { font-size: 11px; color: #000; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -95,6 +95,7 @@ const PRINT_STYLES = `
   .obs-table .vcell {
     height: 92px;
     padding: 0 2px;
+    overflow: hidden;
   }
   .obs-table .vtext {
     display: inline-block;
@@ -447,131 +448,65 @@ export const AWSDReportPrintPage: React.FC = () => {
                           OBSERVATIONS
                         </td>
                       </tr>
-                      {/* Header row 1: Main group labels */}
+                      {/* Header row 1: Group labels */}
                       <tr>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={3}
-                          style={{ width: "3.5%" }}
-                        >
+                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "3.5%" }}>
                           <span className="vtext">Line number</span>
                         </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={3}
-                          style={{ width: "5.5%" }}
-                        >
-                          <span className="vtext">Indication No.</span>
+                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "5.5%" }}>
+                          <span className="vtext">Indication number</span>
                         </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={3}
-                          style={{ width: "7%" }}
-                        >
+                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "7%" }}>
                           <span className="vtext">Transducer angle</span>
                         </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={3}
-                          style={{ width: "4.5%" }}
-                        >
+                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "4.5%" }}>
                           <span className="vtext">From Face</span>
                         </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={3}
-                          style={{ width: "3.5%" }}
-                        >
-                          <span className="vtext">Leg</span>
+                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "3.5%" }}>
+                          <span className="vtext">Leg*</span>
                         </td>
-                        <td className="col-hdr" colSpan={4}>
-                          Decibels
+                        <td className="col-hdr" colSpan={4}>Decibels</td>
+                        <td className="col-hdr" colSpan={5}>Discontinuity</td>
+                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "6.5%" }}>
+                          <span className="vtext">Discontinuity evaluation</span>
                         </td>
-                        <td className="col-hdr" colSpan={5}>
-                          Discontinuity
-                        </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={3}
-                          style={{ width: "6.5%" }}
-                        >
-                          <span className="vtext">
-                            Discontinuity evaluation
-                          </span>
-                        </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={3}
-                          style={{ width: "6.5%" }}
-                        >
+                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "6.5%" }}>
                           <span className="vtext">Remarks</span>
                         </td>
                       </tr>
-                      {/* Header row 2: Decibels sub-cols + Discontinuity sub-cols */}
+                      {/* Header row 2: Sub-column names (vertical) */}
                       <tr>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={2}
-                          style={{ width: "5.5%" }}
-                        >
-                          <span className="vtext">a. Indication level</span>
+                        <td className="col-hdr vcell" style={{ width: "5.5%" }}>
+                          <span className="vtext">Indication level</span>
                         </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={2}
-                          style={{ width: "5.5%" }}
-                        >
-                          <span className="vtext">b. Reference level</span>
+                        <td className="col-hdr vcell" style={{ width: "5.5%" }}>
+                          <span className="vtext">Reference level</span>
                         </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={2}
-                          style={{ width: "6%" }}
-                        >
-                          <span className="vtext">c. Attenuation factor</span>
+                        <td className="col-hdr vcell" style={{ width: "6%" }}>
+                          <span className="vtext">Attenuation factor</span>
                         </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={2}
-                          style={{ width: "5.5%" }}
-                        >
-                          <span className="vtext">d. Indication rating</span>
+                        <td className="col-hdr vcell" style={{ width: "5.5%" }}>
+                          <span className="vtext">Indication rating</span>
                         </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={2}
-                          style={{ width: "5%" }}
-                        >
+                        <td className="col-hdr vcell" rowSpan={2} style={{ width: "5%" }}>
                           <span className="vtext">Length</span>
                         </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={2}
-                          style={{ width: "5.5%" }}
-                        >
-                          <span className="vtext">
-                            Angular distance (sound path)
-                          </span>
+                        <td className="col-hdr vcell" rowSpan={2} style={{ width: "5.5%" }}>
+                          <span className="vtext">Angular distance (sound path)</span>
                         </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={2}
-                          style={{ width: "6%" }}
-                        >
-                          <span className="vtext">Depth from 'A' Surface</span>
+                        <td className="col-hdr vcell" rowSpan={2} style={{ width: "6%" }}>
+                          <span className="vtext">Depth from 'A' surface</span>
                         </td>
-                        <td className="col-hdr" colSpan={2}>
-                          Distance
-                        </td>
+                        <td className="col-hdr" colSpan={2}>Distance</td>
                       </tr>
-                      {/* Header row 3: Distance sub-cols */}
+                      {/* Header row 3: Letter labels + From X/Y */}
                       <tr>
-                        <td className="col-hdr vcell" style={{ width: "4.5%" }}>
-                          <span className="vtext">From X</span>
-                        </td>
-                        <td className="col-hdr vcell" style={{ width: "4.5%" }}>
-                          <span className="vtext">From Y</span>
-                        </td>
+                        <td className="col-hdr" style={{ fontWeight: 700 }}>a</td>
+                        <td className="col-hdr" style={{ fontWeight: 700 }}>b</td>
+                        <td className="col-hdr" style={{ fontWeight: 700 }}>c</td>
+                        <td className="col-hdr" style={{ fontWeight: 700 }}>d</td>
+                        <td className="col-hdr" style={{ width: "4.5%" }}>From X</td>
+                        <td className="col-hdr" style={{ width: "4.5%" }}>From Y</td>
                       </tr>
                     </thead>
                     <tbody>
