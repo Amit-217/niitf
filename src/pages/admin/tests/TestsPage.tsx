@@ -15,7 +15,6 @@ import {
   Mail,
   Users,
   BarChart3,
-  Pencil,
 } from "lucide-react";
 import {
   getTests,
@@ -48,11 +47,6 @@ const INITIAL_FORM = {
   totalMarks: 100,
   passingPercentage: 40,
   mode: "Online",
-  testDate: "",
-  startTimeStr: "",
-  startAmPm: "AM",
-  endTimeStr: "",
-  endAmPm: "AM",
 };
 
 export const TestsPage = () => {
@@ -94,26 +88,50 @@ export const TestsPage = () => {
   const [resultsTest, setResultsTest] = useState<Test | null>(null);
   const [results, setResults] = useState<any[]>([]);
   const [isResultsLoading, setResultsLoading] = useState(false);
-  const [isEditOpen, setEditOpen] = useState(false);
-  const [editingTest, setEditingTest] = useState<Test | null>(null);
-  const [editForm, setEditForm] = useState({
+  const [showInviteSchedule, setShowInviteSchedule] = useState(false);
+  const [inviteForm, setInviteForm] = useState({
     testDate: "",
     startTimeStr: "",
     startAmPm: "AM",
     endTimeStr: "",
     endAmPm: "AM",
   });
-  const [editSubmitting, setEditSubmitting] = useState(false);
 
   const handleSendInvites = async () => {
     if (!questionPaperTest) return;
+
+    const sFormatted = formatTime12h(inviteForm.startTimeStr);
+    const eFormatted = formatTime12h(inviteForm.endTimeStr);
+
+    if (!inviteForm.testDate) {
+      toast.error("Please select an exam date.");
+      return;
+    }
+    if (!validateTime12h(sFormatted)) {
+      toast.error("Invalid Start Time. Hours must be 1–12.");
+      return;
+    }
+    if (!validateTime12h(eFormatted)) {
+      toast.error("Invalid End Time. Hours must be 1–12.");
+      return;
+    }
+
+    const sTime = to24h(sFormatted, inviteForm.startAmPm);
+    const eTime = to24h(eFormatted, inviteForm.endAmPm);
+    const startTime = new Date(`${inviteForm.testDate} ${sTime}`).toISOString();
+    const endTime = new Date(`${inviteForm.testDate} ${eTime}`).toISOString();
+
     setIsSendingInvites(true);
     try {
+      await updateTest(questionPaperTest._id, { startTime, endTime });
       const res: any = await sendExamInvites(questionPaperTest._id);
       const d = res?.data?.data || res?.data || res;
       toast.success(
         `Invites sent to ${d.sent} student(s). Skipped: ${d.skipped} (no email).`,
       );
+      setShowInviteSchedule(false);
+      setQuestionPaperOpen(false);
+      fetchTests();
     } catch (err: any) {
       toast.error(err?.message || "Failed to send invites");
     } finally {
@@ -125,6 +143,8 @@ export const TestsPage = () => {
   const openQuestionPaper = async (t: Test) => {
     setQuestionPaperTest(t);
     setQuestionPaperOpen(true);
+    setShowInviteSchedule(false);
+    setInviteForm({ testDate: "", startTimeStr: "", startAmPm: "AM", endTimeStr: "", endAmPm: "AM" });
     setQPLoading(true);
     try {
       const r: any = await getQuestions(t._id);
@@ -217,36 +237,7 @@ export const TestsPage = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const payload = { ...form };
-
-      const sFormatted = formatTime12h(payload.startTimeStr);
-      const eFormatted = formatTime12h(payload.endTimeStr);
-
-      if (!validateTime12h(sFormatted)) {
-        toast.error("Invalid Start Time. Hours must be 1–12.");
-        setSubmitting(false);
-        return;
-      }
-      if (!validateTime12h(eFormatted)) {
-        toast.error("Invalid End Time. Hours must be 1–12.");
-        setSubmitting(false);
-        return;
-      }
-
-      const sTime = to24h(sFormatted, payload.startAmPm);
-      const eTime = to24h(eFormatted, payload.endAmPm);
-
-      payload.startTime = new Date(
-        `${payload.testDate} ${sTime}`,
-      ).toISOString();
-      payload.endTime = new Date(`${payload.testDate} ${eTime}`).toISOString();
-      delete payload.testDate;
-      delete payload.startTimeStr;
-      delete payload.startAmPm;
-      delete payload.endTimeStr;
-      delete payload.endAmPm;
-
-      await createTest(payload);
+      await createTest(form);
       toast.success("Test created!");
       setForm(INITIAL_FORM);
       setCreateOpen(false);
@@ -387,65 +378,6 @@ export const TestsPage = () => {
     }
   };
 
-  const openEdit = (t: Test) => {
-    setEditingTest(t);
-    const start = t.startTime ? new Date(t.startTime) : new Date();
-    const end = t.endTime ? new Date(t.endTime) : new Date();
-    const pad = (n: number) => String(n).padStart(2, "0");
-    const toDateStr = (d: Date) =>
-      `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-    const toTime12h = (d: Date) => {
-      let h = d.getHours();
-      const m = d.getMinutes();
-      const ampm = h >= 12 ? "PM" : "AM";
-      if (h === 0) h = 12;
-      else if (h > 12) h -= 12;
-      return { timeStr: `${pad(h)}:${pad(m)}`, ampm };
-    };
-    const s = toTime12h(start);
-    const e = toTime12h(end);
-    setEditForm({
-      testDate: toDateStr(start),
-      startTimeStr: s.timeStr,
-      startAmPm: s.ampm,
-      endTimeStr: e.timeStr,
-      endAmPm: e.ampm,
-    });
-    setEditOpen(true);
-  };
-
-  const handleEditTest = async (ev: React.FormEvent) => {
-    ev.preventDefault();
-    if (!editingTest) return;
-    setEditSubmitting(true);
-    try {
-      const sFormatted = formatTime12h(editForm.startTimeStr);
-      const eFormatted = formatTime12h(editForm.endTimeStr);
-      if (!validateTime12h(sFormatted)) {
-        toast.error("Invalid Start Time. Hours must be 1–12.");
-        setEditSubmitting(false);
-        return;
-      }
-      if (!validateTime12h(eFormatted)) {
-        toast.error("Invalid End Time. Hours must be 1–12.");
-        setEditSubmitting(false);
-        return;
-      }
-      const sTime = to24h(sFormatted, editForm.startAmPm);
-      const eTime = to24h(eFormatted, editForm.endAmPm);
-      const startTime = new Date(`${editForm.testDate} ${sTime}`).toISOString();
-      const endTime = new Date(`${editForm.testDate} ${eTime}`).toISOString();
-      await updateTest(editingTest._id, { startTime, endTime });
-      toast.success("Test schedule updated!");
-      setEditOpen(false);
-      setEditingTest(null);
-      fetchTests();
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to update test");
-    } finally {
-      setEditSubmitting(false);
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -547,14 +479,6 @@ export const TestsPage = () => {
                     >
                       <BarChart3 size={16} />
                     </button>
-                    {/* Edit Test Schedule */}
-                    <button
-                      title="Edit Date & Time"
-                      onClick={() => openEdit(t)}
-                      className="p-1.5 rounded-full text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-colors"
-                    >
-                      <Pencil size={16} />
-                    </button>
                   </td>
                 </tr>
               ))
@@ -654,97 +578,11 @@ export const TestsPage = () => {
                       <Clock size={16} />
                     </div>
                     <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
-                      Schedule & Duration
+                      Duration & Grading
                     </h3>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="col-span-2">
-                      <label className={labelClass}>Examination Date *</label>
-                      <div className="relative">
-                        <input
-                          type="date"
-                          required
-                          value={form.testDate}
-                          onChange={(e) =>
-                            setForm({ ...form, testDate: e.target.value })
-                          }
-                          className={`${inputClass} pl-10`}
-                        />
-                        <BookOpen
-                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-                          size={16}
-                        />
-                      </div>
-                    </div>
-                    <div className="relative group col-span-2 lg:col-span-1">
-                      <label className={labelClass}>Start Time *</label>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          required
-                          value={form.startTimeStr}
-                          onBlur={(e) =>
-                            setForm({
-                              ...form,
-                              startTimeStr: formatTime12h(e.target.value),
-                            })
-                          }
-                          onChange={(e) =>
-                            setForm({ ...form, startTimeStr: e.target.value })
-                          }
-                          className={`${inputClass} border-blue-100 bg-blue-50/10 focus:bg-white font-semibold w-16`}
-                          placeholder="09:30"
-                          maxLength={5}
-                        />
-                        <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold shrink-0">
-                          {["AM", "PM"].map((v) => (
-                            <button
-                              key={v}
-                              type="button"
-                              onClick={() => setForm({ ...form, startAmPm: v })}
-                              className={`px-2.5 sm:px-3 py-2 transition-colors ${form.startAmPm === v ? "bg-blue-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
-                            >
-                              {v}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="relative group col-span-2 lg:col-span-1">
-                      <label className={labelClass}>End Time *</label>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          required
-                          value={form.endTimeStr}
-                          onBlur={(e) =>
-                            setForm({
-                              ...form,
-                              endTimeStr: formatTime12h(e.target.value),
-                            })
-                          }
-                          onChange={(e) =>
-                            setForm({ ...form, endTimeStr: e.target.value })
-                          }
-                          className={`${inputClass} border-red-100 bg-red-50/10 focus:bg-white font-semibold w-16`}
-                          placeholder="11:30"
-                          maxLength={5}
-                        />
-                        <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold shrink-0">
-                          {["AM", "PM"].map((v) => (
-                            <button
-                              key={v}
-                              type="button"
-                              onClick={() => setForm({ ...form, endAmPm: v })}
-                              className={`px-2.5 sm:px-3 py-2 transition-colors ${form.endAmPm === v ? "bg-red-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
-                            >
-                              {v}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
                     <div className="col-span-2 p-4 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
                       <div className="flex items-center gap-3 w-full md:w-auto">
                         <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center text-violet-600">
@@ -859,135 +697,6 @@ export const TestsPage = () => {
 
 
 
-      {isEditOpen && editingTest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
-            onClick={() => setEditOpen(false)}
-          />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="bg-gradient-to-r from-violet-600 to-purple-700 px-6 py-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-bold text-white">Edit Test Schedule</h2>
-                  <p className="text-violet-200 text-sm mt-0.5">{editingTest.testName}</p>
-                </div>
-                <button
-                  onClick={() => setEditOpen(false)}
-                  className="p-1.5 rounded-lg text-violet-200 hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-            </div>
-            <form onSubmit={handleEditTest} className="p-0 flex flex-col">
-              <div className="p-6 space-y-6">
-                <div className="space-y-4 pt-2">
-                  <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-                    <div className="p-1.5 bg-blue-100 text-blue-600 rounded-lg">
-                      <Clock size={16} />
-                    </div>
-                    <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
-                      Schedule
-                    </h3>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="col-span-2">
-                      <label className={labelClass}>Examination Date *</label>
-                      <div className="relative">
-                        <input
-                          type="date"
-                          required
-                          value={editForm.testDate}
-                          onChange={(e) => setEditForm({ ...editForm, testDate: e.target.value })}
-                          className={`${inputClass} pl-10`}
-                        />
-                        <BookOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                      </div>
-                    </div>
-                    <div className="relative group col-span-2 lg:col-span-1">
-                      <label className={labelClass}>Start Time *</label>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          required
-                          value={editForm.startTimeStr}
-                          onBlur={(e) => setEditForm({ ...editForm, startTimeStr: formatTime12h(e.target.value) })}
-                          onChange={(e) => setEditForm({ ...editForm, startTimeStr: e.target.value })}
-                          className={`${inputClass} border-blue-100 bg-blue-50/10 focus:bg-white font-semibold w-16`}
-                          placeholder="09:30"
-                          maxLength={5}
-                        />
-                        <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold shrink-0">
-                          {["AM", "PM"].map((v) => (
-                            <button
-                              key={v}
-                              type="button"
-                              onClick={() => setEditForm({ ...editForm, startAmPm: v })}
-                              className={`px-2.5 sm:px-3 py-2 transition-colors ${editForm.startAmPm === v ? "bg-blue-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
-                            >
-                              {v}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="relative group col-span-2 lg:col-span-1">
-                      <label className={labelClass}>End Time *</label>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          required
-                          value={editForm.endTimeStr}
-                          onBlur={(e) => setEditForm({ ...editForm, endTimeStr: formatTime12h(e.target.value) })}
-                          onChange={(e) => setEditForm({ ...editForm, endTimeStr: e.target.value })}
-                          className={`${inputClass} border-red-100 bg-red-50/10 focus:bg-white font-semibold w-16`}
-                          placeholder="11:30"
-                          maxLength={5}
-                        />
-                        <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold shrink-0">
-                          {["AM", "PM"].map((v) => (
-                            <button
-                              key={v}
-                              type="button"
-                              onClick={() => setEditForm({ ...editForm, endAmPm: v })}
-                              className={`px-2.5 sm:px-3 py-2 transition-colors ${editForm.endAmPm === v ? "bg-red-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
-                            >
-                              {v}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setEditOpen(false)}
-                  className="flex-1 py-3 px-4 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all"
-                >
-                  Discard
-                </button>
-                <button
-                  type="submit"
-                  disabled={editSubmitting}
-                  className="flex-[2] py-3 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-bold hover:from-violet-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-violet-200 disabled:opacity-70 group"
-                >
-                  {editSubmitting ? (
-                    <Loader2 className="animate-spin" size={18} />
-                  ) : (
-                    <>
-                      <Save size={18} className="group-hover:scale-110 transition-transform" /> Save Changes
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {viewTest && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -995,243 +704,214 @@ export const TestsPage = () => {
             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
             onClick={() => setViewTest(null)}
           />
-          <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex justify-between items-start shrink-0">
+          <div className="relative w-full max-w-5xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-4 rounded-t-2xl flex justify-between items-center shrink-0">
               <div>
-                <h2 className="text-lg font-bold text-white">
-                  {viewTest.testName}
-                </h2>
-                <p className="text-violet-200 text-sm mt-0.5">
-                  {viewTest.mode} Examination Card
-                </p>
+                <h2 className="text-lg font-bold text-white">{viewTest.testName}</h2>
+                <p className="text-violet-200 text-sm mt-0.5">{viewTest.mode} · Question Bank</p>
               </div>
-              <button
-                onClick={() => setViewTest(null)}
-                className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors"
-              >
-                <X size={18} />
-              </button>
+              <div className="flex items-center gap-3">
+                <span className="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full">
+                  {questions.length} Questions
+                </span>
+                <button
+                  onClick={() => setViewTest(null)}
+                  className="p-1.5 rounded-lg text-violet-100 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto bg-gray-50/30 p-6">
-              {viewTest.mode === "Online" ? (
-                <div className="grid lg:grid-cols-12 gap-6 items-start">
-                  {/* Left: Question List */}
-                  <div className="lg:col-span-12 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">
-                        Question Bank ({questions.length})
-                      </h3>
-                      <div className="h-px flex-1 bg-gray-100 mx-4" />
-                    </div>
-
-                    <div className="grid sm:grid-cols-2 gap-3">
-                      {isQLoading ? (
-                        <div className="col-span-2 py-10 text-center text-gray-400 italic">
-                          Scanning database...
+            {viewTest.mode === "Online" ? (
+              <div className="flex flex-1 min-h-0">
+                {/* ── Left Panel: Question List ── */}
+                <div className="w-2/5 border-r border-gray-100 flex flex-col min-h-0">
+                  <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/60 shrink-0">
+                    <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest">
+                      Added Questions
+                    </h3>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                    {isQLoading ? (
+                      <div className="py-12 text-center text-gray-400 text-sm italic">
+                        Loading...
+                      </div>
+                    ) : questions.length === 0 ? (
+                      <div className="py-12 text-center space-y-2">
+                        <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto">
+                          <Plus size={20} className="text-gray-300" />
                         </div>
-                      ) : questions.length === 0 ? (
-                        <div className="col-span-2 py-10 text-center text-gray-400 italic">
-                          No questions added yet.
-                        </div>
-                      ) : (
-                        questions.map((q, i) => {
-                          const prevQ = i > 0 ? questions[i - 1] : null;
-                          const isNewPassageGroup =
-                            q.type === "PASSAGE" &&
-                            q.passageId &&
-                            (!prevQ || prevQ.passageId !== q.passageId);
-                          return (
-                            <React.Fragment key={q._id}>
-                              {isNewPassageGroup && (
-                                <div className="col-span-2 p-3 bg-amber-50 border border-amber-100 rounded-xl">
-                                  <p className="text-[10px] font-bold text-amber-600 uppercase mb-1">
-                                    Passage
-                                  </p>
-                                  <p className="text-xs text-gray-700 line-clamp-2">
-                                    {q.passageText}
-                                  </p>
-                                </div>
-                              )}
-                              <div className="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:border-primary-200 transition-colors group">
-                                <div className="flex gap-3">
-                                  <span className="shrink-0 w-8 h-8 rounded-xl bg-gray-50 text-gray-400 text-xs font-black flex items-center justify-center group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
-                                    {i + 1}
+                        <p className="text-xs text-gray-400 italic">No questions yet</p>
+                      </div>
+                    ) : (
+                      questions.map((q, i) => {
+                        const prevQ = i > 0 ? questions[i - 1] : null;
+                        const isNewPassageGroup =
+                          q.type === "PASSAGE" &&
+                          q.passageId &&
+                          (!prevQ || prevQ.passageId !== q.passageId);
+                        return (
+                          <React.Fragment key={q._id}>
+                            {isNewPassageGroup && (
+                              <div className="px-3 py-2 bg-amber-50 border border-amber-100 rounded-xl">
+                                <p className="text-[10px] font-bold text-amber-500 uppercase mb-1">
+                                  Passage
+                                </p>
+                                <p className="text-xs text-gray-600 line-clamp-2">
+                                  {q.passageText}
+                                </p>
+                              </div>
+                            )}
+                            <div className="flex gap-2.5 p-3 bg-white border border-gray-100 rounded-xl hover:border-violet-200 hover:shadow-sm transition-all group cursor-default">
+                              <span className="shrink-0 w-6 h-6 rounded-lg bg-gray-50 text-gray-400 text-[11px] font-black flex items-center justify-center group-hover:bg-violet-50 group-hover:text-violet-600 transition-colors">
+                                {i + 1}
+                              </span>
+                              <div className="min-w-0">
+                                <p className="text-xs font-semibold text-gray-800 line-clamp-2 leading-relaxed">
+                                  {q.questionText}
+                                </p>
+                                <div className="flex gap-1.5 mt-1.5">
+                                  <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md ${q.passageId ? "bg-amber-50 text-amber-600" : "bg-indigo-50 text-indigo-500"}`}>
+                                    {q.passageId ? "Passage" : "MCQ"}
                                   </span>
-                                  <div className="space-y-1">
-                                    <p className="text-sm font-bold text-gray-800 line-clamp-2">
-                                      {q.questionText}
-                                    </p>
-                                    <div className="flex gap-2">
-                                      <span
-                                        className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded ${q.passageId ? "bg-amber-50 text-amber-600" : "bg-gray-50 text-gray-400"}`}
-                                      >
-                                        {q.passageId ? "Passage" : "MCQ"}
-                                      </span>
-                                      <span className="text-[10px] font-black uppercase text-primary-500">
-                                        {q.marks} Marks
-                                      </span>
-                                    </div>
-                                  </div>
+                                  <span className="text-[10px] font-bold text-violet-500 bg-violet-50 px-1.5 py-0.5 rounded-md">
+                                    {q.marks}M
+                                  </span>
                                 </div>
                               </div>
-                            </React.Fragment>
-                          );
-                        })
-                      )}
-                    </div>
+                            </div>
+                          </React.Fragment>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
 
-                    <div className="pt-6">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Plus size={16} className="text-primary-600" />
-                        <h3 className="text-sm font-black text-gray-800 uppercase tracking-tight">
-                          Add New Question
-                        </h3>
-                      </div>
-                      <form
-                        onSubmit={handleAddQuestion}
-                        className="bg-white p-5 rounded-2xl border-2 border-dashed border-gray-200 space-y-4 hover:border-primary-200 transition-colors"
-                      >
-                        {/* Passage selector — optional */}
-                        <div>
-                          <label className={labelClass}>
-                            Passage (optional)
-                          </label>
-                          <select
-                            value={
-                              qForm.passageMode === "existing"
-                                ? qForm.passageId
-                                : qForm.passageMode
-                            }
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              if (val === "none") {
-                                setQForm({
-                                  ...qForm,
-                                  passageMode: "none",
-                                  passageId: "",
-                                  passageName: "",
-                                  passageText: "",
-                                });
-                              } else if (val === "new") {
-                                setQForm({
-                                  ...qForm,
-                                  passageMode: "new",
-                                  passageId: "",
-                                  passageName: "",
-                                  passageText: "",
-                                });
+                {/* ── Right Panel: Add Question Form ── */}
+                <div className="w-3/5 flex flex-col min-h-0">
+                  <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/60 shrink-0">
+                    <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest">
+                      Add New Question
+                    </h3>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-5">
+                    <form onSubmit={handleAddQuestion} className="space-y-4">
+                      {/* Type Toggle */}
+                      <div className="flex rounded-xl overflow-hidden border border-gray-200 bg-gray-50 p-1 gap-1">
+                        {[
+                          { label: "MCQ", value: "none" },
+                          { label: "New Passage", value: "new" },
+                          { label: "Link Passage", value: "existing" },
+                        ].map(({ label, value }) => (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => {
+                              if (value === "none") {
+                                setQForm({ ...qForm, passageMode: "none", passageId: "", passageName: "", passageText: "" });
+                              } else if (value === "new") {
+                                setQForm({ ...qForm, passageMode: "new", passageId: "", passageName: "", passageText: "" });
                               } else {
-                                const p = passages.find(
-                                  (p) => p.passageId === val,
-                                );
-                                setQForm({
-                                  ...qForm,
-                                  passageMode: "existing",
-                                  passageId: val,
-                                  passageName: p?.passageName || "",
-                                  passageText: p?.passageText || "",
-                                });
+                                setQForm({ ...qForm, passageMode: "existing", passageId: "", passageName: "", passageText: "" });
                               }
+                            }}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                              qForm.passageMode === value
+                                ? "bg-white text-violet-700 shadow-sm border border-violet-100"
+                                : "text-gray-500 hover:text-gray-700"
+                            }`}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Passage fields */}
+                      {qForm.passageMode === "new" && (
+                        <div className="space-y-2 p-3 bg-amber-50/60 border border-amber-100 rounded-xl">
+                          <input
+                            required
+                            type="text"
+                            value={qForm.passageName}
+                            onChange={(e) => setQForm({ ...qForm, passageName: e.target.value })}
+                            placeholder="Passage title (e.g., Environment Article)"
+                            className={inputClass}
+                          />
+                          <textarea
+                            required
+                            value={qForm.passageText}
+                            onChange={(e) => setQForm({ ...qForm, passageText: e.target.value })}
+                            placeholder="Write or paste passage text here..."
+                            className={inputClass + " h-24 text-sm"}
+                          />
+                        </div>
+                      )}
+
+                      {qForm.passageMode === "existing" && (
+                        <div className="space-y-2">
+                          <select
+                            value={qForm.passageId}
+                            onChange={(e) => {
+                              const p = passages.find((p) => p.passageId === e.target.value);
+                              setQForm({ ...qForm, passageId: e.target.value, passageName: p?.passageName || "", passageText: p?.passageText || "" });
                             }}
                             className={inputClass + " bg-gray-50"}
                           >
-                            <option value="none">
-                              No Passage (Regular MCQ)
-                            </option>
-                            <option value="new">+ Create New Passage</option>
+                            <option value="">— Select a passage —</option>
                             {passagesLoading ? (
-                              <option disabled>Loading passages...</option>
+                              <option disabled>Loading...</option>
                             ) : (
                               passages.map((p) => (
-                                <option key={p.passageId} value={p.passageId}>
-                                  {p.passageName}
-                                </option>
+                                <option key={p.passageId} value={p.passageId}>{p.passageName}</option>
                               ))
                             )}
                           </select>
+                          {qForm.passageText && (
+                            <div className="p-3 bg-amber-50 border border-amber-100 rounded-xl max-h-20 overflow-y-auto">
+                              <p className="text-[10px] font-bold text-amber-600 uppercase mb-1">{qForm.passageName}</p>
+                              <p className="text-xs text-gray-600">{qForm.passageText}</p>
+                            </div>
+                          )}
                         </div>
+                      )}
 
-                        {qForm.passageMode === "new" && (
-                          <div className="space-y-3">
-                            <input
-                              required
-                              type="text"
-                              value={qForm.passageName}
-                              onChange={(e) =>
-                                setQForm({
-                                  ...qForm,
-                                  passageName: e.target.value,
-                                })
-                              }
-                              placeholder="Passage name (e.g., Environment Article)"
-                              className={inputClass}
-                            />
-                            <textarea
-                              required
-                              value={qForm.passageText}
-                              onChange={(e) =>
-                                setQForm({
-                                  ...qForm,
-                                  passageText: e.target.value,
-                                })
-                              }
-                              placeholder="Write or paste the passage text here..."
-                              className={inputClass + " h-32"}
-                            />
-                          </div>
-                        )}
-                        {qForm.passageMode === "existing" && (
-                          <div className="p-3 bg-amber-50 border border-amber-100 rounded-xl max-h-28 overflow-y-auto">
-                            <p className="text-[10px] font-bold text-amber-600 uppercase mb-1">
-                              Linked Passage: {qForm.passageName || "Untitled"}
-                            </p>
-                            <p className="text-xs text-gray-700">
-                              {qForm.passageText}
-                            </p>
-                          </div>
-                        )}
+                      {/* Question Text */}
+                      <textarea
+                        required
+                        value={qForm.questionText}
+                        onChange={(e) => setQForm({ ...qForm, questionText: e.target.value })}
+                        placeholder="Type your question here..."
+                        className={inputClass + " font-semibold text-sm leading-relaxed"}
+                        rows={3}
+                      />
 
-                        <div className="relative">
-                          <input
-                            type="number"
-                            value={qForm.marks}
-                            onChange={(e) =>
-                              setQForm({ ...qForm, marks: +e.target.value })
-                            }
-                            className={inputClass + " pl-10"}
-                            placeholder="Marks"
-                          />
-                          <AlertCircle
-                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                            size={14}
-                          />
-                        </div>
-                        <textarea
-                          required
-                          value={qForm.questionText}
-                          onChange={(e) =>
-                            setQForm({ ...qForm, questionText: e.target.value })
-                          }
-                          placeholder="Type the question..."
-                          className={inputClass + " font-bold"}
-                          rows={2}
-                        />
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
-                          {qForm.options.map((o, i) => (
+                      {/* Options A/B/C/D */}
+                      <div className="grid grid-cols-2 gap-2">
+                        {qForm.options.map((o, i) => {
+                          const label = ["A", "B", "C", "D"][i];
+                          const isCorrect = qForm.correctOption === i;
+                          return (
                             <div
                               key={i}
-                              className={`relative flex items-center group ${qForm.correctOption === i ? "ring-2 ring-primary-500 rounded-xl" : ""}`}
+                              className={`flex items-center gap-2 rounded-xl border-2 transition-all ${
+                                isCorrect
+                                  ? "border-emerald-400 bg-emerald-50"
+                                  : "border-gray-200 bg-white hover:border-gray-300"
+                              }`}
                             >
-                              <input
-                                type="radio"
-                                checked={qForm.correctOption === i}
-                                onChange={() =>
-                                  setQForm({ ...qForm, correctOption: i })
-                                }
-                                className="absolute left-3.5 z-10 w-4 h-4 text-primary-600 accent-primary-600"
-                              />
+                              <button
+                                type="button"
+                                onClick={() => setQForm({ ...qForm, correctOption: i })}
+                                className={`shrink-0 w-8 h-8 m-1 rounded-lg text-xs font-black transition-all ${
+                                  isCorrect
+                                    ? "bg-emerald-500 text-white shadow-sm"
+                                    : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+                                }`}
+                              >
+                                {label}
+                              </button>
                               <input
                                 value={o}
                                 onChange={(e) => {
@@ -1239,51 +919,56 @@ export const TestsPage = () => {
                                   n[i] = e.target.value;
                                   setQForm({ ...qForm, options: n });
                                 }}
-                                placeholder={`Option ${i + 1}`}
-                                className={`${inputClass} pl-10 h-11`}
+                                placeholder={`Option ${label}`}
+                                className="flex-1 py-2 pr-3 text-sm bg-transparent outline-none text-gray-700 placeholder-gray-300"
                                 required
                               />
                             </div>
-                          ))}
-                        </div>
+                          );
+                        })}
+                      </div>
+                      <p className="text-[11px] text-gray-400 -mt-1">Click A / B / C / D to mark the correct answer</p>
 
-                        <button
-                          type="submit"
-                          disabled={addingQ}
-                          className="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold rounded-xl text-sm hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-100 flex items-center justify-center gap-2 disabled:opacity-70"
-                        >
-                          {addingQ ? (
-                            <>
-                              <Loader2 size={16} className="animate-spin" />{" "}
-                              Saving...
-                            </>
-                          ) : (
-                            <>
-                              <Plus size={16} /> Add to Bank
-                            </>
-                          )}
-                        </button>
-                      </form>
-                    </div>
+                      {/* Marks */}
+                      <div className="flex items-center gap-3">
+                        <label className="text-xs font-bold text-gray-600 whitespace-nowrap">Marks per question</label>
+                        <input
+                          type="number"
+                          min={1}
+                          value={qForm.marks}
+                          onChange={(e) => setQForm({ ...qForm, marks: +e.target.value })}
+                          className="w-20 px-3 py-2 border border-gray-200 rounded-lg text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-violet-300"
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={addingQ}
+                        className="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold rounded-xl text-sm hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-100 flex items-center justify-center gap-2 disabled:opacity-70"
+                      >
+                        {addingQ ? (
+                          <><Loader2 size={16} className="animate-spin" /> Saving...</>
+                        ) : (
+                          <><Plus size={16} /> Add Question</>
+                        )}
+                      </button>
+                    </form>
                   </div>
                 </div>
-              ) : (
-                <div className="h-full flex flex-col items-center justify-center p-10 text-center space-y-4">
-                  <div className="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center text-gray-300">
-                    <AlertCircle size={40} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900">
-                      Offline Manifest
-                    </h4>
-                    <p className="hidden sm:block text-sm text-gray-500 mt-1 max-w-xs mx-auto">
-                      This exam is conducted offline. Use the analytics tab to
-                      view manual score records.
-                    </p>
-                  </div>
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center p-10 text-center space-y-4">
+                <div className="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center text-gray-300">
+                  <AlertCircle size={40} />
                 </div>
-              )}
-            </div>
+                <div>
+                  <h4 className="font-bold text-gray-900">Offline Examination</h4>
+                  <p className="text-sm text-gray-500 mt-1 max-w-xs mx-auto">
+                    This exam is conducted offline. Use the analytics tab to view manual score records.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1484,19 +1169,117 @@ export const TestsPage = () => {
             </div>
             <div className="shrink-0 px-6 py-4 bg-white border-t border-gray-100 rounded-b-2xl">
               <button
-                onClick={handleSendInvites}
-                disabled={isSendingInvites || isQPLoading}
+                onClick={() => setShowInviteSchedule(true)}
+                disabled={isQPLoading}
                 className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-bold hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-200 disabled:opacity-60"
               >
+                <Mail size={16} /> Send Exam Invites to Batch Students
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Invite Schedule Popup */}
+      {showInviteSchedule && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+            onClick={() => setShowInviteSchedule(false)}
+          />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  <Clock size={18} /> Set Exam Schedule
+                </h2>
+                <p className="text-violet-200 text-xs mt-0.5">{questionPaperTest?.testName}</p>
+              </div>
+              <button
+                onClick={() => setShowInviteSchedule(false)}
+                className="p-1.5 rounded-lg text-violet-200 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="col-span-2">
+                <label className={labelClass}>Examination Date *</label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={inviteForm.testDate}
+                    onChange={(e) => setInviteForm({ ...inviteForm, testDate: e.target.value })}
+                    className={`${inputClass} pl-10`}
+                  />
+                  <BookOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelClass}>Start Time *</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={inviteForm.startTimeStr}
+                      onBlur={(e) => setInviteForm({ ...inviteForm, startTimeStr: formatTime12h(e.target.value) })}
+                      onChange={(e) => setInviteForm({ ...inviteForm, startTimeStr: e.target.value })}
+                      className={`${inputClass} border-blue-100 bg-blue-50/10 focus:bg-white font-semibold w-16`}
+                      placeholder="09:30"
+                      maxLength={5}
+                    />
+                    <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold shrink-0">
+                      {["AM", "PM"].map((v) => (
+                        <button key={v} type="button" onClick={() => setInviteForm({ ...inviteForm, startAmPm: v })}
+                          className={`px-2.5 py-2 transition-colors ${inviteForm.startAmPm === v ? "bg-blue-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}>
+                          {v}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className={labelClass}>End Time *</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={inviteForm.endTimeStr}
+                      onBlur={(e) => setInviteForm({ ...inviteForm, endTimeStr: formatTime12h(e.target.value) })}
+                      onChange={(e) => setInviteForm({ ...inviteForm, endTimeStr: e.target.value })}
+                      className={`${inputClass} border-red-100 bg-red-50/10 focus:bg-white font-semibold w-16`}
+                      placeholder="11:30"
+                      maxLength={5}
+                    />
+                    <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold shrink-0">
+                      {["AM", "PM"].map((v) => (
+                        <button key={v} type="button" onClick={() => setInviteForm({ ...inviteForm, endAmPm: v })}
+                          className={`px-2.5 py-2 transition-colors ${inviteForm.endAmPm === v ? "bg-red-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}>
+                          {v}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="px-6 pb-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowInviteSchedule(false)}
+                className="flex-1 py-2.5 px-4 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSendInvites}
+                disabled={isSendingInvites}
+                className="flex-[2] flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-bold hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg shadow-violet-200 disabled:opacity-60"
+              >
                 {isSendingInvites ? (
-                  <>
-                    <Loader2 size={16} className="animate-spin" /> Sending
-                    Invites...
-                  </>
+                  <><Loader2 size={16} className="animate-spin" /> Sending...</>
                 ) : (
-                  <>
-                    <Mail size={16} /> Send Exam Invites to Batch Students
-                  </>
+                  <><Mail size={16} /> Confirm & Send</>
                 )}
               </button>
             </div>

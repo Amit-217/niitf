@@ -25,6 +25,8 @@ export interface TestPayload {
     totalMarks: number;
     passingPercentage: number;
     mode: 'Online' | 'Offline';
+    startTime?: string;
+    endTime?: string;
 }
 
 export interface Question {
