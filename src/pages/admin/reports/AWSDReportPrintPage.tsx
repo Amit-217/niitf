@@ -156,7 +156,7 @@ export const AWSDReportPrintPage: React.FC = () => {
 
   const [report, setReport] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [bwMode] = useState(false);
+  const [bwMode, setBwMode] = useState(false);
 
   const goBack = () => {
     if (locState?.customerId) {
@@ -260,9 +260,28 @@ export const AWSDReportPrintPage: React.FC = () => {
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
+      <div
+        className="no-print"
+        style={{ position: "fixed", top: 12, right: 16, zIndex: 100, display: "flex", gap: 8 }}
+      >
+        <button
+          onClick={() => setBwMode((b) => !b)}
+          style={{ padding: "7px 16px", background: bwMode ? "#374151" : "#185FA5", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 600 }}
+        >
+          {bwMode ? "Color Mode" : "B&W Mode"}
+        </button>
+        <button
+          onClick={() => window.print()}
+          style={{ padding: "7px 16px", background: "#16a34a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 600 }}
+        >
+          Print
+        </button>
+      </div>
+
       {/* â"€â"€ Report Content â"€â"€ */}
       <div
         id="report-root"
+        className={bwMode ? "bw" : ""}
         style={{
           background: "#e9eef5",
           minHeight: "100vh",
@@ -358,10 +377,10 @@ export const AWSDReportPrintPage: React.FC = () => {
                         alignItems: "flex-start",
                       }}
                     >
-                      {/* Weld reference diagram - matches original AWS D1.1 sketch */}
+                      {/* Weld reference diagram */}
                       <div
                         style={{
-                          width: "108px",
+                          width: "200px",
                           flexShrink: 0,
                           display: "flex",
                           alignItems: "center",
@@ -369,87 +388,11 @@ export const AWSDReportPrintPage: React.FC = () => {
                           paddingTop: "4px",
                         }}
                       >
-                        <svg
-                          width="108"
-                          height="72"
-                          viewBox="0 0 108 72"
-                          style={{ overflow: "visible" }}
-                        >
-                          {/* Plate: parallelogram shape (slight perspective tilt) */}
-                          <polygon
-                            points="24,8 92,8 96,46 20,46"
-                            fill="white"
-                            stroke="#333"
-                            strokeWidth="1.2"
-                          />
-
-                          {/* Cross "+" mark inside plate (left area - weld reference point) */}
-                          <line
-                            x1="33"
-                            y1="16"
-                            x2="33"
-                            y2="30"
-                            stroke="#333"
-                            strokeWidth="1"
-                          />
-                          <line
-                            x1="26"
-                            y1="23"
-                            x2="40"
-                            y2="23"
-                            stroke="#333"
-                            strokeWidth="1"
-                          />
-
-                          {/* X label — outside shape on the LEFT with horizontal arrow line → */}
-                          <text
-                            x="1"
-                            y="28"
-                            style={{
-                              fontSize: "10px",
-                              fontWeight: "bold",
-                              fontFamily: "Arial",
-                            }}
-                          >
-                            X
-                          </text>
-                          <line
-                            x1="9"
-                            y1="23"
-                            x2="19"
-                            y2="23"
-                            stroke="#333"
-                            strokeWidth="0.9"
-                          />
-                          {/* arrowhead pointing right into shape */}
-                          <polygon points="20,21 20,25 24,23" fill="#333" />
-
-                          {/* X label — inside shape on the RIGHT */}
-                          <text
-                            x="74"
-                            y="22"
-                            style={{
-                              fontSize: "10px",
-                              fontWeight: "bold",
-                              fontFamily: "Arial",
-                            }}
-                          >
-                            X
-                          </text>
-
-                          {/* Y label — below the shape, center */}
-                          <text
-                            x="50"
-                            y="64"
-                            style={{
-                              fontSize: "10px",
-                              fontWeight: "bold",
-                              fontFamily: "Arial",
-                            }}
-                          >
-                            Y
-                          </text>
-                        </svg>
+                        <img
+                          src="/image.png"
+                          alt="Weld reference sketch"
+                          style={{ width: "200px", height: "auto", display: "block" }}
+                        />
                       </div>
                       {/* Right: Form fields */}
                       <div style={{ flex: 1 }}>
@@ -500,7 +443,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                   <table className="obs-table mt-n1">
                     <thead style={{ display: "table-header-group" }}>
                       <tr>
-                        <td colSpan={15} className="section-hdr">
+                        <td colSpan={16} className="section-hdr">
                           OBSERVATIONS
                         </td>
                       </tr>
@@ -548,11 +491,20 @@ export const AWSDReportPrintPage: React.FC = () => {
                           Discontinuity
                         </td>
                         <td
-                          className="col-hdr"
+                          className="col-hdr vcell"
                           rowSpan={3}
-                          style={{ width: "6%" }}
+                          style={{ width: "6.5%" }}
                         >
-                          Remarks
+                          <span className="vtext">
+                            Discontinuity evaluation
+                          </span>
+                        </td>
+                        <td
+                          className="col-hdr vcell"
+                          rowSpan={3}
+                          style={{ width: "6.5%" }}
+                        >
+                          <span className="vtext">Remarks</span>
                         </td>
                       </tr>
                       {/* Header row 2: Decibels sub-cols + Discontinuity sub-cols */}
@@ -610,22 +562,6 @@ export const AWSDReportPrintPage: React.FC = () => {
                         </td>
                         <td className="col-hdr" colSpan={2}>
                           Distance
-                        </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={3}
-                          style={{ width: "6.5%" }}
-                        >
-                          <span className="vtext">
-                            Discontinuity evaluation
-                          </span>
-                        </td>
-                        <td
-                          className="col-hdr vcell"
-                          rowSpan={3}
-                          style={{ width: "6.5%" }}
-                        >
-                          <span className="vtext">Remarks</span>
                         </td>
                       </tr>
                       {/* Header row 3: Distance sub-cols */}
@@ -814,7 +750,7 @@ export const AWSDReportPrintPage: React.FC = () => {
         </div>
       </div>
       {/* The fixed footer that only appears in print on every page at the bottom */}
-      <div className="print-fixed-footer">
+      <div className={`print-fixed-footer${bwMode ? " bw" : ""}`}>
         <div
           className="print-fixed-footer-inner"
           style={{ border: "none", boxShadow: "none" }}
