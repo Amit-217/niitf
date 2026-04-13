@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import { toast } from 'react-toastify';
 
 // ─── Create axios instance ────────────────────────────────────────────────────
 const api = axios.create({
@@ -128,11 +129,17 @@ api.interceptors.response.use(
                 }
 
                 return api(originalRequest);
-            } catch (refreshError) {
-                // Refresh failed — session is dead, log the user out
+            } catch (refreshError: any) {
                 processQueue(refreshError, null);
-                clearSession();
-                redirectToLogin();
+                // Only log out if the server explicitly rejected the refresh token (401/403).
+                // For network errors or server errors (5xx), do NOT wipe the session —
+                // the token may still be valid and the failure is transient.
+                const status = refreshError?.response?.status;
+                if (status === 401 || status === 403) {
+                    clearSession();
+                    toast.error('Your session has expired. Please log in again.');
+                    setTimeout(redirectToLogin, 1500);
+                }
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;

@@ -13,6 +13,8 @@ export interface Test {
     passingPercentage: number;
     mode: 'Online' | 'Offline';
     isActive: boolean;
+    startTime: string;
+    endTime: string;
     createdAt: string;
 }
 
@@ -23,6 +25,8 @@ export interface TestPayload {
     totalMarks: number;
     passingPercentage: number;
     mode: 'Online' | 'Offline';
+    startTime?: string;
+    endTime?: string;
 }
 
 export interface Question {

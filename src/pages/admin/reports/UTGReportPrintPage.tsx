@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useParams,
   useNavigate,
@@ -88,12 +88,13 @@ const PRINT_STYLES = `
   .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; white-space: nowrap; width: 22%; }
   .val { font-size: 11px; color: #000; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 3px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
-  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; text-align: left; }
+  .obs-table th:first-child, .obs-table td:first-child { width: 28px; min-width: 28px; max-width: 28px; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
@@ -443,13 +444,13 @@ export const UTGReportPrintPage: React.FC = () => {
                         Ultrasonic Thickness Gauging Report
                       </div>
 
-                      {/* ── JOB DETAILS ── */}
+                      {/* ── 1. JOB DETAILS ── */}
                       <table className="report-table mt-n1">
                         <colgroup>
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "32%" }} />
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "32%" }} />
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
                         </colgroup>
                         <tbody>
                           <tr>
@@ -459,66 +460,60 @@ export const UTGReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="lbl">Customer</td>
-                            <td className="val">{v(jd.customer)}</td>
+                            <td className="val">{v(jd.customer) || "-"}</td>
                             <td className="lbl">Report No.</td>
-                            <td className="val">{v(report.reportNo)}</td>
+                            <td className="val">{v(report.reportNo) || "-"}</td>
                           </tr>
                           <tr>
                             <td className="lbl">Client</td>
-                            <td className="val">{v(jd.client)}</td>
+                            <td className="val">{v(jd.client) || "-"}</td>
                             <td className="lbl">Report Date</td>
-                            <td className="val">{fmtDate(jd.reportDate)}</td>
+                            <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
                           </tr>
                           <tr>
                             <td className="lbl">Project</td>
-                            <td className="val">{v(jd.project)}</td>
+                            <td className="val">{v(jd.project) || "-"}</td>
                             <td className="lbl">Inspection Date</td>
                             <td className="val">
                               {fmtDate(jd.inspectionDate)}
-                              {jd.inspectionEndDate
-                                ? ` To ${fmtDate(jd.inspectionEndDate)}`
-                                : ""}
+                              {jd.inspectionEndDate ? ` To ${fmtDate(jd.inspectionEndDate)}` : ""}
+                              {!jd.inspectionDate && "-"}
                             </td>
                           </tr>
                           <tr>
                             <td className="lbl">Reference Std.</td>
-                            <td className="val">{v(jd.referenceStd)}</td>
+                            <td className="val">{v(jd.referenceStd) || "-"}</td>
                             <td className="lbl">Inspection Time</td>
-                            <td className="val">{v(jd.inspectionTime)}</td>
+                            <td className="val">{v(jd.inspectionTime) || "-"}</td>
                           </tr>
                           <tr>
                             <td className="lbl">Acceptance Criteria</td>
-                            <td className="val">{v(jd.acceptanceCriteria)}</td>
+                            <td className="val">{v(jd.acceptanceCriteria) || "-"}</td>
                             <td className="lbl">Material</td>
-                            <td className="val">{v(jd.material)}</td>
+                            <td className="val">{v(jd.material) || "-"}</td>
                           </tr>
                           <tr>
                             <td className="lbl">Stage of Inspection</td>
-                            <td className="val">{v(jd.stageOfInspection)}</td>
+                            <td className="val">{v(jd.stageOfInspection) || "-"}</td>
                             <td className="lbl">Surface Condition</td>
-                            <td className="val">{v(jd.surfaceCondition)}</td>
+                            <td className="val">{v(jd.surfaceCondition) || "-"}</td>
                           </tr>
                           <tr>
                             <td className="lbl">Extent of Examination</td>
-                            <td className="val">{v(jd.extentOfExamination)}</td>
+                            <td className="val">{v(jd.extentOfExamination) || "-"}</td>
                             <td className="lbl">Surface Temperature</td>
-                            <td className="val">{v(jd.surfaceTemperature)}</td>
+                            <td className="val">{v(jd.surfaceTemperature) || "-"}</td>
                           </tr>
                         </tbody>
                       </table>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body" style={{ borderTop: "none" }}>
-                      {/* ── EQUIPMENT DETAILS ── */}
-                      <table className="report-table">
+
+                      {/* ── 2. EQUIPMENT DETAILS ── */}
+                      <table className="report-table mt-n1">
                         <colgroup>
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "32%" }} />
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "32%" }} />
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "28%" }} />
                         </colgroup>
                         <tbody>
                           <tr>
@@ -528,36 +523,27 @@ export const UTGReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="lbl">Equip. Type</td>
-                            <td className="val">{v(eq.equipmentType)}</td>
+                            <td className="val">{v(eq.equipmentType) || "-"}</td>
                             <td className="lbl">Sr. No.</td>
-                            <td className="val">{v(eq.srNo)}</td>
+                            <td className="val">{v(eq.srNo) || "-"}</td>
                           </tr>
                           <tr>
                             <td className="lbl">Make</td>
-                            <td className="val">{v(eq.make)}</td>
+                            <td className="val">{v(eq.make) || "-"}</td>
                             <td className="lbl">Calibration Due</td>
-                            <td className="val">
-                              {fmtDate(eq.calibrationDue)}
-                            </td>
+                            <td className="val">{fmtDate(eq.calibrationDue) || "-"}</td>
                           </tr>
                           <tr>
                             <td className="lbl">Couplant</td>
-                            <td className="val">{v(eq.couplant)}</td>
+                            <td className="val">{v(eq.couplant) || "-"}</td>
                             <td className="lbl">Basic Calibration Block</td>
-                            <td className="val">
-                              {v(eq.basicCalibrationBlock)}
-                            </td>
+                            <td className="val">{v(eq.basicCalibrationBlock) || "-"}</td>
                           </tr>
                         </tbody>
                       </table>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body" style={{ borderTop: "none" }}>
-                      {/* ── SEARCH UNIT DETAILS ── */}
-                      <table className="report-table">
+
+                      {/* ── 3. SEARCH UNIT DETAILS ── */}
+                      <table className="report-table mt-n1">
                         <tbody>
                           <tr>
                             <td colSpan={6} className="section-hdr">
@@ -565,73 +551,36 @@ export const UTGReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="col-hdr" style={{ width: "22%" }}>
-                              Search Unit / Model
-                            </td>
-                            <td className="col-hdr" style={{ width: "12%" }}>
-                              Angle
-                            </td>
-                            <td className="col-hdr" style={{ width: "18%" }}>
-                              Sr. No.
-                            </td>
-                            <td className="col-hdr" style={{ width: "18%" }}>
-                              Crystal Size
-                            </td>
-                            <td className="col-hdr" style={{ width: "15%" }}>
-                              Wave Mode
-                            </td>
-                            <td className="col-hdr" style={{ width: "15%" }}>
-                              Frequency
-                            </td>
+                            <td className="col-hdr" style={{ width: "22%" }}>Search Unit / Model</td>
+                            <td className="col-hdr" style={{ width: "12%" }}>Angle</td>
+                            <td className="col-hdr" style={{ width: "18%" }}>Sr. No.</td>
+                            <td className="col-hdr" style={{ width: "18%" }}>Crystal Size</td>
+                            <td className="col-hdr" style={{ width: "15%" }}>Wave Mode</td>
+                            <td className="col-hdr" style={{ width: "15%" }}>Frequency</td>
                           </tr>
                           {sud.length === 0 ? (
                             <tr>
-                              <td
-                                colSpan={6}
-                                style={{
-                                  textAlign: "center",
-                                  padding: "4px",
-                                  color: "#999",
-                                  fontSize: "11px",
-                                }}
-                              >
+                              <td colSpan={6} style={{ textAlign: "center", padding: "4px", color: "#999", fontSize: "11px" }}>
                                 No search units recorded.
                               </td>
                             </tr>
                           ) : (
                             sud.map((u: any, i: number) => (
                               <tr key={i}>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(u.searchUnit || u.model)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(u.angle)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(u.srNo)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(u.crystalSize)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(u.waveMode)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(u.frequency)}
-                                </td>
+                                <td>{v(u.searchUnit || u.model)}</td>
+                                <td>{v(u.angle)}</td>
+                                <td>{v(u.srNo)}</td>
+                                <td>{v(u.crystalSize)}</td>
+                                <td>{v(u.waveMode)}</td>
+                                <td>{v(u.frequency)}</td>
                               </tr>
                             ))
                           )}
                         </tbody>
                       </table>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body" style={{ borderTop: "none" }}>
-                      {/* ── TECHNIQUE DETAILS ── */}
-                      <table className="report-table">
+
+                      {/* ── 4. TECHNIQUE DETAILS ── */}
+                      <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
                           <col style={{ width: "78%" }} />
@@ -644,17 +593,13 @@ export const UTGReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="lbl">UT Method</td>
-                            <td className="val">{v(td.utMethod)}</td>
+                            <td className="val">{v(td.utMethod) || "-"}</td>
                           </tr>
                         </tbody>
                       </table>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body" style={{ borderTop: "none" }}>
-                      <table className="obs-table">
+
+                      {/* ── 5. OBSERVATIONS ── */}
+                      <table className="obs-table mt-n1">
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={4} className="section-hdr">
@@ -662,61 +607,42 @@ export const UTGReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="col-hdr" style={{ width: "8%" }}>
-                              Sr. No.
-                            </td>
-                            <td className="col-hdr" style={{ width: "40%" }}>
-                              Item Name
-                            </td>
-                            <td className="col-hdr" style={{ width: "32%" }}>
-                              Measured Thickness
-                            </td>
-                            <td className="col-hdr" style={{ width: "20%" }}>
-                              Evaluation
-                            </td>
+                            <th>Sr. No.</th>
+                            <th style={{ width: "40%" }}>Item Name</th>
+                            <th style={{ width: "32%" }}>Measured Thickness</th>
+                            <th style={{ width: "20%" }}>Evaluation</th>
                           </tr>
                         </thead>
                         <tbody>
                           {obs.length === 0 ? (
                             <tr>
-                              <td
-                                colSpan={4}
-                                style={{
-                                  textAlign: "center",
-                                  padding: "6px",
-                                  fontSize: "11px",
-                                  color: "#999",
-                                }}
-                              >
+                              <td colSpan={4} style={{ textAlign: "center", padding: "6px", fontSize: "11px", color: "#999" }}>
                                 No observations recorded.
                               </td>
                             </tr>
                           ) : (
                             obs.map((o: any, i: number) => (
                               <tr key={i}>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(o.srNo)}
-                                </td>
-                                <td>{v(o.itemName)}</td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(o.measuredThickness)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(o.evaluation || o.remark || o.result)}
-                                </td>
+                                <td>{v(o.srNo) || i + 1}</td>
+                                <td>{v(o.itemName) || "-"}</td>
+                                <td>{v(o.measuredThickness) || "-"}</td>
+                                <td>{v(o.evaluation || o.remark || o.result) || "-"}</td>
                               </tr>
                             ))
                           )}
+                          {[...Array(4)].map((_, i) => (
+                            <tr key={`empty-obs-${i}`} className="print-blank-row">
+                              <td style={{ height: "24px" }}></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
 
-                      {/* -- Conclusion -- */}
-                      <div
-                        style={{
-                          breakInside: "avoid",
-                          pageBreakInside: "avoid",
-                        }}
-                      >
+                      {/* ── 6. CONCLUSION ── */}
+                      <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
                         <table className="report-table mt-n1">
                           <tbody>
                             <tr>
@@ -725,15 +651,14 @@ export const UTGReportPrintPage: React.FC = () => {
                               </td>
                             </tr>
                             <tr>
-                              <td className="lbl" style={{ width: "22%" }}>
-                                Overall Evaluation
-                              </td>
+                              <td className="lbl" style={{ width: "22%" }}>Overall Evaluation</td>
                               <td className="val">{conclusionText}</td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
                     </div>
+                    {/* ── end report-body ── */}
                   </td>
                 </tr>
               </tbody>

@@ -83,11 +83,11 @@ const PRINT_STYLES = `
   .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
   .val { font-size: 11px; color: #000; }
   .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .items-table td, .items-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 10px; vertical-align: middle; word-break: break-word; text-align: center; }
+  .items-table td, .items-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 10px; vertical-align: middle; word-break: break-word; text-align: left; }
   .items-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
   .items-table td.text-left { text-align: left; }
   .items-table td.section-hdr { text-align: left; }
@@ -820,10 +820,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                                 <td className="val">
                                   {v(doc.referenceNumber)}
                                 </td>
-                                <td
-                                  className="val"
-                                  style={{ textAlign: "center" }}
-                                >
+                                <td className="val">
                                   {v(doc.revNo)}
                                 </td>
                               </tr>
@@ -872,38 +869,10 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             calib.map((c: any, i: number) => (
                               <tr key={i}>
                                 <td className="val">{v(c.equipment)}</td>
-                                <td
-                                  style={{
-                                    textAlign: "center",
-                                    fontSize: "11px",
-                                  }}
-                                >
-                                  {v(c.idNumber)}
-                                </td>
-                                <td
-                                  style={{
-                                    textAlign: "center",
-                                    fontSize: "11px",
-                                  }}
-                                >
-                                  {fmtDate(c.calibrationDate)}
-                                </td>
-                                <td
-                                  style={{
-                                    textAlign: "center",
-                                    fontSize: "11px",
-                                  }}
-                                >
-                                  {fmtDate(c.dueDate)}
-                                </td>
-                                <td
-                                  style={{
-                                    textAlign: "center",
-                                    fontSize: "11px",
-                                  }}
-                                >
-                                  {v(c.nablCertified)}
-                                </td>
+                                <td style={{ fontSize: "11px" }}>{v(c.idNumber)}</td>
+                                <td style={{ fontSize: "11px" }}>{fmtDate(c.calibrationDate)}</td>
+                                <td style={{ fontSize: "11px" }}>{fmtDate(c.dueDate)}</td>
+                                <td style={{ fontSize: "11px" }}>{v(c.nablCertified)}</td>
                               </tr>
                             ))
                           )}
