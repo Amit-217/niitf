@@ -77,12 +77,22 @@ const isTokenExpired = (token: string) => {
 const getSessionUser = () => {
   const token = localStorage.getItem("accessToken");
   const userStr = localStorage.getItem("user");
+  const refreshToken = localStorage.getItem("refreshToken");
 
-  if (!token || !userStr || isTokenExpired(token)) {
+  if (!userStr) {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
     return null;
+  }
+
+  // If access token is expired but a refresh token exists, let the user through.
+  // The axios interceptor will silently refresh on the next API call.
+  if (!token || isTokenExpired(token)) {
+    if (!refreshToken) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("user");
+      return null;
+    }
   }
 
   try {

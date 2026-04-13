@@ -88,12 +88,13 @@ const PRINT_STYLES = `
   .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; white-space: nowrap; width: 22%; }
   .val { font-size: 11px; color: #000; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 3px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
-  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; text-align: left; }
+  .obs-table th:first-child, .obs-table td:first-child { width: 28px; min-width: 28px; max-width: 28px; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
@@ -566,12 +567,12 @@ export const UTGReportPrintPage: React.FC = () => {
                           ) : (
                             sud.map((u: any, i: number) => (
                               <tr key={i}>
-                                <td style={{ textAlign: "center" }}>{v(u.searchUnit || u.model)}</td>
-                                <td style={{ textAlign: "center" }}>{v(u.angle)}</td>
-                                <td style={{ textAlign: "center" }}>{v(u.srNo)}</td>
-                                <td style={{ textAlign: "center" }}>{v(u.crystalSize)}</td>
-                                <td style={{ textAlign: "center" }}>{v(u.waveMode)}</td>
-                                <td style={{ textAlign: "center" }}>{v(u.frequency)}</td>
+                                <td>{v(u.searchUnit || u.model)}</td>
+                                <td>{v(u.angle)}</td>
+                                <td>{v(u.srNo)}</td>
+                                <td>{v(u.crystalSize)}</td>
+                                <td>{v(u.waveMode)}</td>
+                                <td>{v(u.frequency)}</td>
                               </tr>
                             ))
                           )}
@@ -606,7 +607,7 @@ export const UTGReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <th style={{ width: "8%" }}>Sr. No.</th>
+                            <th>Sr. No.</th>
                             <th style={{ width: "40%" }}>Item Name</th>
                             <th style={{ width: "32%" }}>Measured Thickness</th>
                             <th style={{ width: "20%" }}>Evaluation</th>
@@ -622,10 +623,10 @@ export const UTGReportPrintPage: React.FC = () => {
                           ) : (
                             obs.map((o: any, i: number) => (
                               <tr key={i}>
-                                <td style={{ textAlign: "center" }}>{v(o.srNo) || i + 1}</td>
+                                <td>{v(o.srNo) || i + 1}</td>
                                 <td>{v(o.itemName) || "-"}</td>
-                                <td style={{ textAlign: "center" }}>{v(o.measuredThickness) || "-"}</td>
-                                <td style={{ textAlign: "center" }}>{v(o.evaluation || o.remark || o.result) || "-"}</td>
+                                <td>{v(o.measuredThickness) || "-"}</td>
+                                <td>{v(o.evaluation || o.remark || o.result) || "-"}</td>
                               </tr>
                             ))
                           )}
