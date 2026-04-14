@@ -61,6 +61,7 @@ import {
   InvoicePayload,
   LineItem,
 } from "../../../api/customerApi";
+import { Pagination } from "../../../components/Pagination";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -399,21 +400,7 @@ export const CustomerDetailPage = () => {
     locationState?.reportSubType ?? null,
   );
 
-  // Per-type report data
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [mptReports, setMptReports] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [ptReports, setPtReports] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [utReports, setUtReports] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [vsscUtReports, setVsscUtReports] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [utgReports, setUtgReports] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [tpiIvrReports, setTpiIvrReports] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [awsdReports, setAwsdReports] = useState<any[]>([]);
+  // ── Report counts (limit:1 fetch on mount only)
   const [mptTotal, setMptTotal] = useState(0);
   const [ptTotal, setPtTotal] = useState(0);
   const [utTotal, setUtTotal] = useState(0);
@@ -422,19 +409,37 @@ export const CustomerDetailPage = () => {
   const [tpiIvrTotal, setTpiIvrTotal] = useState(0);
   const [awsdTotal, setAwsdTotal] = useState(0);
 
-  // Quotations
-  const [quotations, setQuotations] = useState<Quotation[]>([]);
-  const [quotationsTotal, setQuotationsTotal] = useState(0);
-  const [quotationTypeFilter, setQuotationTypeFilter] = useState<string | null>(
-    null,
-  );
-  const [quotationStatusFilter, setQuotationStatusFilter] = useState<
-    string | null
-  >(null);
+  // ── Quotation counts per type (limit:1 fetch on mount)
+  const [trainQuotationsTotal, setTrainQuotationsTotal] = useState(0);
+  const [servQuotationsTotal, setServQuotationsTotal] = useState(0);
 
-  // Invoices
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  // ── Invoice count (limit:1 fetch on mount)
   const [invoicesTotal, setInvoicesTotal] = useState(0);
+
+  // ── Lazy-loaded report data (populated when Reports tab + subtype selected)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [reportData, setReportData] = useState<any[]>([]);
+  const [reportDataTotal, setReportDataTotal] = useState(0);
+  const [reportDataLoading, setReportDataLoading] = useState(false);
+  const [reportPage, setReportPage] = useState(1);
+  const [reportLimit, setReportLimit] = useState(10);
+
+  // ── Quotations (lazy-loaded when Quotations tab + type selected)
+  const [quotations, setQuotations] = useState<Quotation[]>([]);
+  const [quotationTypeFilter, setQuotationTypeFilter] = useState<string | null>(null);
+  const [quotationStatusFilter, setQuotationStatusFilter] = useState<string | null>(null);
+  const [quotationsPageTotal, setQuotationsPageTotal] = useState(0);
+  const [quotationsLoading, setQuotationsLoading] = useState(false);
+  const [quotationPage, setQuotationPage] = useState(1);
+  const [quotationLimit, setQuotationLimit] = useState(10);
+
+  // ── Invoices (lazy-loaded when Invoices tab is active)
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [invoicesPageTotal, setInvoicesPageTotal] = useState(0);
+  const [invoicesLoading, setInvoicesLoading] = useState(false);
+  const [invoicePage, setInvoicePage] = useState(1);
+  const [invoiceLimit, setInvoiceLimit] = useState(10);
+
   const [countsLoaded, setCountsLoaded] = useState(false);
 
   const [isModalOpen, setModalOpen] = useState(false);
@@ -482,178 +487,113 @@ export const CustomerDetailPage = () => {
     }
   }, [id, navigate]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const extractReports = (res: any) => {
-    const items = res?.data || res?.reports || [];
-    return {
-      items: Array.isArray(items) ? items : [],
-      total:
-        res?.pagination?.total || (Array.isArray(items) ? items.length : 0),
+  // Count-only fetch on mount — limit:1 per type, uses pagination.total for counts
+  const fetchAllCounts = useCallback(async () => {
+    if (!id) return;
+    setCountsLoaded(false);
+    const extractTotal = (res: any): number => {
+      const items = res?.data || res?.reports || [];
+      return res?.pagination?.total ?? (Array.isArray(items) ? items.length : 0);
     };
-  };
-
-  const fetchMPTReports = useCallback(async () => {
-    if (!id) return;
-    try {
-      const res: any = await getMPTReports({ customerId: id, limit: 100 });
-      const { items, total } = extractReports(res);
-      setMptReports(items);
-      setMptTotal(total);
-    } catch {
-      /* silent */
-    }
+    const extractQuoTotal = (res: any): number => {
+      const items = res?.data?.data || res?.data || [];
+      return res?.data?.pagination?.total ?? (Array.isArray(items) ? items.length : 0);
+    };
+    const results = await Promise.allSettled([
+      getMPTReports({ customerId: id, page: 1, limit: 1 }),
+      getPTReports({ customerId: id, page: 1, limit: 1 }),
+      getUTReports({ customerId: id, page: 1, limit: 1 }),
+      getVSSCUTReports({ customerId: id, page: 1, limit: 1 }),
+      getUTGReports({ customerId: id, page: 1, limit: 1 }),
+      getTPIIVRReports({ customerId: id, page: 1, limit: 1 }),
+      getAWSDReports({ customerId: id, page: 1, limit: 1 }),
+      getAllTrainingQuotations({ customerId: id, limit: 1 }),
+      getAllServiceQuotations({ customerId: id, limit: 1 }),
+      getInvoices({ customerId: id, limit: 1 }),
+    ]);
+    const v = (r: PromiseSettledResult<any>) => r.status === "fulfilled" ? r.value : null;
+    setMptTotal(extractTotal(v(results[0])));
+    setPtTotal(extractTotal(v(results[1])));
+    setUtTotal(extractTotal(v(results[2])));
+    setVsscUtTotal(extractTotal(v(results[3])));
+    setUtgTotal(extractTotal(v(results[4])));
+    setTpiIvrTotal(extractTotal(v(results[5])));
+    setAwsdTotal(extractTotal(v(results[6])));
+    setTrainQuotationsTotal(extractQuoTotal(v(results[7])));
+    setServQuotationsTotal(extractQuoTotal(v(results[8])));
+    const invRes = v(results[9]);
+    setInvoicesTotal(invRes?.pagination?.total ?? (Array.isArray(invRes?.data || invRes?.invoices) ? (invRes?.data || invRes?.invoices).length : 0));
+    setCountsLoaded(true);
   }, [id]);
 
-  const fetchPTReports = useCallback(async () => {
-    if (!id) return;
+  // Fetch paginated report data for the active sub-type
+  const fetchReportData = useCallback(async () => {
+    if (!id || !reportSubType) return;
+    setReportDataLoading(true);
     try {
-      const res: any = await getPTReports({ customerId: id, limit: 100 });
-      const { items, total } = extractReports(res);
-      setPtReports(items);
-      setPtTotal(total);
-    } catch {
-      /* silent */
-    }
-  }, [id]);
+      const fns: Record<ReportSubType, (p: any) => Promise<any>> = {
+        mpt: getMPTReports, pt: getPTReports, ut: getUTReports,
+        "vssc-ut": getVSSCUTReports, utg: getUTGReports,
+        "tpi-ivr": getTPIIVRReports, awsd: getAWSDReports,
+      };
+      const res: any = await fns[reportSubType]({ customerId: id, page: reportPage, limit: reportLimit });
+      const items = res?.data || res?.reports || [];
+      setReportData(Array.isArray(items) ? items : []);
+      setReportDataTotal(res?.pagination?.total ?? (Array.isArray(items) ? items.length : 0));
+    } catch { /* silent */ }
+    finally { setReportDataLoading(false); }
+  }, [id, reportSubType, reportPage, reportLimit]);
 
-  const fetchUTReports = useCallback(async () => {
-    if (!id) return;
-    try {
-      const res: any = await getUTReports({ customerId: id, limit: 100 });
-      const { items, total } = extractReports(res);
-      setUtReports(items);
-      setUtTotal(total);
-    } catch {
-      /* silent */
-    }
-  }, [id]);
-
-  const fetchVSSCUTReports = useCallback(async () => {
-    if (!id) return;
-    try {
-      const res: any = await getVSSCUTReports({ customerId: id, limit: 100 });
-      const { items, total } = extractReports(res);
-      setVsscUtReports(items);
-      setVsscUtTotal(total);
-    } catch {
-      /* silent */
-    }
-  }, [id]);
-
-  const fetchUTGReports = useCallback(async () => {
-    if (!id) return;
-    try {
-      const res: any = await getUTGReports({ customerId: id, limit: 100 });
-      const { items, total } = extractReports(res);
-      setUtgReports(items);
-      setUtgTotal(total);
-    } catch {
-      /* silent */
-    }
-  }, [id]);
-
-  const fetchTPIIVRReports = useCallback(async () => {
-    if (!id) return;
-    try {
-      const res: any = await getTPIIVRReports({ customerId: id, limit: 100 });
-      const { items, total } = extractReports(res);
-      setTpiIvrReports(items);
-      setTpiIvrTotal(total);
-    } catch {
-      /* silent */
-    }
-  }, [id]);
-
-  const fetchAWSDReports = useCallback(async () => {
-    if (!id) return;
-    try {
-      const res: any = await getAWSDReports({ customerId: id, limit: 100 });
-      const { items, total } = extractReports(res);
-      setAwsdReports(items);
-      setAwsdTotal(total);
-    } catch {
-      /* silent */
-    }
-  }, [id]);
-
+  // Fetch paginated quotations for the selected type only
   const fetchQuotations = useCallback(async () => {
-    if (!id) return;
+    if (!id || !quotationTypeFilter) return;
+    setQuotationsLoading(true);
     try {
-      const [trainRes, servRes] = await Promise.all([
-        getAllTrainingQuotations({ customerId: id, limit: 1000 }),
-        getAllServiceQuotations({ customerId: id, limit: 1000 }),
-      ]);
-      const tData = (trainRes.data?.data || trainRes.data || []).map(
-        (q: any) => ({ ...q, _type: "training" }),
-      );
-      const sData = (servRes.data?.data || servRes.data || []).map(
-        (q: any) => ({ ...q, _type: "service" }),
-      );
-      const combined = [...tData, ...sData].sort(
-        (a: any, b: any) =>
-          new Date(b.createdAt || 0).getTime() -
-          new Date(a.createdAt || 0).getTime(),
-      );
-      setQuotations(combined as Quotation[]);
-      setQuotationsTotal(combined.length);
-    } catch {
-      /* silent */
-    }
-  }, [id]);
+      const res: any = quotationTypeFilter === "training"
+        ? await getAllTrainingQuotations({ customerId: id, page: quotationPage, limit: quotationLimit })
+        : await getAllServiceQuotations({ customerId: id, page: quotationPage, limit: quotationLimit });
+      const items = (res?.data?.data || res?.data || []).map((q: any) => ({ ...q, _type: quotationTypeFilter }));
+      setQuotations(items as Quotation[]);
+      setQuotationsPageTotal(res?.data?.pagination?.total ?? items.length);
+    } catch { /* silent */ }
+    finally { setQuotationsLoading(false); }
+  }, [id, quotationTypeFilter, quotationPage, quotationLimit]);
 
+  // Fetch paginated invoices
   const fetchInvoices = useCallback(async () => {
     if (!id) return;
+    setInvoicesLoading(true);
     try {
-      const res: any = await getInvoices({ customerId: id, limit: 50 });
+      const res: any = await getInvoices({ customerId: id, page: invoicePage, limit: invoiceLimit });
       const items = res?.data || res?.invoices || [];
       setInvoices(Array.isArray(items) ? items : []);
-      setInvoicesTotal(res?.pagination?.total || items.length);
-    } catch {
-      /* silent */
-    }
-  }, [id]);
+      setInvoicesPageTotal(res?.pagination?.total ?? (Array.isArray(items) ? items.length : 0));
+    } catch { /* silent */ }
+    finally { setInvoicesLoading(false); }
+  }, [id, invoicePage, invoiceLimit]);
 
+  useEffect(() => { fetchCustomer(); }, [fetchCustomer]);
+  useEffect(() => { fetchAllCounts(); }, [fetchAllCounts]);
+
+  // Reset report page when sub-type changes
+  useEffect(() => { setReportPage(1); setReportData([]); }, [reportSubType]);
+  // Reset quotation page when type filter changes
+  useEffect(() => { setQuotationPage(1); setQuotations([]); }, [quotationTypeFilter]);
+
+  // Lazy-fetch report data when Reports tab is active and a sub-type is selected
   useEffect(() => {
-    fetchCustomer();
-  }, [fetchCustomer]);
+    if (activeTab === "reports" && reportSubType) fetchReportData();
+  }, [activeTab, reportSubType, reportPage, fetchReportData]);
+
+  // Lazy-fetch quotations when Quotations tab is active and a type is selected
   useEffect(() => {
-    let cancelled = false;
-    setCountsLoaded(false);
+    if (activeTab === "quotations" && quotationTypeFilter) fetchQuotations();
+  }, [activeTab, quotationTypeFilter, quotationPage, fetchQuotations]);
 
-    const loadAllCounts = async () => {
-      await Promise.all([
-        fetchMPTReports(),
-        fetchPTReports(),
-        fetchUTReports(),
-        fetchVSSCUTReports(),
-        fetchUTGReports(),
-        fetchTPIIVRReports(),
-        fetchAWSDReports(),
-        fetchQuotations(),
-        fetchInvoices(),
-      ]);
-
-      if (!cancelled) {
-        setCountsLoaded(true);
-      }
-    };
-
-    loadAllCounts();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    fetchMPTReports,
-    fetchPTReports,
-    fetchUTReports,
-    fetchVSSCUTReports,
-    fetchUTGReports,
-    fetchTPIIVRReports,
-    fetchAWSDReports,
-    fetchQuotations,
-    fetchInvoices,
-  ]);
+  // Lazy-fetch invoices when Invoices tab is active
+  useEffect(() => {
+    if (activeTab === "invoices") fetchInvoices();
+  }, [activeTab, invoicePage, fetchInvoices]);
 
   // Keep history state in sync so browser back button restores the correct tab/inspection
   useEffect(() => {
@@ -776,6 +716,7 @@ export const CustomerDetailPage = () => {
           toast.success("Quotation created");
         }
         fetchQuotations();
+        fetchAllCounts();
       } else if (activeTab === "invoices") {
         const { subtotal, taxAmount, totalAmount } = computeTotals(
           invForm.items,
@@ -806,6 +747,7 @@ export const CustomerDetailPage = () => {
           toast.success("Invoice created");
         }
         fetchInvoices();
+        fetchAllCounts();
       }
       setModalOpen(false);
     } catch (err: any) {
@@ -830,9 +772,11 @@ export const CustomerDetailPage = () => {
         if (qType === "training") await deleteTrainingQuotation(item._id);
         else await deleteServiceQuotation(item._id);
         fetchQuotations();
+        fetchAllCounts();
       } else {
         await deleteInvoice(item._id);
         fetchInvoices();
+        fetchAllCounts();
       }
       toast.success("Deleted successfully");
     } catch {
@@ -856,16 +800,8 @@ export const CustomerDetailPage = () => {
       };
       await deleteFns[reportSubType](reportId);
       toast.success("Report deleted");
-      const refreshFns: Record<string, () => void> = {
-        mpt: fetchMPTReports,
-        pt: fetchPTReports,
-        ut: fetchUTReports,
-        "vssc-ut": fetchVSSCUTReports,
-        utg: fetchUTGReports,
-        "tpi-ivr": fetchTPIIVRReports,
-        awsd: fetchAWSDReports,
-      };
-      refreshFns[reportSubType]?.();
+      fetchReportData();
+      fetchAllCounts();
     } catch {
       toast.error("Failed to delete report");
     }
@@ -897,24 +833,16 @@ export const CustomerDetailPage = () => {
     "tpi-ivr": tpiIvrTotal,
     awsd: awsdTotal,
   };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const reportListByType: Record<ReportSubType, any[]> = {
-    mpt: mptReports,
-    pt: ptReports,
-    ut: utReports,
-    "vssc-ut": vsscUtReports,
-    utg: utgReports,
-    "tpi-ivr": tpiIvrReports,
-    awsd: awsdReports,
-  };
+  const filteredQuotations = quotations.filter(
+    (q) => !quotationStatusFilter || q.status === quotationStatusFilter,
+  );
 
-  const filteredQuotations = quotations
-    .filter(
-      (q) => !quotationTypeFilter || (q as any)._type === quotationTypeFilter,
-    )
-    .filter(
-      (q) => !quotationStatusFilter || q.status === quotationStatusFilter,
-    );
+  const quotationsTotal = trainQuotationsTotal + servQuotationsTotal;
+
+  const quoTypeTotals: Record<string, number> = {
+    service: servQuotationsTotal,
+    training: trainQuotationsTotal,
+  };
 
   const tabs = [
     {
@@ -1202,7 +1130,13 @@ export const CustomerDetailPage = () => {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-50">
-                        {reportListByType[reportSubType].length === 0 ? (
+                        {reportDataLoading ? (
+                          <tr>
+                            <td colSpan={7} className="px-4 py-10 text-center text-gray-400">
+                              <Loader2 className="animate-spin inline mr-2" size={16} /> Loading...
+                            </td>
+                          </tr>
+                        ) : reportData.length === 0 ? (
                           <tr>
                             <td
                               colSpan={7}
@@ -1218,7 +1152,7 @@ export const CustomerDetailPage = () => {
                             </td>
                           </tr>
                         ) : (
-                          reportListByType[reportSubType].map((r) => (
+                          reportData.map((r) => (
                             <tr
                               key={r._id}
                               className="hover:bg-gray-50 transition-colors"
@@ -1309,6 +1243,14 @@ export const CustomerDetailPage = () => {
                       </tbody>
                     </table>
                   </div>
+                  <Pagination
+                    page={reportPage}
+                    totalPages={Math.max(1, Math.ceil(reportDataTotal / reportLimit))}
+                    total={reportDataTotal}
+                    limit={reportLimit}
+                    onPageChange={setReportPage}
+                    onLimitChange={(l) => { setReportLimit(l); setReportPage(1); }}
+                  />
                 </div>
               ) : (
                 <div className="px-5 py-10 text-center text-gray-400 text-sm">
@@ -1324,9 +1266,7 @@ export const CustomerDetailPage = () => {
               {/* Type cards (Service / Training) */}
               <div className="p-5 grid grid-cols-2 gap-3 border-b border-gray-100">
                 {QUOTATION_TYPES.map((qt) => {
-                  const count = quotations.filter(
-                    (q) => (q as any)._type === qt.key,
-                  ).length;
+                  const count = quoTypeTotals[qt.key] ?? 0;
                   const isSelected = quotationTypeFilter === qt.key;
                   return (
                     <button
@@ -1374,13 +1314,7 @@ export const CustomerDetailPage = () => {
                       }
                       s
                       <span className="ml-2 text-gray-400 font-normal normal-case">
-                        (
-                        {
-                          quotations.filter(
-                            (q) => (q as any)._type === quotationTypeFilter,
-                          ).length
-                        }{" "}
-                        records)
+                        ({quotationsPageTotal} records)
                       </span>
                     </p>
                     <button
@@ -1425,7 +1359,13 @@ export const CustomerDetailPage = () => {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-50">
-                        {filteredQuotations.length === 0 ? (
+                        {quotationsLoading ? (
+                          <tr>
+                            <td colSpan={8} className="px-4 py-10 text-center text-gray-400">
+                              <Loader2 className="animate-spin inline mr-2" size={16} /> Loading...
+                            </td>
+                          </tr>
+                        ) : filteredQuotations.length === 0 ? (
                           <tr>
                             <td
                               colSpan={8}
@@ -1514,6 +1454,14 @@ export const CustomerDetailPage = () => {
                       </tbody>
                     </table>
                   </div>
+                  <Pagination
+                    page={quotationPage}
+                    totalPages={Math.max(1, Math.ceil(quotationsPageTotal / quotationLimit))}
+                    total={quotationsPageTotal}
+                    limit={quotationLimit}
+                    onPageChange={setQuotationPage}
+                    onLimitChange={(l) => { setQuotationLimit(l); setQuotationPage(1); }}
+                  />
                 </div>
               ) : (
                 <div className="px-5 py-10 text-center text-gray-400 text-sm">
@@ -1525,7 +1473,8 @@ export const CustomerDetailPage = () => {
 
           {/* Invoices Tab */}
           {activeTab === "invoices" && (
-            <div className="overflow-x-auto">
+            <div>
+              <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 border-b border-gray-100">
                   <tr>
@@ -1550,7 +1499,13 @@ export const CustomerDetailPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {invoices.length === 0 ? (
+                  {invoicesLoading ? (
+                    <tr>
+                      <td colSpan={9} className="px-4 py-10 text-center text-gray-400">
+                        <Loader2 className="animate-spin inline mr-2" size={16} /> Loading...
+                      </td>
+                    </tr>
+                  ) : invoices.length === 0 ? (
                     <tr>
                       <td
                         colSpan={9}
@@ -1619,6 +1574,15 @@ export const CustomerDetailPage = () => {
                   )}
                 </tbody>
               </table>
+              </div>
+              <Pagination
+                page={invoicePage}
+                totalPages={Math.max(1, Math.ceil(invoicesPageTotal / invoiceLimit))}
+                total={invoicesPageTotal}
+                limit={invoiceLimit}
+                onPageChange={setInvoicePage}
+                onLimitChange={(l) => { setInvoiceLimit(l); setInvoicePage(1); }}
+              />
             </div>
           )}
         </div>
