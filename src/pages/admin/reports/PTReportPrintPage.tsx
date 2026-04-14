@@ -58,7 +58,10 @@ const PRINT_STYLES = `
     border-radius: 6px;
     overflow: hidden;
   }
-  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
+  .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .rpt-header {
     padding: 8px 10px;
     margin-bottom: 6px;
@@ -256,7 +259,9 @@ export const PTReportPrintPage: React.FC = () => {
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
   const rejectedCount = (report.observations ?? []).filter((o) =>
-    /reject|repair|fail|not ok/i.test(v(o.evaluation || o.remark || o.result || o.interpretation)),
+    /reject|repair|fail|not ok/i.test(
+      v(o.evaluation || o.remark || o.result || o.interpretation),
+    ),
   ).length;
   const conclusionText =
     v((report as unknown as { conclusion?: string }).conclusion) ||
@@ -463,11 +468,11 @@ export const PTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-                      <div
-                        className="tfoot-spacer"
-                        style={{ height: "28mm" }}
-                      ></div>
                     </div>
+                    <div
+                      className="tfoot-spacer"
+                      style={{ height: "28mm" }}
+                    ></div>
                   </td>
                 </tr>
               </tfoot>
@@ -668,9 +673,7 @@ export const PTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="col-hdr">
-                              Sr. No.
-                            </td>
+                            <td className="col-hdr">Sr. No.</td>
                             <td className="col-hdr" style={{ width: "18%" }}>
                               Job Description
                             </td>
@@ -709,15 +712,11 @@ export const PTReportPrintPage: React.FC = () => {
                           ) : (
                             obs.map((o, i) => (
                               <tr key={i}>
-                                <td>
-                                  {o.srNo}
-                                </td>
+                                <td>{o.srNo}</td>
                                 <td style={{}}>{v(o.jobDescription)}</td>
                                 <td style={{}}>{v(o.drawingOrJointNo)}</td>
                                 <td style={{}}>{v(o.size)}</td>
-                                <td>
-                                  {o.quantity ?? ""}
-                                </td>
+                                <td>{o.quantity ?? ""}</td>
                                 <td>{v(o.interpretation)}</td>
                                 <td>
                                   {v(o.evaluation || o.remark || o.result)}

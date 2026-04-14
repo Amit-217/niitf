@@ -103,7 +103,10 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
+  .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -408,7 +411,8 @@ export const UTGReportPrintPage: React.FC = () => {
                               Designation: {v(fs.customer?.designation) || "-"}
                             </td>
                             <td>
-                              Designation: {v(fs.clientOrTPI?.designation) || "-"}
+                              Designation:{" "}
+                              {v(fs.clientOrTPI?.designation) || "-"}
                             </td>
                           </tr>
                           <tr>
@@ -424,15 +428,17 @@ export const UTGReportPrintPage: React.FC = () => {
                           <tr>
                             <td>Date: {fmtDate(inspector.date) || "-"}</td>
                             <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
-                            <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
+                            <td>
+                              Date: {fmtDate(fs.clientOrTPI?.date) || "-"}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
-                      <div
-                        className="tfoot-spacer"
-                        style={{ height: "28mm" }}
-                      ></div>
                     </div>
+                    <div
+                      className="tfoot-spacer"
+                      style={{ height: "28mm" }}
+                    ></div>
                   </td>
                 </tr>
               </tfoot>
@@ -468,7 +474,9 @@ export const UTGReportPrintPage: React.FC = () => {
                             <td className="lbl">Client</td>
                             <td className="val">{v(jd.client) || "-"}</td>
                             <td className="lbl">Report Date</td>
-                            <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
+                            <td className="val">
+                              {fmtDate(jd.reportDate) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Project</td>
@@ -476,7 +484,9 @@ export const UTGReportPrintPage: React.FC = () => {
                             <td className="lbl">Inspection Date</td>
                             <td className="val">
                               {fmtDate(jd.inspectionDate)}
-                              {jd.inspectionEndDate ? ` To ${fmtDate(jd.inspectionEndDate)}` : ""}
+                              {jd.inspectionEndDate
+                                ? ` To ${fmtDate(jd.inspectionEndDate)}`
+                                : ""}
                               {!jd.inspectionDate && "-"}
                             </td>
                           </tr>
@@ -484,25 +494,37 @@ export const UTGReportPrintPage: React.FC = () => {
                             <td className="lbl">Reference Std.</td>
                             <td className="val">{v(jd.referenceStd) || "-"}</td>
                             <td className="lbl">Inspection Time</td>
-                            <td className="val">{v(jd.inspectionTime) || "-"}</td>
+                            <td className="val">
+                              {v(jd.inspectionTime) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Acceptance Criteria</td>
-                            <td className="val">{v(jd.acceptanceCriteria) || "-"}</td>
+                            <td className="val">
+                              {v(jd.acceptanceCriteria) || "-"}
+                            </td>
                             <td className="lbl">Material</td>
                             <td className="val">{v(jd.material) || "-"}</td>
                           </tr>
                           <tr>
                             <td className="lbl">Stage of Inspection</td>
-                            <td className="val">{v(jd.stageOfInspection) || "-"}</td>
+                            <td className="val">
+                              {v(jd.stageOfInspection) || "-"}
+                            </td>
                             <td className="lbl">Surface Condition</td>
-                            <td className="val">{v(jd.surfaceCondition) || "-"}</td>
+                            <td className="val">
+                              {v(jd.surfaceCondition) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Extent of Examination</td>
-                            <td className="val">{v(jd.extentOfExamination) || "-"}</td>
+                            <td className="val">
+                              {v(jd.extentOfExamination) || "-"}
+                            </td>
                             <td className="lbl">Surface Temperature</td>
-                            <td className="val">{v(jd.surfaceTemperature) || "-"}</td>
+                            <td className="val">
+                              {v(jd.surfaceTemperature) || "-"}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -523,7 +545,9 @@ export const UTGReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="lbl">Equip. Type</td>
-                            <td className="val">{v(eq.equipmentType) || "-"}</td>
+                            <td className="val">
+                              {v(eq.equipmentType) || "-"}
+                            </td>
                             <td className="lbl">Sr. No.</td>
                             <td className="val">{v(eq.srNo) || "-"}</td>
                           </tr>
@@ -531,13 +555,17 @@ export const UTGReportPrintPage: React.FC = () => {
                             <td className="lbl">Make</td>
                             <td className="val">{v(eq.make) || "-"}</td>
                             <td className="lbl">Calibration Due</td>
-                            <td className="val">{fmtDate(eq.calibrationDue) || "-"}</td>
+                            <td className="val">
+                              {fmtDate(eq.calibrationDue) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Couplant</td>
                             <td className="val">{v(eq.couplant) || "-"}</td>
                             <td className="lbl">Basic Calibration Block</td>
-                            <td className="val">{v(eq.basicCalibrationBlock) || "-"}</td>
+                            <td className="val">
+                              {v(eq.basicCalibrationBlock) || "-"}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -551,16 +579,36 @@ export const UTGReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="col-hdr" style={{ width: "22%" }}>Search Unit / Model</td>
-                            <td className="col-hdr" style={{ width: "12%" }}>Angle</td>
-                            <td className="col-hdr" style={{ width: "18%" }}>Sr. No.</td>
-                            <td className="col-hdr" style={{ width: "18%" }}>Crystal Size</td>
-                            <td className="col-hdr" style={{ width: "15%" }}>Wave Mode</td>
-                            <td className="col-hdr" style={{ width: "15%" }}>Frequency</td>
+                            <td className="col-hdr" style={{ width: "22%" }}>
+                              Search Unit / Model
+                            </td>
+                            <td className="col-hdr" style={{ width: "12%" }}>
+                              Angle
+                            </td>
+                            <td className="col-hdr" style={{ width: "18%" }}>
+                              Sr. No.
+                            </td>
+                            <td className="col-hdr" style={{ width: "18%" }}>
+                              Crystal Size
+                            </td>
+                            <td className="col-hdr" style={{ width: "15%" }}>
+                              Wave Mode
+                            </td>
+                            <td className="col-hdr" style={{ width: "15%" }}>
+                              Frequency
+                            </td>
                           </tr>
                           {sud.length === 0 ? (
                             <tr>
-                              <td colSpan={6} style={{ textAlign: "center", padding: "4px", color: "#999", fontSize: "11px" }}>
+                              <td
+                                colSpan={6}
+                                style={{
+                                  textAlign: "center",
+                                  padding: "4px",
+                                  color: "#999",
+                                  fontSize: "11px",
+                                }}
+                              >
                                 No search units recorded.
                               </td>
                             </tr>
@@ -616,7 +664,15 @@ export const UTGReportPrintPage: React.FC = () => {
                         <tbody>
                           {obs.length === 0 ? (
                             <tr>
-                              <td colSpan={4} style={{ textAlign: "center", padding: "6px", fontSize: "11px", color: "#999" }}>
+                              <td
+                                colSpan={4}
+                                style={{
+                                  textAlign: "center",
+                                  padding: "6px",
+                                  fontSize: "11px",
+                                  color: "#999",
+                                }}
+                              >
                                 No observations recorded.
                               </td>
                             </tr>
@@ -626,12 +682,18 @@ export const UTGReportPrintPage: React.FC = () => {
                                 <td>{v(o.srNo) || i + 1}</td>
                                 <td>{v(o.itemName) || "-"}</td>
                                 <td>{v(o.measuredThickness) || "-"}</td>
-                                <td>{v(o.evaluation || o.remark || o.result) || "-"}</td>
+                                <td>
+                                  {v(o.evaluation || o.remark || o.result) ||
+                                    "-"}
+                                </td>
                               </tr>
                             ))
                           )}
                           {[...Array(4)].map((_, i) => (
-                            <tr key={`empty-obs-${i}`} className="print-blank-row">
+                            <tr
+                              key={`empty-obs-${i}`}
+                              className="print-blank-row"
+                            >
                               <td style={{ height: "24px" }}></td>
                               <td></td>
                               <td></td>
@@ -642,7 +704,12 @@ export const UTGReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* ── 6. CONCLUSION ── */}
-                      <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+                      <div
+                        style={{
+                          breakInside: "avoid",
+                          pageBreakInside: "avoid",
+                        }}
+                      >
                         <table className="report-table mt-n1">
                           <tbody>
                             <tr>
@@ -651,7 +718,9 @@ export const UTGReportPrintPage: React.FC = () => {
                               </td>
                             </tr>
                             <tr>
-                              <td className="lbl" style={{ width: "22%" }}>Overall Evaluation</td>
+                              <td className="lbl" style={{ width: "22%" }}>
+                                Overall Evaluation
+                              </td>
                               <td className="val">{conclusionText}</td>
                             </tr>
                           </tbody>

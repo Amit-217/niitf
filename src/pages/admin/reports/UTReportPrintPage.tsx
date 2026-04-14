@@ -100,7 +100,10 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
+  .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 4px; font-size: 11px; text-align: left; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
@@ -231,7 +234,9 @@ export const UTReportPrintPage: React.FC = () => {
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
   const rejectedCount = obs.filter((o) =>
-    /reject|repair|fail|not ok/i.test(v(o.evaluation || o.remark || o.result || o.interpretation)),
+    /reject|repair|fail|not ok/i.test(
+      v(o.evaluation || o.remark || o.result || o.interpretation),
+    ),
   ).length;
   const conclusionText =
     v((report as unknown as { conclusion?: string }).conclusion) ||
@@ -445,11 +450,11 @@ export const UTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-                      <div
-                        className="tfoot-spacer"
-                        style={{ height: "28mm" }}
-                      ></div>
                     </div>
+                    <div
+                      className="tfoot-spacer"
+                      style={{ height: "28mm" }}
+                    ></div>
                   </td>
                 </tr>
               </tfoot>
@@ -718,9 +723,7 @@ export const UTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="col-hdr">
-                              Sr. No.
-                            </td>
+                            <td className="col-hdr">Sr. No.</td>
                             <td className="col-hdr" style={{ width: "18%" }}>
                               Job Description
                             </td>

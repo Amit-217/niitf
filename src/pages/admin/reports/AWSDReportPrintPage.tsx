@@ -118,7 +118,10 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
+  .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -263,17 +266,42 @@ export const AWSDReportPrintPage: React.FC = () => {
 
       <div
         className="no-print"
-        style={{ position: "fixed", top: 12, right: 16, zIndex: 100, display: "flex", gap: 8 }}
+        style={{
+          position: "fixed",
+          top: 12,
+          right: 16,
+          zIndex: 100,
+          display: "flex",
+          gap: 8,
+        }}
       >
         <button
           onClick={() => setBwMode((b) => !b)}
-          style={{ padding: "7px 16px", background: bwMode ? "#374151" : "#185FA5", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 600 }}
+          style={{
+            padding: "7px 16px",
+            background: bwMode ? "#374151" : "#185FA5",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13,
+            fontWeight: 600,
+          }}
         >
           {bwMode ? "Color Mode" : "B&W Mode"}
         </button>
         <button
           onClick={() => window.print()}
-          style={{ padding: "7px 16px", background: "#16a34a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 600 }}
+          style={{
+            padding: "7px 16px",
+            background: "#16a34a",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13,
+            fontWeight: 600,
+          }}
         >
           Print
         </button>
@@ -392,7 +420,11 @@ export const AWSDReportPrintPage: React.FC = () => {
                         <img
                           src="/image.png"
                           alt="Weld reference sketch"
-                          style={{ width: "200px", height: "auto", display: "block" }}
+                          style={{
+                            width: "200px",
+                            height: "auto",
+                            display: "block",
+                          }}
                         />
                       </div>
                       {/* Right: Form fields */}
@@ -450,27 +482,61 @@ export const AWSDReportPrintPage: React.FC = () => {
                       </tr>
                       {/* Header row 1: Group labels */}
                       <tr>
-                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "3.5%" }}>
+                        <td
+                          className="col-hdr vcell"
+                          rowSpan={3}
+                          style={{ width: "3.5%" }}
+                        >
                           <span className="vtext">Line number</span>
                         </td>
-                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "5.5%" }}>
+                        <td
+                          className="col-hdr vcell"
+                          rowSpan={3}
+                          style={{ width: "5.5%" }}
+                        >
                           <span className="vtext">Indication number</span>
                         </td>
-                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "7%" }}>
+                        <td
+                          className="col-hdr vcell"
+                          rowSpan={3}
+                          style={{ width: "7%" }}
+                        >
                           <span className="vtext">Transducer angle</span>
                         </td>
-                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "4.5%" }}>
+                        <td
+                          className="col-hdr vcell"
+                          rowSpan={3}
+                          style={{ width: "4.5%" }}
+                        >
                           <span className="vtext">From Face</span>
                         </td>
-                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "3.5%" }}>
+                        <td
+                          className="col-hdr vcell"
+                          rowSpan={3}
+                          style={{ width: "3.5%" }}
+                        >
                           <span className="vtext">Leg*</span>
                         </td>
-                        <td className="col-hdr" colSpan={4}>Decibels</td>
-                        <td className="col-hdr" colSpan={5}>Discontinuity</td>
-                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "6.5%" }}>
-                          <span className="vtext">Discontinuity evaluation</span>
+                        <td className="col-hdr" colSpan={4}>
+                          Decibels
                         </td>
-                        <td className="col-hdr vcell" rowSpan={3} style={{ width: "6.5%" }}>
+                        <td className="col-hdr" colSpan={5}>
+                          Discontinuity
+                        </td>
+                        <td
+                          className="col-hdr vcell"
+                          rowSpan={3}
+                          style={{ width: "6.5%" }}
+                        >
+                          <span className="vtext">
+                            Discontinuity evaluation
+                          </span>
+                        </td>
+                        <td
+                          className="col-hdr vcell"
+                          rowSpan={3}
+                          style={{ width: "6.5%" }}
+                        >
                           <span className="vtext">Remarks</span>
                         </td>
                       </tr>
@@ -488,25 +554,53 @@ export const AWSDReportPrintPage: React.FC = () => {
                         <td className="col-hdr vcell" style={{ width: "5.5%" }}>
                           <span className="vtext">Indication rating</span>
                         </td>
-                        <td className="col-hdr vcell" rowSpan={2} style={{ width: "5%" }}>
+                        <td
+                          className="col-hdr vcell"
+                          rowSpan={2}
+                          style={{ width: "5%" }}
+                        >
                           <span className="vtext">Length</span>
                         </td>
-                        <td className="col-hdr vcell" rowSpan={2} style={{ width: "5.5%" }}>
-                          <span className="vtext">Angular distance (sound path)</span>
+                        <td
+                          className="col-hdr vcell"
+                          rowSpan={2}
+                          style={{ width: "5.5%" }}
+                        >
+                          <span className="vtext">
+                            Angular distance (sound path)
+                          </span>
                         </td>
-                        <td className="col-hdr vcell" rowSpan={2} style={{ width: "6%" }}>
+                        <td
+                          className="col-hdr vcell"
+                          rowSpan={2}
+                          style={{ width: "6%" }}
+                        >
                           <span className="vtext">Depth from 'A' surface</span>
                         </td>
-                        <td className="col-hdr" colSpan={2}>Distance</td>
+                        <td className="col-hdr" colSpan={2}>
+                          Distance
+                        </td>
                       </tr>
                       {/* Header row 3: Letter labels + From X/Y */}
                       <tr>
-                        <td className="col-hdr" style={{ fontWeight: 700 }}>a</td>
-                        <td className="col-hdr" style={{ fontWeight: 700 }}>b</td>
-                        <td className="col-hdr" style={{ fontWeight: 700 }}>c</td>
-                        <td className="col-hdr" style={{ fontWeight: 700 }}>d</td>
-                        <td className="col-hdr" style={{ width: "4.5%" }}>From X</td>
-                        <td className="col-hdr" style={{ width: "4.5%" }}>From Y</td>
+                        <td className="col-hdr" style={{ fontWeight: 700 }}>
+                          a
+                        </td>
+                        <td className="col-hdr" style={{ fontWeight: 700 }}>
+                          b
+                        </td>
+                        <td className="col-hdr" style={{ fontWeight: 700 }}>
+                          c
+                        </td>
+                        <td className="col-hdr" style={{ fontWeight: 700 }}>
+                          d
+                        </td>
+                        <td className="col-hdr" style={{ width: "4.5%" }}>
+                          From X
+                        </td>
+                        <td className="col-hdr" style={{ width: "4.5%" }}>
+                          From Y
+                        </td>
                       </tr>
                     </thead>
                     <tbody>
@@ -661,11 +755,11 @@ export const AWSDReportPrintPage: React.FC = () => {
                       Nontubular Structures). Do <strong>NOT</strong> use this
                       form for Tubular Structures (Clause 10, Part A).
                     </div>
-                    <div
-                      className="tfoot-spacer"
-                      style={{ height: "28mm" }}
-                    ></div>
                   </div>
+                  <div
+                    className="tfoot-spacer"
+                    style={{ height: "28mm" }}
+                  ></div>
                 </td>
               </tr>
             </tfoot>
