@@ -14,7 +14,7 @@ const PAYMENT_MODES = [
   "Immediate after submission bill",
   "30 Days",
   "45 Days",
-  "Custom",
+  "Other",
 ];
 const STATUSES = ["Draft", "Sent", "Paid", "Partial", "Cancelled"];
 
@@ -481,7 +481,7 @@ export const InvoiceFormPage: React.FC = () => {
                   </option>
                 ))}
               </select>
-              {form.paymentMode === "Custom" && (
+              {form.paymentMode === "Other" && (
                 <input
                   className="input-field w-full"
                   value={form.paymentModeCustom}
