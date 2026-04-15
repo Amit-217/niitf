@@ -460,6 +460,11 @@ export const DashboardLayout: React.FC = () => {
                 path: `/${basePath}/quotations`,
                 icon: FileText,
               },
+              {
+                name: "Invoices",
+                path: `/${basePath}/invoices`,
+                icon: FileText,
+              },
             ],
           },
         ];

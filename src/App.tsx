@@ -55,6 +55,9 @@ import { StudentExamAccessPage } from "./pages/student/tests/StudentExamAccessPa
 import { QuotationsListPage } from "./pages/admin/quotations/QuotationsListPage";
 import { QuotationFormPage } from "./pages/admin/quotations/QuotationFormPage";
 import { QuotationPrintPage } from "./pages/admin/quotations/QuotationPrintPage";
+import { InvoicesListPage } from "./pages/admin/invoices/InvoicesListPage";
+import { InvoiceFormPage } from "./pages/admin/invoices/InvoiceFormPage";
+import { InvoicePrintPage } from "./pages/admin/invoices/InvoicePrintPage";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -251,6 +254,10 @@ function App() {
             element={<QuotationFormPage />}
           />
 
+          <Route path="invoices" element={<InvoicesListPage />} />
+          <Route path="invoices/new" element={<InvoiceFormPage />} />
+          <Route path="invoices/:id/edit" element={<InvoiceFormPage />} />
+
           <Route path="reports" element={<ReportsListPage />} />
           <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
           <Route path="reports/mpt/:id/edit" element={<MPTReportFormPage />} />
@@ -302,6 +309,9 @@ function App() {
             path="quotations/:type/:id/edit"
             element={<QuotationFormPage />}
           />
+          <Route path="invoices" element={<InvoicesListPage />} />
+          <Route path="invoices/new" element={<InvoiceFormPage />} />
+          <Route path="invoices/:id/edit" element={<InvoiceFormPage />} />
           <Route path="reports" element={<ReportsListPage />} />
           <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
           <Route path="reports/mpt/:id/edit" element={<MPTReportFormPage />} />
@@ -439,6 +449,23 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
               <QuotationPrintPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/invoices/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
+              <InvoicePrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employee/invoices/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
+              <InvoicePrintPage />
             </ProtectedRoute>
           }
         />

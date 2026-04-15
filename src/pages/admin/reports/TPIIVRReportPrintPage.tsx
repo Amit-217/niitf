@@ -98,7 +98,10 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
+  .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .activities-box { border: 1px solid #d9e1ea; padding: 6px 8px; font-size: 11px; min-height: 40px; white-space: pre-wrap; word-break: break-word; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
@@ -397,11 +400,11 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-                      <div
-                        className="tfoot-spacer"
-                        style={{ height: "28mm" }}
-                      ></div>
                     </div>
+                    <div
+                      className="tfoot-spacer"
+                      style={{ height: "28mm" }}
+                    ></div>
                   </td>
                 </tr>
               </tfoot>
@@ -820,9 +823,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                                 <td className="val">
                                   {v(doc.referenceNumber)}
                                 </td>
-                                <td className="val">
-                                  {v(doc.revNo)}
-                                </td>
+                                <td className="val">{v(doc.revNo)}</td>
                               </tr>
                             ))
                           )}
@@ -869,10 +870,18 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             calib.map((c: any, i: number) => (
                               <tr key={i}>
                                 <td className="val">{v(c.equipment)}</td>
-                                <td style={{ fontSize: "11px" }}>{v(c.idNumber)}</td>
-                                <td style={{ fontSize: "11px" }}>{fmtDate(c.calibrationDate)}</td>
-                                <td style={{ fontSize: "11px" }}>{fmtDate(c.dueDate)}</td>
-                                <td style={{ fontSize: "11px" }}>{v(c.nablCertified)}</td>
+                                <td style={{ fontSize: "11px" }}>
+                                  {v(c.idNumber)}
+                                </td>
+                                <td style={{ fontSize: "11px" }}>
+                                  {fmtDate(c.calibrationDate)}
+                                </td>
+                                <td style={{ fontSize: "11px" }}>
+                                  {fmtDate(c.dueDate)}
+                                </td>
+                                <td style={{ fontSize: "11px" }}>
+                                  {v(c.nablCertified)}
+                                </td>
                               </tr>
                             ))
                           )}
