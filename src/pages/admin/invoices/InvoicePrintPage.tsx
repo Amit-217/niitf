@@ -39,6 +39,17 @@ const PRINT_STYLES = `
   .amount-words { color: #cc0000; font-weight: bold; font-size: 13px; }
   .sig-cell { border: 1px solid #000; padding: 5px; height: 60px; vertical-align: top; }
   .footer-note { text-align: center; font-size: 11px; color: #555; padding: 3px; border-top: 1px solid #000; }
+  .rpt-header { padding: 6px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
+  .logo-box { width: 110px; height: 110px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
+  .logo-box img { width: 100%; height: 100%; object-fit: contain; }
+  .hdr-center { flex: 1; text-align: center; color: #0C447C; }
+  .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
+  .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
+  .inv-title-bar { background: #185FA5; color: #fff; text-align: center; font-size: 16px; font-weight: 700; letter-spacing: 4px; padding: 4px 0; margin-bottom: 0; }
+  .inv-footer-bar { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
+  .inv-footer-bar span { color: #fff; font-weight: 700; }
+  .q-foot { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; border-top: 3px solid #185FA5; line-height: 1.4; text-align: center; }
 `;
 
 function fmtDate(d?: string | null) {
@@ -203,95 +214,50 @@ export const InvoicePrintPage: React.FC = () => {
             color: "#000",
           }}
         >
-          {/* INVOICE TITLE */}
-          <div
-            className="title"
-            style={{ borderBottom: "2px solid #000", marginBottom: 0 }}
-          >
-            INVOICE
+          {/* ── COMPANY HEADER ── */}
+          <div className="rpt-header">
+            <div className="logo-box">
+              <img src="/logo.png" alt="NIIT Logo" />
+            </div>
+            <div className="hdr-center">
+              <div className="org">National Industrial Inspection and Training</div>
+              <div className="sub">
+                THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING | NDT CONSULTANCY
+                <br />
+                FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
+              </div>
+              <div className="iso">(AN ISO 9001:2015 CERTIFIED ORGANIZATION)</div>
+            </div>
           </div>
+          <div className="q-foot">
+            Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office, MIDC, Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
+            <br />
+            Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website: www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
+          </div>
+          <div className="title" style={{ borderBottom: "2px solid #000", marginBottom: 0 }}>INVOICE</div>
 
-          {/* ── HEADER SECTION: Left=Company+Buyer stacked, Right=All fields ── */}
+          {/* ── INVOICE FIELDS TABLE ── */}
           <table className="outer-border" style={{ tableLayout: "fixed" }}>
             <tbody>
               <tr>
-                {/* LEFT COLUMN: Company Info (top) + Buyer Info (bottom) */}
-                <td style={{ width: "50%", padding: 0, verticalAlign: "top" }}>
-                  <table style={{ width: "100%" }}>
-                    <tbody>
-                      {/* Company Info */}
-                      <tr>
-                        <td
-                          className="cell"
-                          style={{ padding: "5px 7px", verticalAlign: "top" }}
-                        >
-                          <div className="company-name">
-                            National Industrial Inspection And Training
-                          </div>
-                          <div
-                            style={{
-                              fontSize: 14,
-                              marginTop: 2,
-                              lineHeight: 1.5,
-                            }}
-                          >
-                            Plot NO-PAP-3/28 Behind BSNL Office
-                            <br />
-                            MIDC, Baramati Pin -413133
-                            <br />
-                            GST No.: 27ABJPK8603R1ZY
-                            <br />
-                            State Name=Maharashtra&nbsp; Code =27
-                            <br />
-                            CONTACT= 9850923725, 9421606761
-                            <br />
-                            E-Mail = niit004@gmail.com
-                          </div>
-                        </td>
-                      </tr>
-                      {/* Buyer Info */}
-                      <tr>
-                        <td
-                          className="cell"
-                          style={{ padding: "5px 7px", verticalAlign: "top" }}
-                        >
-                          <div
-                            style={{
-                              fontSize: 14,
-                              color: "#cc0000",
-                              textDecoration: "underline",
-                              marginBottom: 2,
-                            }}
-                          >
-                            Buyer
-                          </div>
-                          <div className="bold red" style={{ fontSize: 15 }}>
-                            {customer?.companyName || "—"}
-                          </div>
-                          {customer?.address && (
-                            <div className="red" style={{ fontSize: 14 }}>
-                              {customer.address}
-                            </div>
-                          )}
-                          {customer?.city && (
-                            <div className="red" style={{ fontSize: 14 }}>
-                              Dist-{customer.city}
-                            </div>
-                          )}
-                          <div className="red" style={{ fontSize: 14 }}>
-                            State Name=Maharashtra Code =27
-                          </div>
-                          <div className="red" style={{ fontSize: 14 }}>
-                            GST No={customer?.gstNo || ""}
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                {/* LEFT COLUMN: Buyer Info */}
+                <td className="cell" style={{ width: "50%", padding: "7px 8px", verticalAlign: "top" }}>
+                  <div style={{ fontSize: 13, color: "#cc0000", textDecoration: "underline", marginBottom: 2, fontWeight: 600 }}>Buyer</div>
+                  <div className="bold red" style={{ fontSize: 14 }}>{customer?.companyName || "—"}</div>
+                  {customer?.address && <div className="red" style={{ fontSize: 13 }}>{customer.address}</div>}
+                  {customer?.city && <div className="red" style={{ fontSize: 13 }}>Dist-{customer.city}</div>}
+                  <div className="red" style={{ fontSize: 13 }}>State Name=Maharashtra Code =27</div>
+                  <div className="red" style={{ fontSize: 13 }}>GST No={customer?.gstNo || ""}</div>
                 </td>
 
                 {/* RIGHT COLUMN: All invoice fields */}
-                <td style={{ width: "50%", padding: 0, verticalAlign: "top" }}>
+                <td
+                  style={{
+                    width: "50%",
+                    padding: 0,
+                    verticalAlign: "top",
+                  }}
+                >
                   <table style={{ width: "100%" }}>
                     <tbody>
                       <tr>
@@ -308,7 +274,7 @@ export const InvoicePrintPage: React.FC = () => {
                         </td>
                         <td
                           className="cell"
-                          style={{ padding: "10px 6px", fontSize: 15 }}
+                          style={{ padding: "11px 6px", fontSize: 15 }}
                         >
                           <span className="field-label">Dated: </span>
                           <span className="bold red">{fmtDate(data.date)}</span>
@@ -324,7 +290,7 @@ export const InvoicePrintPage: React.FC = () => {
                         </td>
                         <td
                           className="cell"
-                          style={{ padding: "10px 6px", fontSize: 15 }}
+                          style={{ padding: "11px 6px", fontSize: 15 }}
                         >
                           <span className="field-label">
                             Mode/Terms of Payment:{" "}
@@ -495,116 +461,46 @@ export const InvoicePrintPage: React.FC = () => {
           <table className="outer-border" style={{ borderTop: "none" }}>
             <tbody>
               <tr>
-                {/* Left: blank */}
-                <td
-                  style={{
-                    width: "55%",
-                    borderRight: "1px solid #000",
-                    padding: "3px 0",
-                    verticalAlign: "top",
-                  }}
-                ></td>
-                {/* Right: GST rows */}
-                <td style={{ width: "45%", padding: 0, verticalAlign: "top" }}>
+                {/* Left: single blank cell spanning all rows */}
+                <td style={{ width: "55%", verticalAlign: "top" }}></td>
+                {/* Right: all tax + total rows in ONE inner table */}
+                <td style={{ width: "45%", padding: 0, verticalAlign: "top", borderLeft: "1px solid #000" }}>
                   <table style={{ width: "100%" }}>
                     <tbody>
                       {cgstRate > 0 && (
                         <tr>
                           <td className="gst-label">SALES SGST {sgstRate}%</td>
-                          <td className="gst-value">
-                            {sgstAmt > 0 ? fmtNum(sgstAmt) : "XXXXX"}
-                          </td>
+                          <td className="gst-value">{sgstAmt > 0 ? fmtNum(sgstAmt) : "XXXXX"}</td>
                         </tr>
                       )}
                       {sgstRate > 0 && (
                         <tr>
                           <td className="gst-label">SALES CGST {cgstRate}%</td>
-                          <td className="gst-value">
-                            {cgstAmt > 0 ? fmtNum(cgstAmt) : "XXXXX"}
-                          </td>
+                          <td className="gst-value">{cgstAmt > 0 ? fmtNum(cgstAmt) : "XXXXX"}</td>
                         </tr>
                       )}
                       {igstRate > 0 && (
                         <tr>
                           <td className="gst-label">SALES IGST {igstRate}%</td>
-                          <td className="gst-value">
-                            {igstAmt > 0 ? fmtNum(igstAmt) : "XXXXX"}
-                          </td>
+                          <td className="gst-value">{igstAmt > 0 ? fmtNum(igstAmt) : "XXXXX"}</td>
                         </tr>
                       )}
-                      <tr>
-                        <td className="gst-label">Round Off / Up</td>
-                        <td className="gst-value">
-                          {data.roundedOff >= 0 ? "+" : ""}
-                          {fmtNum(data.roundedOff)}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-              {/* Total Amount row — shown only when showTotalAmounts is true */}
-              {data.showTotalAmounts !== false && (
-                <tr style={{ borderTop: "1px solid #000" }}>
-                  <td
-                    style={{
-                      padding: "3px 7px",
-                      borderRight: "1px solid #000",
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    <span style={{ fontSize: 13 }}>Total Amount</span>
-                  </td>
-                  <td>
-                    <table style={{ width: "100%" }}>
-                      <tbody>
-                        <tr>
+
+                      {data.showTotalAmounts !== false && (
+                        <tr style={{ borderTop: "1px solid #000" }}>
                           <td className="gst-label bold">Total Amounts</td>
-                          <td className="gst-value bold red">
-                            {fmtNum(data.subtotal ?? data.totalAmount)}
-                          </td>
+                          <td className="gst-value bold red">{fmtNum(data.subtotal ?? data.totalAmount)}</td>
                         </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-              )}
-              {/* Transportation */}
-              {data.transportationCharges > 0 && (
-                <tr style={{ borderTop: "1px solid #000" }}>
-                  <td
-                    style={{
-                      padding: "3px 7px",
-                      borderRight: "1px solid #000",
-                    }}
-                  ></td>
-                  <td>
-                    <table style={{ width: "100%" }}>
-                      <tbody>
-                        <tr>
+                      )}
+                      {data.transportationCharges > 0 && (
+                        <tr style={{ borderTop: "1px solid #000" }}>
                           <td className="gst-label">Transportation Charges</td>
-                          <td className="gst-value red">
-                            {fmtNum(data.transportationCharges)}
-                          </td>
+                          <td className="gst-value red">{fmtNum(data.transportationCharges)}</td>
                         </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-              )}
-              {/* Grand Total */}
-              <tr style={{ borderTop: "1px solid #000" }}>
-                <td
-                  style={{ padding: "3px 7px", borderRight: "1px solid #000" }}
-                ></td>
-                <td>
-                  <table style={{ width: "100%" }}>
-                    <tbody>
-                      <tr>
+                      )}
+                      <tr style={{ borderTop: "1px solid #000" }}>
                         <td className="gst-label bold">Grand Total</td>
-                        <td className="gst-value bold red">
-                          {fmtNum(data.grandTotal)}
-                        </td>
+                        <td className="gst-value bold red">{fmtNum(data.grandTotal)}</td>
                       </tr>
                     </tbody>
                   </table>
