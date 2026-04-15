@@ -42,7 +42,8 @@ const defaultForm = {
   dispatchedThrough: "",
   destination: "",
   termsOfDelivery: "",
-  paymentMode: "Immediate Immediate after submission bill",
+  paymentMode: "Immediate after submission bill",
+  paymentModeCustom: "",
   items: [emptyItem()],
   subtotal: 0,
   discount: 0,
@@ -468,17 +469,27 @@ export const InvoiceFormPage: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Payment Mode
             </label>
-            <select
-              className="input-field w-full"
-              value={form.paymentMode}
-              onChange={(e) => setField("paymentMode", e.target.value)}
-            >
-              {PAYMENT_MODES.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
+            <div className="space-y-1">
+              <select
+                className="input-field w-full"
+                value={form.paymentMode}
+                onChange={(e) => setField("paymentMode", e.target.value)}
+              >
+                {PAYMENT_MODES.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+              {form.paymentMode === "Custom" && (
+                <input
+                  className="input-field w-full"
+                  value={form.paymentModeCustom}
+                  onChange={(e) => setField("paymentModeCustom", e.target.value)}
+                  placeholder="Specify custom payment terms..."
+                />
+              )}
+            </div>
           </div>
           <div className="md:col-span-2 lg:col-span-3">
             <label className="block text-sm font-medium text-gray-700 mb-1">
