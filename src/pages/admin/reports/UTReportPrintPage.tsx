@@ -245,10 +245,10 @@ export const UTReportPrintPage: React.FC = () => {
       : "Examination completed as per applicable standards. No rejectable indications observed in inspected items.");
 
   const calibAngles = [
-    { label: "0Â°", data: apc.deg0 },
-    { label: "45Â°", data: apc.deg45 },
-    { label: "60Â°", data: apc.deg60 },
-    { label: "70Â°", data: apc.deg70 },
+    { label: "0°", data: apc.deg0 },
+    { label: "45°", data: apc.deg45 },
+    { label: "60°", data: apc.deg60 },
+    { label: "70°", data: apc.deg70 },
   ];
 
   const ReportFooter = () => (
@@ -674,7 +674,7 @@ export const UTReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="col-hdr" style={{ width: "20%" }}>
-                              Range / Point
+                              Angle Probe calibration detail
                             </td>
                             {calibAngles.map((a) => (
                               <td key={a.label} className="col-hdr">

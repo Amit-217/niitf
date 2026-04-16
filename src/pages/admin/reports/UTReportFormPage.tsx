@@ -917,9 +917,9 @@ export const UTReportFormPage: React.FC = () => {
                       onChange={(e) => updateUnit(idx, "angle", e.target.value)}
                       className={inputClass}
                     >
-                      <option>45Ã‚Â°</option>
-                      <option>60Ã‚Â°</option>
-                      <option>70Ã‚Â°</option>
+                      <option>45°</option>
+                      <option>60°</option>
+                      <option>70°</option>
                       <option>Normal</option>
                       <option>TR</option>
                     </select>
@@ -941,11 +941,11 @@ export const UTReportFormPage: React.FC = () => {
                       className={inputClass}
                     >
                       <option>8x9 mm / 20x22mm</option>
-                      <option>ÃƒËœ10 mm / ÃƒËœ24 mm</option>
+                      <option>Ø10 mm / Ø24 mm</option>
                       <option>8x9 mm</option>
                       <option>20x22mm</option>
-                      <option>ÃƒËœ10 mm</option>
-                      <option>ÃƒËœ24 mm</option>
+                      <option>Ø10 mm/ Ø24 mm</option>
+                      <option>Ø24 mm</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
