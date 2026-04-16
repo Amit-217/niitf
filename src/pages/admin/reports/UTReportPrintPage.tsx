@@ -397,7 +397,7 @@ export const UTReportPrintPage: React.FC = () => {
                               CUSTOMER:
                             </td>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CLIENT / TPI:
+                              CLIENT :
                             </td>
                           </tr>
                           <tr>

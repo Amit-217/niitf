@@ -380,7 +380,7 @@ export const UTReportFormPage: React.FC = () => {
         }
 
         const conclusionOpts = [
-           "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
           "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
           "Examination completed as per applicable process. No rejectable indications observed in inspected items",
           "Examination completed as per applicable process. Rejectable indications observed in inspected items",
@@ -1048,7 +1048,12 @@ export const UTReportFormPage: React.FC = () => {
               onChange={setScanningSens}
               customValue={scanningSensCustom}
               onCustomChange={setScanningSensCustom}
-              options={["Ø 2.5 mm SDH", "Ø 3mm SDH", '1" BWE set @ 80% of FSH on Job', "Other"]}
+              options={[
+                "Ø 2.5 mm SDH",
+                "Ø 3mm SDH",
+                '1" BWE set @ 80% of FSH on Job',
+                "Other",
+              ]}
             />
           </div>
         </div>
@@ -1258,11 +1263,11 @@ export const UTReportFormPage: React.FC = () => {
             customValue={conclusionCustom}
             onCustomChange={setConclusionCustom}
             options={[
-               "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-          "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-          "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-          'Other',
+              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+              "Other",
             ]}
           />
         </div>
@@ -1370,7 +1375,7 @@ export const UTReportFormPage: React.FC = () => {
           </div>
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
-              Client / TPI
+              Client
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               {jobClient || "-"}

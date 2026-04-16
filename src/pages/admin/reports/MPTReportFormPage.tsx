@@ -619,7 +619,7 @@ export const MPTReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass} htmlFor="jobClient">
-              Client / TPI
+              Client
             </label>
             <input
               id="jobClient"
@@ -1497,7 +1497,7 @@ export const MPTReportFormPage: React.FC = () => {
           {/* Client / TPI */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
-              Client / TPI
+              Client
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               {jobClient || "-"}
