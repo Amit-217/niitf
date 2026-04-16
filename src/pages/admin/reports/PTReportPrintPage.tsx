@@ -58,7 +58,10 @@ const PRINT_STYLES = `
     border-radius: 6px;
     overflow: hidden;
   }
-  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
+  .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .rpt-header {
     padding: 8px 10px;
     margin-bottom: 6px;
@@ -104,19 +107,20 @@ const PRINT_STYLES = `
   }
   .section-hdr {
     background: #185FA5; color: #fff; font-size: 13px; font-weight: 700;
-    padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase;
+    padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left;
   }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
     .report-table td, .report-table th {
       border: 1px solid #d9e1ea; padding: 2px 4px;
       vertical-align: middle; word-break: break-word; font-size: 12px;
     }
-    .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 12px; text-align: center; color: #0C447C; }
+    .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 12px; text-align: left; color: #0C447C; }
     .lbl { background: #f7fafc; font-weight: 600; font-size: 12px; }
     .val { font-size: 12px; color: #000; }
     .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
     .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 11px; vertical-align: top; word-break: break-word; }
-    .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; }
+    .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; text-align: left; }
+    .obs-table th:first-child, .obs-table td:first-child { width: 28px; min-width: 28px; max-width: 28px; }
     .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
     .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
     .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 13px; vertical-align: top; }
@@ -254,6 +258,16 @@ export const PTReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
+  const rejectedCount = (report.observations ?? []).filter((o) =>
+    /reject|repair|fail|not ok/i.test(
+      v(o.evaluation || o.remark || o.result || o.interpretation),
+    ),
+  ).length;
+  const conclusionText =
+    v((report as unknown as { conclusion?: string }).conclusion) ||
+    (rejectedCount > 0
+      ? `Examination completed. ${rejectedCount} rejectable indication(s) identified; repair and re-examination required before final acceptance.`
+      : "Examination completed as per applicable standards. No rejectable indications observed in inspected items.");
 
   const ReportFooter = () => (
     <>
@@ -454,11 +468,11 @@ export const PTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-                      <div
-                        className="tfoot-spacer"
-                        style={{ height: "28mm" }}
-                      ></div>
                     </div>
+                    <div
+                      className="tfoot-spacer"
+                      style={{ height: "28mm" }}
+                    ></div>
                   </td>
                 </tr>
               </tfoot>
@@ -481,7 +495,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              JOB DETAILS
+                              1. JOB DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -557,7 +571,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              METHOD DETAILS
+                              2. METHOD DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -588,7 +602,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              CONSUMABLES DETAILS
+                              3. CONSUMABLES DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -625,7 +639,7 @@ export const PTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              METHOD DESCRIPTION
+                              4. METHOD DESCRIPTION
                             </td>
                           </tr>
                           <tr>
@@ -655,13 +669,11 @@ export const PTReportPrintPage: React.FC = () => {
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={7} className="section-hdr">
-                              6. OBSERVATIONS
+                              5. OBSERVATIONS
                             </td>
                           </tr>
                           <tr>
-                            <td className="col-hdr" style={{ width: "6%" }}>
-                              Sr. No.
-                            </td>
+                            <td className="col-hdr">Sr. No.</td>
                             <td className="col-hdr" style={{ width: "18%" }}>
                               Job Description
                             </td>
@@ -700,19 +712,11 @@ export const PTReportPrintPage: React.FC = () => {
                           ) : (
                             obs.map((o, i) => (
                               <tr key={i}>
-                                <td style={{ textAlign: "center" }}>
-                                  {o.srNo}
-                                </td>
+                                <td>{o.srNo}</td>
                                 <td style={{}}>{v(o.jobDescription)}</td>
                                 <td style={{}}>{v(o.drawingOrJointNo)}</td>
                                 <td style={{}}>{v(o.size)}</td>
-                                <td
-                                  style={{
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  {o.quantity ?? ""}
-                                </td>
+                                <td>{o.quantity ?? ""}</td>
                                 <td>{v(o.interpretation)}</td>
                                 <td>
                                   {v(o.evaluation || o.remark || o.result)}
@@ -733,6 +737,30 @@ export const PTReportPrintPage: React.FC = () => {
                           ))}
                         </tbody>
                       </table>
+
+                      {/* -- Conclusion -- */}
+                      <div
+                        style={{
+                          breakInside: "avoid",
+                          pageBreakInside: "avoid",
+                        }}
+                      >
+                        <table className="report-table mt-n1">
+                          <tbody>
+                            <tr>
+                              <td colSpan={2} className="section-hdr">
+                                6. CONCLUSION
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="lbl" style={{ width: "22%" }}>
+                                Overall Evaluation
+                              </td>
+                              <td className="val">{conclusionText}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                     {/* â"€â"€ end report-body â"€â"€ */}
                   </td>

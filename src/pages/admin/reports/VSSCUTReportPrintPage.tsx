@@ -87,10 +87,10 @@ const PRINT_STYLES = `
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; white-space: nowrap; width: 22%; }
   .val { font-size: 11px; color: #000; }
   .mt-n1 { margin-top: -1px; }
@@ -98,11 +98,14 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
+  .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 3px; font-size: 11px; text-align: center; vertical-align: middle; }
+  .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 3px; font-size: 11px; text-align: left; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
@@ -233,6 +236,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
   const fs = (report as any).finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
   const ct = apc.calibTable ?? {};
+  const conclusionText =
+    v((report as unknown as { conclusion?: string }).conclusion) ||
+    "Examination completed as per applicable standards. No rejectable indications observed in inspected items.";
 
   const ReportFooter = () => (
     <>
@@ -402,7 +408,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                                 : ""}
                             </td>
                             <td>Designation: {v(fs.qc?.designation) || "-"}</td>
-                            <td>Designation: {v(fs.rqs?.designation) || "-"}</td>
+                            <td>
+                              Designation: {v(fs.rqs?.designation) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td style={{ height: 28 }}>Signature:</td>
@@ -421,11 +429,11 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-                      <div
-                        className="tfoot-spacer"
-                        style={{ height: "28mm" }}
-                      ></div>
                     </div>
+                    <div
+                      className="tfoot-spacer"
+                      style={{ height: "28mm" }}
+                    ></div>
                   </td>
                 </tr>
               </tfoot>
@@ -618,7 +626,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td className="section-hdr" colSpan={6}>
-                              ANGLE PROBE CALIBRATION
+                              1. ANGLE PROBE CALIBRATION
                             </td>
                           </tr>
                           <tr>
@@ -711,9 +719,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         </thead>
                         <tbody>
                           <tr className="bg-white">
-                            <td className="lbl" style={{ textAlign: "center" }}>
-                              Skips
-                            </td>
+                            <td className="lbl">Skips</td>
                             {PROBE_MODES.map((pm) => (
                               <React.Fragment key={pm + "_skip_hdr"}>
                                 <td
@@ -733,7 +739,6 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                                 style={{
                                   background: "#f7fafc",
                                   fontWeight: 600,
-                                  textAlign: "center",
                                 }}
                               >
                                 {label}
@@ -811,7 +816,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td className="section-hdr" colSpan={4}>
-                              NORMAL PROBE CALIBRATION
+                              2. NORMAL PROBE CALIBRATION
                             </td>
                           </tr>
                           <tr>
@@ -882,6 +887,30 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                                 </td>
                               </tr>
                             )}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* -- Conclusion -- */}
+                      <div
+                        style={{
+                          breakInside: "avoid",
+                          pageBreakInside: "avoid",
+                        }}
+                      >
+                        <table className="report-table mt-n1">
+                          <tbody>
+                            <tr>
+                              <td colSpan={2} className="section-hdr">
+                                3. CONCLUSION
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="lbl" style={{ width: "22%" }}>
+                                Overall Evaluation
+                              </td>
+                              <td className="val">{conclusionText}</td>
+                            </tr>
                           </tbody>
                         </table>
                       </div>

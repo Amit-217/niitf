@@ -441,7 +441,7 @@ export const UsersPage: React.FC = () => {
                                     <td className="px-4 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
                                             <button onClick={() => setSelectedStaffId(user._id)} className="px-3 py-1.5 bg-primary-50 text-primary-700 rounded-lg font-bold text-[10px] border border-primary-100 hover:bg-primary-600 hover:text-white transition-all uppercase tracking-wider">Intelligence</button>
-                                            <div className="flex items-center gap-1 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-all">
+                                            <div className="flex items-center gap-1">
                                                 <button onClick={() => setModal({ type: 'edit', user })} className="p-1.5 rounded-lg text-gray-400 hover:text-violet-600" title="Edit"><Edit2 size={16} /></button>
                                                 {user.isActive ? <button onClick={() => setDeleteTarget({ user, type: 'soft' })} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-500" title="Deactivate"><ShieldOff size={16} /></button> : <button onClick={() => handleActivate(user)} className="p-1.5 rounded-lg text-gray-400 hover:text-emerald-500" title="Activate"><ShieldCheck size={16} /></button>}
                                                 {currentUserRole === 'SUPER_ADMIN' && <button onClick={() => setDeleteTarget({ user, type: 'hard' })} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500" title="Delete Permanent"><Trash2 size={16} /></button>}

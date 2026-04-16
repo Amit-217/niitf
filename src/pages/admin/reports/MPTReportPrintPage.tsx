@@ -40,6 +40,17 @@ const PRINT_STYLES = `
       right: 5mm !important;
       background: #fff !important;
     }
+    .report-body {
+      border: 1px solid #7b8794 !important;
+      border-bottom: none !important;
+    }
+    .report-footer-wrap {
+      border: 1px solid #7b8794 !important;
+      border-top: none !important;
+    }
+    .report-footer-wrap .sign-table.mt-n1 {
+      margin-top: 0 !important;
+    }
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
@@ -72,22 +83,25 @@ const PRINT_STYLES = `
   .bw .report-table td, .bw .report-table th { border-color: #888 !important; }
   .bw .obs-table td, .bw .obs-table th { border-color: #888 !important; }
   .bw .obs-table th { background: #fff !important; color: #000 !important; }
+  .bw .sign-table { border-color: #888 !important; }
   .bw .sign-table td { border-color: #888 !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
+  .bw .report-footer-wrap { border-color: #000 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
   .val { font-size: 11px; color: #000; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 3px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
-  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; text-align: left; }
+  .obs-table th:first-child, .obs-table td:first-child { width: 28px; min-width: 28px; max-width: 28px; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
-  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
+  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #d9e1ea; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .std-tag { display: inline-block; background: #e7f1fb; color: #0c447c; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; margin-bottom: 2px; font-weight: 700; }
@@ -95,7 +109,13 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .report-footer-wrap {
+    border: 1px solid #444;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    overflow: hidden;
+  }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -483,11 +503,11 @@ export const MPTReportPrintPage = () => {
                           </tr>
                         </tbody>
                       </table>
-                      <div
-                        className="tfoot-spacer"
-                        style={{ height: "28mm" }}
-                      ></div>
                     </div>
+                    <div
+                      className="tfoot-spacer"
+                      style={{ height: "28mm" }}
+                    ></div>
                   </td>
                 </tr>
               </tfoot>
@@ -511,7 +531,7 @@ export const MPTReportPrintPage = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              1. Job Details
+                              1. JOB DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -619,7 +639,7 @@ export const MPTReportPrintPage = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              3. Equipment Details
+                              2. EQUIPMENT DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -660,7 +680,7 @@ export const MPTReportPrintPage = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              4. Medium Details
+                              3. MEDIUM DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -707,7 +727,7 @@ export const MPTReportPrintPage = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              Method Discription
+                              4. METHOD DESCRIPTION
                             </td>
                           </tr>
                           <tr>
@@ -771,11 +791,11 @@ export const MPTReportPrintPage = () => {
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={7} className="section-hdr">
-                              6. OBSERVATIONS
+                              5. OBSERVATIONS
                             </td>
                           </tr>
                           <tr>
-                            <th style={{ width: "6%" }}>Sr. No.</th>
+                            <th>Sr. No.</th>
                             <th>Job Description</th>
                             <th>Drg No. / Joint No.</th>
                             <th style={{ width: "10%" }}>Size</th>
@@ -801,15 +821,11 @@ export const MPTReportPrintPage = () => {
                           ) : (
                             obs.map((o, index) => (
                               <tr key={`${o.srNo}-${index}`}>
-                                <td style={{ textAlign: "center" }}>
-                                  {o.srNo || index + 1}
-                                </td>
+                                <td>{o.srNo || index + 1}</td>
                                 <td>{v(o.jobDescription) || "-"}</td>
                                 <td>{v(o.drawingOrJointNo) || "-"}</td>
                                 <td>{v(o.size) || "-"}</td>
-                                <td style={{ textAlign: "center" }}>
-                                  {o.quantity ?? "-"}
-                                </td>
+                                <td>{o.quantity ?? "-"}</td>
                                 <td>
                                   <span
                                     className={resultClass(o.interpretation)}
@@ -852,7 +868,7 @@ export const MPTReportPrintPage = () => {
                           <tbody>
                             <tr>
                               <td colSpan={2} className="section-hdr">
-                                7. Conclusion
+                                6. CONCLUSION
                               </td>
                             </tr>
                             <tr>

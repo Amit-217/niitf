@@ -80,8 +80,6 @@ interface SearchUnitRow {
   frequencyOther: string;
 }
 
-
-
 interface ObsRow {
   srNo: number;
   itemName: string;
@@ -100,8 +98,6 @@ const emptySearchUnit = (): SearchUnitRow => ({
   frequency: "",
   frequencyOther: "",
 });
-
-
 
 const emptyObs = (): ObsRow => ({
   srNo: 1,
@@ -175,6 +171,10 @@ export const UTGReportFormPage: React.FC = () => {
   // ── Observations ──
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
+  // -- Conclusion --
+  const [conclusion, setConclusion] = useState("");
+  const [conclusionOther, setConclusionOther] = useState("");
+
   // ── Users for inspector dropdown ──
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
   useEffect(() => {
@@ -217,8 +217,6 @@ export const UTGReportFormPage: React.FC = () => {
     setSearchUnits((prev) => [...prev, emptySearchUnit()]);
   const removeSearchUnit = (idx: number) =>
     setSearchUnits((prev) => prev.filter((_, i) => i !== idx));
-
-
 
   const updateObs = (idx: number, key: keyof ObsRow, val: string) =>
     setObservations((prev) =>
@@ -398,6 +396,16 @@ export const UTGReportFormPage: React.FC = () => {
             })),
           );
         }
+        const conclusionOpts = [
+          "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+          "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+          "Other",
+        ];
+        const [con, conO] = fromOther(r.conclusion ?? "", conclusionOpts);
+        setConclusion(con);
+        setConclusionOther(conO);
         const fs = r.finalSection ?? {};
         const insp = fs.inspector?.[0] ?? {};
         setInspectorName(insp.name ?? "");
@@ -485,6 +493,7 @@ export const UTGReportFormPage: React.FC = () => {
             measuredThickness: o.measuredThickness,
             evaluation: o.evaluation,
           })),
+        conclusion: resolve(conclusion, conclusionOther) || undefined,
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
           inspector: [
@@ -1061,6 +1070,27 @@ export const UTGReportFormPage: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* -- Conclusion -- */}
+      <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>Conclusion</h2>
+        <div>
+          <label className={labelClass}>Conclusion</label>
+          <SelectWithOther
+            value={conclusion}
+            onChange={setConclusion}
+            otherValue={conclusionOther}
+            onOtherChange={setConclusionOther}
+            options={[
+              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+              "Other",
+            ]}
+          />
         </div>
       </div>
 

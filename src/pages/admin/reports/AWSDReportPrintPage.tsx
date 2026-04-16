@@ -82,16 +82,29 @@ const PRINT_STYLES = `
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; overflow: hidden; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
   .val { font-size: 11px; color: #000; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 2px 3px; font-size: 9px; vertical-align: middle; text-align: center; word-break: break-word; }
-  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 8.5px; font-weight: 700; }
+  .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 2px 3px; font-size: 10px; vertical-align: middle; text-align: left; word-break: break-word; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
+  .obs-table .vcell {
+    height: 92px;
+    padding: 0 2px;
+    overflow: hidden;
+  }
+  .obs-table .vtext {
+    display: inline-block;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    line-height: 1;
+    font-size: 9.5px;
+  }
   .form-block { border: 1px solid #888; padding: 5px 8px; margin-top: -1px; font-size: 10px; }
   .form-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px; }
   .form-row:last-child { margin-bottom: 0; }
@@ -105,7 +118,10 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
+  .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -144,7 +160,7 @@ export const AWSDReportPrintPage: React.FC = () => {
 
   const [report, setReport] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [bwMode] = useState(false);
+  const [bwMode, setBwMode] = useState(false);
 
   const goBack = () => {
     if (locState?.customerId) {
@@ -248,9 +264,53 @@ export const AWSDReportPrintPage: React.FC = () => {
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
+      <div
+        className="no-print"
+        style={{
+          position: "fixed",
+          top: 12,
+          right: 16,
+          zIndex: 100,
+          display: "flex",
+          gap: 8,
+        }}
+      >
+        <button
+          onClick={() => setBwMode((b) => !b)}
+          style={{
+            padding: "7px 16px",
+            background: bwMode ? "#374151" : "#185FA5",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13,
+            fontWeight: 600,
+          }}
+        >
+          {bwMode ? "Color Mode" : "B&W Mode"}
+        </button>
+        <button
+          onClick={() => window.print()}
+          style={{
+            padding: "7px 16px",
+            background: "#16a34a",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13,
+            fontWeight: 600,
+          }}
+        >
+          Print
+        </button>
+      </div>
+
       {/* â"€â"€ Report Content â"€â"€ */}
       <div
         id="report-root"
+        className={bwMode ? "bw" : ""}
         style={{
           background: "#e9eef5",
           minHeight: "100vh",
@@ -346,10 +406,10 @@ export const AWSDReportPrintPage: React.FC = () => {
                         alignItems: "flex-start",
                       }}
                     >
-                      {/* Weld reference diagram - matches original AWS D1.1 sketch */}
+                      {/* Weld reference diagram */}
                       <div
                         style={{
-                          width: "108px",
+                          width: "200px",
                           flexShrink: 0,
                           display: "flex",
                           alignItems: "center",
@@ -357,87 +417,15 @@ export const AWSDReportPrintPage: React.FC = () => {
                           paddingTop: "4px",
                         }}
                       >
-                        <svg
-                          width="108"
-                          height="72"
-                          viewBox="0 0 108 72"
-                          style={{ overflow: "visible" }}
-                        >
-                          {/* Plate: parallelogram shape (slight perspective tilt) */}
-                          <polygon
-                            points="24,8 92,8 96,46 20,46"
-                            fill="white"
-                            stroke="#333"
-                            strokeWidth="1.2"
-                          />
-
-                          {/* Cross "+" mark inside plate (left area - weld reference point) */}
-                          <line
-                            x1="33"
-                            y1="16"
-                            x2="33"
-                            y2="30"
-                            stroke="#333"
-                            strokeWidth="1"
-                          />
-                          <line
-                            x1="26"
-                            y1="23"
-                            x2="40"
-                            y2="23"
-                            stroke="#333"
-                            strokeWidth="1"
-                          />
-
-                          {/* X label — outside shape on the LEFT with horizontal arrow line → */}
-                          <text
-                            x="1"
-                            y="28"
-                            style={{
-                              fontSize: "10px",
-                              fontWeight: "bold",
-                              fontFamily: "Arial",
-                            }}
-                          >
-                            X
-                          </text>
-                          <line
-                            x1="9"
-                            y1="23"
-                            x2="19"
-                            y2="23"
-                            stroke="#333"
-                            strokeWidth="0.9"
-                          />
-                          {/* arrowhead pointing right into shape */}
-                          <polygon points="20,21 20,25 24,23" fill="#333" />
-
-                          {/* X label — inside shape on the RIGHT */}
-                          <text
-                            x="74"
-                            y="22"
-                            style={{
-                              fontSize: "10px",
-                              fontWeight: "bold",
-                              fontFamily: "Arial",
-                            }}
-                          >
-                            X
-                          </text>
-
-                          {/* Y label — below the shape, center */}
-                          <text
-                            x="50"
-                            y="64"
-                            style={{
-                              fontSize: "10px",
-                              fontWeight: "bold",
-                              fontFamily: "Arial",
-                            }}
-                          >
-                            Y
-                          </text>
-                        </svg>
+                        <img
+                          src="/image.png"
+                          alt="Weld reference sketch"
+                          style={{
+                            width: "200px",
+                            height: "auto",
+                            display: "block",
+                          }}
+                        />
                       </div>
                       {/* Right: Form fields */}
                       <div style={{ flex: 1 }}>
@@ -488,54 +476,46 @@ export const AWSDReportPrintPage: React.FC = () => {
                   <table className="obs-table mt-n1">
                     <thead style={{ display: "table-header-group" }}>
                       <tr>
-                        <td colSpan={15} className="section-hdr">
+                        <td colSpan={16} className="section-hdr">
                           OBSERVATIONS
                         </td>
                       </tr>
-                      {/* Header row 1: Main group labels */}
+                      {/* Header row 1: Group labels */}
                       <tr>
                         <td
-                          className="col-hdr"
+                          className="col-hdr vcell"
                           rowSpan={3}
                           style={{ width: "3.5%" }}
                         >
-                          Line
-                          <br />
-                          number
+                          <span className="vtext">Line number</span>
                         </td>
                         <td
-                          className="col-hdr"
+                          className="col-hdr vcell"
                           rowSpan={3}
                           style={{ width: "5.5%" }}
                         >
-                          Indication
-                          <br />
-                          No.
+                          <span className="vtext">Indication number</span>
                         </td>
                         <td
-                          className="col-hdr"
+                          className="col-hdr vcell"
                           rowSpan={3}
                           style={{ width: "7%" }}
                         >
-                          Transducer
-                          <br />
-                          angle
+                          <span className="vtext">Transducer angle</span>
                         </td>
                         <td
-                          className="col-hdr"
+                          className="col-hdr vcell"
                           rowSpan={3}
                           style={{ width: "4.5%" }}
                         >
-                          From
-                          <br />
-                          face
+                          <span className="vtext">From Face</span>
                         </td>
                         <td
-                          className="col-hdr"
+                          className="col-hdr vcell"
                           rowSpan={3}
                           style={{ width: "3.5%" }}
                         >
-                          Leg
+                          <span className="vtext">Leg*</span>
                         </td>
                         <td className="col-hdr" colSpan={4}>
                           Decibels
@@ -544,90 +524,77 @@ export const AWSDReportPrintPage: React.FC = () => {
                           Discontinuity
                         </td>
                         <td
-                          className="col-hdr"
+                          className="col-hdr vcell"
                           rowSpan={3}
-                          style={{ width: "6%" }}
+                          style={{ width: "6.5%" }}
                         >
-                          Remarks
+                          <span className="vtext">
+                            Discontinuity evaluation
+                          </span>
+                        </td>
+                        <td
+                          className="col-hdr vcell"
+                          rowSpan={3}
+                          style={{ width: "6.5%" }}
+                        >
+                          <span className="vtext">Remarks</span>
                         </td>
                       </tr>
-                      {/* Header row 2: Decibels sub-cols + Discontinuity sub-cols */}
+                      {/* Header row 2: Sub-column names (vertical) */}
                       <tr>
-                        <td
-                          className="col-hdr"
-                          rowSpan={2}
-                          style={{ width: "5.5%" }}
-                        >
-                          a.
-                          <br />
-                          Indication
-                          <br />
-                          level
+                        <td className="col-hdr vcell" style={{ width: "5.5%" }}>
+                          <span className="vtext">Indication level</span>
+                        </td>
+                        <td className="col-hdr vcell" style={{ width: "5.5%" }}>
+                          <span className="vtext">Reference level</span>
+                        </td>
+                        <td className="col-hdr vcell" style={{ width: "6%" }}>
+                          <span className="vtext">Attenuation factor</span>
+                        </td>
+                        <td className="col-hdr vcell" style={{ width: "5.5%" }}>
+                          <span className="vtext">Indication rating</span>
                         </td>
                         <td
-                          className="col-hdr"
-                          rowSpan={2}
-                          style={{ width: "5.5%" }}
-                        >
-                          b.
-                          <br />
-                          Reference
-                          <br />
-                          level
-                        </td>
-                        <td
-                          className="col-hdr"
-                          rowSpan={2}
-                          style={{ width: "6%" }}
-                        >
-                          c.
-                          <br />
-                          Attenuation
-                          <br />
-                          factor
-                        </td>
-                        <td
-                          className="col-hdr"
-                          rowSpan={2}
-                          style={{ width: "5.5%" }}
-                        >
-                          d.
-                          <br />
-                          Indication
-                          <br />
-                          rating
-                        </td>
-                        <td
-                          className="col-hdr"
+                          className="col-hdr vcell"
                           rowSpan={2}
                           style={{ width: "5%" }}
                         >
-                          Length
+                          <span className="vtext">Length</span>
                         </td>
                         <td
-                          className="col-hdr"
+                          className="col-hdr vcell"
                           rowSpan={2}
                           style={{ width: "5.5%" }}
                         >
-                          Angular
-                          <br />
-                          distance
+                          <span className="vtext">
+                            Angular distance (sound path)
+                          </span>
                         </td>
                         <td
-                          className="col-hdr"
+                          className="col-hdr vcell"
                           rowSpan={2}
                           style={{ width: "6%" }}
                         >
-                          Depth
-                          <br />
-                          from A
+                          <span className="vtext">Depth from 'A' surface</span>
                         </td>
                         <td className="col-hdr" colSpan={2}>
                           Distance
                         </td>
                       </tr>
-                      {/* Header row 3: Distance sub-cols */}
+                      {/* Header row 3: Letter labels + From X/Y */}
                       <tr>
+                        <td className="col-hdr" style={{ fontWeight: 700 }}>
+                          a
+                        </td>
+                        <td className="col-hdr" style={{ fontWeight: 700 }}>
+                          b
+                        </td>
+                        <td className="col-hdr" style={{ fontWeight: 700 }}>
+                          c
+                        </td>
+                        <td className="col-hdr" style={{ fontWeight: 700 }}>
+                          d
+                        </td>
                         <td className="col-hdr" style={{ width: "4.5%" }}>
                           From X
                         </td>
@@ -654,13 +621,14 @@ export const AWSDReportPrintPage: React.FC = () => {
                           <td>{v(o.discontinuity?.fromX)}</td>
                           <td>{v(o.discontinuity?.fromY)}</td>
                           <td>{v(o.interpretation)}</td>
+                          <td>{v(o.evaluation)}</td>
                         </tr>
                       ))}
-                      {Array.from({ length: Math.max(4, 26 - obs.length) }).map(
+                      {Array.from({ length: Math.max(0, 3 - obs.length) }).map(
                         (_, i) => (
                           <tr key={`empty-obs-${i}`} style={{ height: "24px" }}>
                             <td>{obs.length + i + 1}</td>
-                            {Array.from({ length: 14 }).map((__, j) => (
+                            {Array.from({ length: 15 }).map((__, j) => (
                               <td key={j}></td>
                             ))}
                           </tr>
@@ -787,11 +755,11 @@ export const AWSDReportPrintPage: React.FC = () => {
                       Nontubular Structures). Do <strong>NOT</strong> use this
                       form for Tubular Structures (Clause 10, Part A).
                     </div>
-                    <div
-                      className="tfoot-spacer"
-                      style={{ height: "28mm" }}
-                    ></div>
                   </div>
+                  <div
+                    className="tfoot-spacer"
+                    style={{ height: "28mm" }}
+                  ></div>
                 </td>
               </tr>
             </tfoot>
@@ -811,7 +779,7 @@ export const AWSDReportPrintPage: React.FC = () => {
         </div>
       </div>
       {/* The fixed footer that only appears in print on every page at the bottom */}
-      <div className="print-fixed-footer">
+      <div className={`print-fixed-footer${bwMode ? " bw" : ""}`}>
         <div
           className="print-fixed-footer-inner"
           style={{ border: "none", boxShadow: "none" }}

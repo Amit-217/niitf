@@ -184,7 +184,11 @@ export const UTReportFormPage: React.FC = () => {
   // Ã¢â€â‚¬Ã¢â€â‚¬ Observations Ã¢â€â‚¬Ã¢â€â‚¬
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
-  // â”€â”€ Users for inspector dropdown â”€â”€
+  // -- Conclusion --
+  const [conclusion, setConclusion] = useState("");
+  const [conclusionCustom, setConclusionCustom] = useState("");
+
+  // â"€â"€ Users for inspector dropdown â"€â"€
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
   useEffect(() => {
     api
@@ -375,6 +379,16 @@ export const UTReportFormPage: React.FC = () => {
           );
         }
 
+        const conclusionOpts = [
+           "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+          "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+          "Other",
+        ];
+        const [con, conC] = fromOther(r.conclusion ?? "", conclusionOpts);
+        setConclusion(con);
+        setConclusionCustom(conC);
         const fs = r.finalSection ?? {};
         const insp = fs.inspector?.[0] ?? {};
         setInspectorName(insp.name ?? "");
@@ -461,6 +475,7 @@ export const UTReportFormPage: React.FC = () => {
             interpretation: o.interpretation || "",
             evaluation: o.evaluation || "",
           })),
+        conclusion: resolve(conclusion, conclusionCustom) || undefined,
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
           inspector: [
@@ -1241,6 +1256,27 @@ export const UTReportFormPage: React.FC = () => {
       </div>
 
       {/* Ã¢â€â‚¬Ã¢â€â‚¬ Examined By Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* -- Conclusion -- */}
+      <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>Conclusion</h2>
+        <div>
+          <label className={labelClass}>Conclusion</label>
+          <SelectWithCustom
+            value={conclusion}
+            onChange={setConclusion}
+            customValue={conclusionCustom}
+            onCustomChange={setConclusionCustom}
+            options={[
+               "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+          "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+          'Other',
+            ]}
+          />
+        </div>
+      </div>
+
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">

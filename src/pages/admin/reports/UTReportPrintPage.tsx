@@ -82,15 +82,16 @@ const PRINT_STYLES = `
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center; color: #0C447C; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
   .val { font-size: 11px; color: #000; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 3px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
-  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; text-align: left; }
+  .obs-table th:first-child, .obs-table td:first-child { width: 28px; min-width: 28px; max-width: 28px; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
@@ -99,10 +100,14 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
+  .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 4px; font-size: 11px; text-align: center; vertical-align: middle; }
+  .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 4px; font-size: 11px; text-align: left; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
+  .calib-table td.section-hdr { text-align: left; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -228,6 +233,16 @@ export const UTReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
+  const rejectedCount = obs.filter((o) =>
+    /reject|repair|fail|not ok/i.test(
+      v(o.evaluation || o.remark || o.result || o.interpretation),
+    ),
+  ).length;
+  const conclusionText =
+    v((report as unknown as { conclusion?: string }).conclusion) ||
+    (rejectedCount > 0
+      ? `Examination completed. ${rejectedCount} rejectable indication(s) identified; repair and re-examination required before final acceptance.`
+      : "Examination completed as per applicable standards. No rejectable indications observed in inspected items.");
 
   const calibAngles = [
     { label: "0Â°", data: apc.deg0 },
@@ -435,11 +450,11 @@ export const UTReportPrintPage: React.FC = () => {
                           </tr>
                         </tbody>
                       </table>
-                      <div
-                        className="tfoot-spacer"
-                        style={{ height: "28mm" }}
-                      ></div>
                     </div>
+                    <div
+                      className="tfoot-spacer"
+                      style={{ height: "28mm" }}
+                    ></div>
                   </td>
                 </tr>
               </tfoot>
@@ -460,7 +475,7 @@ export const UTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              JOB DETAILS
+                              1. JOB DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -530,7 +545,7 @@ export const UTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              EQUIPMENT DETAILS
+                              2. EQUIPMENT DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -561,7 +576,7 @@ export const UTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={6} className="section-hdr">
-                              SEARCH UNIT DETAILS
+                              3. SEARCH UNIT DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -601,32 +616,12 @@ export const UTReportPrintPage: React.FC = () => {
                           ) : (
                             units.map((u: any, i: any) => (
                               <tr key={i}>
-                                <td
-                                  style={{
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  {v(u.model)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(u.angle)}
-                                </td>
-                                <td
-                                  style={{
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  {v(u.srNo)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(u.crystalSize)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(u.waveMode)}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {v(u.frequency)}
-                                </td>
+                                <td>{v(u.model)}</td>
+                                <td>{v(u.angle)}</td>
+                                <td>{v(u.srNo)}</td>
+                                <td>{v(u.crystalSize)}</td>
+                                <td>{v(u.waveMode)}</td>
+                                <td>{v(u.frequency)}</td>
                               </tr>
                             ))
                           )}
@@ -644,7 +639,7 @@ export const UTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={4} className="section-hdr">
-                              TECHNIQUE DETAILS
+                              4. TECHNIQUE DETAILS
                             </td>
                           </tr>
                           <tr>
@@ -674,7 +669,7 @@ export const UTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td colSpan={5} className="section-hdr">
-                              ANGLE PROBE CALIBRATION DETAIL
+                              5. ANGLE PROBE CALIBRATION DETAIL
                             </td>
                           </tr>
                           <tr>
@@ -728,9 +723,7 @@ export const UTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="col-hdr" style={{ width: "6%" }}>
-                              Sr. No.
-                            </td>
+                            <td className="col-hdr">Sr. No.</td>
                             <td className="col-hdr" style={{ width: "18%" }}>
                               Job Description
                             </td>
@@ -769,19 +762,11 @@ export const UTReportPrintPage: React.FC = () => {
                           ) : (
                             obs.map((o, i) => (
                               <tr key={i}>
-                                <td style={{ textAlign: "center" }}>
-                                  {o.srNo}
-                                </td>
-                                <td style={{}}>{v(o.jobDescription)}</td>
-                                <td style={{}}>{v(o.drawingOrJointNo)}</td>
-                                <td style={{}}>{v(o.size)}</td>
-                                <td
-                                  style={{
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  {o.quantity ?? ""}
-                                </td>
+                                <td>{o.srNo}</td>
+                                <td>{v(o.jobDescription)}</td>
+                                <td>{v(o.drawingOrJointNo)}</td>
+                                <td>{v(o.size)}</td>
+                                <td>{o.quantity ?? ""}</td>
                                 <td>{v(o.interpretation)}</td>
                                 <td>
                                   {v(o.evaluation || o.remark || o.result)}
@@ -802,6 +787,30 @@ export const UTReportPrintPage: React.FC = () => {
                           ))}
                         </tbody>
                       </table>
+
+                      {/* -- Conclusion -- */}
+                      <div
+                        style={{
+                          breakInside: "avoid",
+                          pageBreakInside: "avoid",
+                        }}
+                      >
+                        <table className="report-table mt-n1">
+                          <tbody>
+                            <tr>
+                              <td colSpan={2} className="section-hdr">
+                                7. CONCLUSION
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="lbl" style={{ width: "22%" }}>
+                                Overall Evaluation
+                              </td>
+                              <td className="val">{conclusionText}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
 
                       {/* -- EXAMINED BY (screen only, hidden on print) -- */}
                     </div>
