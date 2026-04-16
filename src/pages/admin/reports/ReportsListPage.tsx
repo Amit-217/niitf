@@ -65,7 +65,9 @@ const fetchCount = async (type: ReportType) => {
 };
 
 export const ReportsListPage = () => {
-    const [activeTab, setActiveTab] = useState<ReportType>("mpt");
+    const [activeTab, setActiveTab] = useState<ReportType>(
+        () => (sessionStorage.getItem("reports_activeTab") as ReportType) || "mpt"
+    );
     const [reports, setReports] = useState<any[]>([]);
     const [total, setTotal] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -182,7 +184,7 @@ export const ReportsListPage = () => {
                     return (
                         <button
                             key={rt.key}
-                            onClick={() => { setActiveTab(rt.key); setPage(1); setStatus(""); }}
+                            onClick={() => { sessionStorage.setItem("reports_activeTab", rt.key); setActiveTab(rt.key); setPage(1); setStatus(""); }}
                             className={`group relative p-4 rounded-2xl border-2 transition-all flex flex-col items-start gap-2 text-left ${
                                 isActive
                                 ? `${rt.borderColor} bg-white shadow-xl shadow-gray-200/50 ring-4 ring-gray-950/5`

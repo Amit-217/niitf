@@ -597,15 +597,6 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Report No.</label>
-            <input
-              type="text"
-              value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
-              readOnly
-              className={inputClass + " bg-gray-50 font-mono text-indigo-700"}
-            />
-          </div>
-          <div>
             <label className={labelClass}>Client</label>
             <input
               type="text"

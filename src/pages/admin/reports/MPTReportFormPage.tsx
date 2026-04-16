@@ -630,18 +630,6 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="reportNo2">
-              Report No.
-            </label>
-            <input
-              id="reportNo2"
-              type="text"
-              value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
-              readOnly
-              className={inputClass + " bg-gray-50 font-mono text-indigo-700"}
-            />
-          </div>
-          <div>
             <label className={labelClass} htmlFor="jobReportDate">
               Report Date
             </label>
