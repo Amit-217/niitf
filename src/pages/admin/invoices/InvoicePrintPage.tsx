@@ -12,16 +12,6 @@ const PRINT_STYLES = `
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; }
     #invoice-root { background: #fff !important; padding: 0 !important; }
-    #invoice-root > div { width: 210mm !important; min-height: 297mm !important; margin: 0 auto !important; padding: 0 !important; box-sizing: border-box !important; box-shadow: none !important; }
-    .screen-footer { display: none !important; }
-    .print-footer-fixed { display: block !important; position: fixed !important; bottom: 0 !important; left: 0 !important; width: 210mm !important; margin: 0 auto !important; right: 0 !important; background: #fff !important; z-index: 9999 !important; }
-    .print-footer-fixed-inner { padding: 0 5mm 5mm 5mm !important; }
-    .tfoot-spacer { display: table-footer-group !important; }
-  }
-  @media screen {
-    .print-footer-fixed { display: none !important; }
-    .tfoot-spacer { display: none !important; }
-    .screen-footer { display: block; }
   }
   body { font-family: 'Times New Roman', Times, serif; font-size: 13px; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
@@ -49,17 +39,6 @@ const PRINT_STYLES = `
   .amount-words { color: #cc0000; font-weight: bold; font-size: 13px; }
   .sig-cell { border: 1px solid #000; padding: 5px; height: 60px; vertical-align: top; }
   .footer-note { text-align: center; font-size: 11px; color: #555; padding: 3px; border-top: 1px solid #000; }
-  .rpt-header { padding: 6px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 110px; height: 110px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
-  .logo-box img { width: 100%; height: 100%; object-fit: contain; }
-  .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
-  .inv-title-bar { background: #185FA5; color: #fff; text-align: center; font-size: 16px; font-weight: 700; letter-spacing: 4px; padding: 4px 0; margin-bottom: 0; }
-  .inv-footer-bar { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
-  .inv-footer-bar span { color: #fff; font-weight: 700; }
-  .q-foot { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; border-top: 3px solid #185FA5; line-height: 1.4; text-align: center; }
 `;
 
 function fmtDate(d?: string | null) {
@@ -159,21 +138,6 @@ export const InvoicePrintPage: React.FC = () => {
           ? "45 Days"
           : data.paymentMode || "—";
 
-  const InvoiceFooter = () => (
-    <>
-      <div className="q-foot">
-        Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office, MIDC, Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
-        <br />
-        Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website: www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
-      </div>
-      <div className="inv-footer-bar">
-        Invoice No: <span>{data.invoiceNo}</span>
-        &nbsp;|&nbsp; Date: <span>{data.date ? new Date(data.date).toLocaleDateString("en-GB") : "-"}</span>
-        &nbsp;|&nbsp; This is a Computer generated invoice.
-      </div>
-    </>
-  );
-
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
@@ -234,58 +198,92 @@ export const InvoicePrintPage: React.FC = () => {
             background: "#fff",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             padding: "6mm 6mm 6mm 6mm",
-            position: "relative",
             fontFamily: "'Times New Roman', Times, serif",
             fontSize: 12,
             color: "#000",
           }}
         >
-          {/* ── COMPANY HEADER ── */}
-          <div className="rpt-header">
-            <div className="logo-box">
-              <img src="/logo.png" alt="NIIT Logo" />
-            </div>
-            <div className="hdr-center">
-              <div className="org">National Industrial Inspection and Training</div>
-              <div className="sub">
-                THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING | NDT CONSULTANCY
-                <br />
-                FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
-              </div>
-              <div className="iso">(AN ISO 9001:2015 CERTIFIED ORGANIZATION)</div>
-            </div>
+          {/* INVOICE TITLE */}
+          <div
+            className="title"
+            style={{ borderBottom: "2px solid #000", marginBottom: 0 }}
+          >
+            INVOICE
           </div>
 
-          <div className="title" style={{ borderBottom: "2px solid #000", marginBottom: 0 }}>INVOICE</div>
-
-          {/* ── INVOICE FIELDS TABLE ── */}
+          {/* ── HEADER SECTION: Left=Company+Buyer stacked, Right=All fields ── */}
           <table className="outer-border" style={{ tableLayout: "fixed" }}>
             <tbody>
               <tr>
-                {/* LEFT COLUMN: Seller + Buyer stacked */}
+                {/* LEFT COLUMN: Company Info (top) + Buyer Info (bottom) */}
                 <td style={{ width: "50%", padding: 0, verticalAlign: "top" }}>
                   <table style={{ width: "100%" }}>
                     <tbody>
-                      {/* Seller / Supplier details */}
+                      {/* Company Info */}
                       <tr>
-                        <td className="cell" style={{ padding: "6px 8px", verticalAlign: "top" }}>
-                          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>National Industrial Inspection And Training</div>
-                          <div style={{ fontSize: 12, lineHeight: 1.6 }}>
-                            Plot NO-PAP-3/28 Behind BSNL Office, MIDC, Baramati Pin -413133<br />
-                            GST No.: 27ABJPK8603R1ZY &nbsp;|&nbsp; State: Maharashtra &nbsp; Code: 27<br />
-                            Contact: 9850923725, 9421606761 &nbsp;|&nbsp; Email: niit004@gmail.com
+                        <td
+                          className="cell"
+                          style={{ padding: "12px 7px", verticalAlign: "top" }}
+                        >
+                          <div className="company-name">
+                            National Industrial Inspection And Training
+                          </div>
+                          <div
+                            style={{
+                              fontSize: 14,
+                              marginTop: 2,
+                              lineHeight: 1.5,
+                            }}
+                          >
+                            Plot NO-PAP-3/28 Behind BSNL Office
+                            <br />
+                            MIDC, Baramati Pin -413133
+                            <br />
+                            GST No.: 27ABJPK8603R1ZY
+                            <br />
+                            State Name=Maharashtra&nbsp; Code =27
+                            <br />
+                            CONTACT= 9850923725, 9421606761
+                            <br />
+                            E-Mail = niit004@gmail.com
                           </div>
                         </td>
                       </tr>
-                      {/* Buyer details */}
+                      {/* Buyer Info */}
                       <tr>
-                        <td className="cell" style={{ padding: "6px 8px", verticalAlign: "top" }}>
-                          <div style={{ fontSize: 13, color: "#cc0000", textDecoration: "underline", marginBottom: 2, fontWeight: 600 }}>Buyer</div>
-                          <div className="bold red" style={{ fontSize: 14 }}>{customer?.companyName || "—"}</div>
-                          {customer?.address && <div className="red" style={{ fontSize: 13 }}>{customer.address}</div>}
-                          {customer?.city && <div className="red" style={{ fontSize: 13 }}>Dist-{customer.city}</div>}
-                          <div className="red" style={{ fontSize: 13 }}>State Name=Maharashtra Code =27</div>
-                          <div className="red" style={{ fontSize: 13 }}>GST No={customer?.gstNo || ""}</div>
+                        <td
+                          className="cell"
+                          style={{ padding: "12px 7px", verticalAlign: "top" }}
+                        >
+                          <div
+                            style={{
+                              fontSize: 14,
+                              color: "#cc0000",
+                              textDecoration: "underline",
+                              marginBottom: 2,
+                            }}
+                          >
+                            Buyer
+                          </div>
+                          <div className="bold red" style={{ fontSize: 15 }}>
+                            {customer?.companyName || "—"}
+                          </div>
+                          {customer?.address && (
+                            <div className="red" style={{ fontSize: 14 }}>
+                              {customer.address}
+                            </div>
+                          )}
+                          {customer?.city && (
+                            <div className="red" style={{ fontSize: 14 }}>
+                              Dist-{customer.city}
+                            </div>
+                          )}
+                          <div className="red" style={{ fontSize: 14 }}>
+                            State Name=Maharashtra Code =27
+                          </div>
+                          <div className="red" style={{ fontSize: 14 }}>
+                            GST No={customer?.gstNo || ""}
+                          </div>
                         </td>
                       </tr>
                     </tbody>
@@ -743,30 +741,12 @@ export const InvoicePrintPage: React.FC = () => {
                 </td>
               </tr>
             </tbody>
-            {/* tfoot spacer — reserves space so content doesn't overlap fixed footer */}
-            <tfoot className="tfoot-spacer">
-              <tr>
-                <td style={{ padding: 0 }}>
-                  <div style={{ height: "50mm", visibility: "hidden" }}>spacer</div>
-                </td>
-              </tr>
-            </tfoot>
           </table>
 
-          {/* Screen-only footer — sits at bottom of page card */}
-          <div
-            className="screen-footer"
-            style={{ position: "absolute", bottom: "5mm", left: "5mm", right: "5mm" }}
-          >
-            <InvoiceFooter />
+          {/* Footer note */}
+          <div className="footer-note">
+            This is a Computer generated invoice.
           </div>
-        </div>
-      </div>
-
-      {/* Print-only fixed footer — pins to physical bottom of every page */}
-      <div className="print-footer-fixed">
-        <div className="print-footer-fixed-inner">
-          <InvoiceFooter />
         </div>
       </div>
     </>
