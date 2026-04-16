@@ -8,6 +8,7 @@ import {
   getTPIIVRReportById,
 } from "../../../api/customerApi";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
+import api from "../../../api/axios";
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -181,6 +182,15 @@ export const TPIIVRFormPage: React.FC = () => {
 
   // ── Calibration Status ──
   const [calibRows, setCalibRows] = useState<CalibRow[]>([emptyCalib()]);
+
+  // ── Users for dropdown ──
+  const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
+  useEffect(() => {
+    api
+      .get("/users?status=active&limit=100")
+      .then((res: any) => setUsers(res.data ?? res ?? []))
+      .catch(() => {});
+  }, []);
 
   // ── Signatures ──
   const [vendorSignName, setVendorSignName] = useState("");
@@ -1181,13 +1191,18 @@ export const TPIIVRFormPage: React.FC = () => {
             <div className="space-y-2">
               <div>
                 <label className={labelClass}>Name</label>
-                <input
-                  type="text"
+                <select
                   value={niitSignName}
                   onChange={(e) => setNiitSignName(e.target.value)}
-                  className={inputClass}
-                  placeholder="e.g. Mr. Suraj Dubal"
-                />
+                  className={`${inputClass} bg-white`}
+                >
+                  <option value="">Select....</option>
+                  {users.map((u) => (
+                    <option key={u._id} value={u.name}>
+                      {u.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className={labelClass}>Date</label>

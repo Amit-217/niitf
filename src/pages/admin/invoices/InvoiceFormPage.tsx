@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { Plus, Trash2, Loader2, Save, Printer } from "lucide-react";
+import { Plus, Trash2, Loader2, Save, Printer, ArrowLeft } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   createInvoice,
@@ -372,7 +372,13 @@ export const InvoiceFormPage: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-24">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 text-gray-600" />
+        </button>
         <h1 className="text-2xl font-bold text-gray-900">
           {isEdit ? "Edit Invoice" : "New Invoice"}
         </h1>
