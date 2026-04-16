@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Breadcrumbs } from '../../../components/Breadcrumbs';
 import {
   createTrainingQuotation, getTrainingQuotationById, updateTrainingQuotation,
   createServiceQuotation, getServiceQuotationById, updateServiceQuotation
 } from '../../../api/quotationApi';
 import { getCustomers } from '../../../api/customerApi';
-import { Save, Ban, Plus, Trash2 } from 'lucide-react';
+import { Save, Ban, Plus, Trash2, ArrowLeft } from 'lucide-react';
 
 export const QuotationFormPage: React.FC = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -206,9 +205,13 @@ export const QuotationFormPage: React.FC = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto pb-32">
-      <Breadcrumbs />
-
-      <div className="mt-4 flex items-center justify-between">
+      <div className="flex items-center gap-3 mb-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 text-gray-600" />
+        </button>
         <h1 className="text-2xl font-bold text-gray-900">{isEditing ? 'Edit' : 'Create'} {qType} Quotation</h1>
       </div>
 

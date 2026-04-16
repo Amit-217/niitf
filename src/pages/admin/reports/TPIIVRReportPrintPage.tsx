@@ -508,108 +508,46 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             <td className="section-hdr">3. VENDOR DETAILS</td>
                           </tr>
                           <tr>
-                            <td
-                              style={{
-                                verticalAlign: "top",
-                                padding: "3px 5px",
-                              }}
-                            >
-                              <table
-                                style={{
-                                  width: "100%",
-                                  borderCollapse: "collapse",
-                                }}
-                              >
+                            <td style={{ verticalAlign: "top", padding: 0 }}>
+                              <table style={{ width: "100%", borderCollapse: "collapse" }}>
                                 <tbody>
                                   <tr>
-                                    <td
-                                      style={{
-                                        fontSize: "11px",
-                                        paddingBottom: 2,
-                                      }}
-                                    >
-                                      <strong>Ref:</strong> {v(cd.ref)}
-                                    </td>
+                                    <td className="lbl">Ref</td>
+                                    <td className="val">{v(cd.ref)}</td>
                                   </tr>
                                   <tr>
-                                    <td
-                                      style={{
-                                        fontSize: "11px",
-                                        paddingBottom: 2,
-                                      }}
-                                    >
-                                      <strong>Contact:</strong> {v(cd.contact)}
-                                    </td>
+                                    <td className="lbl">Contact</td>
+                                    <td className="val">{v(cd.contact)}</td>
                                   </tr>
                                   <tr>
-                                    <td
-                                      style={{
-                                        fontSize: "11px",
-                                        paddingBottom: 2,
-                                      }}
-                                    >
-                                      <strong>Call Date:</strong>{" "}
-                                      {fmtDate(cd.callDate)}
-                                    </td>
+                                    <td className="lbl">Call Date</td>
+                                    <td className="val">{fmtDate(cd.callDate)}</td>
                                   </tr>
                                   <tr>
-                                    <td style={{ fontSize: "11px" }}>
-                                      <strong>Inspection Att. Date:</strong>{" "}
-                                      {fmtDate(cd.inspectionAttDt)}
-                                    </td>
+                                    <td className="lbl">Inspection Att. Date</td>
+                                    <td className="val">{fmtDate(cd.inspectionAttDt)}</td>
                                   </tr>
                                 </tbody>
                               </table>
                             </td>
-                            <td
-                              style={{
-                                verticalAlign: "top",
-                                padding: "3px 5px",
-                                borderLeft: "1px solid #444",
-                              }}
-                            >
-                              <table
-                                style={{
-                                  width: "100%",
-                                  borderCollapse: "collapse",
-                                }}
-                              >
+                            <td style={{ verticalAlign: "top", padding: 0, borderLeft: "1px solid #d9e1ea" }}>
+                              <table style={{ width: "100%", borderCollapse: "collapse" }}>
                                 <tbody>
                                   <tr>
-                                    <td
-                                      style={{
-                                        fontSize: "11px",
-                                        paddingBottom: 2,
-                                      }}
-                                    >
-                                      <strong>Vendor:</strong> {v(vd.vendor)}
-                                    </td>
+                                    <td className="lbl">Vendor</td>
+                                    <td className="val">{v(vd.vendor)}</td>
                                   </tr>
                                   <tr>
-                                    <td
-                                      style={{
-                                        fontSize: "11px",
-                                        paddingBottom: 2,
-                                      }}
-                                    >
-                                      <strong>Sub Vendor:</strong>{" "}
-                                      {v(vd.subVendor)}
-                                    </td>
+                                    <td className="lbl">Sub Vendor</td>
+                                    <td className="val">{v(vd.subVendor)}</td>
                                   </tr>
                                   <tr>
-                                    <td
-                                      style={{
-                                        fontSize: "11px",
-                                        paddingBottom: 2,
-                                      }}
-                                    >
-                                      <strong>Contact:</strong> {v(vd.contact)}
-                                    </td>
+                                    <td className="lbl">Contact</td>
+                                    <td className="val">{v(vd.contact)}</td>
                                   </tr>
                                   <tr>
-                                    <td style={{ fontSize: "11px" }}>
-                                      <strong>Phone:</strong> {v(vd.phone)}
-                                    </td>
+                                    <td className="lbl">Phone</td>
+                                    <td className="val">{v(vd.phone)}</td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -618,11 +556,11 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           <tr>
                             <td
                               colSpan={2}
-                              style={{ fontSize: "11px", padding: "2px 5px" }}
+                              className="lbl"
+                              style={{ fontWeight: "normal", whiteSpace: "normal" }}
                             >
-                              <strong>Extra Visit / Date:</strong> {v(ev.date)}{" "}
-                              &nbsp;&nbsp; <strong>Comment:</strong>{" "}
-                              {v(ev.comment)}
+                              <strong>Extra Visit / Date:</strong> {v(ev.date)}
+                              &nbsp;&nbsp; <strong>Comment:</strong> {v(ev.comment)}
                             </td>
                           </tr>
                         </tbody>

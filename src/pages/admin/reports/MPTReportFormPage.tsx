@@ -619,7 +619,7 @@ export const MPTReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass} htmlFor="jobClient">
-              Client / TPI
+              Client
             </label>
             <input
               id="jobClient"
@@ -627,18 +627,6 @@ export const MPTReportFormPage: React.FC = () => {
               value={jobClient}
               onChange={(e) => setJobClient(e.target.value)}
               className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="reportNo2">
-              Report No.
-            </label>
-            <input
-              id="reportNo2"
-              type="text"
-              value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
-              readOnly
-              className={inputClass + " bg-gray-50 font-mono text-indigo-700"}
             />
           </div>
           <div>
@@ -1509,7 +1497,7 @@ export const MPTReportFormPage: React.FC = () => {
           {/* Client / TPI */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
-              Client / TPI
+              Client
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               {jobClient || "-"}

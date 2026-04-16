@@ -381,7 +381,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                               CUSTOMER:
                             </td>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CLIENT / TPI:
+                              CLIENT :
                             </td>
                           </tr>
                           <tr>
@@ -454,6 +454,11 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           <col style={{ width: "36%" }} />
                         </colgroup>
                         <tbody>
+                          <tr>
+                            <td colSpan={3} className="section-hdr">
+                              1. JOB DETAILS
+                            </td>
+                          </tr>
                           <tr>
                             <td colSpan={3} style={{ padding: 0 }}>
                               <div style={{ display: "flex" }}>
@@ -626,7 +631,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td className="section-hdr" colSpan={6}>
-                              1. ANGLE PROBE CALIBRATION
+                              2. ANGLE PROBE CALIBRATION
                             </td>
                           </tr>
                           <tr>
@@ -676,7 +681,6 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                             <th
                               className="lbl"
                               style={{ width: "16%", textAlign: "left" }}
-                              rowSpan={2}
                             >
                               Sr. Nos. of probes
                             </th>
@@ -691,6 +695,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                             </th>
                           </tr>
                           <tr style={{ background: "#f8fafc" }}>
+                            <th className="lbl" style={{ textAlign: "left" }}>
+                              Scanning
+                            </th>
                             {PROBE_MODES.map((pm) => (
                               <th
                                 key={pm}
@@ -703,7 +710,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                           <tr style={{ background: "#fff" }}>
                             <th className="lbl" style={{ textAlign: "left" }}>
-                              Scanning
+                              Skips
                             </th>
                             {PROBE_MODES.map((pm) => (
                               <React.Fragment key={pm + "_hdr"}>
@@ -718,21 +725,6 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          <tr className="bg-white">
-                            <td className="lbl">Skips</td>
-                            {PROBE_MODES.map((pm) => (
-                              <React.Fragment key={pm + "_skip_hdr"}>
-                                <td
-                                  className="lbl"
-                                  style={{ background: "#fff" }}
-                                ></td>
-                                <td
-                                  className="lbl"
-                                  style={{ background: "#fff" }}
-                                ></td>
-                              </React.Fragment>
-                            ))}
-                          </tr>
                           {SKIPS.map(({ key, label }) => (
                             <tr key={key}>
                               <td
@@ -816,7 +808,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td className="section-hdr" colSpan={4}>
-                              2. NORMAL PROBE CALIBRATION
+                              3. NORMAL PROBE CALIBRATION
                             </td>
                           </tr>
                           <tr>
@@ -902,7 +894,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           <tbody>
                             <tr>
                               <td colSpan={2} className="section-hdr">
-                                3. CONCLUSION
+                                5. CONCLUSION
                               </td>
                             </tr>
                             <tr>

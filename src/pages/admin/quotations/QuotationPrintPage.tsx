@@ -8,7 +8,7 @@ import {
 import { getCustomerById } from "../../../api/customerApi";
 
 const PRINT_STYLES = `
-  @page { size: A4 portrait; margin: 0; }
+  @page { size: A4 portrait; margin: 0 10mm; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
   @media screen { body.autoprint-mode { opacity: 0; } }
   @media print {

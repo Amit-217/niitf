@@ -102,11 +102,11 @@ const SKIPS: Array<{
   key: keyof Pick<ProbeModeFormData, "half" | "one" | "oneHalf" | "two">;
   label: string;
 }> = [
-    { key: "half", label: "½" },
-    { key: "one", label: "1" },
-    { key: "oneHalf", label: "1½" },
-    { key: "two", label: "2" },
-  ];
+  { key: "half", label: "½" },
+  { key: "one", label: "1" },
+  { key: "oneHalf", label: "1½" },
+  { key: "two", label: "2" },
+];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export const VSSCUTReportFormPage: React.FC = () => {
@@ -195,7 +195,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   // ── Final Section ──
@@ -1244,7 +1244,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
           {/* RQS */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
-              Client / TPI
+              Client
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               RQS / VSSC
