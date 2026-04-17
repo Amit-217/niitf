@@ -54,9 +54,9 @@ const PRINT_STYLES = `
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
+  .report { background: #fff; border: none; border-radius: 0; overflow: hidden; }
   .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
+  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
   .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
@@ -101,8 +101,8 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0; overflow: hidden; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
@@ -452,7 +452,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       {/* ── VSSC UT SPECIFIC HEADER ── */}
                       <table
                         className="report-table mt-n1"
-                        style={{ marginBottom: 4 }}
+                        style={{ marginBottom: 0 }}
                       >
                         <colgroup>
                           <col style={{ width: "28%" }} />
@@ -631,7 +631,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       <table
                         className="report-table"
                         style={{
-                          marginBottom: 2,
+                          marginBottom: 0,
                         }}
                       >
                         <tbody>
@@ -680,7 +680,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       {/* Calibration Table */}
                       <table
                         className="calib-table mt-n1"
-                        style={{ marginBottom: 3 }}
+                        style={{ marginBottom: 0 }}
                       >
                         <thead>
                           <tr style={{ background: "#f8fafc" }}>
