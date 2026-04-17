@@ -362,23 +362,6 @@ const REPORT_TYPES: {
   },
 ];
 
-const QUOTATION_TYPES = [
-  {
-    key: "service",
-    label: "Service",
-    fullLabel: "Service Quotation",
-    color: "bg-blue-50",
-    textColor: "text-blue-600",
-  },
-  {
-    key: "training",
-    label: "Training",
-    fullLabel: "Training Quotation",
-    color: "bg-violet-50",
-    textColor: "text-violet-600",
-  },
-];
-
 const INIT_QUO_ITEMS: LineItem[] = [{ ...EMPTY_ITEM }];
 
 export const CustomerDetailPage = () => {
@@ -428,7 +411,6 @@ export const CustomerDetailPage = () => {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [quotationTypeFilter, setQuotationTypeFilter] = useState<string | null>(null);
   const [quotationStatusFilter, setQuotationStatusFilter] = useState<string | null>(null);
-  const [quotationsPageTotal, setQuotationsPageTotal] = useState(0);
   const [quotationsLoading, setQuotationsLoading] = useState(false);
   const [quotationPage, setQuotationPage] = useState(1);
   const [quotationLimit, setQuotationLimit] = useState(10);
@@ -606,74 +588,6 @@ export const CustomerDetailPage = () => {
     navigate(".", { replace: true, state: { activeTab, reportSubType } });
   }, [activeTab, reportSubType]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Modal helpers ──────────────────────────────────────────────────────────
-
-  const openAddModal = () => {
-    setEditTarget(null);
-    if (activeTab === "quotations") {
-      setQuoForm({
-        subject: "",
-        date: new Date().toISOString().split("T")[0],
-        validTill: "",
-        status: "Draft",
-        notes: "",
-        items: [{ ...EMPTY_ITEM }],
-        discount: 0,
-        taxPercent: 0,
-      });
-    } else if (activeTab === "invoices") {
-      setInvForm({
-        subject: "",
-        date: new Date().toISOString().split("T")[0],
-        dueDate: "",
-        status: "Draft",
-        paymentMode: "",
-        paidAmount: 0,
-        notes: "",
-        items: [{ ...EMPTY_ITEM }],
-        discount: 0,
-        taxPercent: 0,
-      });
-    }
-    setModalOpen(true);
-  };
-
-  const openEditModal = (item: Quotation | Invoice) => {
-    setEditTarget(item);
-    if (activeTab === "quotations") {
-      const q = item as Quotation;
-      setQuoForm({
-        subject: q.subject || "",
-        date: q.date
-          ? q.date.split("T")[0]
-          : new Date().toISOString().split("T")[0],
-        validTill: q.validTill ? q.validTill.split("T")[0] : "",
-        status: q.status,
-        notes: q.notes || "",
-        items: q.items.length ? q.items : [{ ...EMPTY_ITEM }],
-        discount: q.discount || 0,
-        taxPercent: q.taxPercent || 0,
-      });
-    } else if (activeTab === "invoices") {
-      const inv = item as Invoice;
-      setInvForm({
-        subject: inv.subject || "",
-        date: inv.date
-          ? inv.date.split("T")[0]
-          : new Date().toISOString().split("T")[0],
-        dueDate: inv.dueDate ? inv.dueDate.split("T")[0] : "",
-        status: inv.status,
-        paymentMode: (inv.paymentMode as Invoice["paymentMode"]) || "",
-        paidAmount: inv.paidAmount || 0,
-        notes: inv.notes || "",
-        items: inv.items.length ? inv.items : [{ ...EMPTY_ITEM }],
-        discount: inv.discount || 0,
-        taxPercent: inv.taxPercent || 0,
-      });
-    }
-    setModalOpen(true);
-  };
-
   // ── Compute totals ─────────────────────────────────────────────────────────
 
   const computeTotals = (
@@ -848,11 +762,6 @@ export const CustomerDetailPage = () => {
   );
 
   const quotationsTotal = trainQuotationsTotal + servQuotationsTotal;
-
-  const quoTypeTotals: Record<string, number> = {
-    service: servQuotationsTotal,
-    training: trainQuotationsTotal,
-  };
 
   const tabs = [
     {
@@ -1444,7 +1353,7 @@ export const CustomerDetailPage = () => {
                             {fmt(inv.dueDate)}
                           </td>
                           <td className="px-4 py-3 font-semibold">
-                            ₹{(inv.grandTotal ?? inv.totalAmount).toLocaleString("en-IN")}
+                            ₹{(inv.totalAmount).toLocaleString("en-IN")}
                           </td>
                           <td className="px-4 py-3">
                             <span
