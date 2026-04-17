@@ -77,6 +77,7 @@ const PRINT_STYLES = `
   .inv-foot { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 1px solid #185FA5; line-height: 1.4; text-align: center; }
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
+  .gst-inner-table > tbody > tr:first-child > td { border-top: none !important; }
 `;
 
 function fmtDate(d?: string | null) {
@@ -302,7 +303,6 @@ export const InvoicePrintPage: React.FC = () => {
                     <div
                       className="title"
                       style={{
-                        borderBottom: "1px solid #000",
                         marginBottom: 0,
                       }}
                     >
@@ -334,6 +334,7 @@ export const InvoicePrintPage: React.FC = () => {
                                     style={{
                                       padding: "11px 7px",
                                       verticalAlign: "top",
+                                      borderRight: "none",
                                     }}
                                   >
                                     <div className="company-name">
@@ -369,6 +370,7 @@ export const InvoicePrintPage: React.FC = () => {
                                       padding: "13.5px 7px",
                                       verticalAlign: "top",
                                       height: "100%",
+                                      borderRight: "none",
                                     }}
                                   >
                                     <div
@@ -697,7 +699,12 @@ export const InvoicePrintPage: React.FC = () => {
                         <tr>
                           {/* Left: single blank cell spanning all rows */}
                           <td
-                            style={{ width: "55%", verticalAlign: "top" }}
+                            style={{
+                              width: "55%",
+                              verticalAlign: "top",
+                              borderLeft: "1px solid #000",
+                              borderBottom: "1px solid #000",
+                            }}
                           ></td>
                           {/* Right: all tax + total rows in ONE inner table */}
                           <td
@@ -705,10 +712,12 @@ export const InvoicePrintPage: React.FC = () => {
                               width: "45%",
                               padding: 0,
                               verticalAlign: "top",
-                              borderLeft: "1px solid #000",
                             }}
                           >
-                            <table style={{ width: "100%" }}>
+                            <table
+                              className="gst-inner-table"
+                              style={{ width: "100%" }}
+                            >
                               <tbody>
                                 {cgstRate > 0 && (
                                   <tr>
