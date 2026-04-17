@@ -16,7 +16,7 @@ import {
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
-  @media screen { body.autoprint-mode { opacity: 0; } }
+  @media screen { body.autoprint-mode { opacity: 0.01 !important; } }
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
@@ -40,6 +40,9 @@ const PRINT_STYLES = `
       left: 5mm !important;
       right: 5mm !important;
       background: #fff !important;
+      z-index: 99999 !important;
+      contain: layout !important;
+      pointer-events: none !important;
     }
     .report { overflow: visible !important; }
     .report-body { overflow: visible !important; }
@@ -166,6 +169,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
     if (!loading && report && autoPrint) {
       document.body.classList.add("autoprint-mode");
       const t = setTimeout(() => {
+        window.scrollTo(0, document.body.scrollHeight);
+        window.scrollTo(0, 0);
+        
         window.print();
         document.body.classList.remove("autoprint-mode");
       }, 1000);
