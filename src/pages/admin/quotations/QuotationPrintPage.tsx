@@ -10,7 +10,10 @@ import { getCustomerById } from "../../../api/customerApi";
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0 10mm; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
-  @media screen { body.autoprint-mode { opacity: 0; } }
+  @media screen { 
+    body.autoprint-mode { background: #fff !important; }
+    body.autoprint-mode > #root > *:not(.print-footer-fixed):not(.print-fixed-footer) { opacity: 0 !important; visibility: hidden !important; }
+  }
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
@@ -31,7 +34,11 @@ const PRINT_STYLES = `
       margin: 0 auto !important;
       right: 0 !important;
       background: #fff !important;
-      z-index: 9999 !important;
+      z-index: 999999 !important;
+      contain: layout !important;
+      pointer-events: none !important;
+      transform: translateZ(0);
+      will-change: transform;
     }
     .print-footer-fixed-inner {
       padding: 0 5mm 5mm 5mm !important;
@@ -111,9 +118,21 @@ export const QuotationPrintPage: React.FC = () => {
 
   useEffect(() => {
     if (!isLoading && data && isAutoPrint) {
-      setTimeout(() => {
-        window.print();
-      }, 800);
+      document.body.classList.add("autoprint-mode");
+      const t = setTimeout(() => {
+        // Trigger multiple reflows to "wake up" the rendering engine
+        window.scrollTo(0, 10);
+        window.scrollTo(0, document.body.scrollHeight);
+        window.scrollTo(0, 1);
+        window.scrollTo(0, 0);
+        
+        // Force a tiny delay after scrolling before printing
+        requestAnimationFrame(() => {
+          window.print();
+          document.body.classList.remove("autoprint-mode");
+        });
+      }, 1200); 
+      return () => clearTimeout(t);
     }
   }, [isLoading, data, isAutoPrint]);
 
