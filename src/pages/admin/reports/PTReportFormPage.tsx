@@ -547,15 +547,6 @@ export const PTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Report No.</label>
-            <input
-              type="text"
-              value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
-              readOnly
-              className={inputClass + " bg-gray-50 font-mono text-indigo-700"}
-            />
-          </div>
-          <div>
             <label className={labelClass}>Client</label>
             <input
               type="text"
@@ -1203,7 +1194,7 @@ export const PTReportFormPage: React.FC = () => {
           {/* Client / TPI */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
-              Client / TPI
+              Client
             </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               {jobClient || "-"}
