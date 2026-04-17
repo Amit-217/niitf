@@ -17,7 +17,10 @@ import {
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
-  @media screen { body.autoprint-mode { opacity: 0; } }
+  @media screen { 
+    body.autoprint-mode { background: #fff !important; }
+    body.autoprint-mode > #root > *:not(.print-fixed-footer):not(.print-footer-fixed) { opacity: 0 !important; visibility: hidden !important; }
+  }
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
@@ -41,6 +44,11 @@ const PRINT_STYLES = `
       left: 5mm !important;
       right: 5mm !important;
       background: #fff !important;
+      z-index: 999999 !important;
+      contain: layout !important;
+      pointer-events: none !important;
+      transform: translateZ(0);
+      will-change: transform;
     }
     .report { overflow: visible !important; }
     .report-body { overflow: visible !important; }
@@ -180,9 +188,17 @@ export const UTReportPrintPage: React.FC = () => {
   useEffect(() => {
     if (!loading && report && autoPrint) {
       setTimeout(() => {
-        window.print();
-        window.close();
-      }, 300);
+        // Trigger multiple reflows to "wake up" the rendering engine
+        window.scrollTo(0, 10);
+        window.scrollTo(0, document.body.scrollHeight);
+        window.scrollTo(0, 1);
+        window.scrollTo(0, 0);
+
+        // Force a tiny delay after scrolling before printing
+        requestAnimationFrame(() => {
+          window.print();
+        });
+      }, 1200);
     }
   }, [loading, report, autoPrint]);
 

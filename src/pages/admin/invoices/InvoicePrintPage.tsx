@@ -6,7 +6,10 @@ import { getCustomerById } from "../../../api/customerApi";
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 8mm 8mm; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
-  @media screen { body.autoprint-mode { opacity: 0; } }
+  @media screen { 
+    body.autoprint-mode { background: #fff !important; }
+    body.autoprint-mode > #root > *:not(.print-footer-fixed):not(.print-fixed-footer) { opacity: 0 !important; visibility: hidden !important; }
+  }
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
@@ -27,7 +30,11 @@ const PRINT_STYLES = `
       margin: 0 !important;
       right: 0 !important;
       background: #fff !important;
-      z-index: 9999 !important;
+      z-index: 999999 !important;
+      contain: layout !important;
+      pointer-events: none !important;
+      transform: translateZ(0);
+      will-change: transform;
     }
     .print-footer-fixed-inner {
       padding: 0 !important;
@@ -77,6 +84,8 @@ const PRINT_STYLES = `
   .inv-foot { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 1px solid #185FA5; line-height: 1.4; text-align: center; }
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
+  .gst-inner-table > tbody > tr:first-child > td { border-top: none !important; }
+  .hsn-table.outer-border, .hsn-table.outer-border thead tr:first-child th { border-top: 1px solid #000 !important; }
 `;
 
 function fmtDate(d?: string | null) {
@@ -135,10 +144,20 @@ export const InvoicePrintPage: React.FC = () => {
   useEffect(() => {
     if (!isLoading && data && isAutoPrint) {
       document.body.classList.add("autoprint-mode");
-      setTimeout(() => {
-        window.print();
-        document.body.classList.remove("autoprint-mode");
-      }, 800);
+      const t = setTimeout(() => {
+        // Trigger multiple reflows to "wake up" the rendering engine
+        window.scrollTo(0, 10);
+        window.scrollTo(0, document.body.scrollHeight);
+        window.scrollTo(0, 1);
+        window.scrollTo(0, 0);
+
+        // Force a tiny delay after scrolling before printing
+        requestAnimationFrame(() => {
+          window.print();
+          document.body.classList.remove("autoprint-mode");
+        });
+      }, 1200); 
+      return () => clearTimeout(t);
     }
   }, [isLoading, data, isAutoPrint]);
 
@@ -302,7 +321,6 @@ export const InvoicePrintPage: React.FC = () => {
                     <div
                       className="title"
                       style={{
-                        borderBottom: "1px solid #000",
                         marginBottom: 0,
                       }}
                     >
@@ -334,6 +352,7 @@ export const InvoicePrintPage: React.FC = () => {
                                     style={{
                                       padding: "11px 7px",
                                       verticalAlign: "top",
+                                      borderRight: "none",
                                     }}
                                   >
                                     <div className="company-name">
@@ -369,6 +388,7 @@ export const InvoicePrintPage: React.FC = () => {
                                       padding: "13.5px 7px",
                                       verticalAlign: "top",
                                       height: "100%",
+                                      borderRight: "none",
                                     }}
                                   >
                                     <div
@@ -691,13 +711,18 @@ export const InvoicePrintPage: React.FC = () => {
                     {/* ── GST SUMMARY + TOTALS ── */}
                     <table
                       className="outer-border"
-                      style={{ borderTop: "none" }}
+                      style={{ marginTop: "-1px" }}
                     >
                       <tbody>
                         <tr>
                           {/* Left: single blank cell spanning all rows */}
                           <td
-                            style={{ width: "55%", verticalAlign: "top" }}
+                            style={{
+                              width: "55%",
+                              verticalAlign: "top",
+                              borderLeft: "1px solid #000",
+                              borderBottom: "1px solid #000",
+                            }}
                           ></td>
                           {/* Right: all tax + total rows in ONE inner table */}
                           <td
@@ -705,10 +730,12 @@ export const InvoicePrintPage: React.FC = () => {
                               width: "45%",
                               padding: 0,
                               verticalAlign: "top",
-                              borderLeft: "1px solid #000",
                             }}
                           >
-                            <table style={{ width: "100%" }}>
+                            <table
+                              className="gst-inner-table"
+                              style={{ width: "100%" }}
+                            >
                               <tbody>
                                 {cgstRate > 0 && (
                                   <tr>
@@ -781,7 +808,7 @@ export const InvoicePrintPage: React.FC = () => {
                     {/* ── AMOUNT IN WORDS ── */}
                     <table
                       className="outer-border"
-                      style={{ borderTop: "none" }}
+                      style={{ marginTop: "-1px" }}
                     >
                       <tbody>
                         <tr>
@@ -799,8 +826,8 @@ export const InvoicePrintPage: React.FC = () => {
 
                     {/* ── HSN/SAC TAX TABLE ── */}
                     <table
-                      className="outer-border"
-                      style={{ borderTop: "none" }}
+                      className="outer-border hsn-table"
+                      style={{ marginTop: "-1px" }}
                     >
                       <thead>
                         <tr>
@@ -911,7 +938,7 @@ export const InvoicePrintPage: React.FC = () => {
                     {/* Tax Amount in Words */}
                     <table
                       className="outer-border"
-                      style={{ borderTop: "none" }}
+                      style={{ marginTop: "-1px" }}
                     >
                       <tbody>
                         <tr>
@@ -930,7 +957,7 @@ export const InvoicePrintPage: React.FC = () => {
                     {/* ── DECLARATION + BANK DETAILS + SIGNATURES ── */}
                     <table
                       className="outer-border"
-                      style={{ borderTop: "none" }}
+                      style={{ marginTop: "-1px" }}
                     >
                       <tbody>
                         <tr>

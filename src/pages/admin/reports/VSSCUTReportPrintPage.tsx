@@ -16,7 +16,10 @@ import {
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
-  @media screen { body.autoprint-mode { opacity: 0; } }
+  @media screen { 
+    body.autoprint-mode { background: #fff !important; }
+    body.autoprint-mode > #root > *:not(.print-fixed-footer):not(.print-footer-fixed) { opacity: 0 !important; visibility: hidden !important; }
+  }
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
@@ -40,6 +43,11 @@ const PRINT_STYLES = `
       left: 5mm !important;
       right: 5mm !important;
       background: #fff !important;
+      z-index: 999999 !important;
+      contain: layout !important;
+      pointer-events: none !important;
+      transform: translateZ(0);
+      will-change: transform;
     }
     .report { overflow: visible !important; }
     .report-body { overflow: visible !important; }
@@ -51,9 +59,9 @@ const PRINT_STYLES = `
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
+  .report { background: #fff; border: none; border-radius: 0; overflow: hidden; }
   .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
+  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
   .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
@@ -98,8 +106,8 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0; overflow: hidden; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
@@ -166,9 +174,18 @@ export const VSSCUTReportPrintPage: React.FC = () => {
     if (!loading && report && autoPrint) {
       document.body.classList.add("autoprint-mode");
       const t = setTimeout(() => {
-        window.print();
-        document.body.classList.remove("autoprint-mode");
-      }, 600);
+        // Trigger multiple reflows to "wake up" the rendering engine
+        window.scrollTo(0, 10);
+        window.scrollTo(0, document.body.scrollHeight);
+        window.scrollTo(0, 1);
+        window.scrollTo(0, 0);
+
+        // Force a tiny delay after scrolling before printing
+        requestAnimationFrame(() => {
+          window.print();
+          document.body.classList.remove("autoprint-mode");
+        });
+      }, 1200);
       return () => clearTimeout(t);
     }
   }, [loading, report, autoPrint]);
@@ -446,7 +463,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       {/* ── VSSC UT SPECIFIC HEADER ── */}
                       <table
                         className="report-table mt-n1"
-                        style={{ marginBottom: 4 }}
+                        style={{ marginBottom: 0 }}
                       >
                         <colgroup>
                           <col style={{ width: "28%" }} />
@@ -625,7 +642,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       <table
                         className="report-table"
                         style={{
-                          marginBottom: 2,
+                          marginBottom: 0,
                         }}
                       >
                         <tbody>
@@ -674,7 +691,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       {/* Calibration Table */}
                       <table
                         className="calib-table mt-n1"
-                        style={{ marginBottom: 3 }}
+                        style={{ marginBottom: 0 }}
                       >
                         <thead>
                           <tr style={{ background: "#f8fafc" }}>
