@@ -173,7 +173,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       const t = setTimeout(() => {
         window.print();
         document.body.classList.remove("autoprint-mode");
-      }, 600);
+      }, 1000);
       return () => clearTimeout(t);
     }
   }, [loading, report, autoPrint]);

@@ -189,7 +189,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       const t = setTimeout(() => {
         window.print();
         document.body.classList.remove("autoprint-mode");
-      }, 600);
+      }, 1000); // 1s buffer for images and SVG QR code to render
       return () => clearTimeout(t);
     }
   }, [loading, report, autoPrint]);
@@ -644,10 +644,10 @@ export const AWSDReportPrintPage: React.FC = () => {
                                 {v(o.decibels?.indicationRating)}
                               </td>
                               <td>{v(o.discontinuity?.length)}</td>
-                              <td>{v(o.discontinuity?.angularDist)}</td>
+                              <td>{v(o.discontinuity?.angularDistance)}</td>
                               <td>{v(o.discontinuity?.depthFromA)}</td>
-                              <td>{v(o.discontinuity?.fromX)}</td>
-                              <td>{v(o.discontinuity?.fromY)}</td>
+                              <td>{v(o.discontinuity?.distanceFromX)}</td>
+                              <td>{v(o.discontinuity?.distanceFromY)}</td>
                               <td>{v(o.interpretation)}</td>
                               <td>{v(o.evaluation)}</td>
                             </tr>

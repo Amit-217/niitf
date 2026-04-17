@@ -226,7 +226,7 @@ export const MPTReportPrintPage = () => {
       setTimeout(() => {
         window.print();
         window.close();
-      }, 300);
+      }, 1000);
     }
   }, [loading, report, autoPrint]);
 
