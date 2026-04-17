@@ -78,6 +78,7 @@ const PRINT_STYLES = `
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   .gst-inner-table > tbody > tr:first-child > td { border-top: none !important; }
+  .hsn-table.outer-border, .hsn-table.outer-border thead tr:first-child th { border-top: 1px solid #000 !important; }
 `;
 
 function fmtDate(d?: string | null) {
@@ -693,7 +694,7 @@ export const InvoicePrintPage: React.FC = () => {
                     {/* ── GST SUMMARY + TOTALS ── */}
                     <table
                       className="outer-border"
-                      style={{ borderTop: "none" }}
+                      style={{ marginTop: "-1px" }}
                     >
                       <tbody>
                         <tr>
@@ -790,7 +791,7 @@ export const InvoicePrintPage: React.FC = () => {
                     {/* ── AMOUNT IN WORDS ── */}
                     <table
                       className="outer-border"
-                      style={{ borderTop: "none" }}
+                      style={{ marginTop: "-1px" }}
                     >
                       <tbody>
                         <tr>
@@ -808,8 +809,8 @@ export const InvoicePrintPage: React.FC = () => {
 
                     {/* ── HSN/SAC TAX TABLE ── */}
                     <table
-                      className="outer-border"
-                      style={{ borderTop: "none" }}
+                      className="outer-border hsn-table"
+                      style={{ marginTop: "-1px" }}
                     >
                       <thead>
                         <tr>
@@ -920,7 +921,7 @@ export const InvoicePrintPage: React.FC = () => {
                     {/* Tax Amount in Words */}
                     <table
                       className="outer-border"
-                      style={{ borderTop: "none" }}
+                      style={{ marginTop: "-1px" }}
                     >
                       <tbody>
                         <tr>
@@ -939,7 +940,7 @@ export const InvoicePrintPage: React.FC = () => {
                     {/* ── DECLARATION + BANK DETAILS + SIGNATURES ── */}
                     <table
                       className="outer-border"
-                      style={{ borderTop: "none" }}
+                      style={{ marginTop: "-1px" }}
                     >
                       <tbody>
                         <tr>
