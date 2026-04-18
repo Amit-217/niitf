@@ -178,7 +178,7 @@ export const MyTasksPage = () => {
         <p className="text-sm text-gray-400 font-medium text-center">No updates posted in this thread yet.</p>
       </div>
     ) : (
-      <div className="flex flex-col-reverse space-y-4 space-y-reverse max-h-[450px] overflow-y-auto pr-1">
+      <div className="flex flex-col-reverse space-y-4 space-y-reverse flex-1 lg:overflow-y-auto pr-1">
         {updates.map((update: any) => {
           const isMine = String(update.employeeId?._id || update.employeeId) === String(currentUserId);
           return (
@@ -318,7 +318,7 @@ export const MyTasksPage = () => {
       {isTaskModalOpen && selectedTask && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setTaskModalOpen(false)} />
-          <div className="relative bg-white rounded-[2rem] w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in duration-200 shadow-2xl">
+          <div className="relative bg-white rounded-[2rem] w-full max-w-4xl max-h-[95vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200 shadow-2xl">
             <div className="px-6 py-5 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white flex justify-between items-start gap-4">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-violet-100/80">Admin Task Detail</p>
@@ -344,9 +344,9 @@ export const MyTasksPage = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] max-h-[80dvh] lg:max-h-[70vh] overflow-y-auto lg:overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] flex-1 overflow-y-auto lg:overflow-hidden">
               {/* Form Side */}
-              <div className="p-6 overflow-y-auto border-b lg:border-b-0 lg:border-r border-gray-100">
+              <div className="p-6 lg:overflow-y-auto border-b lg:border-b-0 lg:border-r border-gray-100">
                 <div className="rounded-2xl border border-gray-100 bg-gray-50/50 p-4 mb-6">
                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Description</p>
                     <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedTask.description}</p>
@@ -395,7 +395,7 @@ export const MyTasksPage = () => {
               </div>
 
               {/* Thread Side */}
-              <div className="p-6 bg-gray-50/50 overflow-y-auto">
+              <div className="p-6 bg-gray-50/50 flex flex-col overflow-hidden">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] flex items-center gap-2">
                     <Bell size={14} className="text-violet-600" />

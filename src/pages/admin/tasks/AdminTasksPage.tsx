@@ -940,7 +940,7 @@ export const AdminTasksPage = () => {
                     No updates yet. Start the conversation below.
                   </p>
                 ) : (
-                  <div className="flex flex-col-reverse space-y-3 space-y-reverse max-h-[420px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-violet-200 scrollbar-track-transparent">
+                  <div className="flex flex-col-reverse space-y-3 space-y-reverse pr-1">
                     {taskUpdates.map((update: any) => {
                       const isMine = String(update.employeeId?._id || update.employeeId) === String(currentUserId);
                       return (
