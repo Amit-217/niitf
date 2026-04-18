@@ -640,7 +640,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 </tr>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body" style={{ borderTop: "none" }}>
+                    <div
+                      className="report-body"
+                      style={{ borderTop: "none", borderRadius: 0 }}
+                    >
                       {/* Angle Probe Calibration */}
                       <table
                         className="report-table"
@@ -690,7 +693,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 </tr>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body" style={{ borderTop: "none" }}>
+                    <div
+                      className="report-body"
+                      style={{ borderTop: "none", borderRadius: 0 }}
+                    >
                       {/* Calibration Table */}
                       <table
                         className="calib-table mt-n1"
@@ -819,7 +825,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 </tr>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body" style={{ borderTop: "none" }}>
+                    <div
+                      className="report-body"
+                      style={{ borderTop: "none", borderRadius: 0 }}
+                    >
                       {/* Normal Probe Calibration */}
                       <table
                         className="report-table"
@@ -862,7 +871,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 </tr>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body" style={{ borderTop: "none" }}>
+                    <div
+                      className="report-body"
+                      style={{ borderTop: "none", borderRadius: 0 }}
+                    >
                       {/* Disposition & Evaluation */}
                       <div
                         style={{
