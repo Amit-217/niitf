@@ -17,7 +17,10 @@ import {
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
-  @media screen { body.autoprint-mode { opacity: 0; } }
+  @media screen { 
+    body.autoprint-mode { background: #fff !important; }
+    body.autoprint-mode > #root > *:not(.print-fixed-footer):not(.print-footer-fixed) { opacity: 0 !important; visibility: hidden !important; }
+  }
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
@@ -41,6 +44,11 @@ const PRINT_STYLES = `
       left: 5mm !important;
       right: 5mm !important;
       background: #fff !important;
+      z-index: 999999 !important;
+      contain: layout !important;
+      pointer-events: none !important;
+      transform: translateZ(0);
+      will-change: transform;
     }
   }
   body {
@@ -55,11 +63,11 @@ const PRINT_STYLES = `
   .report {
     background: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: 0;
     overflow: hidden;
   }
-  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0; overflow: hidden; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .rpt-header {
@@ -69,7 +77,7 @@ const PRINT_STYLES = `
     align-items: center;
     gap: 10px;
   }
-  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
+  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
   .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
@@ -129,7 +137,8 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0; overflow: hidden; }
   .footer {
     background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563;
     margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4;
@@ -206,9 +215,17 @@ export const PTReportPrintPage: React.FC = () => {
   useEffect(() => {
     if (!loading && report && autoPrint) {
       setTimeout(() => {
-        window.print();
-        window.close();
-      }, 300);
+        // Trigger multiple reflows to "wake up" the rendering engine
+        window.scrollTo(0, 10);
+        window.scrollTo(0, document.body.scrollHeight);
+        window.scrollTo(0, 1);
+        window.scrollTo(0, 0);
+
+        // Force a tiny delay after scrolling before printing
+        requestAnimationFrame(() => {
+          window.print();
+        });
+      }, 1200);
     }
   }, [loading, report, autoPrint]);
 
@@ -753,10 +770,10 @@ export const PTReportPrintPage: React.FC = () => {
                               </td>
                             </tr>
                             <tr>
-                              <td className="lbl" style={{ width: "22%" }}>
+                              <td className="lbl" style={{ width: "22%", borderBottom: "none" }}>
                                 Overall Evaluation
                               </td>
-                              <td className="val">{conclusionText}</td>
+                              <td className="val" style={{ borderBottom: "none" }}>{conclusionText}</td>
                             </tr>
                           </tbody>
                         </table>
