@@ -107,9 +107,11 @@ const PRINT_STYLES = `
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
   .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: 1px solid #444; border-radius: 0 0 4px 4px; overflow: hidden; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
+
+
   .activities-box { border: 1px solid #d9e1ea; padding: 6px 8px; font-size: 11px; min-height: 40px; white-space: pre-wrap; word-break: break-word; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
@@ -706,18 +708,22 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* ── INSPECTION ACTIVITIES ── */}
-                      <table className="report-table mt-n1">
-                        <tbody>
+                      <table className="report-table mt-n1" style={{ breakInside: "auto", pageBreakInside: "auto" }}>
+                        <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td className="section-hdr">
                               5. INSPECTION ACTIVITIES
                             </td>
                           </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td className="activities-box">
+                              {v(report.inspectionActivities) || " "}
+                            </td>
+                          </tr>
                         </tbody>
                       </table>
-                      <div className="activities-box">
-                        {v(report.inspectionActivities) || " "}
-                      </div>
 
                       <table className="report-table mt-n1">
                         <colgroup>
@@ -738,13 +744,13 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* ── REFERENCE DOCUMENTS ── */}
-                      <table className="report-table mt-n1">
+                      <table className="report-table mt-n1" style={{ breakInside: "auto", pageBreakInside: "auto" }}>
                         <colgroup>
                           <col style={{ width: "30%" }} />
                           <col style={{ width: "50%" }} />
                           <col style={{ width: "20%" }} />
                         </colgroup>
-                        <tbody>
+                        <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={3} className="section-hdr">
                               7. REFERENCE DOCUMENTS FOR INSPECTION
@@ -755,6 +761,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             <td className="col-hdr">Reference Number</td>
                             <td className="col-hdr">Rev. No.</td>
                           </tr>
+                        </thead>
+                        <tbody>
                           {refs.length === 0 ? (
                             <tr>
                               <td
@@ -786,7 +794,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* ── CALIBRATION STATUS ── */}
-                      <table className="report-table mt-n1">
+                      <table className="report-table mt-n1" style={{ breakInside: "auto", pageBreakInside: "auto" }}>
                         <colgroup>
                           <col style={{ width: "28%" }} />
                           <col style={{ width: "18%" }} />
@@ -794,7 +802,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           <col style={{ width: "18%" }} />
                           <col style={{ width: "18%" }} />
                         </colgroup>
-                        <tbody>
+                        <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={5} className="section-hdr">
                               8. CALIBRATION STATUS OF INSTRUMENTS
@@ -807,6 +815,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             <td className="col-hdr">Due Date</td>
                             <td className="col-hdr">NABL Certified</td>
                           </tr>
+                        </thead>
+                        <tbody>
                           {calib.length === 0 ? (
                             <tr>
                               <td

@@ -106,10 +106,13 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-radius: 0 0 4px 4px; overflow: hidden; }
+
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
+
+
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -637,7 +640,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 </tr>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body" style={{ borderTop: "none" }}>
+                    <div
+                      className="report-body"
+                      style={{ borderTop: "none", borderRadius: 0 }}
+                    >
                       {/* Angle Probe Calibration */}
                       <table
                         className="report-table"
@@ -687,7 +693,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 </tr>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body" style={{ borderTop: "none" }}>
+                    <div
+                      className="report-body"
+                      style={{ borderTop: "none", borderRadius: 0 }}
+                    >
                       {/* Calibration Table */}
                       <table
                         className="calib-table mt-n1"
@@ -816,7 +825,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 </tr>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body" style={{ borderTop: "none" }}>
+                    <div
+                      className="report-body"
+                      style={{ borderTop: "none", borderRadius: 0 }}
+                    >
                       {/* Normal Probe Calibration */}
                       <table
                         className="report-table"
@@ -859,7 +871,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 </tr>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body" style={{ borderTop: "none" }}>
+                    <div
+                      className="report-body"
+                      style={{ borderTop: "none", borderRadius: 0 }}
+                    >
                       {/* Disposition & Evaluation */}
                       <div
                         style={{

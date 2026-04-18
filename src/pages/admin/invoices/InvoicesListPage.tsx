@@ -36,7 +36,8 @@ export const InvoicesListPage: React.FC = () => {
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [page, setPage] = useState(1);
-    const [limit] = useState(10);
+    const [limit, setLimit] = useState(10);
+    const [total, setTotal] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -49,6 +50,7 @@ export const InvoicesListPage: React.FC = () => {
             const pagination = body?.data?.pagination || body?.pagination;
             setInvoices(Array.isArray(data) ? data : []);
             if (pagination?.totalPages) setTotalPages(pagination.totalPages);
+            if (pagination?.total) setTotal(pagination.total);
         } catch (err: any) {
             toast.error(err?.message || 'Failed to load invoices');
         } finally {
@@ -197,7 +199,14 @@ export const InvoicesListPage: React.FC = () => {
 
                 {!isLoading && totalPages > 1 && (
                     <div className="px-4 py-3 border-t border-gray-100">
-                        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+                        <Pagination 
+                            page={page} 
+                            totalPages={totalPages} 
+                            total={total}
+                            limit={limit}
+                            onPageChange={setPage} 
+                            onLimitChange={(l) => { setLimit(l); setPage(1); }}
+                        />
                     </div>
                 )}
             </div>
