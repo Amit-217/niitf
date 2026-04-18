@@ -256,7 +256,14 @@ export const ReportsListPage = () => {
                         <thead>
                             <tr className="bg-white border-b border-gray-50">
                                 {["Report No", "Customer", "Date", "Inspection Stage", "Status", "Actions"].map((h) => (
-                                    <th key={h} className="px-6 py-4 text-left text-[11px] font-black text-gray-400 uppercase tracking-[0.15em]">{h}</th>
+                                    <th
+                                        key={h}
+                                        className={`px-6 py-4 text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] ${
+                                            h === "Actions" ? "text-center" : "text-left"
+                                        }`}
+                                    >
+                                        {h}
+                                    </th>
                                 ))}
                             </tr>
                         </thead>
@@ -323,7 +330,7 @@ export const ReportsListPage = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-5">
-                                            <div className="flex items-center gap-1">
+                                            <div className="flex items-center justify-center gap-1">
                                                 <button
                                                     onClick={() => navigate(`/admin/reports/${activeTab}/${r._id}/print`)}
                                                     className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
