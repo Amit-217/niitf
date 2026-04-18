@@ -708,18 +708,22 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* ── INSPECTION ACTIVITIES ── */}
-                      <table className="report-table mt-n1">
-                        <tbody>
+                      <table className="report-table mt-n1" style={{ breakInside: "auto", pageBreakInside: "auto" }}>
+                        <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td className="section-hdr">
                               5. INSPECTION ACTIVITIES
                             </td>
                           </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td className="activities-box">
+                              {v(report.inspectionActivities) || " "}
+                            </td>
+                          </tr>
                         </tbody>
                       </table>
-                      <div className="activities-box">
-                        {v(report.inspectionActivities) || " "}
-                      </div>
 
                       <table className="report-table mt-n1">
                         <colgroup>
@@ -740,13 +744,13 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* ── REFERENCE DOCUMENTS ── */}
-                      <table className="report-table mt-n1">
+                      <table className="report-table mt-n1" style={{ breakInside: "auto", pageBreakInside: "auto" }}>
                         <colgroup>
                           <col style={{ width: "30%" }} />
                           <col style={{ width: "50%" }} />
                           <col style={{ width: "20%" }} />
                         </colgroup>
-                        <tbody>
+                        <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={3} className="section-hdr">
                               7. REFERENCE DOCUMENTS FOR INSPECTION
@@ -757,6 +761,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             <td className="col-hdr">Reference Number</td>
                             <td className="col-hdr">Rev. No.</td>
                           </tr>
+                        </thead>
+                        <tbody>
                           {refs.length === 0 ? (
                             <tr>
                               <td
@@ -788,7 +794,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* ── CALIBRATION STATUS ── */}
-                      <table className="report-table mt-n1">
+                      <table className="report-table mt-n1" style={{ breakInside: "auto", pageBreakInside: "auto" }}>
                         <colgroup>
                           <col style={{ width: "28%" }} />
                           <col style={{ width: "18%" }} />
@@ -796,7 +802,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           <col style={{ width: "18%" }} />
                           <col style={{ width: "18%" }} />
                         </colgroup>
-                        <tbody>
+                        <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={5} className="section-hdr">
                               8. CALIBRATION STATUS OF INSTRUMENTS
@@ -809,6 +815,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             <td className="col-hdr">Due Date</td>
                             <td className="col-hdr">NABL Certified</td>
                           </tr>
+                        </thead>
+                        <tbody>
                           {calib.length === 0 ? (
                             <tr>
                               <td
