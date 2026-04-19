@@ -5,12 +5,16 @@ import {
     Calculator,
     CreditCard,
     Eye,
+    X,
+    TrendingUp,
+    Users,
+    Info,
     Loader2,
-    Trash2,
-    X
+    Trash2
 } from 'lucide-react';
 import { 
     generateSalary, 
+    previewSalary,
     getAllSalaryRecordsForMonth,
     deleteSalaryRecord,
     updateSalaryRecordStatus
@@ -52,8 +56,9 @@ export const SalaryRecordsPage = () => {
 
     const PAYROLL_DAYS = 30;
 
-    const [month, setMonth] = useState(getLastMonthValue());
+    const [month, setMonth] = useState(new Date().toISOString().substring(0, 7)); // Default to current month
     const [records, setRecords] = useState<SalaryRecord[]>([]);
+    const [previews, setPreviews] = useState<any[]>([]);
     const [isLoadingRecords, setIsLoadingRecords] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [note, setNote] = useState('');
@@ -67,20 +72,72 @@ export const SalaryRecordsPage = () => {
     const [monthlyAttendance, setMonthlyAttendance] = useState<any[]>([]);
 
     useEffect(() => {
-        fetchMonthRecords();
-        fetchEmployees();
-        fetchMonthlyAttendance();
+        const loadPageData = async () => {
+            setIsLoadingRecords(true);
+            try {
+                // Fetch basic data in parallel
+                const empRes: any = await api.get('/users?status=active&limit=100');
+                const attRes: any = await api.get(`/admin/attendance/month?month=${month}`);
+                
+                const loadedEmployees = empRes.data || empRes || [];
+                const loadedAttendance = attRes.data || attRes || [];
+                
+                setEmployees(loadedEmployees);
+                setMonthlyAttendance(loadedAttendance);
+
+                // Now fetch records and previews
+                await fetchMonthRecords(loadedEmployees);
+            } catch (err) {
+                toast.error("Failed to load page data");
+            } finally {
+                setIsLoadingRecords(false);
+            }
+        };
+
+        loadPageData();
     }, [month]);
 
-    const fetchMonthRecords = async () => {
-        setIsLoadingRecords(true);
+    const fetchMonthRecords = async (currentEmployees?: any[]) => {
+        const targetEmployees = currentEmployees || employees;
+        if (!targetEmployees.length) return;
+
+        setPreviews([]);
         try {
-            const res = await getAllSalaryRecordsForMonth(month);
-            setRecords(res.data || []);
+            const currentMonthStr = new Date().toISOString().substring(0, 7);
+            const res: any = await getAllSalaryRecordsForMonth(month);
+            const existingRecords = res.data || res || []; 
+            setRecords(Array.isArray(existingRecords) ? existingRecords : []);
+
+            // If it's the current month, fetch previews for employees who don't have records yet
+            if (month === currentMonthStr) {
+                const previewPromises = targetEmployees.map(async (emp) => {
+                    const hasRecord = existingRecords.some((r: any) => {
+                        const rId = r.employeeId?._id || r.employeeId;
+                        return rId === emp._id;
+                    });
+
+                    if (!hasRecord) {
+                        try {
+                            const pRes: any = await previewSalary(emp._id, month);
+                            const details = pRes.data || pRes;
+                            return { 
+                                ...details, 
+                                isPreview: true, 
+                                _id: `preview-${emp._id}`,
+                                status: 'LIVE_BALANCE' 
+                            };
+                        } catch (e) {
+                            console.error(`Preview failed for ${emp.name}:`, e);
+                            return null;
+                        }
+                    }
+                    return null;
+                });
+                const fetchedPreviews = (await Promise.all(previewPromises)).filter(Boolean);
+                setPreviews(fetchedPreviews);
+            }
         } catch (error) {
-            toast.error("Failed to fetch salary records");
-        } finally {
-            setIsLoadingRecords(false);
+            console.error("Fetch records error:", error);
         }
     };
 
@@ -107,10 +164,9 @@ export const SalaryRecordsPage = () => {
         new Date(`${value}-01T00:00:00Z`).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 
     const getDaysInMonth = (monthValue: string) => {
-        // Payroll is normalized to a 30-day cycle regardless of calendar month length.
         const [year, monthNumber] = monthValue.split('-').map(Number);
-        if (!year || !monthNumber) return PAYROLL_DAYS;
-        return PAYROLL_DAYS;
+        if (!year || !monthNumber) return 30;
+        return new Date(year, monthNumber, 0).getDate();
     };
 
     const getAttendanceSummary = (employeeId: string): AttendanceSummary => {
@@ -259,12 +315,25 @@ export const SalaryRecordsPage = () => {
         }, 500);
     };
 
+    const totalNetPayout = [...records, ...previews].reduce((acc, r) => acc + (r.netSalary || 0), 0);
+    const totalEmployees = employees.length;
+    const daysInThisMonth = getDaysInMonth(month);
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2"><CreditCard className="text-primary-600" size={26} /> Payroll Records</h1>
-                    <p className="hidden sm:block text-sm text-gray-500 mt-1">Review, generate, and process monthly payouts</p>
+                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <CreditCard className="text-primary-600" size={26} /> 
+                        Payroll Records
+                    </h1>
+                    <div className="flex items-center gap-2 mt-1">
+                        <span className="text-sm text-gray-500 font-medium">{formatMonthLabel(month)}</span>
+                        <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                        <span className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-gray-200">
+                            {daysInThisMonth} Days Logic
+                        </span>
+                    </div>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -287,6 +356,37 @@ export const SalaryRecordsPage = () => {
                 </div>
             </div>
 
+            {/* Summary Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center text-primary-600">
+                        <TrendingUp size={24} />
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Estimated Payout</p>
+                        <p className="text-2xl font-black text-gray-900 mt-0.5">₹{Math.round(totalNetPayout).toLocaleString()}</p>
+                    </div>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                        <Users size={24} />
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Employees</p>
+                        <p className="text-2xl font-black text-gray-900 mt-0.5">{totalEmployees}</p>
+                    </div>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-emerald-50 shadow-sm flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <Calculator size={24} />
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cycle Configuration</p>
+                        <p className="text-base font-black text-emerald-700 mt-0.5">{daysInThisMonth} Days / Fixed OT</p>
+                    </div>
+                </div>
+            </div>
+
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
@@ -304,17 +404,27 @@ export const SalaryRecordsPage = () => {
                         <tbody className="divide-y divide-gray-50">
                             {isLoadingRecords ? (
                                 <tr><td colSpan={7} className="text-center py-8 text-gray-400"><Loader2 className="animate-spin inline-block" /></td></tr>
-                            ) : records.length === 0 ? (
+                            ) : (records.length === 0 && previews.length === 0) ? (
                                 <tr><td colSpan={7} className="text-center py-8 text-gray-500 font-medium">No records found for this month</td></tr>
                             ) : (
-                                records.map((record) => (
-                                    <tr key={record._id} className={`hover:bg-gray-50/50 transition-colors ${record.status === 'PAID' ? 'bg-emerald-50/10' : ''}`}>
+                                [...records, ...previews].map((record: any) => (
+                                    <tr key={record._id} className={`hover:bg-gray-50/50 transition-colors ${record.status === 'PAID' ? 'bg-emerald-50/10' : ''} ${record.isPreview ? 'opacity-70 grayscale-[0.3]' : ''}`}>
                                         <td className="px-4 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center text-primary-700 font-black text-xs uppercase">{record.employeeId?.name ? record.employeeId.name.charAt(0) : '?'}</div>
+                                                <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center text-primary-700 font-black text-xs uppercase">
+                                                    {record.employeeId?.name ? record.employeeId.name.charAt(0) : record.employeeDetails?.name?.charAt(0) || '?'}
+                                                </div>
                                                 <div>
-                                                    <p className="font-black text-gray-900 leading-tight">{record.employeeId?.name || 'Unknown'}</p>
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{record.employeeId?.empId || 'N/A'}</p>
+                                                    <p className="font-black text-gray-900 leading-tight flex items-center gap-2">
+                                                        {record.employeeId?.name || record.employeeDetails?.name || 'Unknown'}
+                                                        {record.isPreview && (
+                                                            <span className="flex items-center gap-1 text-[8px] bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded-full uppercase tracking-widest border border-amber-100 font-black animate-pulse">
+                                                                <span className="w-1 h-1 rounded-full bg-amber-500"></span>
+                                                                Live
+                                                            </span>
+                                                        )}
+                                                    </p>
+                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{record.employeeId?.empId || record.employeeDetails?.empId || 'N/A'}</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -341,50 +451,69 @@ export const SalaryRecordsPage = () => {
                                             <div className="text-[10px] font-bold text-emerald-600">+ ₹{(record.overtimeAmount || 0).toLocaleString()} (OT)</div>
                                         </td>
                                         <td className="px-4 py-4">
-                                            <div className="text-[10px] font-bold text-red-600">- ₹{(record.deductionAmount || 0).toLocaleString()} (Absent)</div>
-                                            <div className="text-[10px] font-bold text-amber-600">- ₹{(record.advanceTotal || 0).toLocaleString()} (Advance)</div>
+                                            <div className="text-[10px] font-bold text-red-600 flex items-center gap-1">- ₹{(record.deductionAmount || 0).toLocaleString()} <span className="text-[8px] opacity-70">({record.absentDays}A)</span></div>
+                                            <div className="text-[10px] font-bold text-amber-600">- ₹{(record.advanceTotal || 0).toLocaleString()} <span className="text-[8px] opacity-70">(Adv)</span></div>
                                         </td>
                                         <td className="px-4 py-4 font-black text-primary-700 text-base">₹{Math.round(record.netSalary || 0).toLocaleString()}</td>
                                         <td className="px-4 py-4 text-center">
-                                            <select
-                                                value={record.status}
-                                                disabled={statusUpdatingId === record._id}
-                                                onChange={(e) => handleStatusChange(record._id, e.target.value as 'DRAFT' | 'PAID')}
-                                                className={`inline-flex px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter border outline-none cursor-pointer ${
-                                                    record.status === 'PAID'
-                                                        ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
-                                                        : 'bg-blue-100 text-blue-700 border-blue-200'
-                                                }`}
-                                            >
-                                                <option value="DRAFT">DRAFT</option>
-                                                <option value="PAID">PAID</option>
-                                            </select>
+                                            {record.isPreview ? (
+                                                <span className="inline-flex px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter bg-gray-100 text-gray-500 border border-gray-200">UNBORN</span>
+                                            ) : (
+                                                <select
+                                                    value={record.status}
+                                                    disabled={statusUpdatingId === record._id}
+                                                    onChange={(e) => handleStatusChange(record._id, e.target.value as 'DRAFT' | 'PAID')}
+                                                    className={`inline-flex px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter border outline-none cursor-pointer ${
+                                                        record.status === 'PAID'
+                                                            ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
+                                                            : 'bg-blue-100 text-blue-700 border-blue-200'
+                                                    }`}
+                                                >
+                                                    <option value="DRAFT">DRAFT</option>
+                                                    <option value="PAID">PAID</option>
+                                                </select>
+                                            )}
                                         </td>
                                         <td className="px-4 py-4">
                                             <div className="flex items-center justify-center gap-2">
                                                 <button
-                                                    onClick={() => setSelectedRecord(record)}
+                                                    onClick={() => {
+                                                        const normalizedRecord = record.isPreview ? {
+                                                            ...record,
+                                                            employeeId: {
+                                                                _id: record.employeeId,
+                                                                name: record.employeeDetails.name,
+                                                                empId: record.employeeDetails.empId,
+                                                                email: record.employeeDetails.email
+                                                            }
+                                                        } : record;
+                                                        setSelectedRecord(normalizedRecord);
+                                                    }}
                                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 text-xs font-bold hover:bg-gray-50 transition-all"
                                                     title="View"
                                                 >
                                                     <Eye size={16} />
                                                     View
                                                 </button>
-                                                <button
-                                                    onClick={() => downloadSalarySlip(record)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-600 text-white text-xs font-bold hover:bg-primary-700 transition-all"
-                                                    title="Generate Slip"
-                                                >
-                                                    <Download size={16} />
-                                                    Generate
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(record._id, record.employeeId?.name)}
-                                                    className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                                                    title="Delete Record"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
+                                                {!record.isPreview && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => downloadSalarySlip(record)}
+                                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-600 text-white text-xs font-bold hover:bg-primary-700 transition-all"
+                                                            title="Generate Slip"
+                                                        >
+                                                            <Download size={16} />
+                                                            Generate
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDelete(record._id, record.employeeId?.name)}
+                                                            className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                            title="Delete Record"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>
@@ -532,9 +661,14 @@ export const SalaryRecordsPage = () => {
                                                     <p className="text-2xl font-black text-sky-700 mt-1">{summary.holidayDays}</p>
                                                 </div>
                                             </div>
-                                            <p className="text-xs text-emerald-800 mt-4 font-medium">
-                                                {summary.payableDays} payable days out of {summary.daysInMonth}. Payroll is calculated on a fixed 30-day month.
-                                            </p>
+                                            <div className="flex items-start gap-2 text-[10px] text-emerald-800 mt-4 font-bold bg-emerald-100/50 p-2.5 rounded-xl border border-emerald-100">
+                                                <Info size={14} className="shrink-0" />
+                                                <p>
+                                                    Calculation Factor: {summary.daysInMonth} Days Month. 
+                                                    Earnings include {summary.payableDays} payable days (Present + Leaves + Holidays). 
+                                                    Overtime is calculated at a fixed 30-day rate as per company policy.
+                                                </p>
+                                            </div>
                                         </div>
 
                                         <div className="rounded-2xl border border-gray-100 p-5">
