@@ -111,8 +111,8 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-radius: 0; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
