@@ -58,6 +58,7 @@ import { QuotationPrintPage } from "./pages/admin/quotations/QuotationPrintPage"
 import { InvoicesListPage } from "./pages/admin/invoices/InvoicesListPage";
 import { InvoiceFormPage } from "./pages/admin/invoices/InvoiceFormPage";
 import { InvoicePrintPage } from "./pages/admin/invoices/InvoicePrintPage";
+import { SalarySlipPage } from "./pages/admin/payroll/SalarySlipPage";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -361,6 +362,16 @@ function App() {
             element={<Navigate to="/student/dashboard" replace />}
           />
         </Route>
+
+        {/* Salary Slip Standalone Page */}
+        <Route
+          path="/admin/payroll/slip"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+              <SalarySlipPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Report Print Routes (standalone, no DashboardLayout) */}
         <Route
