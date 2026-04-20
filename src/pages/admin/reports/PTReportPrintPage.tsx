@@ -117,7 +117,7 @@ const PRINT_STYLES = `
   }
   .section-hdr {
     background: #185FA5; color: #fff; font-size: 13px; font-weight: 700;
-    padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left;
+    padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important;
   }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
     .report-table td, .report-table th {
