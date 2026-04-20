@@ -92,7 +92,7 @@ const PRINT_STYLES = `
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
   .report-table td, .report-table th { border: 1px solid #444; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; }
   .val { font-size: 11px; color: #000; }
   .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .items-table td, .items-table th { border: 1px solid #444; padding: 2px 4px; font-size: 10px; vertical-align: middle; word-break: break-word; text-align: left; }
@@ -443,11 +443,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           <col style={{ width: "32%" }} />
                         </colgroup>
                         <tbody>
-                          <tr>
-                            <td colSpan={5} className="section-hdr">
-                              1. JOB DETAILS
-                            </td>
-                          </tr>
+
                           <tr>
                             <td className="lbl">I.R No:</td>
                             <td className="val" style={{ fontWeight: 600 }}>
@@ -523,12 +519,16 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         </colgroup>
                         <tbody>
                           <tr>
-                            <td className="section-hdr">2. CLIENT DETAILS</td>
-                            <td className="section-hdr">3. VENDOR DETAILS</td>
+                            <td className="section-hdr">1. CLIENT DETAILS</td>
+                            <td className="section-hdr">2. VENDOR DETAILS</td>
                           </tr>
                           <tr>
                             <td style={{ verticalAlign: "top", padding: 0 }}>
-                              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                              <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                                <colgroup>
+                                  <col style={{ width: "30%" }} />
+                                  <col style={{ width: "70%" }} />
+                                </colgroup>
                                 <tbody>
                                   <tr>
                                     <td className="lbl">Ref</td>
@@ -549,8 +549,12 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                                 </tbody>
                               </table>
                             </td>
-                            <td style={{ verticalAlign: "top", padding: 0, borderLeft: "1px solid #d9e1ea" }}>
-                              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                            <td style={{ verticalAlign: "top", padding: 0, borderLeft: "1px solid #444" }}>
+                              <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                                <colgroup>
+                                  <col style={{ width: "36%" }} />
+                                  <col style={{ width: "64%" }} />
+                                </colgroup>
                                 <tbody>
                                   <tr>
                                     <td className="lbl">Vendor</td>
@@ -590,7 +594,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={9} className="section-hdr">
-                              4. INSPECTION ITEMS
+                              3. INSPECTION ITEMS
                             </td>
                           </tr>
                           <tr>
@@ -712,7 +716,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td className="section-hdr">
-                              5. INSPECTION ACTIVITIES
+                              4. INSPECTION ACTIVITIES
                             </td>
                           </tr>
                         </thead>
@@ -725,23 +729,6 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      <table className="report-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "22%" }} />
-                          <col style={{ width: "78%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td colSpan={2} className="section-hdr">
-                              6. Conclusion
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Overall Evaluation</td>
-                            <td className="val">{v(report.conclusion)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
 
                       {/* ── REFERENCE DOCUMENTS ── */}
                       <table className="report-table mt-n1" style={{ breakInside: "auto", pageBreakInside: "auto" }}>
@@ -753,7 +740,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={3} className="section-hdr">
-                              7. REFERENCE DOCUMENTS FOR INSPECTION
+                              5. REFERENCE DOCUMENTS FOR INSPECTION
                             </td>
                           </tr>
                           <tr>
@@ -805,7 +792,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={5} className="section-hdr">
-                              8. CALIBRATION STATUS OF INSTRUMENTS
+                              6. CALIBRATION STATUS OF INSTRUMENTS
                             </td>
                           </tr>
                           <tr>
@@ -852,6 +839,24 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           )}
                         </tbody>
                       </table>
+                      <table className="report-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "78%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td colSpan={2} className="section-hdr">
+                              7. Conclusion
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Overall Evaluation</td>
+                            <td className="val">{v(report.conclusion)}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+
                     </div>
                     {/* ── end report-body ── */}
                   </td>
