@@ -99,7 +99,7 @@ const PRINT_STYLES = `
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #444; }
   .obs-table td, .obs-table th { border: 1px solid #444; padding: 3px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
   .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; text-align: left; }
-  .obs-table th:first-child, .obs-table td:first-child { width: 28px; min-width: 28px; max-width: 28px; }
+  .obs-table th:first-child, .obs-table td:first-child { width: 30px !important; min-width: 30px !important; max-width: 30px !important; text-align: center; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
@@ -735,6 +735,15 @@ export const UTReportPrintPage: React.FC = () => {
 
                       {/* -- OBSERVATIONS -- */}
                       <table className="obs-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "35px" }} />
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "16%" }} />
+                          <col style={{ width: "13%" }} />
+                          <col style={{ width: "8%" }} />
+                          <col style={{ width: "26%" }} />
+                          <col style={{ width: "10%" }} />
+                        </colgroup>
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={7} className="section-hdr">
@@ -742,23 +751,23 @@ export const UTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="col-hdr">Sr. No.</td>
-                            <td className="col-hdr" style={{ width: "18%" }}>
+                            <td className="col-hdr">Sr.</td>
+                            <td className="col-hdr">
                               Job Description
                             </td>
-                            <td className="col-hdr" style={{ width: "16%" }}>
+                            <td className="col-hdr">
                               Drg No. / Joint No.
                             </td>
-                            <td className="col-hdr" style={{ width: "14%" }}>
+                            <td className="col-hdr">
                               Size
                             </td>
-                            <td className="col-hdr" style={{ width: "10%" }}>
-                              Quantity in Nos.
+                            <td className="col-hdr">
+                              Qty
                             </td>
-                            <td className="col-hdr" style={{ width: "20%" }}>
+                            <td className="col-hdr">
                               Interpretation
                             </td>
-                            <td className="col-hdr" style={{ width: "16%" }}>
+                            <td className="col-hdr">
                               Evaluation
                             </td>
                           </tr>

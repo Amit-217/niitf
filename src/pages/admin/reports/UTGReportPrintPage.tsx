@@ -666,6 +666,12 @@ export const UTGReportPrintPage: React.FC = () => {
 
                       {/* ── 5. OBSERVATIONS ── */}
                       <table className="obs-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "5%" }} />
+                          <col style={{ width: "15%" }} />
+                          <col style={{ width: "60%" }} />
+                          <col style={{ width: "10%" }} />
+                        </colgroup>
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={4} className="section-hdr">
@@ -674,9 +680,9 @@ export const UTGReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <th>Sr. No.</th>
-                            <th style={{ width: "40%" }}>Item Name</th>
-                            <th style={{ width: "32%" }}>Measured Thickness</th>
-                            <th style={{ width: "20%" }}>Evaluation</th>
+                            <th>Item Name</th>
+                            <th>Measured Thickness</th>
+                            <th>Evaluation</th>
                           </tr>
                         </thead>
                         <tbody>
