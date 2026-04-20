@@ -375,17 +375,13 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                     <div className="report-footer-wrap">
                       <table className="sign-table mt-n1">
                         <colgroup>
-                          <col style={{ width: "33.3%" }} />
-                          <col style={{ width: "33.3%" }} />
-                          <col style={{ width: "33.4%" }} />
+                          <col style={{ width: "50%" }} />
+                          <col style={{ width: "50%" }} />
                         </colgroup>
                         <tbody>
                           <tr>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
                               FOR VENDOR:
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CUSTOMER:
                             </td>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
                               FOR NIIT SURVEYOR, BARAMATI:
@@ -396,25 +392,19 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                               {v(vd.vendor) || "-"}
                             </td>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              {v(report.client) || "-"}
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
                               National Industrial Inspection And Training
                             </td>
                           </tr>
                           <tr>
                             <td>Name: {v(sigs.vendor?.name) || "-"}</td>
-                            <td>Name: -</td>
                             <td>Name: {v(sigs.niit?.name) || "-"}</td>
                           </tr>
                           <tr>
                             <td style={{ height: 28 }}>Signature:</td>
                             <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
                           </tr>
                           <tr>
                             <td>Date: {fmtDate(sigs.vendor?.date) || "-"}</td>
-                            <td>Date: -</td>
                             <td>Date: {fmtDate(sigs.niit?.date) || "-"}</td>
                           </tr>
                         </tbody>
