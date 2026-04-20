@@ -915,29 +915,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         </table>
                       </div>
 
-                      {/* -- Conclusion -- */}
-                      <div
-                        style={{
-                          breakInside: "avoid",
-                          pageBreakInside: "avoid",
-                        }}
-                      >
-                        <table className="report-table mt-n1">
-                          <tbody>
-                            <tr>
-                              <td colSpan={2} className="section-hdr">
-                                5. CONCLUSION
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="lbl" style={{ width: "22%" }}>
-                                Overall Evaluation
-                              </td>
-                              <td className="val">{conclusionText}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
+
                     </div>
                   </td>
                 </tr>
