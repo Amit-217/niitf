@@ -580,10 +580,8 @@ export const PTReportPrintPage: React.FC = () => {
                       {/* â"€â"€ METHOD DETAILS â"€â"€ */}
                       <table className="report-table mt-n1">
                         <colgroup>
-                          <col style={{ width: "22%" }} />
-                          <col style={{ width: "28%" }} />
-                          <col style={{ width: "22%" }} />
-                          <col style={{ width: "28%" }} />
+                          <col style={{ width: "32%" }} />
+                          <col style={{ width: "68%" }} />
                         </colgroup>
                         <tbody>
                           <tr>
@@ -646,41 +644,39 @@ export const PTReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* â"€â"€ METHOD DESCRIPTION â"€â"€ */}
-                      <table className="report-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "22%" }} />
-                          <col style={{ width: "28%" }} />
-                          <col style={{ width: "22%" }} />
-                          <col style={{ width: "28%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td colSpan={4} className="section-hdr">
-                              4. METHOD DESCRIPTION
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Dwell Time</td>
-                            <td className="val">{v(desc.dwellTime)}</td>
-                            <td className="lbl">Light Intensity</td>
-                            <td className="val">{v(desc.lightIntensity)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Developing Time</td>
-                            <td className="val">{v(desc.developingTime)}</td>
-                            <td className="lbl">Light Equip. Used</td>
-                            <td className="val">
-                              {v(desc.lightEquipmentUsed)}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Post Cleaning</td>
-                            <td className="val">{v(desc.postCleaning)}</td>
-                            <td className="lbl">Drying Time</td>
-                            <td className="val">{v(desc.dryingTime)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                        <table className="report-table mt-n1">
+                          <colgroup>
+                            <col style={{ width: "15%" }} />
+                            <col style={{ width: "18.33%" }} />
+                            <col style={{ width: "15%" }} />
+                            <col style={{ width: "18.33%" }} />
+                            <col style={{ width: "15%" }} />
+                            <col style={{ width: "18.33%" }} />
+                          </colgroup>
+                          <tbody>
+                            <tr>
+                              <td colSpan={6} className="section-hdr">
+                                4. METHOD DESCRIPTION
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="lbl">Dwell Time</td>
+                              <td className="val">{v(desc.dwellTime)}</td>
+                              <td className="lbl">Developing Time</td>
+                              <td className="val">{v(desc.developingTime)}</td>
+                              <td className="lbl">Post Cleaning</td>
+                              <td className="val">{v(desc.postCleaning)}</td>
+                            </tr>
+                            <tr>
+                              <td className="lbl">Light Intensity</td>
+                              <td className="val">{v(desc.lightIntensity)}</td>
+                              <td className="lbl">Light Equip. Used</td>
+                              <td className="val">{v(desc.lightEquipmentUsed)}</td>
+                              <td className="lbl">Drying Time</td>
+                              <td className="val">{v(desc.dryingTime)}</td>
+                            </tr>
+                          </tbody>
+                        </table>
 
                       <table className="obs-table mt-n1">
                         <colgroup>
