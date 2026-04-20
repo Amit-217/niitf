@@ -107,6 +107,9 @@ export const getAllAdvancesForMonth = (month: string) =>
 export const generateSalary = (data: GenerateSalaryPayload) =>
     api.post('/admin/salary-record/generate', data);
 
+export const previewSalary = (employeeId: string, month: string) =>
+    api.get(`/admin/salary-record/preview/${employeeId}?month=${month}`);
+
 export const getEmployeeSalaryRecord = (employeeId: string, month: string) =>
     api.get(`/admin/salary-record/${employeeId}?month=${month}`);
 
