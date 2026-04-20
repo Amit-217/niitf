@@ -24,7 +24,7 @@ const PRINT_STYLES = `
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
       width: 210mm !important; 
-      margin: 0 !important; padding: 2mm 5mm 15mm 5mm !important;
+      margin: 0 !important; padding: 0mm 5mm 15mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       page-break-after: auto !important;
       box-shadow: none !important;
@@ -57,7 +57,7 @@ const PRINT_STYLES = `
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
   .report { background: #fff; border: none; border-radius: 0; overflow: hidden; }
-  .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+  .rpt-header { padding: 2px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
   .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
@@ -126,8 +126,8 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-radius: 0; overflow: hidden; }
 
 
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
@@ -345,7 +345,7 @@ export const AWSDReportPrintPage: React.FC = () => {
             minHeight: "297mm",
             background: "#fff",
             margin: "0 auto",
-            padding: "5mm 5mm 35mm 5mm",
+            padding: "0mm 5mm 35mm 5mm",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
           }}
@@ -362,7 +362,7 @@ export const AWSDReportPrintPage: React.FC = () => {
             >
               <thead style={{ display: "table-header-group" }}>
                 <tr>
-                  <td style={{ padding: "2mm 0 0 0" }}>
+                  <td style={{ padding: "0" }}>
                     {/* ───── HEADER ───── */}
                     <div className="rpt-header">
                       <div className="logo-box">

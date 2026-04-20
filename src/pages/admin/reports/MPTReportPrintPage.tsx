@@ -26,7 +26,7 @@ const PRINT_STYLES = `
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
       width: 210mm !important; 
-      margin: 0 !important; padding: 2mm 5mm 15mm 5mm !important;
+      margin: 0 !important; padding: 0mm 5mm 15mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       page-break-after: auto !important;
       box-shadow: none !important;
@@ -65,9 +65,9 @@ const PRINT_STYLES = `
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
-  .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
+  .report { background: #fff; border: none; border-radius: 0; overflow: hidden; }
+  .rpt-header { padding: 2px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
+  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
   .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
@@ -116,15 +116,15 @@ const PRINT_STYLES = `
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
-  .std-tag { display: inline-block; background: #e7f1fb; color: #0c447c; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; margin-bottom: 2px; font-weight: 700; }
+  .std-tag { display: inline-block; background: #e7f1fb; color: #0c447c; font-size: 10px; padding: 2px 6px; border-radius: 0; margin-right: 4px; margin-bottom: 2px; font-weight: 700; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 0; overflow: hidden; }
   .report-footer-wrap {
     border: 1px solid #444;
-    border-radius: 0 0 4px 4px;
+    border-radius: 0;
     overflow: hidden;
   }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
@@ -402,7 +402,7 @@ export const MPTReportPrintPage = () => {
             width: "210mm",
             minHeight: "297mm",
             margin: "0 auto",
-            padding: "5mm 5mm 35mm 5mm",
+            padding: "0mm 5mm 35mm 5mm",
             background: "#fff",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
@@ -420,7 +420,7 @@ export const MPTReportPrintPage = () => {
             >
               <thead style={{ display: "table-header-group" }}>
                 <tr>
-                  <td style={{ padding: "2mm 0 0 0" }}>
+                  <td style={{ padding: "0" }}>
                     {/* â"€â"€ HEADER â"€â"€ */}
                     <div className="rpt-header">
                       <div className="logo-box">
