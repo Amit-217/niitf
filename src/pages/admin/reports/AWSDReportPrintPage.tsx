@@ -210,7 +210,7 @@ export const AWSDReportPrintPage: React.FC = () => {
           window.print();
           document.body.classList.remove("autoprint-mode");
         });
-      }, 1200); 
+      }, 1200);
       return () => clearTimeout(t);
     }
   }, [loading, report, autoPrint]);
@@ -608,7 +608,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                               style={{ width: "5.5%" }}
                             >
                               <span className="vtext">
-                                Angular distance (sound path)
+                                Angular distance
                               </span>
                             </td>
                             <td
