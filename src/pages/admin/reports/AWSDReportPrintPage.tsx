@@ -90,7 +90,7 @@ const PRINT_STYLES = `
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #444; border-radius: 6px 6px 0 0; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 14px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
   .report-table td, .report-table th { border: 1px solid #444; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; overflow: hidden; }
@@ -98,7 +98,7 @@ const PRINT_STYLES = `
   .val { font-size: 11px; color: #000; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #444; }
   .obs-table td, .obs-table th { border: 1px solid #444; padding: 2px 3px; font-size: 10px; vertical-align: middle; text-align: left; word-break: break-word; }
-  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 11px; font-weight: 700; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .obs-table .vcell {
     height: 92px;
@@ -111,7 +111,7 @@ const PRINT_STYLES = `
     transform: rotate(180deg);
     white-space: nowrap;
     line-height: 1;
-    font-size: 9.5px;
+    font-size: 11px;
   }
   .form-block { border: 1px solid #888; padding: 5px 8px; margin-top: -1px; font-size: 10px; }
   .form-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px; }
@@ -557,8 +557,8 @@ export const AWSDReportPrintPage: React.FC = () => {
                               rowSpan={3}
                               style={{ width: "6.5%" }}
                             >
-                              <span className="vtext">
-                                Discontinuity evaluation
+                              <span className="vtext text-center">
+                                Discontinuity <br />evaluation
                               </span>
                             </td>
                             <td
@@ -575,25 +575,25 @@ export const AWSDReportPrintPage: React.FC = () => {
                               className="col-hdr vcell"
                               style={{ width: "5.5%" }}
                             >
-                              <span className="vtext">Indication level</span>
+                              <span className="vtext text-center">Indication <br />level</span>
                             </td>
                             <td
                               className="col-hdr vcell"
                               style={{ width: "5.5%" }}
                             >
-                              <span className="vtext">Reference level</span>
+                              <span className="vtext text-center">Reference <br />level</span>
                             </td>
                             <td
                               className="col-hdr vcell"
                               style={{ width: "6%" }}
                             >
-                              <span className="vtext">Attenuation factor</span>
+                              <span className="vtext text-center">Attenuation <br />factor</span>
                             </td>
                             <td
                               className="col-hdr vcell"
                               style={{ width: "5.5%" }}
                             >
-                              <span className="vtext">Indication rating</span>
+                              <span className="vtext text-center">Indication <br />rating</span>
                             </td>
                             <td
                               className="col-hdr vcell"
@@ -617,7 +617,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                               style={{ width: "6%" }}
                             >
                               <span className="vtext">
-                                Depth from 'A' surface
+                                Depth from <br />'A' surface
                               </span>
                             </td>
                             <td className="col-hdr" colSpan={2}>
