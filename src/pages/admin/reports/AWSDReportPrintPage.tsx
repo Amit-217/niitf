@@ -13,50 +13,64 @@ import { getAWSDReportById } from "../../../api/customerApi";
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
-  @media screen { 
+
+  @media screen {
     body.autoprint-mode { background: #fff !important; }
-    body.autoprint-mode > #root > *:not(.print-fixed-footer):not(.print-footer-fixed) { opacity: 0 !important; visibility: hidden !important; }
+    body.autoprint-mode > #root > *:not(.print-fixed-footer) { opacity: 0 !important; visibility: hidden !important; }
+    .print-fixed-footer { display: none; }
+    .print-sign-table { display: none; }
   }
+
   @media print {
-    body.autoprint-mode { opacity: 1; }
-    .no-print { display: none !important; }
-    body { margin: 0; background: #fff; min-height: 297mm !important; }
-    #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
+    html, body { height: auto; }
+    body {
+      margin: 0;
+      background: #fff;
+      padding-bottom: 35mm !important;
+    }
+    #report-root {
+      background: #fff !important;
+      padding-bottom: 35mm !important;
+      display: block !important;
+    }
     #report-root > div {
-      width: 210mm !important; 
-      margin: 0 !important; padding: 0mm 5mm 15mm 5mm !important;
-      box-sizing: border-box !important; position: relative !important;
+      width: 210mm !important;
+      margin: 0 !important;
+      padding: 0mm 5mm 0 5mm !important;
+      box-sizing: border-box !important;
       page-break-after: auto !important;
       box-shadow: none !important;
     }
-    .report {
-      margin: 0 !important; box-shadow: none !important;
-      width: 100% !important;
-    }
+    .report { margin: 0 !important; box-shadow: none !important; width: 100% !important; }
+    .no-print { display: none !important; }
     .screen-sign-table { display: none !important; }
+
+    thead { display: table-header-group; }
+    tfoot { display: table-footer-group; break-inside: avoid; page-break-inside: avoid; }
+    table { page-break-inside: auto; }
+    tr { page-break-inside: avoid; }
+
     .print-fixed-footer {
       position: fixed !important;
-      bottom: 5mm !important;
-      left: 5mm !important;
-      right: 5mm !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      height: 30mm !important;
       background: #fff !important;
-      z-index: 999999 !important;
-      contain: layout !important;
+      z-index: 9999 !important;
+      box-sizing: border-box !important;
+      overflow: hidden !important;
       pointer-events: none !important;
-      transform: translateZ(0);
-      will-change: transform;
     }
+
     .report { overflow: visible !important; }
     .report-body { overflow: visible !important; }
-    tfoot { display: table-footer-group !important; }
-    .report-footer-wrap {
-      break-inside: avoid !important;
-      page-break-inside: avoid !important;
-    }
+    .report-footer-wrap { break-inside: avoid !important; page-break-inside: avoid !important; }
   }
+
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: none; border-radius: 0; overflow: hidden; }
+  .report { background: #fff; border: none; border-radius: 0; }
   .rpt-header { padding: 2px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
   .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
@@ -113,36 +127,23 @@ const PRINT_STYLES = `
     line-height: 1;
     font-size: 11px;
   }
-  .form-block { border: 1px solid #888; padding: 5px 8px; margin-top: -1px; font-size: 10px; }
+  .form-block { border: 1px solid #888; padding: 5px 8px; font-size: 10px; }
   .form-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px; }
   .form-row:last-child { margin-bottom: 0; }
   .form-label { white-space: nowrap; font-size: 10px; font-weight: 600; }
   .form-val { flex: 1; border-bottom: 1px solid #555; min-width: 30px; font-size: 10px; padding-bottom: 1px; min-height: 13px; }
-  .cert-para { font-size: 11px; font-style: italic; color: #333; padding: 4px 6px; border: 1px solid #444; margin-top: -1px; line-height: 1.4; break-inside: avoid; }
+  .cert-para { font-size: 11px; font-style: italic; color: #333; padding: 4px 6px; border: 1px solid #444; line-height: 1.4; break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #444; padding: 2px 4px; font-size: 12px; vertical-align: top; }
-  .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
-
-
-  .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
-  .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
-
-
-  .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .report-body { border: 1px solid #444; border-radius: 6px 6px 0 0; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px; }
+  .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-
-  @media screen {
-    .print-blank-row { display: none; }
-    .print-fixed-footer { display: none; }
-    .print-sign-table { display: none; }
-  }
 `;
 
 // ───────── Helpers ─────────────────────────────────────────────────────────────
@@ -198,20 +199,18 @@ export const AWSDReportPrintPage: React.FC = () => {
   useEffect(() => {
     if (!loading && report && autoPrint) {
       document.body.classList.add("autoprint-mode");
-      const t = setTimeout(() => {
-        // Trigger multiple reflows to "wake up" the rendering engine
-        window.scrollTo(0, 10);
-        window.scrollTo(0, document.body.scrollHeight);
-        window.scrollTo(0, 1);
-        window.scrollTo(0, 0);
-
-        // Force a tiny delay after scrolling before printing
+      const trigger = async () => {
+        try {
+          await document.fonts.ready;
+        } catch (_) {}
         requestAnimationFrame(() => {
-          window.print();
-          document.body.classList.remove("autoprint-mode");
+          setTimeout(() => {
+            window.print();
+            document.body.classList.remove("autoprint-mode");
+          }, 300);
         });
-      }, 1200);
-      return () => clearTimeout(t);
+      };
+      trigger();
     }
   }, [loading, report, autoPrint]);
 
@@ -340,7 +339,6 @@ export const AWSDReportPrintPage: React.FC = () => {
       >
         <div
           style={{
-            position: "relative",
             width: "210mm",
             minHeight: "297mm",
             background: "#fff",
@@ -360,10 +358,10 @@ export const AWSDReportPrintPage: React.FC = () => {
                 padding: 0,
               }}
             >
-              <thead style={{ display: "table-header-group" }}>
+              {/* ── THEAD: repeats on every page ── */}
+              <thead>
                 <tr>
                   <td style={{ padding: "0" }}>
-                    {/* ───── HEADER ───── */}
                     <div className="rpt-header">
                       <div className="logo-box">
                         <img src="/logo.png" alt="NIIT Logo" />
@@ -387,7 +385,8 @@ export const AWSDReportPrintPage: React.FC = () => {
                 </tr>
               </thead>
 
-              <tbody style={{ display: "table-row-group" }}>
+              {/* ── TBODY: dynamic content ── */}
+              <tbody>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
                     <div className="report-body">
@@ -502,8 +501,8 @@ export const AWSDReportPrintPage: React.FC = () => {
                         </div>
                       </div>
 
-                      <table className="obs-table mt-n1">
-                        <thead style={{ display: "table-header-group" }}>
+                      <table className="obs-table">
+                        <thead>
                           <tr>
                             <td colSpan={16} className="section-hdr">
                               OBSERVATIONS
@@ -654,16 +653,10 @@ export const AWSDReportPrintPage: React.FC = () => {
                               <td>{v(o.transducerAngle)}</td>
                               <td>{v(o.fromFace)}</td>
                               <td>{v(o.leg)}</td>
-                              <td style={{}}>
-                                {v(o.decibels?.indicationLevel)}
-                              </td>
-                              <td style={{}}>{v(o.decibels?.referenceLevel)}</td>
-                              <td style={{}}>
-                                {v(o.decibels?.attenuationFactor)}
-                              </td>
-                              <td style={{}}>
-                                {v(o.decibels?.indicationRating)}
-                              </td>
+                              <td>{v(o.decibels?.indicationLevel)}</td>
+                              <td>{v(o.decibels?.referenceLevel)}</td>
+                              <td>{v(o.decibels?.attenuationFactor)}</td>
+                              <td>{v(o.decibels?.indicationRating)}</td>
                               <td>{v(o.discontinuity?.length)}</td>
                               <td>{v(o.discontinuity?.angularDistance)}</td>
                               <td>{v(o.discontinuity?.depthFromA)}</td>
@@ -685,26 +678,27 @@ export const AWSDReportPrintPage: React.FC = () => {
                           ))}
                         </tbody>
                       </table>
-
-                      {/* -- CERTIFICATION TEXT -- */}
-                      <div className="cert-para">
-                        We, the undersigned, certify that the statements in this
-                        record are correct and that the welds were prepared and
-                        tested in conformance with the requirements of Clause 8,
-                        Part F of AWS D1.1/D1.1M,&nbsp;
-                        <strong>({v(cert.year) || "____"})</strong>,&nbsp;
-                        Structural Welding Code—Steel.
-                      </div>
                     </div>
                   </td>
                 </tr>
               </tbody>
 
-              <tfoot style={{ display: "table-footer-group" }}>
+              {/* ── TFOOT: certification + signature — repeats on every page ── */}
+              <tfoot>
                 <tr>
                   <td style={{ padding: 0 }}>
+                    {/* Certification text */}
+                    <div className="cert-para">
+                      We, the undersigned, certify that the statements in this
+                      record are correct and that the welds were prepared and
+                      tested in conformance with the requirements of Clause 8,
+                      Part F of AWS D1.1/D1.1M,&nbsp;
+                      <strong>({v(cert.year) || "____"})</strong>,&nbsp;
+                      Structural Welding Code—Steel.
+                    </div>
+                    {/* Signature block */}
                     <div className="report-footer-wrap">
-                      <table className="sign-table mt-n1">
+                      <table className="sign-table">
                         <colgroup>
                           <col style={{ width: "50%" }} />
                           <col style={{ width: "50%" }} />
@@ -795,8 +789,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                         style={{
                           fontSize: "9px",
                           padding: "4px 6px",
-                          border: "1px solid #d9e1ea",
-                          marginTop: "-1px",
+                          borderTop: "1px solid #d9e1ea",
                           lineHeight: 1.4,
                         }}
                       >
@@ -806,37 +799,22 @@ export const AWSDReportPrintPage: React.FC = () => {
                         form for Tubular Structures (Clause 10, Part A).
                       </div>
                     </div>
-                    <div
-                      className="tfoot-spacer"
-                      style={{ height: "28mm" }}
-                    ></div>
                   </td>
                 </tr>
               </tfoot>
             </table>
           </div>
 
-          <div
-            className={`no-print ${bwMode ? "bw" : ""}`}
-            style={{
-              position: "absolute",
-              bottom: "5mm",
-              left: "5mm",
-              right: "5mm",
-            }}
-          >
+          {/* Screen-only footer preview (hidden in print) */}
+          <div className={`no-print${bwMode ? " bw" : ""}`} style={{ marginTop: "8px" }}>
             <ReportFooter />
           </div>
         </div>
       </div>
-      {/* The fixed footer that only appears in print on every page at the bottom */}
+
+      {/* Fixed footer — single source of truth for print, appears on every page */}
       <div className={`print-fixed-footer${bwMode ? " bw" : ""}`}>
-        <div
-          className="print-fixed-footer-inner"
-          style={{ border: "none", boxShadow: "none" }}
-        >
-          <ReportFooter />
-        </div>
+        <ReportFooter />
       </div>
     </>
   );
