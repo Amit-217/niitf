@@ -28,7 +28,7 @@ const PRINT_STYLES = `
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
       width: 210mm !important; 
-      margin: 0 !important; padding: 0mm 5mm 15mm 5mm !important;
+      margin: 0 !important; padding: 0mm 5mm 25mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       page-break-after: auto !important;
       box-shadow: none !important;
@@ -367,7 +367,7 @@ export const PTReportPrintPage: React.FC = () => {
             position: "relative",
             width: "210mm",
             margin: "0 auto",
-            padding: "0mm 5mm 15mm 5mm",
+            padding: "0mm 5mm 25mm 5mm",
             background: "#fff",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
@@ -380,7 +380,7 @@ export const PTReportPrintPage: React.FC = () => {
                   <td style={{ padding: 0 }}>
                     <div
                       className="tfoot-spacer"
-                      style={{ height: "0.5mm" }}
+                      style={{ height: "20mm" }}
                     ></div>
                   </td>
                 </tr>

@@ -26,7 +26,7 @@ const PRINT_STYLES = `
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
       width: 210mm !important; 
-      margin: 0 !important; padding: 0mm 5mm 15mm 5mm !important;
+      margin: 0 !important; padding: 0mm 5mm 25mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       page-break-after: auto !important;
       box-shadow: none !important;
@@ -52,6 +52,7 @@ const PRINT_STYLES = `
       border: 1px solid #7b8794 !important;
       border-bottom: none !important;
     }
+    tfoot { display: table-footer-group !important; }
     .report-footer-wrap {
       border: 1px solid #7b8794 !important;
     }
@@ -399,7 +400,7 @@ export const MPTReportPrintPage = () => {
             position: "relative",
             width: "210mm",
             margin: "0 auto",
-            padding: "0mm 5mm 15mm 5mm",
+            padding: "0mm 5mm 25mm 5mm",
             background: "#fff",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
@@ -440,6 +441,17 @@ export const MPTReportPrintPage = () => {
                   </td>
                 </tr>
               </thead>
+
+              <tfoot style={{ display: "table-footer-group" }}>
+                <tr>
+                  <td style={{ padding: 0 }}>
+                    <div
+                      className="tfoot-spacer"
+                      style={{ height: "20mm" }}
+                    ></div>
+                  </td>
+                </tr>
+              </tfoot>
 
               <tbody style={{ display: "table-row-group" }}>
                 <tr>
