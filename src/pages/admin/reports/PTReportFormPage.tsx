@@ -168,7 +168,7 @@ export const PTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // Ã¢"â‚¬Ã¢"â‚¬ Final Section Ã¢"â‚¬Ã¢"â‚¬
@@ -1046,7 +1046,7 @@ export const PTReportFormPage: React.FC = () => {
                     >
                       <option value="">Select...</option>
                       <option>Accepted</option>
-                      <option>Rejected</option>
+                      <option>Not Accepted</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
