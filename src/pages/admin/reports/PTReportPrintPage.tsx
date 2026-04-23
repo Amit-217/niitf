@@ -98,6 +98,15 @@ const PRINT_STYLES = `
   .bw .rpt-title { background: #fff !important; color: #000 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
+
+  .print-only { display: none !important; }
+  .no-print-screen { display: block; }
+
+  @media print {
+    .print-only { display: block !important; }
+    .no-print-screen { display: none !important; }
+    .page-break { page-break-before: always; }
+  }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
   .bw .accept-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .reject-badge { background: transparent !important; color: #000 !important; border: none !important; }
@@ -375,16 +384,6 @@ export const PTReportPrintPage: React.FC = () => {
         >
           <div className={`report${bwMode ? " bw" : ""}`}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <tfoot style={{ display: "table-footer-group" }}>
-                <tr>
-                  <td style={{ padding: 0 }}>
-                    <div
-                      className="tfoot-spacer"
-                      style={{ height: "15mm" }}
-                    ></div>
-                  </td>
-                </tr>
-              </tfoot>
               <thead style={{ display: "table-header-group" }}>
                 <tr>
                   <td style={{ padding: 0 }}>
@@ -408,7 +407,7 @@ export const PTReportPrintPage: React.FC = () => {
                   </td>
                 </tr>
               </thead>
-              <tbody>
+              <tbody style={{ display: "table-row-group" }}>
                 <tr>
                   <td style={{ padding: 0 }}>
                     <div className="report-body">
@@ -576,122 +575,127 @@ export const PTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* --- OBSERVATIONS --- */}
-                      <div style={obs.length > 5 ? { pageBreakBefore: "always", marginTop: "20px" } : {}}>
-                        <table className="obs-table mt-n1">
-                          <colgroup>
-                            <col style={{ width: "35px" }} />
-                            <col style={{ width: "22%" }} />
-                            <col style={{ width: "16%" }} />
-                            <col style={{ width: "13%" }} />
-                            <col style={{ width: "8%" }} />
-                            <col style={{ width: "25%" }} />
-                            <col style={{ width: "11%" }} />
-                          </colgroup>
-                          <thead style={{ display: "table-header-group" }}>
-                            <tr>
-                              <td colSpan={7} className="section-hdr">
-                                5. OBSERVATIONS
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="col-hdr">Sr.</td>
-                              <td className="col-hdr">Job Description</td>
-                              <td className="col-hdr">Drg No. / Joint No.</td>
-                              <td className="col-hdr">Size</td>
-                              <td className="col-hdr">Qty</td>
-                              <td className="col-hdr">Interpretation</td>
-                              <td className="col-hdr">Evaluation</td>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {obs.length === 0 ? (
-                              <tr>
-                                <td
-                                  colSpan={7}
-                                  style={{
-                                    textAlign: "center",
-                                    padding: "6px",
-                                    fontSize: "11px",
-                                    color: "#999",
-                                  }}
-                                >
-                                  No observations recorded.
-                                </td>
-                              </tr>
-                            ) : (
-                              obs.map((o, i) => (
-                                <tr key={i}>
-                                  <td>{o.srNo}</td>
-                                  <td>{v(o.jobDescription)}</td>
-                                  <td>{v(o.drawingOrJointNo)}</td>
-                                  <td>{v(o.size)}</td>
-                                  <td>{o.quantity ?? ""}</td>
-                                  <td>{v(o.interpretation)}</td>
-                                  <td>{v(o.evaluation)}</td>
-                                </tr>
-                              ))
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
+                      {/* --- 5. Observations & Signatures Logic --- */}
+                      {(() => {
+                        const obsPage1 = obs.slice(0, 5);
+                        const obsPage2 = obs.slice(5);
 
-                      {/* --- CONCLUSION REMOVED --- */}
-                      <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
-                        <div className="report-footer-wrap">
-                          <table className="sign-table mt-n1">
+                        const renderSignatures = () => (
+                          <div className="report-footer-wrap mt-1">
+                            <table className="sign-table mt-n1">
+                              <colgroup>
+                                <col style={{ width: "33.3%" }} />
+                                <col style={{ width: "33.3%" }} />
+                                <col style={{ width: "33.4%" }} />
+                              </colgroup>
+                              <tbody>
+                                <tr>
+                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
+                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER:</td>
+                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT :</td>
+                                </tr>
+                                <tr>
+                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>National Industrial Inspection And Training</td>
+                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.customer)}</td>
+                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.client)}</td>
+                                </tr>
+                                <tr>
+                                  <td>Name: {v(inspector.name) || "-"}</td>
+                                  <td>Name: {v(jd.customerRepresentative) || "-"}</td>
+                                  <td>Name: {v(jd.clientRepresentative) || "-"}</td>
+                                </tr>
+                                <tr>
+                                  <td>{v(inspector.designation) || "PT NDE Level II"}</td>
+                                  <td>Designation: {v(jd.customerDesignation) || "-"}</td>
+                                  <td>Designation: {v(jd.clientDesignation) || "-"}</td>
+                                </tr>
+                                <tr>
+                                  <td style={{ height: "30px" }}>Signature:</td>
+                                  <td>Signature:</td>
+                                  <td>Signature:</td>
+                                </tr>
+                                <tr>
+                                  <td>Date: {fmtDate(jd.reportDate)}</td>
+                                  <td>Date: {fmtDate(jd.reportDate)}</td>
+                                  <td>Date: {fmtDate(jd.reportDate)}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        );
+
+                        const renderObsTable = (data: any[], title: string) => (
+                          <table className="obs-table mt-n1">
                             <colgroup>
-                              <col style={{ width: "33.3%" }} />
-                              <col style={{ width: "33.3%" }} />
-                              <col style={{ width: "33.4%" }} />
+                              <col style={{ width: "35px" }} />
+                              <col style={{ width: "22%" }} />
+                              <col style={{ width: "16%" }} />
+                              <col style={{ width: "13%" }} />
+                              <col style={{ width: "8%" }} />
+                              <col style={{ width: "25%" }} />
+                              <col style={{ width: "11%" }} />
                             </colgroup>
+                            <thead>
+                              <tr>
+                                <td colSpan={7} className="section-hdr">{title}</td>
+                              </tr>
+                              <tr>
+                                <td className="col-hdr">Sr.</td>
+                                <td className="col-hdr">Job Description</td>
+                                <td className="col-hdr">Drg No. / Joint No.</td>
+                                <td className="col-hdr">Size</td>
+                                <td className="col-hdr">Qty</td>
+                                <td className="col-hdr">Interpretation</td>
+                                <td className="col-hdr">Evaluation</td>
+                              </tr>
+                            </thead>
                             <tbody>
-                              <tr>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                  EXAMINED BY
-                                </td>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                  CUSTOMER:
-                                </td>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                  CLIENT :
-                                </td>
-                              </tr>
-                              <tr>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                  National Industrial Inspection And Training
-                                </td>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                  {v(jd.customer)}
-                                </td>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                  {v(jd.client)}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Name: {v(inspector.name) || "-"}</td>
-                                <td>Name: {v(jd.customerRepresentative) || "-"}</td>
-                                <td>Name: {v(jd.clientRepresentative) || "-"}</td>
-                              </tr>
-                              <tr>
-                                <td>{v(inspector.designation) || "PT NDE Level II"}</td>
-                                <td>Designation: {v(jd.customerDesignation) || "-"}</td>
-                                <td>Designation: {v(jd.clientDesignation) || "-"}</td>
-                              </tr>
-                              <tr>
-                                <td style={{ height: "30px" }}>Signature:</td>
-                                <td>Signature:</td>
-                                <td>Signature:</td>
-                              </tr>
-                              <tr>
-                                <td>Date: {fmtDate(jd.reportDate)}</td>
-                                <td>Date: {fmtDate(jd.reportDate)}</td>
-                                <td>Date: {fmtDate(jd.reportDate)}</td>
-                              </tr>
+                              {data.length === 0 ? (
+                                <tr>
+                                  <td colSpan={7} style={{ textAlign: "center", padding: "6px", fontSize: "11px", color: "#999" }}>
+                                    No observations recorded.
+                                  </td>
+                                </tr>
+                              ) : (
+                                data.map((o, i) => (
+                                  <tr key={i}>
+                                    <td>{o.srNo}</td>
+                                    <td>{v(o.jobDescription)}</td>
+                                    <td>{v(o.drawingOrJointNo)}</td>
+                                    <td>{v(o.size)}</td>
+                                    <td>{o.quantity ?? ""}</td>
+                                    <td>{v(o.interpretation)}</td>
+                                    <td>{v(o.evaluation)}</td>
+                                  </tr>
+                                ))
+                              )}
                             </tbody>
                           </table>
-                        </div>
-                      </div>
+                        );
+
+                        return (
+                          <>
+                            {/* --- PRINT ONLY SPLIT --- */}
+                            <div className="print-only">
+                              {renderObsTable(obsPage1, "5. OBSERVATIONS")}
+                              {renderSignatures()}
+                              
+                              {obsPage2.length > 0 && (
+                                <div style={{ pageBreakBefore: "always", marginTop: "10mm" }}>
+                                  {renderObsTable(obsPage2, "5. OBSERVATIONS (Contd.)")}
+                                  {renderSignatures()}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* --- SCREEN ONLY CONTINUOUS --- */}
+                            <div className="no-print-screen">
+                              {renderObsTable(obs, "5. OBSERVATIONS")}
+                              {renderSignatures()}
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
                   </td>
                 </tr>
