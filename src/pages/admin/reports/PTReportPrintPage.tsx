@@ -66,7 +66,7 @@ const PRINT_STYLES = `
     border-radius: 0;
     overflow: hidden;
   }
-  .report-body { border: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .report-body { border-top: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
   .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
@@ -87,7 +87,7 @@ const PRINT_STYLES = `
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
-  .bw .rpt-header { background: #fff !important; border-bottom: 1px solid #444 !important; }
+  .bw .rpt-header { background: #fff !important; }
   .bw .hdr-center { color: #000 !important; }
   .bw .hdr-center .org { color: #000 !important; }
   .bw .hdr-center .sub { color: #333 !important; }
@@ -121,7 +121,8 @@ const PRINT_STYLES = `
   .rpt-title {
     background: #E6F1FB; text-align: center; padding: 5px;
     font-size: 16px; font-weight: 700; color: #0C447C;
-    text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #444;
+    text-transform: uppercase; letter-spacing: 0.4px; 
+    border: 1px solid #444; border-top: none; border-radius: 6px 6px 0 0;
   }
   .section-hdr {
     background: #185FA5; color: #fff; font-size: 13px; font-weight: 700;
