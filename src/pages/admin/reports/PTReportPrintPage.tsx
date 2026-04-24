@@ -527,7 +527,7 @@ export const PTReportPrintPage: React.FC = () => {
                             <td className="val" colSpan={3}>{v(md.penetrantMethod)}</td>
                           </tr>
                           <tr>
-                            <td className="lbl">Excess Penetrant Removal method</td>
+                            <td className="lbl">Excess Penetrant <br />Removal method</td>
                             <td className="val" colSpan={3}>{v(md.excessPenetrantRemovalMethod)}</td>
                           </tr>
                         </tbody>
