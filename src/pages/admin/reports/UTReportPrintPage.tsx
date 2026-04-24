@@ -660,7 +660,7 @@ export const UTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      <div style={obs.length > 5 ? { pageBreakBefore: "always", marginTop: "20px" } : {}}>
+                      <div style={obs.length > 5 ? { pageBreakBefore: "always" } : {}}>
                         <table className="obs-table mt-n1">
                           <colgroup>
                             <col style={{ width: "35px" }} />

@@ -49,12 +49,13 @@ const PRINT_STYLES = `
       will-change: transform;
     }
     .report-body {
-      border: 1px solid #7b8794 !important;
+      border: 1px solid #444 !important;
       border-bottom: none !important;
+      overflow: visible !important;
     }
     tfoot { display: table-footer-group !important; }
     .report-footer-wrap {
-      border: 1px solid #7b8794 !important;
+      border: 1px solid #444 !important;
     }
     .report-footer-wrap .sign-table.mt-n1 {
       margin-top: 0 !important;
@@ -62,7 +63,6 @@ const PRINT_STYLES = `
     .report-footer-wrap .sign-table tr:first-child td {
       border-top: none !important;
     }
-
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
@@ -682,8 +682,8 @@ export const MPTReportPrintPage = () => {
 
                       {/* --- 5. Observations & Signatures Logic --- */}
                       {(() => {
-                        const obsPage1 = obs.slice(0, 5);
-                        const obsPage2 = obs.slice(5);
+                        const obsPage1 = obs.slice(0, 6);
+                        const obsPage2 = obs.slice(6);
 
                         const renderSignatures = () => (
                           <div className="report-footer-wrap mt-1">
@@ -784,9 +784,9 @@ export const MPTReportPrintPage = () => {
                             <div className="print-only">
                               {renderObsTable(obsPage1, "5. OBSERVATIONS")}
                               {renderSignatures()}
-                              
+
                               {obsPage2.length > 0 && (
-                                <div style={{ pageBreakBefore: "always", marginTop: "10mm" }}>
+                                <div style={{ pageBreakBefore: "always" }}>
                                   {renderObsTable(obsPage2, "5. OBSERVATIONS (Contd.)")}
                                   {renderSignatures()}
                                 </div>

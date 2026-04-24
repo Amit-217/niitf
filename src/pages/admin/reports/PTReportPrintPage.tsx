@@ -172,6 +172,19 @@ const fmtDate = (d?: string) => {
   return `${String(dt.getDate()).padStart(2, "0")}.${String(dt.getMonth() + 1).padStart(2, "0")}.${dt.getFullYear()}`;
 };
 
+const dateRange = (start?: string | null, end?: string | null) => {
+  const s = fmtDate(start || undefined);
+  const e = fmtDate(end || undefined);
+  if (s && e && s !== e) return `${s} to ${e}`;
+  return s || e;
+};
+
+const splitTags = (text?: string | null) =>
+  v(text || undefined)
+    .split(/[,|;]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
 // --- Component ---
 
 export const PTReportPrintPage: React.FC = () => {
@@ -281,6 +294,9 @@ export const PTReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
+
+  const standards = splitTags(jd.referenceStandard);
+  const acceptance = splitTags(jd.acceptanceCriteria);
   const rejectedCount = (report.observations ?? []).filter((o) =>
     /reject|repair|fail|not ok/i.test(
       v(o.evaluation || o.remark || o.result || o.interpretation),
@@ -422,46 +438,75 @@ export const PTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl" style={{ width: "18%" }}>Customer</td>
-                            <td className="val" style={{ width: "32%" }}>{v(jd.customer)}</td>
-                            <td className="lbl" style={{ width: "18%" }}>Report No.</td>
-                            <td className="val" style={{ width: "32%" }}>{v(jd.reportNo)}</td>
+                            <td className="lbl" style={{ width: "22%" }}>Customer</td>
+                            <td className="val" style={{ width: "28%" }}>{v(jd.customer)}</td>
+                            <td className="lbl" style={{ width: "22%" }}>Report No.:</td>
+                            <td className="val" style={{ width: "28%" }}>{v(report.reportNo)}</td>
                           </tr>
                           <tr>
                             <td className="lbl">Client</td>
                             <td className="val">{v(jd.client)}</td>
-                            <td className="lbl">Date of Exam</td>
-                            <td className="val">{fmtDate(jd.dateOfExamination)}</td>
+                            <td className="lbl">Report Date:</td>
+                            <td className="val">
+                              {fmtDate(jd.reportDate) || "-"}
+                            </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Project Name</td>
-                            <td className="val">{v(jd.projectName)}</td>
-                            <td className="lbl">Procedure No.</td>
-                            <td className="val">{v(jd.procedureNo)}</td>
+                            <td className="lbl">Project</td>
+                            <td className="val">{v(jd.project) || "-"}</td>
+                            <td className="lbl">Inspection Date</td>
+                            <td className="val">
+                              {dateRange(
+                                jd.inspectionDate,
+                                jd.inspectionEndDate,
+                              ) || "-"}
+                            </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Job Description</td>
-                            <td className="val">{v(jd.jobDescription)}</td>
-                            <td className="lbl">Ref. Code/Std</td>
-                            <td className="val">{v(jd.refCodeOrStd)}</td>
+                            <td className="lbl">Reference standard</td>
+                            <td className="val">
+                              {standards.length > 0 ? (
+                                standards.join(", ")
+                              ) : (
+                                "Not specified"
+                              )}
+                            </td>
+                            <td className="lbl">Acceptance Criteria</td>
+                            <td className="val">
+                              {acceptance.length > 0 ? (
+                                acceptance.join(", ")
+                              ) : (
+                                "Not specified"
+                              )}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Material</td>
-                            <td className="val">{v(jd.material)}</td>
-                            <td className="lbl">Acceptance Criteria</td>
-                            <td className="val">{v(jd.acceptanceCriteria)}</td>
+                            <td className="val">{v(jd.material) || "-"}</td>
+                            <td className="lbl">Stage of Inspection</td>
+                            <td className="val">
+                              {v(jd.stageOfInspection) || "-"}
+                            </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Surface Cond.</td>
-                            <td className="val">{v(jd.surfaceCondition)}</td>
-                            <td className="lbl">WPS No.</td>
-                            <td className="val">{v(jd.wpsNo)}</td>
+                            <td className="lbl">Thickness</td>
+                            <td className="val">{v(jd.thickness) || "-"}</td>
+                            <td className="lbl">Extent of Examination</td>
+                            <td className="val">
+                              {v(jd.extentOfExamination) || "-"}
+                            </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Stage of Exam</td>
-                            <td className="val">{v(jd.stageOfExamination)}</td>
-                            <td className="lbl">Extent of Exam</td>
-                            <td className="val">{v(jd.extentOfExamination)}</td>
+                            <td className="lbl">Surface condition</td>
+                            <td className="val">{v(jd.surfaceCondition) || "-"}</td>
+                            <td className="lbl">Type of Joint</td>
+                            <td className="val">{v(jd.typeOfJoint) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Surface Temperature</td>
+                            <td className="val">{v(jd.surfaceTemperature) || "-"}</td>
+                            <td className="lbl">Welding Process</td>
+                            <td className="val">{v(jd.weldingProcess) || "-"}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -475,30 +520,12 @@ export const PTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl" style={{ width: "22%" }}>Method</td>
-                            <td className="val" style={{ width: "28%" }}>{v(md.method)}</td>
-                            <td className="lbl" style={{ width: "22%" }}>Penetrant Type</td>
-                            <td className="val" style={{ width: "28%" }}>{v(md.penetrantType)}</td>
+                            <td className="lbl" style={{ width: "22%" }}>Penetrant Method</td>
+                            <td className="val" colSpan={3}>{v(md.penetrantMethod)}</td>
                           </tr>
                           <tr>
-                            <td className="lbl">Developer Type</td>
-                            <td className="val">{v(md.developerType)}</td>
-                            <td className="lbl">Pre-Cleaning</td>
-                            <td className="val">{v(md.preCleaning)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Dwell Time</td>
-                            <td className="val">{v(md.dwellTime)}</td>
-                            <td className="lbl">Surface Temp.</td>
-                            <td className="val">{v(md.surfaceTemperature)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">
-                              Excess Penetrant Removal method
-                            </td>
-                            <td className="val" colSpan={3}>
-                              {v(md.excessPenetrantRemovalMethod)}
-                            </td>
+                            <td className="lbl">Excess Penetrant Removal method</td>
+                            <td className="val" colSpan={3}>{v(md.excessPenetrantRemovalMethod)}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -577,8 +604,8 @@ export const PTReportPrintPage: React.FC = () => {
 
                       {/* --- 5. Observations & Signatures Logic --- */}
                       {(() => {
-                        const obsPage1 = obs.slice(0, 5);
-                        const obsPage2 = obs.slice(5);
+                        const obsPage1 = obs.slice(0, 9);
+                        const obsPage2 = obs.slice(9);
 
                         const renderSignatures = () => (
                           <div className="report-footer-wrap mt-1">
@@ -679,9 +706,9 @@ export const PTReportPrintPage: React.FC = () => {
                             <div className="print-only">
                               {renderObsTable(obsPage1, "5. OBSERVATIONS")}
                               {renderSignatures()}
-                              
+
                               {obsPage2.length > 0 && (
-                                <div style={{ pageBreakBefore: "always", marginTop: "10mm" }}>
+                                <div style={{ pageBreakBefore: "always" }}>
                                   {renderObsTable(obsPage2, "5. OBSERVATIONS (Contd.)")}
                                   {renderSignatures()}
                                 </div>
