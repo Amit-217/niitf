@@ -27,7 +27,7 @@ const PRINT_STYLES = `
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
       width: 210mm !important; 
-      margin: 0 !important; padding: 2mm 5mm 15mm 5mm !important;
+      margin: 0 !important; padding: 0mm 5mm 35mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       page-break-after: auto !important;
       box-shadow: none !important;
@@ -52,9 +52,9 @@ const PRINT_STYLES = `
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
-  .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
+  .report { background: #fff; border: none; border-radius: 0; overflow: hidden; }
+  .rpt-header { padding: 2px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
+  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
   .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
@@ -87,32 +87,32 @@ const PRINT_STYLES = `
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .bw .items-table td, .bw .items-table th { border-color: #888 !important; }
   .bw .activities-box { border-color: #888 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #444; border-radius: 6px 6px 0 0; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
-  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
+  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
+  .report-table td, .report-table th { border: 1px solid #444; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; }
   .val { font-size: 11px; color: #000; }
   .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .items-table td, .items-table th { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 10px; vertical-align: middle; word-break: break-word; text-align: left; }
+  .items-table td, .items-table th { border: 1px solid #444; padding: 2px 4px; font-size: 10px; vertical-align: middle; word-break: break-word; text-align: left; }
   .items-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
   .items-table td.text-left { text-align: left; }
   .items-table td.section-hdr { text-align: left; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
+  .sign-table td { border: 1px solid #444; padding: 2px 4px; font-size: 12px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: 1px solid #444; border-radius: 0 0 4px 4px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
 
-  .activities-box { border: 1px solid #d9e1ea; padding: 6px 8px; font-size: 11px; min-height: 40px; white-space: pre-wrap; word-break: break-word; }
+  .activities-box { border: 1px solid #444; padding: 6px 8px; font-size: 11px; min-height: 40px; white-space: pre-wrap; word-break: break-word; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -328,7 +328,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
             width: "210mm",
             minHeight: "297mm",
             margin: "0 auto",
-            padding: "5mm 5mm 35mm 5mm",
+            padding: "0mm 5mm 35mm 5mm",
             background: "#fff",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
@@ -346,7 +346,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
             >
               <thead style={{ display: "table-header-group" }}>
                 <tr>
-                  <td style={{ padding: "2mm 0 0 0" }}>
+                  <td style={{ padding: "0" }}>
                     <div className="rpt-header">
                       <div className="logo-box">
                         <img src="/logo.png" alt="NIIT Logo" />
@@ -375,17 +375,13 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                     <div className="report-footer-wrap">
                       <table className="sign-table mt-n1">
                         <colgroup>
-                          <col style={{ width: "33.3%" }} />
-                          <col style={{ width: "33.3%" }} />
-                          <col style={{ width: "33.4%" }} />
+                          <col style={{ width: "50%" }} />
+                          <col style={{ width: "50%" }} />
                         </colgroup>
                         <tbody>
                           <tr>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
                               FOR VENDOR:
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CUSTOMER:
                             </td>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
                               FOR NIIT SURVEYOR, BARAMATI:
@@ -396,25 +392,19 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                               {v(vd.vendor) || "-"}
                             </td>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              {v(report.client) || "-"}
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
                               National Industrial Inspection And Training
                             </td>
                           </tr>
                           <tr>
                             <td>Name: {v(sigs.vendor?.name) || "-"}</td>
-                            <td>Name: -</td>
                             <td>Name: {v(sigs.niit?.name) || "-"}</td>
                           </tr>
                           <tr>
                             <td style={{ height: 28 }}>Signature:</td>
                             <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
                           </tr>
                           <tr>
                             <td>Date: {fmtDate(sigs.vendor?.date) || "-"}</td>
-                            <td>Date: -</td>
                             <td>Date: {fmtDate(sigs.niit?.date) || "-"}</td>
                           </tr>
                         </tbody>
@@ -443,11 +433,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           <col style={{ width: "32%" }} />
                         </colgroup>
                         <tbody>
-                          <tr>
-                            <td colSpan={5} className="section-hdr">
-                              1. JOB DETAILS
-                            </td>
-                          </tr>
+
                           <tr>
                             <td className="lbl">I.R No:</td>
                             <td className="val" style={{ fontWeight: 600 }}>
@@ -523,12 +509,16 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         </colgroup>
                         <tbody>
                           <tr>
-                            <td className="section-hdr">2. CLIENT DETAILS</td>
-                            <td className="section-hdr">3. VENDOR DETAILS</td>
+                            <td className="section-hdr">1. CLIENT DETAILS</td>
+                            <td className="section-hdr">2. VENDOR DETAILS</td>
                           </tr>
                           <tr>
                             <td style={{ verticalAlign: "top", padding: 0 }}>
-                              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                              <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                                <colgroup>
+                                  <col style={{ width: "30%" }} />
+                                  <col style={{ width: "70%" }} />
+                                </colgroup>
                                 <tbody>
                                   <tr>
                                     <td className="lbl">Ref</td>
@@ -549,8 +539,12 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                                 </tbody>
                               </table>
                             </td>
-                            <td style={{ verticalAlign: "top", padding: 0, borderLeft: "1px solid #d9e1ea" }}>
-                              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                            <td style={{ verticalAlign: "top", padding: 0, borderLeft: "1px solid #444" }}>
+                              <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                                <colgroup>
+                                  <col style={{ width: "36%" }} />
+                                  <col style={{ width: "64%" }} />
+                                </colgroup>
                                 <tbody>
                                   <tr>
                                     <td className="lbl">Vendor</td>
@@ -590,7 +584,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={9} className="section-hdr">
-                              4. INSPECTION ITEMS
+                              3. INSPECTION ITEMS
                             </td>
                           </tr>
                           <tr>
@@ -712,7 +706,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td className="section-hdr">
-                              5. INSPECTION ACTIVITIES
+                              4. INSPECTION ACTIVITIES
                             </td>
                           </tr>
                         </thead>
@@ -725,23 +719,6 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      <table className="report-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "22%" }} />
-                          <col style={{ width: "78%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td colSpan={2} className="section-hdr">
-                              6. Conclusion
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Overall Evaluation</td>
-                            <td className="val">{v(report.conclusion)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
 
                       {/* ── REFERENCE DOCUMENTS ── */}
                       <table className="report-table mt-n1" style={{ breakInside: "auto", pageBreakInside: "auto" }}>
@@ -753,7 +730,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={3} className="section-hdr">
-                              7. REFERENCE DOCUMENTS FOR INSPECTION
+                              5. REFERENCE DOCUMENTS FOR INSPECTION
                             </td>
                           </tr>
                           <tr>
@@ -805,7 +782,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td colSpan={5} className="section-hdr">
-                              8. CALIBRATION STATUS OF INSTRUMENTS
+                              6. CALIBRATION STATUS OF INSTRUMENTS
                             </td>
                           </tr>
                           <tr>
@@ -852,6 +829,24 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           )}
                         </tbody>
                       </table>
+                      <table className="report-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "22%" }} />
+                          <col style={{ width: "78%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td colSpan={2} className="section-hdr">
+                              7. Conclusion
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Overall Evaluation</td>
+                            <td className="val">{v(report.conclusion)}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+
                     </div>
                     {/* ── end report-body ── */}
                   </td>

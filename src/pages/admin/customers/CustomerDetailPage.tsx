@@ -197,8 +197,12 @@ export const CustomerDetailPage = () => {
 
   // ── Quotations (lazy-loaded when Quotations tab is active)
   const [quotations, setQuotations] = useState<Quotation[]>([]);
-  const [quotationTypeFilter, setQuotationTypeFilter] = useState<string | null>(null);
-  const [quotationStatusFilter, setQuotationStatusFilter] = useState<string | null>(null);
+  const [quotationTypeFilter, setQuotationTypeFilter] = useState<string | null>(
+    null,
+  );
+  const [quotationStatusFilter, setQuotationStatusFilter] = useState<
+    string | null
+  >(null);
   const [quotationsLoading, setQuotationsLoading] = useState(false);
   const [quotationPage, setQuotationPage] = useState(1);
   const [quotationLimit, setQuotationLimit] = useState(10);
@@ -232,11 +236,16 @@ export const CustomerDetailPage = () => {
     setCountsLoaded(false);
     const extractTotal = (res: any): number => {
       const items = res?.data || res?.reports || [];
-      return res?.pagination?.total ?? (Array.isArray(items) ? items.length : 0);
+      return (
+        res?.pagination?.total ?? (Array.isArray(items) ? items.length : 0)
+      );
     };
     const extractQuoTotal = (res: any): number => {
       const items = res?.data?.data || res?.data || [];
-      return res?.data?.pagination?.total ?? (Array.isArray(items) ? items.length : 0);
+      return (
+        res?.data?.pagination?.total ??
+        (Array.isArray(items) ? items.length : 0)
+      );
     };
     const results = await Promise.allSettled([
       getMPTReports({ customerId: id, page: 1, limit: 1 }),
@@ -250,7 +259,8 @@ export const CustomerDetailPage = () => {
       getAllServiceQuotations({ customerId: id, limit: 1 }),
       getInvoices({ customerId: id, limit: 1 }),
     ]);
-    const v = (r: PromiseSettledResult<any>) => r.status === "fulfilled" ? r.value : null;
+    const v = (r: PromiseSettledResult<any>) =>
+      r.status === "fulfilled" ? r.value : null;
     setMptTotal(extractTotal(v(results[0])));
     setPtTotal(extractTotal(v(results[1])));
     setUtTotal(extractTotal(v(results[2])));
@@ -261,7 +271,12 @@ export const CustomerDetailPage = () => {
     setTrainQuotationsTotal(extractQuoTotal(v(results[7])));
     setServQuotationsTotal(extractQuoTotal(v(results[8])));
     const invRes = v(results[9]);
-    setInvoicesTotal(invRes?.pagination?.total ?? (Array.isArray(invRes?.data || invRes?.invoices) ? (invRes?.data || invRes?.invoices).length : 0));
+    setInvoicesTotal(
+      invRes?.pagination?.total ??
+        (Array.isArray(invRes?.data || invRes?.invoices)
+          ? (invRes?.data || invRes?.invoices).length
+          : 0),
+    );
     setCountsLoaded(true);
   }, [id]);
 
@@ -271,16 +286,29 @@ export const CustomerDetailPage = () => {
     setReportDataLoading(true);
     try {
       const fns: Record<ReportSubType, (p: any) => Promise<any>> = {
-        mpt: getMPTReports, pt: getPTReports, ut: getUTReports,
-        "vssc-ut": getVSSCUTReports, utg: getUTGReports,
-        "tpi-ivr": getTPIIVRReports, awsd: getAWSDReports,
+        mpt: getMPTReports,
+        pt: getPTReports,
+        ut: getUTReports,
+        "vssc-ut": getVSSCUTReports,
+        utg: getUTGReports,
+        "tpi-ivr": getTPIIVRReports,
+        awsd: getAWSDReports,
       };
-      const res: any = await fns[reportSubType]({ customerId: id, page: reportPage, limit: reportLimit });
+      const res: any = await fns[reportSubType]({
+        customerId: id,
+        page: reportPage,
+        limit: reportLimit,
+      });
       const items = res?.data || res?.reports || [];
       setReportData(Array.isArray(items) ? items : []);
-      setReportDataTotal(res?.pagination?.total ?? (Array.isArray(items) ? items.length : 0));
-    } catch { /* silent */ }
-    finally { setReportDataLoading(false); }
+      setReportDataTotal(
+        res?.pagination?.total ?? (Array.isArray(items) ? items.length : 0),
+      );
+    } catch {
+      /* silent */
+    } finally {
+      setReportDataLoading(false);
+    }
   }, [id, reportSubType, reportPage, reportLimit]);
 
   // Fetch all quotations to filter them client-side (to mix service and training)
@@ -292,14 +320,27 @@ export const CustomerDetailPage = () => {
         getAllServiceQuotations({ customerId: id, page: 1, limit: 200 }),
         getAllTrainingQuotations({ customerId: id, page: 1, limit: 200 }),
       ]);
-      const serviceItems = (serviceRes?.data?.data || serviceRes?.data || []).map((q: any) => ({ ...q, _type: "service" }));
-      const trainingItems = (trainingRes?.data?.data || trainingRes?.data || []).map((q: any) => ({ ...q, _type: "training" }));
-      const all = [...serviceItems, ...trainingItems].sort((a: any, b: any) =>
-        new Date(b.date || b.createdAt).getTime() - new Date(a.date || a.createdAt).getTime()
+      const serviceItems = (
+        serviceRes?.data?.data ||
+        serviceRes?.data ||
+        []
+      ).map((q: any) => ({ ...q, _type: "service" }));
+      const trainingItems = (
+        trainingRes?.data?.data ||
+        trainingRes?.data ||
+        []
+      ).map((q: any) => ({ ...q, _type: "training" }));
+      const all = [...serviceItems, ...trainingItems].sort(
+        (a: any, b: any) =>
+          new Date(b.date || b.createdAt).getTime() -
+          new Date(a.date || a.createdAt).getTime(),
       );
       setQuotations(all as Quotation[]);
-    } catch { /* silent */ }
-    finally { setQuotationsLoading(false); }
+    } catch {
+      /* silent */
+    } finally {
+      setQuotationsLoading(false);
+    }
   }, [id]);
 
   // Fetch paginated invoices
@@ -307,21 +348,40 @@ export const CustomerDetailPage = () => {
     if (!id) return;
     setInvoicesLoading(true);
     try {
-      const res: any = await getInvoices({ customerId: id, page: invoicePage, limit: invoiceLimit });
+      const res: any = await getInvoices({
+        customerId: id,
+        page: invoicePage,
+        limit: invoiceLimit,
+      });
       const items = res?.data || res?.invoices || [];
       setInvoices(Array.isArray(items) ? items : []);
-      setInvoicesPageTotal(res?.pagination?.total ?? (Array.isArray(items) ? items.length : 0));
-    } catch { /* silent */ }
-    finally { setInvoicesLoading(false); }
+      setInvoicesPageTotal(
+        res?.pagination?.total ?? (Array.isArray(items) ? items.length : 0),
+      );
+    } catch {
+      /* silent */
+    } finally {
+      setInvoicesLoading(false);
+    }
   }, [id, invoicePage, invoiceLimit]);
 
-  useEffect(() => { fetchCustomer(); }, [fetchCustomer]);
-  useEffect(() => { fetchAllCounts(); }, [fetchAllCounts]);
+  useEffect(() => {
+    fetchCustomer();
+  }, [fetchCustomer]);
+  useEffect(() => {
+    fetchAllCounts();
+  }, [fetchAllCounts]);
 
   // Reset report page when sub-type changes
-  useEffect(() => { setReportPage(1); setReportData([]); }, [reportSubType]);
+  useEffect(() => {
+    setReportPage(1);
+    setReportData([]);
+  }, [reportSubType]);
   // Reset quotation page when type filter changes
-  useEffect(() => { setQuotationPage(1); setQuotations([]); }, [quotationTypeFilter]);
+  useEffect(() => {
+    setQuotationPage(1);
+    setQuotations([]);
+  }, [quotationTypeFilter]);
 
   // Lazy-fetch report data when Reports tab is active and a sub-type is selected
   useEffect(() => {
@@ -560,10 +620,14 @@ export const CustomerDetailPage = () => {
               <div className={`p-2.5 rounded-xl mb-3 ${tab.color}`}>
                 <Icon size={20} />
               </div>
-              <p className={`text-xs font-black uppercase tracking-wider mb-1 ${isActive ? "text-violet-700" : "text-gray-500"}`}>
+              <p
+                className={`text-xs font-black uppercase tracking-wider mb-1 ${isActive ? "text-violet-700" : "text-gray-500"}`}
+              >
                 {tab.label}
               </p>
-              <p className={`text-3xl font-extrabold ${isActive ? "text-violet-900" : "text-gray-800"}`}>
+              <p
+                className={`text-3xl font-extrabold ${isActive ? "text-violet-900" : "text-gray-800"}`}
+              >
                 {countsLoaded ? tab.count : "-"}
               </p>
               {isActive && (
@@ -583,7 +647,9 @@ export const CustomerDetailPage = () => {
             </h2>
             {activeTab === "invoices" && (
               <button
-                onClick={() => navigate(`/admin/invoices/new`, { state: { customerId: id } })}
+                onClick={() =>
+                  navigate(`/admin/invoices/new`, { state: { customerId: id } })
+                }
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-xs font-bold hover:from-violet-700 hover:to-purple-700 transition-all shadow shadow-violet-200"
               >
                 <Plus size={14} /> Add Invoice
@@ -602,13 +668,23 @@ export const CustomerDetailPage = () => {
                   <div className="absolute right-0 top-full mt-1 z-20 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden min-w-[160px]">
                     <button
                       className="block w-full px-4 py-2.5 text-left text-xs font-medium text-gray-700 hover:bg-violet-50 hover:text-violet-700"
-                      onClick={() => { setShowQTypeMenu(false); navigate(`/admin/quotations/service/new`, { state: { customerId: id } }); }}
+                      onClick={() => {
+                        setShowQTypeMenu(false);
+                        navigate(`/admin/quotations/service/new`, {
+                          state: { customerId: id },
+                        });
+                      }}
                     >
                       Service Quotation
                     </button>
                     <button
                       className="block w-full px-4 py-2.5 text-left text-xs font-medium text-gray-700 hover:bg-violet-50 hover:text-violet-700 border-t border-gray-100"
-                      onClick={() => { setShowQTypeMenu(false); navigate(`/admin/quotations/training/new`, { state: { customerId: id } }); }}
+                      onClick={() => {
+                        setShowQTypeMenu(false);
+                        navigate(`/admin/quotations/training/new`, {
+                          state: { customerId: id },
+                        });
+                      }}
                     >
                       Training Quotation
                     </button>
@@ -627,7 +703,9 @@ export const CustomerDetailPage = () => {
                   return (
                     <button
                       key={rt.key}
-                      onClick={() => setReportSubType(isSelected ? null : rt.key)}
+                      onClick={() =>
+                        setReportSubType(isSelected ? null : rt.key)
+                      }
                       className={`relative flex flex-col items-start p-4 rounded-2xl border-2 transition-all text-left hover:shadow-md ${
                         isSelected
                           ? "border-indigo-400 bg-indigo-50/70 shadow-sm shadow-indigo-100"
@@ -637,13 +715,19 @@ export const CustomerDetailPage = () => {
                       <div className={`p-2 rounded-xl mb-2 ${rt.color}`}>
                         <Icon size={18} className={rt.textColor} />
                       </div>
-                      <p className={`text-[10px] font-black uppercase tracking-widest ${isSelected ? "text-indigo-700" : "text-gray-500"}`}>
+                      <p
+                        className={`text-[10px] font-black uppercase tracking-widest ${isSelected ? "text-indigo-700" : "text-gray-500"}`}
+                      >
                         {rt.label}
                       </p>
-                      <p className={`text-2xl font-extrabold mt-0.5 ${isSelected ? "text-indigo-900" : "text-gray-800"}`}>
+                      <p
+                        className={`text-2xl font-extrabold mt-0.5 ${isSelected ? "text-indigo-900" : "text-gray-800"}`}
+                      >
                         {countsLoaded ? reportCountByType[rt.key] : "-"}
                       </p>
-                      <p className={`text-[9px] mt-1 leading-tight ${isSelected ? "text-indigo-500" : "text-gray-400"}`}>
+                      <p
+                        className={`text-[9px] mt-1 leading-tight ${isSelected ? "text-indigo-500" : "text-gray-400"}`}
+                      >
                         {rt.fullLabel}
                       </p>
                       {isSelected && (
@@ -658,13 +742,25 @@ export const CustomerDetailPage = () => {
                 <div>
                   <div className="flex items-center justify-between px-5 py-3 bg-gray-50/50">
                     <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      {REPORT_TYPES.find((r) => r.key === reportSubType)?.fullLabel} Reports
+                      {
+                        REPORT_TYPES.find((r) => r.key === reportSubType)
+                          ?.fullLabel
+                      }{" "}
+                      Reports
                       <span className="ml-2 text-gray-400 font-normal normal-case">
-                        ({countsLoaded ? reportCountByType[reportSubType] : "-"} records)
+                        ({countsLoaded ? reportCountByType[reportSubType] : "-"}{" "}
+                        records)
                       </span>
                     </p>
                     <button
-                      onClick={() => navigate(`/admin/reports/${reportSubType}/new`, { state: { customerId: id, customerName: customer.companyName } })}
+                      onClick={() =>
+                        navigate(`/admin/reports/${reportSubType}/new`, {
+                          state: {
+                            customerId: id,
+                            customerName: customer.companyName,
+                          },
+                        })
+                      }
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl text-xs font-bold hover:from-indigo-700 hover:to-blue-700 transition-all shadow shadow-indigo-200"
                     >
                       <Plus size={13} /> Generate New Report
@@ -674,8 +770,19 @@ export const CustomerDetailPage = () => {
                     <table className="w-full text-sm">
                       <thead className="bg-gray-50 border-b border-gray-100">
                         <tr>
-                          {["Report No", "Date", "Client", "Stage", "Status", "Type", "Actions"].map((h) => (
-                            <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          {[
+                            "Report No",
+                            "Customer",
+                            "Date",
+                            ...(reportSubType !== "awsd" ? ["Inspection Stage"] : []),
+                            "Status",
+                            "Type",
+                            "Actions",
+                          ].map((h) => (
+                            <th
+                              key={h}
+                              className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                            >
                               {h}
                             </th>
                           ))}
@@ -684,33 +791,63 @@ export const CustomerDetailPage = () => {
                       <tbody className="divide-y divide-gray-50">
                         {reportDataLoading ? (
                           <tr>
-                            <td colSpan={7} className="px-4 py-10 text-center text-gray-400">
-                              <Loader2 className="animate-spin inline mr-2" size={16} /> Loading...
+                            <td
+                              colSpan={reportSubType === "awsd" ? 6 : 7}
+                              className="px-4 py-10 text-center text-gray-400"
+                            >
+                              <Loader2
+                                className="animate-spin inline mr-2"
+                                size={16}
+                              />{" "}
+                              Loading...
                             </td>
                           </tr>
                         ) : reportData.length === 0 ? (
                           <tr>
-                            <td colSpan={7} className="px-4 py-10 text-center text-gray-400">
-                              No {REPORT_TYPES.find((r) => r.key === reportSubType)?.label} reports found.
+                            <td
+                              colSpan={reportSubType === "awsd" ? 6 : 7}
+                              className="px-4 py-10 text-center text-gray-400"
+                            >
+                              No{" "}
+                              {
+                                REPORT_TYPES.find(
+                                  (r) => r.key === reportSubType,
+                                )?.label
+                              }{" "}
+                              reports found.
                             </td>
                           </tr>
                         ) : (
                           reportData.map((r) => (
-                            <tr key={r._id} className="hover:bg-gray-50 transition-colors">
+                            <tr
+                              key={r._id}
+                              className="hover:bg-gray-50 transition-colors"
+                            >
                               <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700">
                                 {r.reportNo || r.irNo}
                               </td>
-                              <td className="px-4 py-3 text-gray-600">
-                                {fmt(r.jobDetails?.reportDate || r.dtOfInspection || r.reportDate)}
-                              </td>
                               <td className="px-4 py-3 text-gray-700 truncate max-w-[150px]">
-                                {r.jobDetails?.client || r.client || r.customer || "—"}
+                                {r.jobDetails?.customer || r.customer || "—"}
                               </td>
-                              <td className="px-4 py-3 text-gray-500 text-xs">
-                                {r.jobDetails?.stageOfInspection || r.inspectionStage || "—"}
+                              <td className="px-4 py-3 text-gray-600">
+                                {fmt(
+                                  r.jobDetails?.reportDate ||
+                                    r.dtOfInspection ||
+                                    r.reportDate,
+                                )}
                               </td>
+
+                              {reportSubType !== "awsd" && (
+                                <td className="px-4 py-3 text-gray-500 text-xs">
+                                  {r.jobDetails?.stageOfInspection ||
+                                    r.inspectionStage ||
+                                    "—"}
+                                </td>
+                              )}
                               <td className="px-4 py-3">
-                                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${r.status === "final" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+                                <span
+                                  className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${r.status === "final" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}
+                                >
                                   {r.status}
                                 </span>
                               </td>
@@ -719,16 +856,37 @@ export const CustomerDetailPage = () => {
                                   {r.reportType || reportSubType?.toUpperCase()}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 text-right">
-                                <div className="flex items-center gap-1 justify-end">
+                              <td className=" py-3 text-center">
+                                <div className="flex items-center gap-1">
                                   <button
-                                    onClick={() => navigate(`/admin/reports/${reportSubType}/${r._id}/print`, { state: { customerId: id, reportSubType } })}
+                                    onClick={() =>
+                                      navigate(
+                                        `/admin/reports/${reportSubType}/${r._id}/print`,
+                                        {
+                                          state: {
+                                            customerId: id,
+                                            reportSubType,
+                                          },
+                                        },
+                                      )
+                                    }
                                     className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                                   >
                                     <Eye size={14} />
                                   </button>
                                   <button
-                                    onClick={() => navigate(`/admin/reports/${reportSubType}/${r._id}/edit`, { state: { customerId: id, reportSubType, customerName: customer.companyName } })}
+                                    onClick={() =>
+                                      navigate(
+                                        `/admin/reports/${reportSubType}/${r._id}/edit`,
+                                        {
+                                          state: {
+                                            customerId: id,
+                                            reportSubType,
+                                            customerName: customer.companyName,
+                                          },
+                                        },
+                                      )
+                                    }
                                     className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
                                   >
                                     <Pencil size={14} />
@@ -749,11 +907,17 @@ export const CustomerDetailPage = () => {
                   </div>
                   <Pagination
                     page={reportPage}
-                    totalPages={Math.max(1, Math.ceil(reportDataTotal / reportLimit))}
+                    totalPages={Math.max(
+                      1,
+                      Math.ceil(reportDataTotal / reportLimit),
+                    )}
                     total={reportDataTotal}
                     limit={reportLimit}
                     onPageChange={setReportPage}
-                    onLimitChange={(l) => { setReportLimit(l); setReportPage(1); }}
+                    onLimitChange={(l) => {
+                      setReportLimit(l);
+                      setReportPage(1);
+                    }}
                   />
                 </div>
               ) : (
@@ -761,8 +925,12 @@ export const CustomerDetailPage = () => {
                   <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <ClipboardList size={28} className="opacity-20" />
                   </div>
-                  <p className="font-medium text-gray-500">Select a report type above</p>
-                  <p className="text-sm mt-1">View specialized technical reports for this customer</p>
+                  <p className="font-medium text-gray-500">
+                    Select a report type above
+                  </p>
+                  <p className="text-sm mt-1">
+                    View specialized technical reports for this customer
+                  </p>
                 </div>
               )}
             </div>
@@ -774,8 +942,19 @@ export const CustomerDetailPage = () => {
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50 border-b border-gray-100">
                     <tr>
-                      {["Quotation No", "Date", "Type", "Subject", "Amount", "Status", "Actions"].map((h) => (
-                        <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      {[
+                        "Quotation No",
+                        "Date",
+                        "Type",
+                        "Subject",
+                        "Amount",
+                        "Status",
+                        "Actions",
+                      ].map((h) => (
+                        <th
+                          key={h}
+                          className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                        >
                           {h}
                         </th>
                       ))}
@@ -784,47 +963,79 @@ export const CustomerDetailPage = () => {
                   <tbody className="divide-y divide-gray-50">
                     {quotationsLoading ? (
                       <tr>
-                        <td colSpan={7} className="px-4 py-10 text-center text-gray-400">
-                          <Loader2 className="animate-spin inline mr-2" size={16} /> Loading...
+                        <td
+                          colSpan={7}
+                          className="px-4 py-10 text-center text-gray-400"
+                        >
+                          <Loader2
+                            className="animate-spin inline mr-2"
+                            size={16}
+                          />{" "}
+                          Loading...
                         </td>
                       </tr>
                     ) : pagedQuotations.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="px-4 py-10 text-center text-gray-400">
+                        <td
+                          colSpan={7}
+                          className="px-4 py-10 text-center text-gray-400"
+                        >
                           No quotations found.
                         </td>
                       </tr>
                     ) : (
                       pagedQuotations.map((q) => (
-                        <tr key={q._id} className="hover:bg-gray-50 transition-colors">
+                        <tr
+                          key={q._id}
+                          className="hover:bg-gray-50 transition-colors"
+                        >
                           <td className="px-4 py-3 font-mono text-xs font-bold text-violet-700">
                             {q.quotationNo}
                           </td>
-                          <td className="px-4 py-3 text-gray-600">{fmt(q.date)}</td>
+                          <td className="px-4 py-3 text-gray-600">
+                            {fmt(q.date)}
+                          </td>
                           <td className="px-4 py-3">
-                            <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${(q as any)._type === "training" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
-                              {(q as any)._type === "training" ? "Training" : "Service"}
+                            <span
+                              className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${(q as any)._type === "training" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}
+                            >
+                              {(q as any)._type === "training"
+                                ? "Training"
+                                : "Service"}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-gray-700 truncate max-w-[200px]">{q.subject || "—"}</td>
+                          <td className="px-4 py-3 text-gray-700 truncate max-w-[200px]">
+                            {q.subject || "—"}
+                          </td>
                           <td className="px-4 py-3 font-semibold text-gray-900">
                             ₹{(q.totalAmount || 0).toLocaleString("en-IN")}
                           </td>
                           <td className="px-4 py-3">
-                            <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[q.status] || "bg-gray-100 text-gray-600"}`}>
+                            <span
+                              className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[q.status] || "bg-gray-100 text-gray-600"}`}
+                            >
                               {q.status}
                             </span>
                           </td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex items-center gap-2 justify-end">
                               <button
-                                onClick={() => navigate(`/admin/quotations/${((q as any)._type as string) || "service"}/${q._id}/print`, { state: { customerId: id } })}
+                                onClick={() =>
+                                  navigate(
+                                    `/admin/quotations/${((q as any)._type as string) || "service"}/${q._id}/print`,
+                                    { state: { customerId: id } },
+                                  )
+                                }
                                 className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                               >
                                 <Eye size={13} />
                               </button>
                               <button
-                                onClick={() => navigate(`/admin/quotations/${((q as any)._type as string) || "service"}/${q._id}/edit`)}
+                                onClick={() =>
+                                  navigate(
+                                    `/admin/quotations/${((q as any)._type as string) || "service"}/${q._id}/edit`,
+                                  )
+                                }
                                 className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
                               >
                                 <Pencil size={13} />
@@ -845,11 +1056,17 @@ export const CustomerDetailPage = () => {
               </div>
               <Pagination
                 page={quotationPage}
-                totalPages={Math.max(1, Math.ceil(filteredQuotations.length / quotationLimit))}
+                totalPages={Math.max(
+                  1,
+                  Math.ceil(filteredQuotations.length / quotationLimit),
+                )}
                 total={filteredQuotations.length}
                 limit={quotationLimit}
                 onPageChange={setQuotationPage}
-                onLimitChange={(l) => { setQuotationLimit(l); setQuotationPage(1); }}
+                onLimitChange={(l) => {
+                  setQuotationLimit(l);
+                  setQuotationPage(1);
+                }}
               />
             </div>
           )}
@@ -860,8 +1077,18 @@ export const CustomerDetailPage = () => {
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50 border-b border-gray-100">
                     <tr>
-                      {["Invoice No", "Date", "Due Date", "Grand Total", "Status", "Actions"].map((h) => (
-                        <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      {[
+                        "Invoice No",
+                        "Date",
+                        "Due Date",
+                        "Grand Total",
+                        "Status",
+                        "Actions",
+                      ].map((h) => (
+                        <th
+                          key={h}
+                          className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                        >
                           {h}
                         </th>
                       ))}
@@ -870,42 +1097,65 @@ export const CustomerDetailPage = () => {
                   <tbody className="divide-y divide-gray-50">
                     {invoicesLoading ? (
                       <tr>
-                        <td colSpan={6} className="px-4 py-10 text-center text-gray-400">
-                          <Loader2 className="animate-spin inline mr-2" size={16} /> Loading...
+                        <td
+                          colSpan={6}
+                          className="px-4 py-10 text-center text-gray-400"
+                        >
+                          <Loader2
+                            className="animate-spin inline mr-2"
+                            size={16}
+                          />{" "}
+                          Loading...
                         </td>
                       </tr>
                     ) : invoices.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="px-4 py-10 text-center text-gray-400">
+                        <td
+                          colSpan={6}
+                          className="px-4 py-10 text-center text-gray-400"
+                        >
                           No invoices found.
                         </td>
                       </tr>
                     ) : (
                       invoices.map((inv) => (
-                        <tr key={inv._id} className="hover:bg-gray-50 transition-colors">
+                        <tr
+                          key={inv._id}
+                          className="hover:bg-gray-50 transition-colors"
+                        >
                           <td className="px-4 py-3 font-mono text-xs font-bold text-emerald-700">
                             {inv.invoiceNo}
                           </td>
-                          <td className="px-4 py-3 text-gray-600">{fmt(inv.date)}</td>
-                          <td className="px-4 py-3 text-gray-500">{fmt(inv.dueDate)}</td>
+                          <td className="px-4 py-3 text-gray-600">
+                            {fmt(inv.date)}
+                          </td>
+                          <td className="px-4 py-3 text-gray-500">
+                            {fmt(inv.dueDate)}
+                          </td>
                           <td className="px-4 py-3 font-semibold text-gray-900">
                             ₹{(inv.totalAmount || 0).toLocaleString("en-IN")}
                           </td>
                           <td className="px-4 py-3">
-                            <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[inv.status] || "bg-gray-100 text-gray-600"}`}>
+                            <span
+                              className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[inv.status] || "bg-gray-100 text-gray-600"}`}
+                            >
                               {inv.status}
                             </span>
                           </td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex items-center gap-2 justify-end">
                               <button
-                                onClick={() => navigate(`/admin/invoices/${inv._id}/print`)}
+                                onClick={() =>
+                                  navigate(`/admin/invoices/${inv._id}/print`)
+                                }
                                 className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                               >
                                 <Eye size={13} />
                               </button>
                               <button
-                                onClick={() => navigate(`/admin/invoices/${inv._id}/edit`)}
+                                onClick={() =>
+                                  navigate(`/admin/invoices/${inv._id}/edit`)
+                                }
                                 className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
                               >
                                 <Pencil size={13} />
@@ -926,11 +1176,17 @@ export const CustomerDetailPage = () => {
               </div>
               <Pagination
                 page={invoicePage}
-                totalPages={Math.max(1, Math.ceil(invoicesPageTotal / invoiceLimit))}
+                totalPages={Math.max(
+                  1,
+                  Math.ceil(invoicesPageTotal / invoiceLimit),
+                )}
                 total={invoicesPageTotal}
                 limit={invoiceLimit}
                 onPageChange={setInvoicePage}
-                onLimitChange={(l) => { setInvoiceLimit(l); setInvoicePage(1); }}
+                onLimitChange={(l) => {
+                  setInvoiceLimit(l);
+                  setInvoicePage(1);
+                }}
               />
             </div>
           )}

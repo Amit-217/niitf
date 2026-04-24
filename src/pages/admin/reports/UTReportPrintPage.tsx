@@ -24,11 +24,11 @@ const PRINT_STYLES = `
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
-    body { margin: 0; background: #fff; min-height: 297mm !important; }
+    body { margin: 0; background: #fff; }
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
       width: 210mm !important; 
-      margin: 0 !important; padding: 2mm 5mm 15mm 5mm !important;
+      margin: 0 !important; padding: 5mm 5mm 15mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       page-break-after: auto !important;
       box-shadow: none !important;
@@ -54,11 +54,11 @@ const PRINT_STYLES = `
     .report-body { overflow: visible !important; }
     tfoot { display: table-footer-group !important; }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: none; border-radius: 4px; overflow: hidden; }
-  .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
+  .report { background: #fff; border: none; border-radius: 0; overflow: hidden; }
+  .rpt-header { padding: 2px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
+  .logo-box { width: 90px; height: 90px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-4px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
   .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
@@ -89,37 +89,37 @@ const PRINT_STYLES = `
   .bw .lbl { color: #000 !important; background: #fff !important; }
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #b8cfe7; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
-  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .report-table td, .report-table th { border: 1px solid #d9e1ea; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
-  .val { font-size: 11px; color: #000; }
-  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .obs-table td, .obs-table th { border: 1px solid #d9e1ea; padding: 3px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
-  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; text-align: left; }
-  .obs-table th:first-child, .obs-table td:first-child { width: 28px; min-width: 28px; max-width: 28px; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 5px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #444; border-radius: 6px 6px 0 0; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 3px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
+  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
+  .report-table td, .report-table th { border: 1px solid #444; padding: 2px 5px; vertical-align: middle; word-break: break-word; font-size: 11.5px; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 12px; text-align: left; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 11.5px; width: 22%; }
+  .val { font-size: 11.5px; color: #000; }
+  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #444; }
+  .obs-table td, .obs-table th { border: 1px solid #444; padding: 3px 6px; font-size: 11.5px; vertical-align: top; word-break: break-word; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 11.5px; font-weight: 700; text-align: left; }
+  .obs-table th:first-child, .obs-table td:first-child { width: 35px !important; min-width: 35px !important; max-width: 35px !important; text-align: center; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #d9e1ea; padding: 2px 4px; font-size: 12px; vertical-align: top; }
+  .sign-table td { border: 1px solid #444; padding: 2px 6px; font-size: 11px; vertical-align: top; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
   .report-body { border: 1px solid #444; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
 
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
 
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .calib-table td, .calib-table th { border: 1px solid #d9e1ea; padding: 4px; font-size: 11px; text-align: left; vertical-align: middle; }
+  .calib-table td, .calib-table th { border: 1px solid #444; padding: 4px; font-size: 11px; text-align: left; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
   .calib-table td.section-hdr { text-align: left; }
-  .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .footer { background: #f8fafc; padding: 5px 10px; font-size: 11px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
@@ -354,9 +354,8 @@ export const UTReportPrintPage: React.FC = () => {
           style={{
             position: "relative",
             width: "210mm",
-            minHeight: "297mm",
             margin: "0 auto",
-            padding: "5mm 5mm 35mm 5mm",
+            padding: "0mm 5mm 25mm 5mm",
             background: "#fff",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
@@ -374,7 +373,7 @@ export const UTReportPrintPage: React.FC = () => {
             >
               <thead style={{ display: "table-header-group" }}>
                 <tr>
-                  <td style={{ padding: "2mm 0 0 0" }}>
+                  <td style={{ padding: "0" }}>
                     <div className="rpt-header">
                       <div className="logo-box">
                         <img src="/logo.png" alt="NIIT Logo" />
@@ -400,79 +399,9 @@ export const UTReportPrintPage: React.FC = () => {
               <tfoot style={{ display: "table-footer-group" }}>
                 <tr>
                   <td style={{ padding: 0 }}>
-                    <div className="report-footer-wrap">
-                      <table className="sign-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "33.3%" }} />
-                          <col style={{ width: "33.3%" }} />
-                          <col style={{ width: "33.4%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              EXAMINED BY
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CUSTOMER:
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CLIENT :
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              National Industrial Inspection And Training
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              {v(jd.customer)}
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              {v(jd.client)}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Name: {v(inspector.name) || "-"}</td>
-                            <td>Name: {v(fs.customer?.name) || "-"}</td>
-                            <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
-                          </tr>
-                          <tr>
-                            <td>
-                              {v(inspector.qualification) || "UT NDE Level II"}
-                              {inspector.designation
-                                ? ` / ${inspector.designation}`
-                                : ""}
-                            </td>
-                            <td>
-                              Designation: {v(fs.customer?.designation) || "-"}
-                            </td>
-                            <td>
-                              Designation:{" "}
-                              {v(fs.clientOrTPI?.designation) || "-"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
-                          </tr>
-                          <tr>
-                            <td>I.D. No.: {v(inspector.idNo) || "-"}</td>
-                            <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
-                            <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
-                          </tr>
-                          <tr>
-                            <td>Date: {fmtDate(inspector.date) || "-"}</td>
-                            <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
-                            <td>
-                              Date: {fmtDate(fs.clientOrTPI?.date) || "-"}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
                     <div
                       className="tfoot-spacer"
-                      style={{ height: "28mm" }}
+                      style={{ height: "15mm" }}
                     ></div>
                   </td>
                 </tr>
@@ -523,47 +452,47 @@ export const UTReportPrintPage: React.FC = () => {
                           <tr>
                             <td className="lbl">Reference Std.</td>
                             <td className="val">{v(jd.referenceStd)}</td>
-                            <td className="lbl">Inspection Time</td>
-                            <td className="val">{v(jd.inspectionTime)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Acceptance Criteria</td>
-                            <td className="val">{v(jd.acceptanceCriteria)}</td>
                             <td className="lbl">Material</td>
                             <td className="val">{v(jd.material)}</td>
                           </tr>
                           <tr>
-                            <td className="lbl">Stage of Inspection</td>
-                            <td className="val">{v(jd.stageOfInspection)}</td>
+                            <td className="lbl">Acceptance Criteria</td>
+                            <td className="val">{v(jd.acceptanceCriteria)}</td>
                             <td className="lbl">Thickness</td>
                             <td className="val">{v(jd.thickness)}</td>
                           </tr>
                           <tr>
-                            <td className="lbl">Extent of Examination</td>
-                            <td className="val">{v(jd.extentOfExamination)}</td>
+                            <td className="lbl">Stage of Inspection</td>
+                            <td className="val">{v(jd.stageOfInspection)}</td>
                             <td className="lbl">Surface Condition</td>
                             <td className="val">{v(jd.surfaceCondition)}</td>
                           </tr>
                           <tr>
-                            <td className="lbl">Type of Joint</td>
-                            <td className="val">{v(jd.typeOfJoint)}</td>
+                            <td className="lbl">Extent of Examination</td>
+                            <td className="val">{v(jd.extentOfExamination)}</td>
                             <td className="lbl">Surface Temperature</td>
                             <td className="val">{v(jd.surfaceTemperature)}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Type of Joint</td>
+                            <td colSpan={3} className="val">{v(jd.typeOfJoint)}</td>
                           </tr>
                         </tbody>
                       </table>
 
-                      {/* â"€â"€ EQUIPMENT DETAILS â"€â"€ */}
+                      {/* ——— EQUIPMENT DETAILS ——— */}
                       <table className="report-table mt-n1">
                         <colgroup>
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "32%" }} />
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "32%" }} />
+                          <col style={{ width: "15%" }} />
+                          <col style={{ width: "18.3%" }} />
+                          <col style={{ width: "15%" }} />
+                          <col style={{ width: "18.3%" }} />
+                          <col style={{ width: "15%" }} />
+                          <col style={{ width: "18.4%" }} />
                         </colgroup>
                         <tbody>
                           <tr>
-                            <td colSpan={4} className="section-hdr">
+                            <td colSpan={6} className="section-hdr">
                               2. EQUIPMENT DETAILS
                             </td>
                           </tr>
@@ -572,14 +501,12 @@ export const UTReportPrintPage: React.FC = () => {
                             <td className="val">{v(eq.equipmentType)}</td>
                             <td className="lbl">Sr. no.</td>
                             <td className="val">{v(eq.srNo)}</td>
-                          </tr>
-                          <tr>
                             <td className="lbl">Make</td>
                             <td className="val">{v(eq.make)}</td>
-                            <td className="lbl">Calibration Due</td>
-                            <td className="val">{v(eq.calibrationDue)}</td>
                           </tr>
                           <tr>
+                            <td className="lbl">Calibration Due</td>
+                            <td className="val">{fmtDate(eq.calibrationDue)}</td>
                             <td className="lbl">Couplant</td>
                             <td className="val">{v(eq.couplant)}</td>
                             <td className="lbl">Basic Calibration Block</td>
@@ -722,8 +649,8 @@ export const UTReportPrintPage: React.FC = () => {
                                   {v(
                                     (
                                       a.data as
-                                        | Record<string, string>
-                                        | undefined
+                                      | Record<string, string>
+                                      | undefined
                                     )?.[row.key],
                                   )}
                                 </td>
@@ -733,107 +660,122 @@ export const UTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* -- OBSERVATIONS -- */}
-                      <table className="obs-table mt-n1">
-                        <thead style={{ display: "table-header-group" }}>
-                          <tr>
-                            <td colSpan={7} className="section-hdr">
-                              6. OBSERVATIONS
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="col-hdr">Sr. No.</td>
-                            <td className="col-hdr" style={{ width: "18%" }}>
-                              Job Description
-                            </td>
-                            <td className="col-hdr" style={{ width: "16%" }}>
-                              Drg No. / Joint No.
-                            </td>
-                            <td className="col-hdr" style={{ width: "14%" }}>
-                              Size
-                            </td>
-                            <td className="col-hdr" style={{ width: "10%" }}>
-                              Quantity in Nos.
-                            </td>
-                            <td className="col-hdr" style={{ width: "20%" }}>
-                              Interpretation
-                            </td>
-                            <td className="col-hdr" style={{ width: "16%" }}>
-                              Evaluation
-                            </td>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {obs.length === 0 ? (
+                      <div style={obs.length > 5 ? { pageBreakBefore: "always" } : {}}>
+                        <table className="obs-table mt-n1">
+                          <colgroup>
+                            <col style={{ width: "35px" }} />
+                            <col style={{ width: "22%" }} />
+                            <col style={{ width: "16%" }} />
+                            <col style={{ width: "13%" }} />
+                            <col style={{ width: "8%" }} />
+                            <col style={{ width: "26%" }} />
+                            <col style={{ width: "10%" }} />
+                          </colgroup>
+                          <thead style={{ display: "table-header-group" }}>
                             <tr>
-                              <td
-                                colSpan={7}
-                                style={{
-                                  textAlign: "center",
-                                  padding: "6px",
-                                  fontSize: "11px",
-                                  color: "#999",
-                                }}
-                              >
-                                No observations recorded.
+                              <td colSpan={7} className="section-hdr">
+                                6. OBSERVATIONS
                               </td>
                             </tr>
-                          ) : (
-                            obs.map((o, i) => (
-                              <tr key={i}>
-                                <td>{o.srNo}</td>
-                                <td>{v(o.jobDescription)}</td>
-                                <td>{v(o.drawingOrJointNo)}</td>
-                                <td>{v(o.size)}</td>
-                                <td>{o.quantity ?? ""}</td>
-                                <td>{v(o.interpretation)}</td>
-                                <td>
-                                  {v(o.evaluation || o.remark || o.result)}
+                            <tr>
+                              <td className="col-hdr">Sr.</td>
+                              <td className="col-hdr">Job Description</td>
+                              <td className="col-hdr">Drg No. / Joint No.</td>
+                              <td className="col-hdr">Size</td>
+                              <td className="col-hdr">Qty</td>
+                              <td className="col-hdr">Interpretation</td>
+                              <td className="col-hdr">Evaluation</td>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {obs.length === 0 ? (
+                              <tr>
+                                <td
+                                  colSpan={7}
+                                  style={{
+                                    textAlign: "center",
+                                    padding: "6px",
+                                    fontSize: "11px",
+                                    color: "#999",
+                                  }}
+                                >
+                                  No observations recorded.
                                 </td>
                               </tr>
-                            ))
-                          )}
-                          {[...Array(4)].map((_, i) => (
-                            <tr key={`empty-obs-${i}`}>
-                              <td style={{ height: "24px" }}></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-
-                      {/* -- Conclusion -- */}
-                      <div
-                        style={{
-                          breakInside: "avoid",
-                          pageBreakInside: "avoid",
-                        }}
-                      >
-                        <table className="report-table mt-n1">
-                          <tbody>
-                            <tr>
-                              <td colSpan={2} className="section-hdr">
-                                7. CONCLUSION
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="lbl" style={{ width: "22%" }}>
-                                Overall Evaluation
-                              </td>
-                              <td className="val">{conclusionText}</td>
-                            </tr>
+                            ) : (
+                              obs.map((o, i) => (
+                                <tr key={i}>
+                                  <td>{o.srNo}</td>
+                                  <td>{v(o.jobDescription)}</td>
+                                  <td>{v(o.drawingOrJointNo)}</td>
+                                  <td>{v(o.size)}</td>
+                                  <td>{o.quantity ?? ""}</td>
+                                  <td>{v(o.interpretation)}</td>
+                                  <td>{v(o.evaluation || o.remark || o.result)}</td>
+                                </tr>
+                              ))
+                            )}
                           </tbody>
                         </table>
                       </div>
 
-                      {/* -- EXAMINED BY (screen only, hidden on print) -- */}
+                      {/* --- CONCLUSION REMOVED --- */}
+                      <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+                        <div className="report-footer-wrap">
+                          <table className="sign-table mt-n1">
+                            <colgroup>
+                              <col style={{ width: "33.3%" }} />
+                              <col style={{ width: "33.3%" }} />
+                              <col style={{ width: "33.4%" }} />
+                            </colgroup>
+                            <tbody>
+                              <tr>
+                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                                  EXAMINED BY
+                                </td>
+                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                                  CUSTOMER:
+                                </td>
+                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                                  CLIENT :
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                                  National Industrial Inspection And Training
+                                </td>
+                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                                  {v(jd.customer)}
+                                </td>
+                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                                  {v(jd.client)}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Name: {v(inspector.name) || "-"}</td>
+                                <td>Name: {v(jd.customerRepresentative) || "-"}</td>
+                                <td>Name: {v(jd.clientRepresentative) || "-"}</td>
+                              </tr>
+                              <tr>
+                                <td>{v(inspector.designation) || "UT NDE Level II"}</td>
+                                <td>Designation: {v(jd.customerDesignation) || "-"}</td>
+                                <td>Designation: {v(jd.clientDesignation) || "-"}</td>
+                              </tr>
+                              <tr>
+                                <td style={{ height: "30px" }}>Signature:</td>
+                                <td>Signature:</td>
+                                <td>Signature:</td>
+                              </tr>
+                              <tr>
+                                <td>Date: {fmtDate(jd.reportDate)}</td>
+                                <td>Date: {fmtDate(jd.reportDate)}</td>
+                                <td>Date: {fmtDate(jd.reportDate)}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
                     </div>
-                    {/* â"€â"€ end report-body â"€â"€ */}
                   </td>
                 </tr>
               </tbody>

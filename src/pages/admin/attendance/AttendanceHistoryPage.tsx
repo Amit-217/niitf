@@ -23,12 +23,19 @@ interface AttendanceRecord {
 const formatDate = (value: string) =>
     new Date(value).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
 
+interface LeaveBalance {
+    employeeId: string;
+    leaveUsed: number;
+    leaveBalance: number;
+    leaveLimit: number;
+}
+
 export const AttendanceHistoryPage = () => {
     const navigate = useNavigate();
     const [month, setMonth] = useState(new Date().toISOString().substring(0, 7));
     const [employees, setEmployees] = useState<User[]>([]);
     const [records, setRecords] = useState<AttendanceRecord[]>([]);
-    const [yearRecords, setYearRecords] = useState<AttendanceRecord[]>([]);
+    const [leaveBalanceMap, setLeaveBalanceMap] = useState<Record<string, LeaveBalance>>({});
     const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState('');
     const [selectedEmployee, setSelectedEmployee] = useState<User | null>(null);
@@ -43,16 +50,23 @@ export const AttendanceHistoryPage = () => {
         const fetchRecords = async () => {
             setLoading(true);
             try {
-                const [monthRes, yearRes]: any = await Promise.all([
+                const year = month.substring(0, 4);
+                const [monthRes, leaveBalRes]: any = await Promise.all([
                     api.get(`/admin/attendance/month?month=${month}`),
-                    api.get(`/admin/attendance/year?year=${month.substring(0, 4)}`),
+                    api.get(`/admin/attendance/leave-balance?year=${year}`),
                 ]);
                 setRecords(Array.isArray(monthRes.data) ? monthRes.data : []);
-                setYearRecords(Array.isArray(yearRes.data) ? yearRes.data : []);
+                const map: Record<string, LeaveBalance> = {};
+                if (Array.isArray(leaveBalRes.data)) {
+                    leaveBalRes.data.forEach((item: LeaveBalance) => {
+                        map[item.employeeId.toString()] = item;
+                    });
+                }
+                setLeaveBalanceMap(map);
             } catch {
                 toast.error('Failed to load attendance history');
                 setRecords([]);
-                setYearRecords([]);
+                setLeaveBalanceMap({});
             } finally {
                 setLoading(false);
             }
@@ -73,10 +87,7 @@ export const AttendanceHistoryPage = () => {
                     return id === emp._id;
                 });
 
-                const leaveYearCount = yearRecords.filter((record) => {
-                    const id = record.employeeId?._id || record.employeeId;
-                    return id === emp._id && record.status === 'LEAVE';
-                }).length;
+                const lb = leaveBalanceMap[emp._id] || { leaveUsed: 0, leaveBalance: 22, leaveLimit: 22 };
 
                 return {
                     employee: emp,
@@ -85,10 +96,12 @@ export const AttendanceHistoryPage = () => {
                     absent: empRecords.filter((r) => r.status === 'ABSENT').length,
                     leave: empRecords.filter((r) => r.status === 'LEAVE').length,
                     holiday: empRecords.filter((r) => r.status === 'HOLIDAY').length,
-                    leaveYearCount,
+                    leaveUsed: lb.leaveUsed,
+                    leaveBalance: lb.leaveBalance,
+                    leaveLimit: lb.leaveLimit,
                 };
             });
-    }, [employees, records, yearRecords, search]);
+    }, [employees, records, leaveBalanceMap, search]);
 
     const selectedEmployeeRecords = selectedEmployee
         ? records
@@ -170,7 +183,7 @@ export const AttendanceHistoryPage = () => {
                                 <th className="px-4 py-3">Absent</th>
                                 <th className="px-4 py-3">Leave</th>
                                 <th className="px-4 py-3">Holiday</th>
-                                <th className="px-4 py-3">Year Leave</th>
+                                <th className="px-4 py-3">Leave Balance</th>
                                 <th className="px-4 py-3 text-right">Action</th>
                             </tr>
                         </thead>
@@ -199,13 +212,18 @@ export const AttendanceHistoryPage = () => {
                                         <td className="px-4 py-3 font-bold text-amber-700">{item.leave}</td>
                                         <td className="px-4 py-3 font-bold text-sky-700">{item.holiday}</td>
                                         <td className="px-4 py-3">
-                                            <span className={`inline-flex px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border ${
-                                                item.leaveYearCount >= 22
-                                                    ? 'bg-rose-100 text-rose-700 border-rose-200'
-                                                    : 'bg-emerald-100 text-emerald-700 border-emerald-200'
-                                            }`}>
-                                                {item.leaveYearCount}/22
-                                            </span>
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className={`inline-flex px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border w-fit ${
+                                                    item.leaveBalance <= 0
+                                                        ? 'bg-rose-100 text-rose-700 border-rose-200'
+                                                        : item.leaveBalance <= 5
+                                                            ? 'bg-amber-100 text-amber-700 border-amber-200'
+                                                            : 'bg-emerald-100 text-emerald-700 border-emerald-200'
+                                                }`}>
+                                                    {item.leaveBalance} left
+                                                </span>
+                                                <span className="text-[10px] text-gray-400">{item.leaveUsed}/{item.leaveLimit} used</span>
+                                            </div>
                                         </td>
                                         <td className="px-4 py-3 text-right">
                                             <button

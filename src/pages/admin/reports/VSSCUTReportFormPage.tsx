@@ -185,10 +185,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
   const [evaluation, setEvaluation] = useState("");
   const [evaluationCustom, setEvaluationCustom] = useState("");
 
-  // -- Conclusion --
-  const [conclusion, setConclusion] = useState("");
-  const [conclusionCustom, setConclusionCustom] = useState("");
-
   // ── Users for inspector dropdown ──
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
   useEffect(() => {
@@ -356,16 +352,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
         ]);
         setEvaluation(rm);
         setEvaluationCustom(rmC);
-        const conclusionOpts = [
-          "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-          "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-          "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-          "Other",
-        ];
-        const [con, conC] = fromOther(r.conclusion ?? "", conclusionOpts);
-        setConclusion(con);
-        setConclusionCustom(conC);
         const fs = r.finalSection ?? {};
         const insp = fs.inspector?.[0] ?? {};
         setInspectorName(insp.name ?? "");
@@ -476,9 +462,8 @@ export const VSSCUTReportFormPage: React.FC = () => {
           dacDb: npDacDb,
           scanningDb: npScanningDb,
         },
-        disposition: disposition || undefined,
+        disposition,
         evaluation: resolve(evaluation, evaluationCustom),
-        conclusion: resolve(conclusion, conclusionCustom) || undefined,
         finalSection: {
           inspector: [
             {
@@ -1135,26 +1120,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* -- Conclusion -- */}
-      <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Conclusion</h2>
-        <div>
-          <label className={labelClass}>Conclusion</label>
-          <SelectWithCustom
-            value={conclusion}
-            onChange={setConclusion}
-            customValue={conclusionCustom}
-            onCustomChange={setConclusionCustom}
-            options={[
-              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-              "Other",
-            ]}
-          />
-        </div>
-      </div>
+
 
       {/* Final Section */}
       <div className={sectionClass}>

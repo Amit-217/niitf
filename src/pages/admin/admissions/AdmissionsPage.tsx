@@ -365,7 +365,9 @@ export const AdmissionsPage = () => {
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <BookOpen className="text-primary-600" /> Admissions
           </h1>
-          <p className="hidden sm:block text-sm text-gray-500 mt-1">{total} total admissions</p>
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">
+            {total} total admissions
+          </p>
         </div>
         <button
           onClick={() => setCreateOpen(true)}
@@ -379,11 +381,17 @@ export const AdmissionsPage = () => {
       <div className="flex flex-col sm:flex-row flex-wrap gap-3">
         {/* Search */}
         <div className="relative">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          <Search
+            size={15}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+          />
           <input
             type="text"
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             placeholder="Search name, mobile, ID…"
             className="pl-9 pr-8 py-2 text-sm border border-gray-200 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition-all w-64"
           />
@@ -402,7 +410,10 @@ export const AdmissionsPage = () => {
           {["", "Active", "Completed", "Cancelled"].map((s) => (
             <button
               key={s}
-              onClick={() => { setFilterStatus(s); setPage(1); }}
+              onClick={() => {
+                setFilterStatus(s);
+                setPage(1);
+              }}
               className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${filterStatus === s ? "bg-white text-primary-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
             >
               {s || "All Status"}
@@ -411,7 +422,10 @@ export const AdmissionsPage = () => {
         </div>
 
         <button
-          onClick={() => { setBalanceOnly(!balanceOnly); setPage(1); }}
+          onClick={() => {
+            setBalanceOnly(!balanceOnly);
+            setPage(1);
+          }}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border transition-all ${balanceOnly ? "bg-red-50 border-red-200 text-red-600 shadow-sm" : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"}`}
         >
           <BadgeDollarSign size={14} /> Balance Alert
@@ -438,7 +452,7 @@ export const AdmissionsPage = () => {
                 ].map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-left font-semibold text-gray-500 text-xs uppercase tracking-wider"
+                    className="px-4 py-3 text-left {} font-semibold text-gray-500 text-xs uppercase tracking-wider"
                   >
                     {h}
                   </th>
@@ -536,7 +550,10 @@ export const AdmissionsPage = () => {
           total={total}
           limit={limit}
           onPageChange={setPage}
-          onLimitChange={(l) => { setLimit(l); setPage(1); }}
+          onLimitChange={(l) => {
+            setLimit(l);
+            setPage(1);
+          }}
         />
       </div>
 
