@@ -66,8 +66,8 @@ const PRINT_STYLES = `
     border-radius: 0;
     overflow: hidden;
   }
-  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
@@ -142,6 +142,8 @@ const PRINT_STYLES = `
     .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
     .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
     .sign-table td { border: 1px solid #444; padding: 2px 6px; font-size: 11px; vertical-align: top; }
+    .sign-table td:first-child { border-left: none; }
+    .sign-table td:last-child { border-right: none; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
@@ -608,7 +610,7 @@ export const PTReportPrintPage: React.FC = () => {
                         const obsPage2 = obs.slice(9);
 
                         const renderSignatures = () => (
-                          <div className="report-footer-wrap mt-1">
+                          <div className="report-footer-wrap mt-n1">
                             <table className="sign-table mt-n1">
                               <colgroup>
                                 <col style={{ width: "33.3%" }} />

@@ -50,12 +50,15 @@ const PRINT_STYLES = `
     }
     .report-body {
       border: 1px solid #444 !important;
+      border-left: none !important;
+      border-right: none !important;
       border-bottom: none !important;
       overflow: visible !important;
     }
     tfoot { display: table-footer-group !important; }
     .report-footer-wrap {
       border: 1px solid #444 !important;
+      border-top: none !important;
     }
     .report-footer-wrap .sign-table.mt-n1 {
       margin-top: 0 !important;
@@ -125,15 +128,18 @@ const PRINT_STYLES = `
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #444; padding: 2px 6px; font-size: 11px; vertical-align: top; }
+  .sign-table td:first-child { border-left: none; }
+  .sign-table td:last-child { border-right: none; }
   .mt-n1 { margin-top: -1px; }
   .std-tag { display: inline-block; background: #e7f1fb; color: #0c447c; font-size: 10px; padding: 2px 6px; border-radius: 0; margin-right: 4px; margin-bottom: 2px; font-weight: 700; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .report-body { border: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
   .report-footer-wrap {
     border: 1px solid #444;
+    border-top: none;
     border-radius: 0 0 6px 6px;
     overflow: hidden;
   }
@@ -686,7 +692,7 @@ export const MPTReportPrintPage = () => {
                         const obsPage2 = obs.slice(6);
 
                         const renderSignatures = () => (
-                          <div className="report-footer-wrap mt-1">
+                          <div className="report-footer-wrap mt-n1">
                             <table className="sign-table mt-n1">
                               <colgroup>
                                 <col style={{ width: "33.3%" }} />
