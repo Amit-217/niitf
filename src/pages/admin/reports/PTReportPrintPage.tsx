@@ -607,8 +607,8 @@ export const PTReportPrintPage: React.FC = () => {
 
                       {/* --- 5. Observations & Signatures Logic --- */}
                       {(() => {
-                        const obsPage1 = obs.slice(0, 9);
-                        const obsPage2 = obs.slice(9);
+                        const obsPage1 = obs.slice(0, 8);
+                        const obsPage2 = obs.slice(8);
 
                         const renderSignatures = () => (
                           <div className="report-footer-wrap mt-n1">
@@ -640,7 +640,7 @@ export const PTReportPrintPage: React.FC = () => {
                                   <td>Designation: {v(jd.clientDesignation) || "-"}</td>
                                 </tr>
                                 <tr>
-                                  <td style={{ height: "30px" }}>Signature:</td>
+                                  <td style={{ height: "60px" }}>Signature:</td>
                                   <td>Signature:</td>
                                   <td>Signature:</td>
                                 </tr>

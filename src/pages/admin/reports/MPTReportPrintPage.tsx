@@ -688,8 +688,8 @@ export const MPTReportPrintPage = () => {
 
                       {/* --- 5. Observations & Signatures Logic --- */}
                       {(() => {
-                        const obsPage1 = obs.slice(0, 6);
-                        const obsPage2 = obs.slice(6);
+                        const obsPage1 = obs.slice(0, 5);
+                        const obsPage2 = obs.slice(5);
 
                         const renderSignatures = () => (
                           <div className="report-footer-wrap mt-n1">
@@ -721,7 +721,7 @@ export const MPTReportPrintPage = () => {
                                   <td>Designation: {v(fs.clientOrTPI?.designation) || "-"}</td>
                                 </tr>
                                 <tr>
-                                  <td style={{ height: "30px" }}>Signature:</td>
+                                  <td style={{ height: "60px" }}>Signature:</td>
                                   <td>Signature:</td>
                                   <td>Signature:</td>
                                 </tr>
