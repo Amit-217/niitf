@@ -66,8 +66,8 @@ const PRINT_STYLES = `
     border-radius: 0;
     overflow: hidden;
   }
-  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; }
+  .report-body { border-top: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
@@ -87,7 +87,7 @@ const PRINT_STYLES = `
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
-  .bw .rpt-header { background: #fff !important; border-bottom: 1px solid #444 !important; }
+  .bw .rpt-header { background: #fff !important; }
   .bw .hdr-center { color: #000 !important; }
   .bw .hdr-center .org { color: #000 !important; }
   .bw .hdr-center .sub { color: #333 !important; }
@@ -121,7 +121,8 @@ const PRINT_STYLES = `
   .rpt-title {
     background: #E6F1FB; text-align: center; padding: 5px;
     font-size: 16px; font-weight: 700; color: #0C447C;
-    text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #444;
+    text-transform: uppercase; letter-spacing: 0.4px; 
+    border: 1px solid #444; border-top: none; border-radius: 6px 6px 0 0;
   }
   .section-hdr {
     background: #185FA5; color: #fff; font-size: 13px; font-weight: 700;
@@ -142,6 +143,8 @@ const PRINT_STYLES = `
     .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
     .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
     .sign-table td { border: 1px solid #444; padding: 2px 6px; font-size: 11px; vertical-align: top; }
+    .sign-table td:first-child { border-left: none; }
+    .sign-table td:last-child { border-right: none; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
@@ -524,7 +527,7 @@ export const PTReportPrintPage: React.FC = () => {
                             <td className="val" colSpan={3}>{v(md.penetrantMethod)}</td>
                           </tr>
                           <tr>
-                            <td className="lbl">Excess Penetrant Removal method</td>
+                            <td className="lbl">Excess Penetrant <br />Removal method</td>
                             <td className="val" colSpan={3}>{v(md.excessPenetrantRemovalMethod)}</td>
                           </tr>
                         </tbody>
@@ -604,11 +607,11 @@ export const PTReportPrintPage: React.FC = () => {
 
                       {/* --- 5. Observations & Signatures Logic --- */}
                       {(() => {
-                        const obsPage1 = obs.slice(0, 9);
-                        const obsPage2 = obs.slice(9);
+                        const obsPage1 = obs.slice(0, 8);
+                        const obsPage2 = obs.slice(8);
 
                         const renderSignatures = () => (
-                          <div className="report-footer-wrap mt-1">
+                          <div className="report-footer-wrap mt-n1">
                             <table className="sign-table mt-n1">
                               <colgroup>
                                 <col style={{ width: "33.3%" }} />
@@ -637,7 +640,7 @@ export const PTReportPrintPage: React.FC = () => {
                                   <td>Designation: {v(jd.clientDesignation) || "-"}</td>
                                 </tr>
                                 <tr>
-                                  <td style={{ height: "30px" }}>Signature:</td>
+                                  <td style={{ height: "60px" }}>Signature:</td>
                                   <td>Signature:</td>
                                   <td>Signature:</td>
                                 </tr>
