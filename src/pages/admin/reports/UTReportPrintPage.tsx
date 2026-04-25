@@ -765,9 +765,9 @@ export const UTReportPrintPage: React.FC = () => {
                                 <td>Designation: {v(jd.clientDesignation) || "-"}</td>
                               </tr>
                               <tr>
-                                <td style={{ height: "30px" }}>Signature:</td>
-                                <td>Signature:</td>
-                                <td>Signature:</td>
+                                <td style={{ height: "60px" }}>Signature:</td>
+                                <td style={{ height: "60px" }}>Signature:</td>
+                                <td style={{ height: "60px" }}>Signature:</td>
                               </tr>
                               <tr>
                                 <td>Date: {fmtDate(jd.reportDate)}</td>

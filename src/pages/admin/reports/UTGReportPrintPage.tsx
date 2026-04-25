@@ -438,15 +438,11 @@ export const UTGReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: 60 }}>Signature:</td>
+                            <td style={{ height: 60 }}>Signature:</td>
+                            <td style={{ height: 60 }}>Signature:</td>
                           </tr>
-                          <tr>
-                            <td>I.D. No.: {v(inspector.idNo) || "-"}</td>
-                            <td>I.D. No.: {v(fs.customer?.idNo) || "-"}</td>
-                            <td>I.D. No.: {v(fs.clientOrTPI?.idNo) || "-"}</td>
-                          </tr>
+
                           <tr>
                             <td>Date: {fmtDate(inspector.date) || "-"}</td>
                             <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>

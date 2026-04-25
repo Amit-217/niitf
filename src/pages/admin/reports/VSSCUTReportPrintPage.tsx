@@ -612,15 +612,11 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                                 <td>Designation: {v(fs.rqs?.designation) || "-"}</td>
                               </tr>
                               <tr>
-                                <td style={{ height: "35px" }}>Signature:</td>
-                                <td>Signature:</td>
-                                <td>Signature:</td>
+                                <td style={{ height: "60px" }}>Signature:</td>
+                                <td style={{ height: "60px" }}>Signature:</td>
+                                <td style={{ height: "60px" }}>Signature:</td>
                               </tr>
-                              <tr>
-                                <td>I.D. No.: {v(inspector.idNo) || "-"}</td>
-                                <td>I.D. No.: {v(fs.qc?.idNo) || "-"}</td>
-                                <td>I.D. No.: {v(fs.rqs?.idNo) || "-"}</td>
-                              </tr>
+
                               <tr>
                                 <td>Date: {fmtDate(inspector.date) || "-"}</td>
                                 <td>Date: {fmtDate(fs.qc?.date) || "-"}</td>
