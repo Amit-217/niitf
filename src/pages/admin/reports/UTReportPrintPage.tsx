@@ -89,8 +89,8 @@ const PRINT_STYLES = `
   .bw .sign-table td { border-color: #888 !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
-  .bw .report-body { color: #000 !important; border-color: #000 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 5px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #444; border-radius: 6px 6px 0 0; }
+  .bw .report-body { color: #000 !important; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 5px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #444; border-top: none; border-radius: 6px 6px 0 0; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 3px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
   .report-table td, .report-table th { border: 1px solid #444; padding: 2px 5px; vertical-align: middle; word-break: break-word; font-size: 11.5px; }
@@ -104,13 +104,15 @@ const PRINT_STYLES = `
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #444; padding: 2px 6px; font-size: 11px; vertical-align: top; }
+  .sign-table td:first-child { border-left: none; }
+  .sign-table td:last-child { border-right: none; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border: 1px solid #444; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
+  .report-body { border-top: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
 
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
