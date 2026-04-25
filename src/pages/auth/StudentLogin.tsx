@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 export const StudentLogin: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState(''); // This will be DOB
+    const [rememberMe, setRememberMe] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -16,7 +17,11 @@ export const StudentLogin: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const apiResponse: any = await api.post('/auth/student-login', { email, password });
+            const apiResponse: any = await api.post('/auth/student-login', { 
+                email, 
+                password,
+                rememberMe 
+            });
             const authData = apiResponse.data;
 
             // Store token and user data
@@ -78,6 +83,22 @@ export const StudentLogin: React.FC = () => {
                             required
                         />
                     </div>
+                </div>
+
+                <div className="flex items-center">
+                    <input
+                        id="remember-me"
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+                    />
+                    <label
+                        htmlFor="remember-me"
+                        className="ml-2 block text-sm text-gray-600 cursor-pointer select-none font-medium"
+                    >
+                        Remember me for 30 days
+                    </label>
                 </div>
 
                 <button

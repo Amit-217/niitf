@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 export const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export const Login: React.FC = () => {
       const apiResponse: any = await api.post("/auth/login", {
         email,
         password,
+        rememberMe,
       });
       const authData = apiResponse.data;
 
@@ -111,6 +113,8 @@ export const Login: React.FC = () => {
           <input
             id="remember-me"
             type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
             className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded cursor-pointer"
           />
           <label
