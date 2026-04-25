@@ -67,7 +67,8 @@ const PRINT_STYLES = `
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
-  .bw .rpt-header { background: #fff !important; border-bottom: 1px solid #444 !important; }
+  .bw .rpt-header { background: #fff !important; border-bottom: none !important; }
+  .bw thead, .bw thead tr, .bw thead td { border: none !important; }
   .bw .hdr-center { color: #000 !important; }
   .bw .hdr-center .org { color: #000 !important; }
   .bw .hdr-center .sub { color: #333 !important; }
