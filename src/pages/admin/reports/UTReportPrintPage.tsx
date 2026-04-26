@@ -402,6 +402,59 @@ export const UTReportPrintPage: React.FC = () => {
               <tfoot style={{ display: "table-footer-group" }}>
                 <tr>
                   <td style={{ padding: 0 }}>
+                    <div className="report-footer-wrap">
+                      <table className="sign-table mt-n1">
+                        <colgroup>
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.3%" }} />
+                          <col style={{ width: "33.4%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              EXAMINED BY
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              CUSTOMER:
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              CLIENT :
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              National Industrial Inspection And Training
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              {v(jd.customer)}
+                            </td>
+                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+                              {v(jd.client)}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Name: {v(inspector.name) || "-"}</td>
+                            <td>Name: {v(jd.customerRepresentative) || "-"}</td>
+                            <td>Name: {v(jd.clientRepresentative) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td>{v(inspector.designation) || "UT NDE Level II"}</td>
+                            <td>Designation: {v(jd.customerDesignation) || "-"}</td>
+                            <td>Designation: {v(jd.clientDesignation) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ height: "60px" }}>Signature:</td>
+                            <td style={{ height: "60px" }}>Signature:</td>
+                            <td style={{ height: "60px" }}>Signature:</td>
+                          </tr>
+                          <tr>
+                            <td>Date: {fmtDate(jd.reportDate)}</td>
+                            <td>Date: {fmtDate(jd.reportDate)}</td>
+                            <td>Date: {fmtDate(jd.reportDate)}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                     <div
                       className="tfoot-spacer"
                       style={{ height: "15mm" }}
@@ -722,62 +775,7 @@ export const UTReportPrintPage: React.FC = () => {
                         </table>
                       </div>
 
-                      {/* --- CONCLUSION REMOVED --- */}
-                      <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
-                        <div className="report-footer-wrap">
-                          <table className="sign-table mt-n1">
-                            <colgroup>
-                              <col style={{ width: "33.3%" }} />
-                              <col style={{ width: "33.3%" }} />
-                              <col style={{ width: "33.4%" }} />
-                            </colgroup>
-                            <tbody>
-                              <tr>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                  EXAMINED BY
-                                </td>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                  CUSTOMER:
-                                </td>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                  CLIENT :
-                                </td>
-                              </tr>
-                              <tr>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                  National Industrial Inspection And Training
-                                </td>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                  {v(jd.customer)}
-                                </td>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                                  {v(jd.client)}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Name: {v(inspector.name) || "-"}</td>
-                                <td>Name: {v(jd.customerRepresentative) || "-"}</td>
-                                <td>Name: {v(jd.clientRepresentative) || "-"}</td>
-                              </tr>
-                              <tr>
-                                <td>{v(inspector.designation) || "UT NDE Level II"}</td>
-                                <td>Designation: {v(jd.customerDesignation) || "-"}</td>
-                                <td>Designation: {v(jd.clientDesignation) || "-"}</td>
-                              </tr>
-                              <tr>
-                                <td style={{ height: "60px" }}>Signature:</td>
-                                <td style={{ height: "60px" }}>Signature:</td>
-                                <td style={{ height: "60px" }}>Signature:</td>
-                              </tr>
-                              <tr>
-                                <td>Date: {fmtDate(jd.reportDate)}</td>
-                                <td>Date: {fmtDate(jd.reportDate)}</td>
-                                <td>Date: {fmtDate(jd.reportDate)}</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
+                      {/* --- SIGNATURES MOVED TO TFOOT --- */}
                     </div>
                   </td>
                 </tr>
