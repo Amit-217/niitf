@@ -102,11 +102,11 @@ const SKIPS: Array<{
   key: keyof Pick<ProbeModeFormData, "half" | "one" | "oneHalf" | "two">;
   label: string;
 }> = [
-  { key: "half", label: "½" },
-  { key: "one", label: "1" },
-  { key: "oneHalf", label: "1½" },
-  { key: "two", label: "2" },
-];
+    { key: "half", label: "½" },
+    { key: "one", label: "1" },
+    { key: "oneHalf", label: "1½" },
+    { key: "two", label: "2" },
+  ];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export const VSSCUTReportFormPage: React.FC = () => {
@@ -191,7 +191,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // ── Final Section ──
@@ -346,7 +346,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
         setNpScanningDb(npc.scanningDb ?? "");
         setDisposition(r.disposition ?? "");
         const [rm, rmC] = fromOther(r.evaluation ?? r.remarks, [
-          "RECORDABLE INDICATIONS WAS OBSERVED - REFER ANNEXURE– I",
+          "RECORDABLE INDICATIONS WAS OBSERVED - REFER ANNEXURE–I",
           "NO RECORDABLE INDICATIONS WAS OBSERVED",
           "Other",
         ]);

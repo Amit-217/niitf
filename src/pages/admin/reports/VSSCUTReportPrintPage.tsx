@@ -464,15 +464,18 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       <table className="report-table mt-n1">
                         <tbody>
                           <tr>
-                            <td className="section-hdr" colSpan={6}>1. ANGLE PROBE CALIBRATION</td>
+                            <td className="section-hdr" colSpan={3}>1. ANGLE PROBE CALIBRATION</td>
                           </tr>
                           <tr>
-                            <td className="lbl" style={{ width: "12%" }}>Frequency</td>
-                            <td className="val" style={{ width: "21.3%", fontWeight: 700 }}>{v(apc.frequency)}</td>
-                            <td className="lbl" style={{ width: "12%" }}>Size</td>
-                            <td className="val" style={{ width: "21.3%", fontWeight: 700 }}>{v(apc.size)}</td>
-                            <td className="lbl" style={{ width: "12%" }}>Type</td>
-                            <td className="val" style={{ width: "21.4%", fontWeight: 700 }}>{v(apc.type)}</td>
+                            <td className="val" style={{ width: "33.3%" }}>
+                              Frequency: <strong>{v(apc.frequency)}</strong>
+                            </td>
+                            <td className="val" style={{ width: "33.3%" }}>
+                              Size: <strong>{v(apc.size)}</strong>
+                            </td>
+                            <td className="val" style={{ width: "33.4%" }}>
+                              Type: <strong>{v(apc.type)}</strong>
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -536,25 +539,29 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       <table className="report-table mt-n1">
                         <tbody>
                           <tr>
-                            <td className="section-hdr" colSpan={4}>2. NORMAL PROBE CALIBRATION</td>
+                            <td className="section-hdr" colSpan={3}>2. NORMAL PROBE CALIBRATION</td>
                           </tr>
                           <tr>
-                            <td className="lbl">Probe S. No / Type</td>
-                            <td className="val">{v(npc.probeType)}</td>
-                            <td className="lbl">Frequency</td>
-                            <td className="val">{v(npc.frequency)}</td>
+                            <td className="val" style={{ width: "33.3%" }}>
+                              Probe S. No / Type: <strong>{v(npc.probeType)}</strong>
+                            </td>
+                            <td className="val" style={{ width: "33.3%" }}>
+                              Frequency: <strong>{v(npc.frequency)}</strong>
+                            </td>
+                            <td className="val" style={{ width: "33.4%" }}>
+                              Size: <strong>{v(npc.size)}</strong>
+                            </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Size</td>
-                            <td className="val">{v(npc.size)}</td>
-                            <td className="lbl">Skip</td>
-                            <td className="val">{v(npc.skip)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">BP – %FSH</td>
-                            <td className="val">{v(npc.bp)}</td>
-                            <td className="lbl">DAC dB</td>
-                            <td className="val">{v(npc.dacDb)}</td>
+                            <td className="val">
+                              Skip: <strong>{v(npc.skip)}</strong>
+                            </td>
+                            <td className="val">
+                              BP – %FSH: <strong>{v(npc.bp)}</strong>
+                            </td>
+                            <td className="val">
+                              DAC dB: <strong>{v(npc.dacDb)}</strong>
+                            </td>
                           </tr>
                         </tbody>
                       </table>
