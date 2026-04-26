@@ -1410,17 +1410,6 @@ export const MPTReportFormPage: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>I.D. No.</label>
-                      <input
-                        type="text"
-                        value={insp.idNo}
-                        onChange={(e) =>
-                          updateInsp(idx, "idNo", e.target.value)
-                        }
-                        className={inputClass}
-                      />
-                    </div>
-                    <div>
                       <label className={labelClass}>Date</label>
                       <input
                         type="date"
@@ -1474,15 +1463,6 @@ export const MPTReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={custIdNo}
-                  onChange={(e) => setCustIdNo(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
                 <label className={labelClass}>Date</label>
                 <input
                   type="date"
@@ -1527,15 +1507,6 @@ export const MPTReportFormPage: React.FC = () => {
                   type="text"
                   value={clientSig}
                   onChange={(e) => setClientSig(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={clientIdNo}
-                  onChange={(e) => setClientIdNo(e.target.value)}
                   className={inputClass}
                 />
               </div>

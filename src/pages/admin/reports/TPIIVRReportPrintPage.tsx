@@ -823,24 +823,6 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           )}
                         </tbody>
                       </table>
-                      <table className="report-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "22%" }} />
-                          <col style={{ width: "78%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td colSpan={2} className="section-hdr">
-                              7. Conclusion
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Overall Evaluation</td>
-                            <td className="val">{v(report.conclusion)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-
                     </div>
                     {/* ── end report-body ── */}
                   </td>

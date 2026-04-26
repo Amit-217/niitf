@@ -251,10 +251,6 @@ export const VSSCUTReportPrintPage: React.FC = () => {
   const fs = (report as any).finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
   const ct = apc.calibTable ?? {};
-  const conclusionText =
-    v((report as unknown as { conclusion?: string }).conclusion) ||
-    "Examination completed as per applicable standards. No rejectable indications observed in inspected items.";
-
   const ReportFooter = () => (
     <>
       <div className="footer">
@@ -566,26 +562,8 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* --- DISPOSITION & CONCLUSION --- */}
+                      {/* --- SIGNATURE --- */}
                       <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
-                        <table className="report-table mt-n1">
-                          <tbody>
-                            <tr>
-                              <td className="section-hdr" colSpan={2}>3. DISPOSITION & CONCLUSION</td>
-                            </tr>
-                            <tr>
-                              <td className="lbl" style={{ width: "20%" }}>Disposition</td>
-                              <td style={{ fontWeight: 700, color: report.disposition === "ACCEPTED" ? "#276749" : "#c53030" }}>
-                                {v(report.disposition)}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="lbl">Evaluation</td>
-                              <td className="val">{v(report.evaluation || report.remarks || conclusionText)}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-
                         <div className="report-footer-wrap">
                           <table className="sign-table mt-n1">
                             <colgroup>

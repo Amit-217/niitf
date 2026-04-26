@@ -1308,15 +1308,6 @@ export const UTReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={inspectorIdNo}
-                  onChange={(e) => setInspectorIdNo(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
                 <label className={labelClass}>Date</label>
                 <input
                   type="date"
@@ -1354,15 +1345,6 @@ export const UTReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={custIdNo}
-                  onChange={(e) => setCustIdNo(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
                 <label className={labelClass}>Date</label>
                 <input
                   type="date"
@@ -1396,15 +1378,6 @@ export const UTReportFormPage: React.FC = () => {
                   type="text"
                   value={clientDesig}
                   onChange={(e) => setClientDesig(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={clientIdNo}
-                  onChange={(e) => setClientIdNo(e.target.value)}
                   className={inputClass}
                 />
               </div>

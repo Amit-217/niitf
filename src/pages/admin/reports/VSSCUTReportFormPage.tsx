@@ -1148,15 +1148,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={inspectorIdNo}
-                  onChange={(e) => setInspectorIdNo(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
                 <label className={labelClass}>Date</label>
                 <input
                   type="date"
@@ -1186,15 +1177,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={qcIdNo}
-                  onChange={(e) => setQcIdNo(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
                 <label className={labelClass}>Date</label>
                 <input
                   type="date"
@@ -1220,15 +1202,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
                   type="text"
                   value={rqsName}
                   onChange={(e) => setRqsName(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={rqsIdNo}
-                  onChange={(e) => setRqsIdNo(e.target.value)}
                   className={inputClass}
                 />
               </div>

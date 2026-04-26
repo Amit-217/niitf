@@ -430,7 +430,7 @@ export const PTReportPrintPage: React.FC = () => {
                 <tr>
                   <td style={{ padding: 0 }}>
                     <div className="report-body">
-                      <div className="rpt-title">PENETRANT TESTING REPORT</div>
+                      <div className="rpt-title">LIQUID PENETRANT TESTING REPORT</div>
 
                       {/* --- JOB DETAILS --- */}
                       <table className="report-table">
@@ -455,8 +455,14 @@ export const PTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Project</td>
-                            <td className="val">{v(jd.project) || "-"}</td>
+                            <td className="lbl">Reference standard</td>
+                            <td className="val">
+                              {standards.length > 0 ? (
+                                standards.join(", ")
+                              ) : (
+                                "Not specified"
+                              )}
+                            </td>
                             <td className="lbl">Inspection Date</td>
                             <td className="val">
                               {dateRange(
@@ -466,14 +472,6 @@ export const PTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Reference standard</td>
-                            <td className="val">
-                              {standards.length > 0 ? (
-                                standards.join(", ")
-                              ) : (
-                                "Not specified"
-                              )}
-                            </td>
                             <td className="lbl">Acceptance Criteria</td>
                             <td className="val">
                               {acceptance.length > 0 ? (
@@ -482,34 +480,36 @@ export const PTReportPrintPage: React.FC = () => {
                                 "Not specified"
                               )}
                             </td>
-                          </tr>
-                          <tr>
                             <td className="lbl">Material</td>
                             <td className="val">{v(jd.material) || "-"}</td>
+                          </tr>
+                          <tr>
                             <td className="lbl">Stage of Inspection</td>
                             <td className="val">
                               {v(jd.stageOfInspection) || "-"}
                             </td>
-                          </tr>
-                          <tr>
                             <td className="lbl">Thickness</td>
                             <td className="val">{v(jd.thickness) || "-"}</td>
+                          </tr>
+                          <tr>
                             <td className="lbl">Extent of Examination</td>
                             <td className="val">
                               {v(jd.extentOfExamination) || "-"}
                             </td>
-                          </tr>
-                          <tr>
                             <td className="lbl">Surface condition</td>
                             <td className="val">{v(jd.surfaceCondition) || "-"}</td>
-                            <td className="lbl">Type of Joint</td>
-                            <td className="val">{v(jd.typeOfJoint) || "-"}</td>
                           </tr>
                           <tr>
-                            <td className="lbl">Surface Temperature</td>
-                            <td className="val">{v(jd.surfaceTemperature) || "-"}</td>
+                            <td className="lbl">Type of Joint</td>
+                            <td className="val">{v(jd.typeOfJoint) || "-"}</td>
                             <td className="lbl">Welding Process</td>
                             <td className="val">{v(jd.weldingProcess) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Project</td>
+                            <td className="val">{v(jd.project) || "-"}</td>
+                            <td className="lbl">Surface Temperature</td>
+                            <td className="val">{v(jd.surfaceTemperature) || "-"}</td>
                           </tr>
                         </tbody>
                       </table>

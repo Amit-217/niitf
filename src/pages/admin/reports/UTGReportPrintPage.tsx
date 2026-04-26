@@ -570,11 +570,7 @@ export const UTGReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="lbl">Reference Std.</td>
-                            <td className="val">{v(jd.referenceStd) || "-"}</td>
-                            <td className="lbl">Inspection Time</td>
-                            <td className="val">
-                              {v(jd.inspectionTime) || "-"}
-                            </td>
+                            <td className="val" colSpan={3}>{v(jd.referenceStd) || "-"}</td>
                           </tr>
                           <tr>
                             <td className="lbl">Acceptance Criteria</td>
