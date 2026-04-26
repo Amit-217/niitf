@@ -72,13 +72,13 @@ const PRINT_STYLES = `
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
   .rpt-header {
-    padding: 2px 10px;
+    padding: 2px 8px;
     margin-bottom: 0;
     display: flex;
     align-items: center;
     gap: 10px;
   }
-  .logo-box { width: 90px; height: 90px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-4px); }
+  .logo-box { width: 160px; height: 110px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-4px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
   .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
