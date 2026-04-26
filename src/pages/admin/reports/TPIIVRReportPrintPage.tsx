@@ -691,22 +691,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                               </tr>
                             ))
                           )}
-                          {[...Array(4)].map((_, i) => (
-                            <tr
-                              key={`empty-item-${i}`}
-                              style={{ height: "24px" }}
-                            >
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                            </tr>
-                          ))}
+
                         </tbody>
                       </table>
 
