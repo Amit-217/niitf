@@ -26,7 +26,7 @@ const PRINT_STYLES = `
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
       width: 210mm !important; 
-      margin: 0 !important; padding: 2mm 5mm 15mm 5mm !important;
+      margin: 0 !important; padding: 0mm 5mm 35mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       page-break-after: auto !important;
       box-shadow: none !important;
@@ -38,9 +38,12 @@ const PRINT_STYLES = `
     .screen-sign-table { display: none !important; }
     .print-fixed-footer {
       position: fixed !important;
-      bottom: 5mm !important;
+      bottom: 2mm !important;
       left: 5mm !important;
       right: 5mm !important;
+      border-left: 1px solid #444 !important;
+      border-right: 1px solid #444 !important;
+      border-bottom: 1px solid #444 !important;
       background: #fff !important;
       z-index: 999999 !important;
       contain: layout !important;
@@ -49,9 +52,7 @@ const PRINT_STYLES = `
       will-change: transform;
     }
     .report-body {
-      border-top: 1px solid #444 !important;
-      border-left: none !important;
-      border-right: none !important;
+      border: 1px solid #444 !important;
       border-bottom: none !important;
       overflow: visible !important;
     }
@@ -142,10 +143,11 @@ const PRINT_STYLES = `
     border-top: none;
     border-radius: 0 0 6px 6px;
     overflow: hidden;
+    margin-bottom: 2px;
   }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
-  .footer { background: #f8fafc; padding: 5px 10px; font-size: 11px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .footer { background: #f8fafc; padding: 5px 10px; font-size: 11px; color: #4b5563; margin-top: 1px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
@@ -415,7 +417,7 @@ export const MPTReportPrintPage = () => {
             position: "relative",
             width: "210mm",
             margin: "0 auto",
-            padding: "0mm 5mm 25mm 5mm",
+            padding: "0mm 5mm 40mm 5mm",
             background: "#fff",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",

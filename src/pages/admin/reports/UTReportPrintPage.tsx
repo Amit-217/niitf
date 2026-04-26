@@ -28,7 +28,7 @@ const PRINT_STYLES = `
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
       width: 210mm !important; 
-      margin: 0 !important; padding: 5mm 5mm 15mm 5mm !important;
+      margin: 0 !important; padding: 0mm 5mm 35mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       page-break-after: auto !important;
       box-shadow: none !important;
@@ -40,7 +40,7 @@ const PRINT_STYLES = `
     .screen-sign-table { display: none !important; }
     .print-fixed-footer {
       position: fixed !important;
-      bottom: 5mm !important;
+      bottom: 2mm !important;
       left: 5mm !important;
       right: 5mm !important;
       background: #fff !important;
@@ -112,7 +112,7 @@ const PRINT_STYLES = `
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
   .report-body { border-top: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
+  .report-footer-wrap { border: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; margin-bottom: 2px; }
 
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
@@ -472,7 +472,7 @@ export const UTReportPrintPage: React.FC = () => {
             position: "relative",
             width: "210mm",
             margin: "0 auto",
-            padding: "0mm 5mm 25mm 5mm",
+            padding: "0mm 5mm 40mm 5mm",
             background: "#fff",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
