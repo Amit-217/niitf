@@ -27,7 +27,7 @@ const PRINT_STYLES = `
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
       width: 210mm !important; 
-      margin: 0 !important; padding: 0mm 5mm 15mm 5mm !important;
+      margin: 0 !important; padding: 0mm 5mm 35mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       page-break-after: auto !important;
       box-shadow: none !important;
@@ -39,7 +39,7 @@ const PRINT_STYLES = `
     .screen-sign-table { display: none !important; }
     .print-fixed-footer {
       position: fixed !important;
-      bottom: 5mm !important;
+      bottom: 2mm !important;
       left: 5mm !important;
       right: 5mm !important;
       background: #fff !important;
@@ -129,6 +129,13 @@ const PRINT_STYLES = `
     .print-blank-row { display: none; }
     .print-fixed-footer { display: none; }
     .print-sign-table { display: none; }
+    .print-only { display: none !important; }
+    .no-print-screen { display: block; }
+  }
+  @media print {
+    .print-only { display: block !important; }
+    .no-print-screen { display: none !important; }
+    .page-break { page-break-before: always; }
   }
 `;
 
@@ -267,9 +274,75 @@ export const UTGReportPrintPage: React.FC = () => {
   const obsLimit = Math.max(0, firstPageCapacity - sudCount);
   const obsPage1 = obs.slice(0, obsLimit);
   const obsPage2 = obs.slice(obsLimit);
-  const emptyRowsCount = Math.max(
-    0,
-    firstPageCapacity - (sudCount + obsPage1.length)
+
+  const renderObsTable = (data: any[], title: string) => (
+    <table className="obs-table mt-n1">
+      <colgroup>
+        <col style={{ width: "5%" }} />
+        <col style={{ width: "15%" }} />
+        <col style={{ width: "60%" }} />
+        <col style={{ width: "10%" }} />
+      </colgroup>
+      <thead style={{ display: "table-header-group" }}>
+        <tr>
+          <td colSpan={4} className="section-hdr">
+            {title}
+          </td>
+        </tr>
+        <tr>
+          <th>Sr. No.</th>
+          <th>Item Name</th>
+          <th>Measured Thickness</th>
+          <th>Evaluation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.length === 0 && sudCount === 0 ? (
+          <tr>
+            <td
+              colSpan={4}
+              style={{
+                textAlign: "center",
+                padding: "6px",
+                fontSize: "11px",
+                color: "#999",
+              }}
+            >
+              No observations recorded.
+            </td>
+          </tr>
+        ) : (
+          data.map((o: any, i: number) => (
+            <tr key={i}>
+              <td>{v(o.srNo) || i + 1}</td>
+              <td>{v(o.itemName) || "-"}</td>
+              <td>{v(o.measuredThickness) || "-"}</td>
+              <td>{v(o.evaluation || o.remark || o.result) || "-"}</td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  );
+
+  const renderConclusion = () => (
+    <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+      <table className="report-table mt-n1">
+        <tbody>
+          <tr>
+            <td colSpan={2} className="section-hdr">
+              6. CONCLUSION
+            </td>
+          </tr>
+          <tr>
+            <td className="lbl" style={{ width: "22%" }}>
+              Overall Evaluation
+            </td>
+            <td className="val">{conclusionText}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   );
 
   const ReportFooter = () => (
@@ -651,150 +724,32 @@ export const UTGReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* ── 5. OBSERVATIONS ── */}
-                      <table className="obs-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "5%" }} />
-                          <col style={{ width: "15%" }} />
-                          <col style={{ width: "60%" }} />
-                          <col style={{ width: "10%" }} />
-                        </colgroup>
-                        <thead style={{ display: "table-header-group" }}>
-                          <tr>
-                            <td colSpan={4} className="section-hdr">
-                              5. OBSERVATIONS
-                            </td>
-                          </tr>
-                          <tr>
-                            <th>Sr. No.</th>
-                            <th>Item Name</th>
-                            <th>Measured Thickness</th>
-                            <th>Evaluation</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {obsPage1.length === 0 && sudCount === 0 ? (
-                            <tr>
-                              <td
-                                colSpan={4}
-                                style={{
-                                  textAlign: "center",
-                                  padding: "6px",
-                                  fontSize: "11px",
-                                  color: "#999",
-                                }}
-                              >
-                                No observations recorded.
-                              </td>
-                            </tr>
-                          ) : (
-                            obsPage1.map((o: any, i: number) => (
-                              <tr key={i}>
-                                <td>{v(o.srNo) || i + 1}</td>
-                                <td>{v(o.itemName) || "-"}</td>
-                                <td>{v(o.measuredThickness) || "-"}</td>
-                                <td>
-                                  {v(o.evaluation || o.remark || o.result) ||
-                                    "-"}
-                                </td>
-                              </tr>
-                            ))
-                          )}
-                        </tbody>
-                      </table>
+                      {/* ── 5. OBSERVATIONS (Print vs Screen split) ── */}
+                      <div className="print-only">
+                        {renderObsTable(obsPage1, "5. OBSERVATIONS")}
+                        <Signatures />
 
-                      <Signatures />
+                        {obsPage2.length > 0 ? (
+                          <>
+                            <div className="page-break">
+                              {renderObsTable(obsPage2, "5. OBSERVATIONS (Contd.)")}
+                            </div>
+                            {renderConclusion()}
+                            <Signatures />
+                          </>
+                        ) : (
+                          <>
+                            {renderConclusion()}
+                            <Signatures />
+                          </>
+                        )}
+                      </div>
 
-                      {obsPage2.length > 0 ? (
-                        <>
-                          <div style={{ pageBreakBefore: "always" }}>
-                            <table className="obs-table mt-n1">
-                              <colgroup>
-                                <col style={{ width: "5%" }} />
-                                <col style={{ width: "15%" }} />
-                                <col style={{ width: "60%" }} />
-                                <col style={{ width: "10%" }} />
-                              </colgroup>
-                              <thead style={{ display: "table-header-group" }}>
-                                <tr>
-                                  <td colSpan={4} className="section-hdr">
-                                    5. OBSERVATIONS (Contd.)
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <th>Sr. No.</th>
-                                  <th>Item Name</th>
-                                  <th>Measured Thickness</th>
-                                  <th>Evaluation</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {obsPage2.map((o: any, i: number) => (
-                                  <tr key={i}>
-                                    <td>{v(o.srNo) || obsLimit + i + 1}</td>
-                                    <td>{v(o.itemName) || "-"}</td>
-                                    <td>{v(o.measuredThickness) || "-"}</td>
-                                    <td>
-                                      {v(
-                                        o.evaluation || o.remark || o.result
-                                      ) || "-"}
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-
-                          <div
-                            style={{
-                              breakInside: "avoid",
-                              pageBreakInside: "avoid",
-                            }}
-                          >
-                            <table className="report-table mt-n1">
-                              <tbody>
-                                <tr>
-                                  <td colSpan={2} className="section-hdr">
-                                    6. CONCLUSION
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td className="lbl" style={{ width: "22%" }}>
-                                    Overall Evaluation
-                                  </td>
-                                  <td className="val">{conclusionText}</td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                          <Signatures />
-                        </>
-                      ) : (
-                        /* Case: All observations fit on page 1 */
-                        <div
-                          style={{
-                            breakInside: "avoid",
-                            pageBreakInside: "avoid",
-                          }}
-                        >
-                          <table className="report-table mt-n1">
-                            <tbody>
-                              <tr>
-                                <td colSpan={2} className="section-hdr">
-                                  6. CONCLUSION
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="lbl" style={{ width: "22%" }}>
-                                  Overall Evaluation
-                                </td>
-                                <td className="val">{conclusionText}</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          <Signatures />
-                        </div>
-                      )}
+                      <div className="no-print-screen">
+                        {renderObsTable(obs, "5. OBSERVATIONS")}
+                        {renderConclusion()}
+                        <Signatures />
+                      </div>
                     </div>
                     {/* ── end report-body ── */}
                   </td>
