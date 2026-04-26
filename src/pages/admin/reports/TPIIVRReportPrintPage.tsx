@@ -409,8 +409,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             <td>Name: {v(sigs.niit?.name) || "-"}</td>
                           </tr>
                           <tr>
-                            <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: "60px" }}>Signature:</td>
+                            <td style={{ height: "60px" }}>Signature:</td>
                           </tr>
                           <tr>
                             <td>Date: {fmtDate(sigs.vendor?.date) || "-"}</td>
