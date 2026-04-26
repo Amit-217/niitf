@@ -94,7 +94,6 @@ const emptyInspector = (): InspRow => ({
   qualification: "MT NDE Level II",
   designation: "",
   signature: "",
-  idNo: "",
   date: "",
 });
 
@@ -117,14 +116,11 @@ export const MPTReportFormPage: React.FC = () => {
   const jobCustomer = customerName;
   const [jobClient, setJobClient] = useState("");
   const [jobReportDate, setJobReportDate] = useState("");
-  const [jobInspectionDate, setJobInspectionDate] = useState("");
-  const [jobInspectionEndDate, setJobInspectionEndDate] = useState("");
   const [jobReferenceStd, setJobReferenceStd] = useState("");
   const [jobReferenceStdOther, setJobReferenceStdOther] = useState("");
   const [jobAcceptanceCriteria, setJobAcceptanceCriteria] = useState("");
   const [jobAcceptanceCriteriaOther, setJobAcceptanceCriteriaOther] =
     useState("");
-  const [jobInspectionTime, setJobInspectionTime] = useState("");
   const [jobStageOfInspection, setJobStageOfInspection] = useState("");
   const [jobMaterial, setJobMaterial] = useState("");
   const [jobThickness, setJobThickness] = useState("");
@@ -170,9 +166,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [currentTypeOther, setCurrentTypeOther] = useState("");
   const [postCleaning, setPostCleaning] = useState("");
 
-  // ── Conclusion ──
-  const [conclusion, setConclusion] = useState("");
-  const [conclusionOther, setConclusionOther] = useState("");
+
 
   // Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
@@ -181,12 +175,10 @@ export const MPTReportFormPage: React.FC = () => {
   const [custName, setCustName] = useState("");
   const [custDesig, setCustDesig] = useState("");
   const [custSig, setCustSig] = useState("");
-  const [custIdNo, setCustIdNo] = useState("");
   const [custDate, setCustDate] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientDesig, setClientDesig] = useState("");
   const [clientSig, setClientSig] = useState("");
-  const [clientIdNo, setClientIdNo] = useState("");
   const [clientDate, setClientDate] = useState("");
   const [inspectors, setInspectors] = useState<InspRow[]>([emptyInspector()]);
 
@@ -221,8 +213,6 @@ export const MPTReportFormPage: React.FC = () => {
         const jd = r.jobDetails ?? {};
         setJobClient(jd.client ?? "");
         setJobReportDate(toDate(jd.reportDate));
-        setJobInspectionDate(toDate(jd.inspectionDate));
-        setJobInspectionEndDate(toDate(jd.inspectionEndDate));
         const [refStd, refStdO] = fromOther(jd.referenceStd, [
           "ASME SEC V Article 7",
           "ASTM E 709",
@@ -238,7 +228,6 @@ export const MPTReportFormPage: React.FC = () => {
         ]);
         setJobAcceptanceCriteria(acc);
         setJobAcceptanceCriteriaOther(accO);
-        setJobInspectionTime(jd.inspectionTime ?? "");
         setJobStageOfInspection(jd.stageOfInspection ?? "");
         setJobMaterial(jd.material ?? "");
         setJobThickness(jd.thickness ?? "");
@@ -318,16 +307,7 @@ export const MPTReportFormPage: React.FC = () => {
         setCurrentType(ct);
         setCurrentTypeOther(ctO);
         setPostCleaning(method.postCleaning ?? "");
-        const conclusionOpts = [
-          "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-          "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-          "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-          "Other",
-        ];
-        const [con, conO] = fromOther(r.conclusion ?? "", conclusionOpts);
-        setConclusion(con);
-        setConclusionOther(conO);
+
         if (r.observations?.length) {
           setObservations(
             r.observations.map((o: any) => ({
@@ -349,7 +329,6 @@ export const MPTReportFormPage: React.FC = () => {
                 qualification: i.qualification || "MT NDE Level II",
                 designation: i.designation ?? "",
                 signature: i.signature ?? "",
-                idNo: i.idNo ?? "",
                 date: toDate(i.date),
               }))
             : [emptyInspector()],
@@ -358,13 +337,11 @@ export const MPTReportFormPage: React.FC = () => {
         setCustName(cust.name ?? "");
         setCustDesig(cust.designation ?? "");
         setCustSig(cust.signature ?? "");
-        setCustIdNo(cust.idNo ?? "");
         setCustDate(toDate(cust.date));
         const cli = fs.clientOrTPI ?? {};
         setClientName(cli.name ?? "");
         setClientDesig(cli.designation ?? "");
         setClientSig(cli.signature ?? "");
-        setClientIdNo(cli.idNo ?? "");
         setClientDate(toDate(cli.date));
       })
       .catch(() => toast.error("Failed to load report."));
@@ -425,14 +402,11 @@ export const MPTReportFormPage: React.FC = () => {
           customer: jobCustomer,
           client: jobClient,
           reportDate: jobReportDate || undefined,
-          inspectionDate: jobInspectionDate || undefined,
-          inspectionEndDate: jobInspectionEndDate || undefined,
           referenceStd: resolveCustom(jobReferenceStd, jobReferenceStdOther),
           acceptanceCriteria: resolveCustom(
             jobAcceptanceCriteria,
             jobAcceptanceCriteriaOther,
           ),
-          inspectionTime: jobInspectionTime,
           stageOfInspection: jobStageOfInspection || undefined,
           material: jobMaterial,
           thickness: jobThickness,
@@ -492,21 +466,19 @@ export const MPTReportFormPage: React.FC = () => {
             interpretation: o.interpretation || "",
             evaluation: o.evaluation || "",
           })),
-        conclusion: resolveCustom(conclusion, conclusionOther) || undefined,
+
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
           customer: {
             name: custName,
             designation: custDesig,
             signature: custSig,
-            idNo: custIdNo,
             date: custDate || undefined,
           },
           clientOrTPI: {
             name: clientName,
             designation: clientDesig,
             signature: clientSig,
-            idNo: clientIdNo,
             date: clientDate || undefined,
           },
           inspector: inspectors
@@ -534,8 +506,6 @@ export const MPTReportFormPage: React.FC = () => {
     }
   };
 
-  // Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Render Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
-
   const manufacturerOptions = [
     "Pradeep",
     "Dyeglo",
@@ -547,7 +517,6 @@ export const MPTReportFormPage: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
-      {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => navigate(-1)}
@@ -563,7 +532,6 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Missing Customer Banner â”€â”€ */}
       {!customerId && (
         <CustomerPickerBanner
           onCustomerSelected={(id, name) => {
@@ -601,7 +569,6 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Job Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -674,43 +641,7 @@ export const MPTReportFormPage: React.FC = () => {
               placeholder="Select...."
             />
           </div>
-          <div>
-            <label className={labelClass} htmlFor="jobInspectionDate">
-              Inspection Start Date
-            </label>
-            <input
-              id="jobInspectionDate"
-              type="date"
-              value={jobInspectionDate}
-              onChange={(e) => setJobInspectionDate(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobInspectionEndDate">
-              Inspection End Date
-            </label>
-            <input
-              id="jobInspectionEndDate"
-              type="date"
-              value={jobInspectionEndDate}
-              onChange={(e) => setJobInspectionEndDate(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobInspectionTime">
-              Inspection Time
-            </label>
-            <input
-              id="jobInspectionTime"
-              type="text"
-              value={jobInspectionTime}
-              onChange={(e) => setJobInspectionTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 10:30 AM to 05:30 PM"
-            />
-          </div>
+
           <div>
             <label className={labelClass} htmlFor="jobStage">
               Stage of Inspection
@@ -811,7 +742,6 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Equipment Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Equipment Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -897,7 +827,6 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Medium Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Medium Details</h2>
         <div className="overflow-x-auto">
@@ -990,7 +919,6 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Method Description Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Description</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1167,7 +1095,6 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
@@ -1298,32 +1225,8 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Conclusion ── */}
-      <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Conclusion</h2>
-        <div>
-          <label className={labelClass}>Conclusion</label>
-          <SelectWithOther
-            id="conclusion"
-            value={conclusion}
-            onChange={setConclusion}
-            otherValue={conclusionOther}
-            onOtherChange={setConclusionOther}
-            options={[
-              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-              "Other",
-            ]}
-          />
-        </div>
-      </div>
-
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Examined By Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {/* NIIT Inspector(s) */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
               Examined By
@@ -1426,7 +1329,6 @@ export const MPTReportFormPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Customer */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
               Customer
@@ -1474,7 +1376,6 @@ export const MPTReportFormPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Client / TPI */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
               Client

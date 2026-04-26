@@ -139,7 +139,6 @@ export const TPIIVRFormPage: React.FC = () => {
   // ── Header Fields ──
   const [irNo, setIrNo] = useState("");
   const [irRev, setIrRev] = useState("");
-  const [dtOfInspection, setDtOfInspection] = useState("");
   const [client, setClient] = useState("");
   const [inspectionLocation, setInspectionLocation] = useState("");
   const [project, setProject] = useState("");
@@ -172,7 +171,6 @@ export const TPIIVRFormPage: React.FC = () => {
   // ── Inspection Items ──
   const [items, setItems] = useState<InspectionItemRow[]>([emptyItem()]);
 
-  // ── Inspection Activities & Conclusion ──
   const [inspectionActivities, setInspectionActivities] = useState("");
   const [conclusion, setConclusion] = useState("");
 
@@ -221,7 +219,6 @@ export const TPIIVRFormPage: React.FC = () => {
         }
         setIrNo(r.irNo ?? "");
         setIrRev(r.irRev ?? "");
-        setDtOfInspection(toDate(r.dtOfInspection));
         setClient(r.client ?? "");
         setInspectionLocation(r.inspectionLocation ?? "");
         setProject(r.project ?? "");
@@ -280,7 +277,6 @@ export const TPIIVRFormPage: React.FC = () => {
           );
         }
         setInspectionActivities(r.inspectionActivities ?? "");
-        setConclusion(r.conclusion ?? "");
         setRefDocs(
           r.referenceDocuments?.length ? r.referenceDocuments : [emptyRefDoc()],
         );
@@ -346,7 +342,6 @@ export const TPIIVRFormPage: React.FC = () => {
         irNo: irNo.trim(),
         status,
         irRev,
-        dtOfInspection: dtOfInspection || undefined,
         client,
         inspectionLocation,
         project,
@@ -387,7 +382,6 @@ export const TPIIVRFormPage: React.FC = () => {
             inspectionType: i.inspectionType,
           })),
         inspectionActivities,
-        conclusion: conclusion.trim(),
         referenceDocuments: refDocs.map((d) => ({
           document: d.document,
           referenceNumber: d.referenceNumber,
@@ -476,15 +470,6 @@ export const TPIIVRFormPage: React.FC = () => {
               onChange={(e) => setIrRev(e.target.value)}
               className={inputClass}
               placeholder="e.g. Rev.00"
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Date of Inspection</label>
-            <input
-              type="date"
-              value={dtOfInspection}
-              onChange={(e) => setDtOfInspection(e.target.value)}
-              className={inputClass}
             />
           </div>
           <div>
@@ -913,14 +898,13 @@ export const TPIIVRFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Inspection Activities & Conclusion ── */}
+      {/* ── Inspection Activities ── */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>
-          Inspection Activities &amp; Conclusion
+          Inspection Activities
         </h2>
         <div className="space-y-4">
           <div>
-            <label className={labelClass}>Inspection Activities</label>
             <textarea
               value={inspectionActivities}
               onChange={(e) => setInspectionActivities(e.target.value)}

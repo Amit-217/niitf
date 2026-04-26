@@ -135,9 +135,6 @@ export const UTReportFormPage: React.FC = () => {
   const [jobClient, setJobClient] = useState("");
   const [jobProject, setJobProject] = useState("");
   const [jobReportDate, setJobReportDate] = useState("");
-  const [jobInspectionDate, setJobInspectionDate] = useState("");
-  const [jobInspectionEndDate, setJobInspectionEndDate] = useState("");
-  const [jobInspectionTime, setJobInspectionTime] = useState("");
   const [jobRefStd, setJobRefStd] = useState("");
   const [jobRefStdCustom, setJobRefStdCustom] = useState("");
   const [jobAcceptance, setJobAcceptance] = useState("");
@@ -184,9 +181,7 @@ export const UTReportFormPage: React.FC = () => {
   // Ã¢â€â‚¬Ã¢â€â‚¬ Observations Ã¢â€â‚¬Ã¢â€â‚¬
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
-  // -- Conclusion --
-  const [conclusion, setConclusion] = useState("");
-  const [conclusionCustom, setConclusionCustom] = useState("");
+
 
   // â"€â"€ Users for inspector dropdown â"€â"€
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
@@ -200,15 +195,12 @@ export const UTReportFormPage: React.FC = () => {
   // Ã¢â€â‚¬Ã¢â€â‚¬ Final Section Ã¢â€â‚¬Ã¢â€â‚¬
   const [inspectorName, setInspectorName] = useState("");
   const [inspectorQual, setInspectorQual] = useState("UT NDE Level II");
-  const [inspectorIdNo, setInspectorIdNo] = useState("");
   const [inspectorDate, setInspectorDate] = useState("");
   const [custName, setCustName] = useState("");
   const [custDesig, setCustDesig] = useState("");
-  const [custIdNo, setCustIdNo] = useState("");
   const [custDate, setCustDate] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientDesig, setClientDesig] = useState("");
-  const [clientIdNo, setClientIdNo] = useState("");
   const [clientDate, setClientDate] = useState("");
 
   // Ã¢â€â‚¬Ã¢â€â‚¬ Helpers Ã¢â€â‚¬Ã¢â€â‚¬
@@ -274,9 +266,6 @@ export const UTReportFormPage: React.FC = () => {
         setJobClient(jd.client ?? "");
         setJobProject(jd.project ?? "");
         setJobReportDate(toDate(jd.reportDate));
-        setJobInspectionDate(toDate(jd.inspectionDate));
-        setJobInspectionEndDate(toDate(jd.inspectionEndDate));
-        setJobInspectionTime(jd.inspectionTime ?? "");
         const [refStd, refStdC] = fromOther(jd.referenceStd, [
           "ASME Sec V Article 4",
           "ASTM SA 609",
@@ -379,31 +368,19 @@ export const UTReportFormPage: React.FC = () => {
           );
         }
 
-        const conclusionOpts = [
-          "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-          "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-          "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-          "Other",
-        ];
-        const [con, conC] = fromOther(r.conclusion ?? "", conclusionOpts);
-        setConclusion(con);
-        setConclusionCustom(conC);
+
         const fs = r.finalSection ?? {};
         const insp = fs.inspector?.[0] ?? {};
         setInspectorName(insp.name ?? "");
         setInspectorQual(insp.qualification || "UT NDE Level II");
-        setInspectorIdNo(insp.idNo ?? "");
         setInspectorDate(toDate(insp.date));
         const custRep = fs.customer ?? {};
         setCustName(custRep.name ?? "");
         setCustDesig(custRep.designation ?? "");
-        setCustIdNo(custRep.idNo ?? "");
         setCustDate(toDate(custRep.date));
         const clientRep = fs.clientOrTPI ?? {};
         setClientName(clientRep.name ?? "");
         setClientDesig(clientRep.designation ?? "");
-        setClientIdNo(clientRep.idNo ?? "");
         setClientDate(toDate(clientRep.date));
       })
       .catch(() => toast.error("Failed to load report."));
@@ -426,9 +403,6 @@ export const UTReportFormPage: React.FC = () => {
           client: jobClient,
           project: jobProject,
           reportDate: jobReportDate || undefined,
-          inspectionDate: jobInspectionDate || undefined,
-          inspectionEndDate: jobInspectionEndDate || undefined,
-          inspectionTime: jobInspectionTime,
           referenceStd: resolve(jobRefStd, jobRefStdCustom),
           acceptanceCriteria: resolve(jobAcceptance, jobAcceptanceCustom),
           material: jobMaterial,
@@ -475,27 +449,24 @@ export const UTReportFormPage: React.FC = () => {
             interpretation: o.interpretation || "",
             evaluation: o.evaluation || "",
           })),
-        conclusion: resolve(conclusion, conclusionCustom) || undefined,
+
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
           inspector: [
             {
               name: inspectorName,
               qualification: inspectorQual,
-              idNo: inspectorIdNo,
               date: inspectorDate || undefined,
             },
           ],
           customer: {
             name: custName,
             designation: custDesig,
-            idNo: custIdNo,
             date: custDate || undefined,
           },
           clientOrTPI: {
             name: clientName,
             designation: clientDesig,
-            idNo: clientIdNo,
             date: clientDate || undefined,
           },
         },
@@ -625,24 +596,6 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection Start Date</label>
-            <input
-              type="date"
-              value={jobInspectionDate}
-              onChange={(e) => setJobInspectionDate(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Inspection End Date</label>
-            <input
-              type="date"
-              value={jobInspectionEndDate}
-              onChange={(e) => setJobInspectionEndDate(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
             <label className={labelClass}>Reference Std.</label>
             <SelectWithCustom
               value={jobRefStd}
@@ -676,16 +629,7 @@ export const UTReportFormPage: React.FC = () => {
               ]}
             />
           </div>
-          <div>
-            <label className={labelClass}>Inspection Time</label>
-            <input
-              type="text"
-              value={jobInspectionTime}
-              onChange={(e) => setJobInspectionTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 02:00 PM to 05:00 PM"
-            />
-          </div>
+
           <div>
             <label className={labelClass}>Material</label>
             <input
@@ -777,7 +721,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Equipment Details Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* Equipment Details */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Equipment Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -855,7 +799,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Search Unit Details Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* Search Unit Details */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4">
           <h2
@@ -991,7 +935,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Technique Details Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* Technique Details */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Technique Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1059,7 +1003,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Angle Probe Calibration Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* Angle Probe Calibration */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Angle Probe Calibration Detail</h2>
         <div className="overflow-x-auto">
@@ -1115,7 +1059,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Observations Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* Observations */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4">
           <h2
@@ -1251,27 +1195,7 @@ export const UTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Examined By Ã¢â€â‚¬Ã¢â€â‚¬ */}
-      {/* -- Conclusion -- */}
-      <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Conclusion</h2>
-        <div>
-          <label className={labelClass}>Conclusion</label>
-          <SelectWithCustom
-            value={conclusion}
-            onChange={setConclusion}
-            customValue={conclusionCustom}
-            onCustomChange={setConclusionCustom}
-            options={[
-              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-              "Other",
-            ]}
-          />
-        </div>
-      </div>
+      {/* Examined By */}
 
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">

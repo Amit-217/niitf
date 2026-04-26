@@ -497,19 +497,12 @@ export const MPTReportPrintPage = () => {
                           </tr>
                           <tr>
                             <td className="lbl">Reference Std.</td>
-                            <td className="val">
+                            <td className="val" colSpan={3}>
                               {standards.length > 0 ? (
                                 standards.join(", ")
                               ) : (
                                 "Not specified"
                               )}
-                            </td>
-                            <td className="lbl">Inspection Date</td>
-                            <td className="val">
-                              {dateRange(
-                                jd.inspectionDate,
-                                jd.inspectionEndDate,
-                              ) || "-"}
                             </td>
                           </tr>
                           <tr>

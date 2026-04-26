@@ -108,9 +108,6 @@ export const PTReportFormPage: React.FC = () => {
   const [jobClient, setJobClient] = useState("");
   const [jobProject, setJobProject] = useState("");
   const [jobReportDate, setJobReportDate] = useState("");
-  const [jobInspectionDate, setJobInspectionDate] = useState("");
-  const [jobInspectionEndDate, setJobInspectionEndDate] = useState("");
-  const [jobInspectionTime, setJobInspectionTime] = useState("");
   const [jobRefStd, setJobRefStd] = useState("");
   const [jobRefStdCustom, setJobRefStdCustom] = useState("");
   const [jobAcceptance, setJobAcceptance] = useState("");
@@ -158,9 +155,7 @@ export const PTReportFormPage: React.FC = () => {
   // Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
-  // -- Conclusion --
-  const [conclusion, setConclusion] = useState("");
-  const [conclusionCustom, setConclusionCustom] = useState("");
+
 
   // â”€â”€ Users for inspector dropdown â”€â”€
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
@@ -174,15 +169,12 @@ export const PTReportFormPage: React.FC = () => {
   // Ã¢"â‚¬Ã¢"â‚¬ Final Section Ã¢"â‚¬Ã¢"â‚¬
   const [inspectorName, setInspectorName] = useState("");
   const [inspectorQual, setInspectorQual] = useState("PT NDE Level II");
-  const [inspectorIdNo, setInspectorIdNo] = useState("");
   const [inspectorDate, setInspectorDate] = useState("");
   const [custName, setCustName] = useState("");
   const [custDesig, setCustDesig] = useState("");
-  const [custIdNo, setCustIdNo] = useState("");
   const [custDate, setCustDate] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientDesig, setClientDesig] = useState("");
-  const [clientIdNo, setClientIdNo] = useState("");
   const [clientDate, setClientDate] = useState("");
 
   useEffect(() => {
@@ -209,9 +201,6 @@ export const PTReportFormPage: React.FC = () => {
         setJobClient(jd.client ?? "");
         setJobProject(jd.project ?? "");
         setJobReportDate(toDate(jd.reportDate));
-        setJobInspectionDate(toDate(jd.inspectionDate));
-        setJobInspectionEndDate(toDate(jd.inspectionEndDate));
-        setJobInspectionTime(jd.inspectionTime ?? "");
         const refStdOpts = ["ASME Sec. V, Article VI", "ASTM E 165", "Other"];
         const [rs, rsC] = fromOther(jd.referenceStandard, refStdOpts);
         setJobRefStd(rs);
@@ -296,31 +285,19 @@ export const PTReportFormPage: React.FC = () => {
             })),
           );
         }
-        const conclusionOpts = [
-          "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-          "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-          "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-          "Other",
-        ];
-        const [concl, conclC] = fromOther(r.conclusion ?? "", conclusionOpts);
-        setConclusion(concl);
-        setConclusionCustom(conclC);
+
         const fs = r.finalSection ?? {};
         const insp0 = fs.inspector?.[0] ?? {};
         setInspectorName(insp0.name ?? "");
         setInspectorQual(insp0.qualification || "PT NDE Level II");
-        setInspectorIdNo(insp0.idNo ?? "");
         setInspectorDate(toDate(insp0.date));
         const cust = fs.customer ?? {};
         setCustName(cust.name ?? "");
         setCustDesig(cust.designation ?? "");
-        setCustIdNo(cust.idNo ?? "");
         setCustDate(toDate(cust.date));
         const cli = fs.clientOrTPI ?? {};
         setClientName(cli.name ?? "");
         setClientDesig(cli.designation ?? "");
-        setClientIdNo(cli.idNo ?? "");
         setClientDate(toDate(cli.date));
       })
       .catch(() => toast.error("Failed to load report."));
@@ -369,9 +346,6 @@ export const PTReportFormPage: React.FC = () => {
           client: jobClient,
           project: jobProject,
           reportDate: jobReportDate || undefined,
-          inspectionDate: jobInspectionDate || undefined,
-          inspectionEndDate: jobInspectionEndDate || undefined,
-          inspectionTime: jobInspectionTime,
           referenceStandard: resolve(jobRefStd, jobRefStdCustom),
           acceptanceCriteria: resolve(jobAcceptance, jobAcceptanceCustom),
           material: jobMaterial,
@@ -423,27 +397,24 @@ export const PTReportFormPage: React.FC = () => {
             interpretation: o.interpretation || "",
             evaluation: o.evaluation || "",
           })),
-        conclusion: resolve(conclusion, conclusionCustom) || undefined,
+
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
           inspector: [
             {
               name: inspectorName,
               qualification: inspectorQual,
-              idNo: inspectorIdNo,
               date: inspectorDate || undefined,
             },
           ],
           customer: {
             name: custName,
             designation: custDesig,
-            idNo: custIdNo,
             date: custDate || undefined,
           },
           clientOrTPI: {
             name: clientName,
             designation: clientDesig,
-            idNo: clientIdNo,
             date: clientDate || undefined,
           },
         },
@@ -533,7 +504,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Job Details Ã¢"â‚¬Ã¢"â‚¬ */}
+      {/* — Job Details — */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -565,34 +536,6 @@ export const PTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Project</label>
-            <input
-              type="text"
-              value={jobProject}
-              onChange={(e) => setJobProject(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. OIL COOLER FOR GEAR BOX"
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Inspection Start Date</label>
-            <input
-              type="date"
-              value={jobInspectionDate}
-              onChange={(e) => setJobInspectionDate(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Inspection End Date</label>
-            <input
-              type="date"
-              value={jobInspectionEndDate}
-              onChange={(e) => setJobInspectionEndDate(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
             <label className={labelClass}>Reference Standard</label>
             <SelectWithCustom
               value={jobRefStd}
@@ -617,26 +560,6 @@ export const PTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection Time</label>
-            <input
-              type="text"
-              value={jobInspectionTime}
-              onChange={(e) => setJobInspectionTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 10:00 AM - 03:30 PM"
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Material</label>
-            <input
-              type="text"
-              value={jobMaterial}
-              onChange={(e) => setJobMaterial(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. IS 2062 E250 BR"
-            />
-          </div>
-          <div>
             <label className={labelClass}>Stage of Inspection</label>
             <select
               value={jobStage}
@@ -650,6 +573,16 @@ export const PTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
+            <label className={labelClass}>Material</label>
+            <input
+              type="text"
+              value={jobMaterial}
+              onChange={(e) => setJobMaterial(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. IS 2062 E250 BR"
+            />
+          </div>
+          <div>
             <label className={labelClass}>Thickness</label>
             <input
               type="text"
@@ -658,6 +591,33 @@ export const PTReportFormPage: React.FC = () => {
               className={inputClass}
               placeholder="e.g. 6, 12 & 16 MM"
             />
+          </div>
+          <div>
+            <label className={labelClass}>Type of Joint</label>
+            <select
+              value={jobJointType}
+              onChange={(e) => setJobJointType(e.target.value)}
+              className={inputClass}
+            >
+              <option value="">Select...</option>
+              <option>Butt</option>
+              <option>Corner</option>
+              <option>T Joint</option>
+              <option>NA</option>
+            </select>
+          </div>
+          <div>
+            <label className={labelClass}>Surface Condition</label>
+            <select
+              value={jobSurface}
+              onChange={(e) => setJobSurface(e.target.value)}
+              className={inputClass}
+            >
+              <option value="">Select...</option>
+              <option>Smooth</option>
+              <option>Rough</option>
+              <option>Ground and polished</option>
+            </select>
           </div>
           <div>
             <label className={labelClass}>Extent of Examination</label>
@@ -675,31 +635,24 @@ export const PTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Surface Condition</label>
-            <select
-              value={jobSurface}
-              onChange={(e) => setJobSurface(e.target.value)}
+            <label className={labelClass}>Welding Process</label>
+            <input
+              type="text"
+              value={jobWeldingProcess}
+              onChange={(e) => setJobWeldingProcess(e.target.value)}
               className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>Smooth</option>
-              <option>Rough</option>
-              <option>Ground and polished</option>
-            </select>
+              placeholder="e.g. SMAW, GTAW"
+            />
           </div>
           <div>
-            <label className={labelClass}>Type of Joint</label>
-            <select
-              value={jobJointType}
-              onChange={(e) => setJobJointType(e.target.value)}
+            <label className={labelClass}>Project</label>
+            <input
+              type="text"
+              value={jobProject}
+              onChange={(e) => setJobProject(e.target.value)}
               className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>Butt</option>
-              <option>Corner</option>
-              <option>T Joint</option>
-              <option>NA</option>
-            </select>
+              placeholder="e.g. OIL COOLER FOR GEAR BOX"
+            />
           </div>
           <div>
             <label className={labelClass}>Surface Temperature</label>
@@ -709,30 +662,15 @@ export const PTReportFormPage: React.FC = () => {
               className={inputClass}
             >
               <option value="">Select...</option>
-              <option>Room Temperature</option>
+              <option>Ambient</option>
+              <option>5 - 52 °C</option>
               <option>Other</option>
-            </select>
-          </div>
-          <div>
-            <label className={labelClass}>Welding Process</label>
-            <select
-              value={jobWeldingProcess}
-              onChange={(e) => setJobWeldingProcess(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>SMAW</option>
-              <option>GMAW</option>
-              <option>FCAW</option>
-              <option>SAW</option>
-              <option>GTAW</option>
-              <option>MAG</option>
             </select>
           </div>
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Method Details Ã¢"â‚¬Ã¢"â‚¬ */}
+      {/* — Method Details — */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -767,7 +705,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Consumables Details Ã¢"â‚¬Ã¢"â‚¬ */}
+      {/* — Consumables Details — */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Consumables Details</h2>
         <div className="overflow-x-auto">
@@ -862,7 +800,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Method Description Ã¢"â‚¬Ã¢"â‚¬ */}
+      {/* — Method Description — */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Description</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -931,7 +869,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬ */}
+      {/* — Observations — */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4">
           <h2
@@ -1067,28 +1005,9 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Conclusion ── */}
-      <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Conclusion</h2>
-        <div>
-          <label className={labelClass}>Conclusion</label>
-          <SelectWithCustom
-            value={conclusion}
-            onChange={setConclusion}
-            customValue={conclusionCustom}
-            onCustomChange={setConclusionCustom}
-            options={[
-              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-              "Other",
-            ]}
-          />
-        </div>
-      </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Examined By Ã¢"â‚¬Ã¢"â‚¬ */}
+
+      {/* — Examined By — */}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* NIIT Inspector */}

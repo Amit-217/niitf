@@ -504,7 +504,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                             <div className="form-row">
                               <span className="form-label">Remarks :</span>
                               <span className="form-val">
-                                {v(report.evaluation || report.remarks)}
+                                {v(report.remarks)}
                               </span>
                             </div>
                           </div>
@@ -744,17 +744,6 @@ export const AWSDReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td style={{ fontSize: "11px", padding: "4px 6px" }}>
-                              Test date&nbsp;
-                              <span
-                                style={{
-                                  display: "inline-block",
-                                  minWidth: "140px",
-                                  borderBottom: "1px solid #555",
-                                  verticalAlign: "bottom",
-                                }}
-                              >
-                                {fmtDate(cert.testDate)}
-                              </span>
                             </td>
                             <td style={{ fontSize: "11px", padding: "4px 6px" }}>
                               Manufacturer or Contractor&nbsp;

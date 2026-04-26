@@ -130,8 +130,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
   const [thicknessOfJob, setThicknessOfJob] = useState("");
   const [surfaceCondition, setSurfaceCondition] = useState("");
   const [surfaceConditionCustom, setSurfaceConditionCustom] = useState("");
-  const [periodFrom, setPeriodFrom] = useState("");
-  const [periodTo, setPeriodTo] = useState("");
   const [material, setMaterial] = useState("");
   const [scanningTechnique, setScanningTechnique] = useState("");
   const [scanningTechniqueCustom, setScanningTechniqueCustom] = useState("");
@@ -182,8 +180,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
 
   // ── Disposition & Evaluation ──
   const [disposition, setDisposition] = useState("");
-  const [evaluation, setEvaluation] = useState("");
-  const [evaluationCustom, setEvaluationCustom] = useState("");
 
   // ── Users for inspector dropdown ──
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
@@ -196,13 +192,10 @@ export const VSSCUTReportFormPage: React.FC = () => {
 
   // ── Final Section ──
   const [inspectorName, setInspectorName] = useState("");
-  const [inspectorIdNo, setInspectorIdNo] = useState("");
   const [inspectorDate, setInspectorDate] = useState("");
   const [qcName, setQcName] = useState("");
-  const [qcIdNo, setQcIdNo] = useState("");
   const [qcDate, setQcDate] = useState("");
   const [rqsName, setRqsName] = useState("");
-  const [rqsIdNo, setRqsIdNo] = useState("");
   const [rqsDate, setRqsDate] = useState("");
 
   // ── Load in edit mode ──
@@ -241,14 +234,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
         ]);
         setSurfaceCondition(sc);
         setSurfaceConditionCustom(scC);
-        const period = r.periodOfInspection ?? "";
-        if (period.includes(" To ")) {
-          const parts = period.split(" To ");
-          setPeriodFrom(toDate(parts[0]));
-          setPeriodTo(toDate(parts[1]));
-        } else {
-          setPeriodFrom(toDate(period));
-        }
         setMaterial(r.material ?? "");
         const [st, stC] = fromOther(r.scanningTechnique, [
           "Contact manual",
@@ -345,25 +330,15 @@ export const VSSCUTReportFormPage: React.FC = () => {
         setNpDacDb(npc.dacDb ?? "");
         setNpScanningDb(npc.scanningDb ?? "");
         setDisposition(r.disposition ?? "");
-        const [rm, rmC] = fromOther(r.evaluation ?? r.remarks, [
-          "RECORDABLE INDICATIONS WAS OBSERVED - REFER ANNEXURE–I",
-          "NO RECORDABLE INDICATIONS WAS OBSERVED",
-          "Other",
-        ]);
-        setEvaluation(rm);
-        setEvaluationCustom(rmC);
         const fs = r.finalSection ?? {};
         const insp = fs.inspector?.[0] ?? {};
         setInspectorName(insp.name ?? "");
-        setInspectorIdNo(insp.idNo ?? "");
         setInspectorDate(toDate(insp.date));
         const qc = fs.qc ?? {};
         setQcName(qc.name ?? "");
-        setQcIdNo(qc.idNo ?? "");
         setQcDate(toDate(qc.date));
         const rqs = fs.rqs ?? {};
         setRqsName(rqs.name ?? "");
-        setRqsIdNo(rqs.idNo ?? "");
         setRqsDate(toDate(rqs.date));
       })
       .catch(() => toast.error("Failed to load report."));
@@ -417,10 +392,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
         thicknessOfJob,
         surfaceCondition: resolve(surfaceCondition, surfaceConditionCustom),
         customer: customerName,
-        periodOfInspection:
-          periodFrom && periodTo
-            ? `${periodFrom} To ${periodTo}`
-            : periodFrom || periodTo || undefined,
         material,
         scanningTechnique: resolve(scanningTechnique, scanningTechniqueCustom),
         stageOfInspection: resolve(stageOfInspection, stageOfInspectionCustom),
@@ -463,17 +434,15 @@ export const VSSCUTReportFormPage: React.FC = () => {
           scanningDb: npScanningDb,
         },
         disposition,
-        evaluation: resolve(evaluation, evaluationCustom),
         finalSection: {
           inspector: [
             {
               name: inspectorName,
-              idNo: inspectorIdNo,
               date: inspectorDate || undefined,
             },
           ],
-          qc: { name: qcName, idNo: qcIdNo, date: qcDate || undefined },
-          rqs: { name: rqsName, idNo: rqsIdNo, date: rqsDate || undefined },
+          qc: { name: qcName, date: qcDate || undefined },
+          rqs: { name: rqsName, date: rqsDate || undefined },
         },
       };
       if (id) {
@@ -618,24 +587,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
               onChange={(e) => setMaterial(e.target.value)}
               className={inputClass}
               placeholder="e.g. MDN 250"
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Period of Inspection — From</label>
-            <input
-              type="date"
-              value={periodFrom}
-              onChange={(e) => setPeriodFrom(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Period of Inspection — To</label>
-            <input
-              type="date"
-              value={periodTo}
-              onChange={(e) => setPeriodTo(e.target.value)}
-              className={inputClass}
             />
           </div>
           <div>
@@ -1085,38 +1036,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Disposition & Evaluation */}
-      <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Disposition & Evaluation</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Disposition</label>
-            <select
-              value={disposition}
-              onChange={(e) => setDisposition(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>ACCEPTED</option>
-              <option>NOT ACCEPTED</option>
-            </select>
-          </div>
-          <div>
-            <label className={labelClass}>Evaluation</label>
-            <SelectWithCustom
-              value={evaluation}
-              onChange={setEvaluation}
-              customValue={evaluationCustom}
-              onCustomChange={setEvaluationCustom}
-              options={[
-                "RECORDABLE INDICATIONS WAS OBSERVED - REFER ANNEXURE– I",
-                "NO RECORDABLE INDICATIONS WAS OBSERVED",
-                "Other",
-              ]}
-            />
-          </div>
-        </div>
-      </div>
+
 
 
 

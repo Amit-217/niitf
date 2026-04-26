@@ -267,11 +267,7 @@ export const UTReportPrintPage: React.FC = () => {
       v(o.evaluation || o.remark || o.result || o.interpretation),
     ),
   ).length;
-  const conclusionText =
-    v((report as unknown as { conclusion?: string }).conclusion) ||
-    (rejectedCount > 0
-      ? `Examination completed. ${rejectedCount} rejectable indication(s) identified; repair and re-examination required before final acceptance.`
-      : "Examination completed as per applicable standards. No rejectable indications observed in inspected items.");
+  const conclusionText = "";
 
   const calibAngles = [
     { label: "0°", data: apc.deg0 },
@@ -547,14 +543,7 @@ export const UTReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="lbl">Project</td>
-                            <td className="val">{v(jd.project)}</td>
-                            <td className="lbl">Inspection Date</td>
-                            <td className="val">
-                              {fmtDate(jd.inspectionDate)}
-                              {jd.inspectionEndDate
-                                ? ` to ${fmtDate(jd.inspectionEndDate)}`
-                                : ""}
-                            </td>
+                            <td className="val" colSpan={3}>{v(jd.project)}</td>
                           </tr>
                           <tr>
                             <td className="lbl">Reference Std.</td>

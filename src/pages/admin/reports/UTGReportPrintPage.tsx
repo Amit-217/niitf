@@ -558,15 +558,7 @@ export const UTGReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="lbl">Project</td>
-                            <td className="val">{v(jd.project) || "-"}</td>
-                            <td className="lbl">Inspection Date</td>
-                            <td className="val">
-                              {fmtDate(jd.inspectionDate)}
-                              {jd.inspectionEndDate
-                                ? ` To ${fmtDate(jd.inspectionEndDate)}`
-                                : ""}
-                              {!jd.inspectionDate && "-"}
-                            </td>
+                            <td className="val" colSpan={3}>{v(jd.project) || "-"}</td>
                           </tr>
                           <tr>
                             <td className="lbl">Reference Std.</td>

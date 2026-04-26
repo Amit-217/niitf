@@ -135,20 +135,16 @@ export const AWSDReportFormPage: React.FC = () => {
   const [weldingProcessOther, setWeldingProcessOther] = useState("");
   const [qualityRequirementsSection, setQualityRequirementsSection] =
     useState("");
-  const [jobEvaluation, setJobEvaluation] = useState("");
 
   // â”€â”€ Observations â”€â”€
   const [observations, setObservations] = useState<ObsRow[]>(
     Array.from({ length: 3 }, (_, i) => emptyObs(i + 1)),
   );
 
-  // â”€â”€ Footer / Certification â”€â”€
-  const [testDate, setTestDate] = useState("");
   const [inspectedBy, setInspectedBy] = useState("");
   const [certYear, setCertYear] = useState("");
   const [manufacturerOrContractor, setManufacturerOrContractor] = useState("");
   const [authorizedBy, setAuthorizedBy] = useState("");
-  const [footerDate, setFooterDate] = useState("");
 
   // â”€â”€ Load in edit mode â”€â”€
   useEffect(() => {
@@ -190,7 +186,6 @@ export const AWSDReportFormPage: React.FC = () => {
         setWeldingProcess(wp);
         setWeldingProcessOther(wpO);
         setQualityRequirementsSection(r.qualityRequirementsSection ?? "");
-        setJobEvaluation(r.evaluation ?? r.remarks ?? "");
         if (r.observations?.length) {
           setObservations(
             r.observations.map((o: any) => {
@@ -224,12 +219,10 @@ export const AWSDReportFormPage: React.FC = () => {
           );
         }
         const cert = r.certification ?? {};
-        setTestDate(toDate(cert.testDate));
         setInspectedBy(cert.inspectedBy ?? "");
         setCertYear(cert.year ?? "");
         setManufacturerOrContractor(cert.manufacturerOrContractor ?? "");
         setAuthorizedBy(cert.authorizedBy ?? "");
-        setFooterDate(toDate(cert.date));
       })
       .catch(() => toast.error("Failed to load report."));
   }, [id]);
@@ -270,7 +263,6 @@ export const AWSDReportFormPage: React.FC = () => {
         weldJointAWS,
         weldingProcess: resolve(weldingProcess, weldingProcessOther),
         qualityRequirementsSection,
-        evaluation: jobEvaluation,
         observations: observations
           .filter(
             (o) =>
@@ -299,12 +291,10 @@ export const AWSDReportFormPage: React.FC = () => {
             evaluation: o.evaluation,
           })),
         certification: {
-          testDate: testDate || undefined,
           inspectedBy,
           year: certYear,
           manufacturerOrContractor,
           authorizedBy,
-          date: footerDate || undefined,
         },
       };
       if (id) {
@@ -435,15 +425,6 @@ export const AWSDReportFormPage: React.FC = () => {
               onChange={(e) => setQualityRequirementsSection(e.target.value)}
               className={inputClass}
               placeholder="e.g. Clause 8, Part F"
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Evaluation</label>
-            <input
-              type="text"
-              value={jobEvaluation}
-              onChange={(e) => setJobEvaluation(e.target.value)}
-              className={inputClass}
             />
           </div>
         </div>
@@ -759,15 +740,6 @@ export const AWSDReportFormPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Left */}
           <div className="space-y-3">
-            <div>
-              <label className={labelClass}>Test Date</label>
-              <input
-                type="date"
-                value={testDate}
-                onChange={(e) => setTestDate(e.target.value)}
-                className={inputClass}
-              />
-            </div>
             <div>
               <label className={labelClass}>Inspected By</label>
               <input
