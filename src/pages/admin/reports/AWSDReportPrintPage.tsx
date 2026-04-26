@@ -104,28 +104,38 @@ const PRINT_STYLES = `
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .report-body { color: #000 !important; border-color: #000 !important; }
   .rpt-title { background: #E6F1FB; text-align: center; padding: 5px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #444; border-top: none; border-radius: 6px 6px 0 0; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 14px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 14px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: center !important; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
   .report-table td, .report-table th { border: 1px solid #444; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; overflow: hidden; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center !important; color: #0C447C; overflow: hidden; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
   .val { font-size: 11px; color: #000; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #444; }
-  .obs-table td, .obs-table th { border: 1px solid #444; padding: 2px 3px; font-size: 10px; vertical-align: middle; text-align: left; word-break: break-word; }
+  .obs-table td, .obs-table th { border: 1px solid #444; padding: 2px 3px; font-size: 10px; vertical-align: middle; text-align: center !important; word-break: break-word; }
   .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 11px; font-weight: 700; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .obs-table .vcell {
     height: 92px;
-    padding: 0 2px;
+    padding: 0;
     overflow: hidden;
+    text-align: center !important;
+    vertical-align: middle !important;
   }
   .obs-table .vtext {
     display: inline-block;
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     white-space: nowrap;
-    line-height: 1;
+    line-height: 1.1;
     font-size: 11px;
+    text-align: center;
+  }
+  .vcell-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
   }
   .form-block { border: 1px solid #888; padding: 5px 8px; font-size: 10px; }
   .form-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px; }
@@ -202,7 +212,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       const trigger = async () => {
         try {
           await document.fonts.ready;
-        } catch (_) {}
+        } catch (_) { }
         requestAnimationFrame(() => {
           setTimeout(() => {
             window.print();
@@ -455,7 +465,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                           <div style={{ flex: 1 }}>
                             <div className="form-row">
                               <span className="form-label">
-                                Weld identification
+                                Weld identification :
                               </span>
                               <span className="form-val">
                                 {v(report.weldIdentification)}
@@ -463,21 +473,21 @@ export const AWSDReportPrintPage: React.FC = () => {
                             </div>
                             <div className="form-row">
                               <span className="form-label">
-                                Material thickness
+                                Material thickness :
                               </span>
                               <span className="form-val">
                                 {v(report.materialThickness)}
                               </span>
                             </div>
                             <div className="form-row">
-                              <span className="form-label">Weld joint AWS</span>
+                              <span className="form-label">Weld joint AWS :</span>
                               <span className="form-val">
                                 {v(report.weldJointAWS)}
                               </span>
                             </div>
                             <div className="form-row">
                               <span className="form-label">
-                                Welding process
+                                Welding process :
                               </span>
                               <span className="form-val">
                                 {v(report.weldingProcess)}
@@ -485,14 +495,14 @@ export const AWSDReportPrintPage: React.FC = () => {
                             </div>
                             <div className="form-row">
                               <span className="form-label">
-                                Quality requirements—section no.
+                                Quality requirements—section no. :
                               </span>
                               <span className="form-val">
                                 {v(report.qualityRequirementsSection)}
                               </span>
                             </div>
                             <div className="form-row">
-                              <span className="form-label">Remarks</span>
+                              <span className="form-label">Remarks :</span>
                               <span className="form-val">
                                 {v(report.evaluation || report.remarks)}
                               </span>
@@ -504,7 +514,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                       <table className="obs-table">
                         <thead>
                           <tr>
-                            <td colSpan={16} className="section-hdr">
+                            <td colSpan={16} className="section-hdr" style={{ textAlign: "center" }}>
                               OBSERVATIONS
                             </td>
                           </tr>
@@ -515,35 +525,45 @@ export const AWSDReportPrintPage: React.FC = () => {
                               rowSpan={3}
                               style={{ width: "3.5%" }}
                             >
-                              <span className="vtext">Line number</span>
+                              <div className="vcell-wrap">
+                                <span className="vtext">Line number</span>
+                              </div>
                             </td>
                             <td
                               className="col-hdr vcell"
                               rowSpan={3}
                               style={{ width: "5.5%" }}
                             >
-                              <span className="vtext">Indication number</span>
+                              <div className="vcell-wrap">
+                                <span className="vtext">Indication number</span>
+                              </div>
                             </td>
                             <td
                               className="col-hdr vcell"
                               rowSpan={3}
                               style={{ width: "7%" }}
                             >
-                              <span className="vtext">Transducer angle</span>
+                              <div className="vcell-wrap">
+                                <span className="vtext">Transducer angle</span>
+                              </div>
                             </td>
                             <td
                               className="col-hdr vcell"
                               rowSpan={3}
                               style={{ width: "4.5%" }}
                             >
-                              <span className="vtext">From Face</span>
+                              <div className="vcell-wrap">
+                                <span className="vtext">From Face</span>
+                              </div>
                             </td>
                             <td
                               className="col-hdr vcell"
                               rowSpan={3}
                               style={{ width: "3.5%" }}
                             >
-                              <span className="vtext">Leg*</span>
+                              <div className="vcell-wrap">
+                                <span className="vtext">Leg*</span>
+                              </div>
                             </td>
                             <td className="col-hdr" colSpan={4}>
                               Decibels
@@ -556,16 +576,20 @@ export const AWSDReportPrintPage: React.FC = () => {
                               rowSpan={3}
                               style={{ width: "6.5%" }}
                             >
-                              <span className="vtext text-center">
-                                Discontinuity <br />evaluation
-                              </span>
+                              <div className="vcell-wrap">
+                                <span className="vtext text-center">
+                                  Discontinuity <br />evaluation
+                                </span>
+                              </div>
                             </td>
                             <td
                               className="col-hdr vcell"
                               rowSpan={3}
                               style={{ width: "6.5%" }}
                             >
-                              <span className="vtext">Remarks</span>
+                              <div className="vcell-wrap">
+                                <span className="vtext">Remarks</span>
+                              </div>
                             </td>
                           </tr>
                           {/* Header row 2: Sub-column names (vertical) */}
@@ -574,50 +598,64 @@ export const AWSDReportPrintPage: React.FC = () => {
                               className="col-hdr vcell"
                               style={{ width: "5.5%" }}
                             >
-                              <span className="vtext text-center">Indication <br />level</span>
+                              <div className="vcell-wrap">
+                                <span className="vtext text-center">Indication <br />level</span>
+                              </div>
                             </td>
                             <td
                               className="col-hdr vcell"
                               style={{ width: "5.5%" }}
                             >
-                              <span className="vtext text-center">Reference <br />level</span>
+                              <div className="vcell-wrap">
+                                <span className="vtext text-center">Reference <br />level</span>
+                              </div>
                             </td>
                             <td
                               className="col-hdr vcell"
                               style={{ width: "6%" }}
                             >
-                              <span className="vtext text-center">Attenuation <br />factor</span>
+                              <div className="vcell-wrap">
+                                <span className="vtext text-center">Attenuation <br />factor</span>
+                              </div>
                             </td>
                             <td
                               className="col-hdr vcell"
                               style={{ width: "5.5%" }}
                             >
-                              <span className="vtext text-center">Indication <br />rating</span>
+                              <div className="vcell-wrap">
+                                <span className="vtext text-center">Indication <br />rating</span>
+                              </div>
                             </td>
                             <td
                               className="col-hdr vcell"
                               rowSpan={2}
                               style={{ width: "5%" }}
                             >
-                              <span className="vtext">Length</span>
+                              <div className="vcell-wrap">
+                                <span className="vtext">Length</span>
+                              </div>
                             </td>
                             <td
                               className="col-hdr vcell"
                               rowSpan={2}
                               style={{ width: "5.5%" }}
                             >
-                              <span className="vtext">
-                                Angular distance
-                              </span>
+                              <div className="vcell-wrap">
+                                <span className="vtext">
+                                  Angular distance
+                                </span>
+                              </div>
                             </td>
                             <td
                               className="col-hdr vcell"
                               rowSpan={2}
                               style={{ width: "6%" }}
                             >
-                              <span className="vtext">
-                                Depth from <br />'A' surface
-                              </span>
+                              <div className="vcell-wrap">
+                                <span className="vtext">
+                                  Depth from <br />'A' surface
+                                </span>
+                              </div>
                             </td>
                             <td className="col-hdr" colSpan={2}>
                               Distance
