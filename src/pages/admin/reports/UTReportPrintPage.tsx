@@ -118,7 +118,7 @@ const PRINT_STYLES = `
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
 
-  .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .calib-table { width: 100%; border-collapse: collapse; table-layout: auto; }
   .calib-table td, .calib-table th { border: 1px solid #444; padding: 4px; font-size: 11px; text-align: left; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
   .calib-table td.section-hdr { text-align: left; }
@@ -730,7 +730,10 @@ export const UTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="col-hdr" style={{ width: "20%" }}>
+                            <td
+                              className="col-hdr"
+                              style={{ whiteSpace: "nowrap" }}
+                            >
                               Angle Probe calibration detail
                             </td>
                             {calibAngles.map((a) => (
@@ -760,8 +763,8 @@ export const UTReportPrintPage: React.FC = () => {
                                   {v(
                                     (
                                       a.data as
-                                        | Record<string, string>
-                                        | undefined
+                                      | Record<string, string>
+                                      | undefined
                                     )?.[row.key],
                                   )}
                                 </td>
