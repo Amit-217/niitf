@@ -112,7 +112,7 @@ const PRINT_STYLES = `
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
   .report-body { border-top: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
+  .report-footer-wrap { border: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
 
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
@@ -129,6 +129,13 @@ const PRINT_STYLES = `
   @media screen {
     .print-fixed-footer { display: none; }
     .print-sign-table { display: none; }
+    .print-only { display: none !important; }
+    .no-print-screen { display: block; }
+  }
+  @media print {
+    .print-only { display: block !important; }
+    .no-print-screen { display: none !important; }
+    .page-break { page-break-before: always; }
   }
 `;
 
@@ -273,6 +280,113 @@ export const UTReportPrintPage: React.FC = () => {
     { label: "70°", data: apc.deg70 },
   ];
 
+  const renderSignatures = () => (
+    <div className="report-footer-wrap">
+      <table className="sign-table mt-n1">
+        <colgroup>
+          <col style={{ width: "33.3%" }} />
+          <col style={{ width: "33.3%" }} />
+          <col style={{ width: "33.4%" }} />
+        </colgroup>
+        <tbody>
+          <tr>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER:</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT :</td>
+          </tr>
+          <tr>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              National Industrial Inspection And Training
+            </td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.customer)}</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.client)}</td>
+          </tr>
+          <tr>
+            <td>Name: {v(inspector.name) || "-"}</td>
+            <td>Name: {v(jd.customerRepresentative) || "-"}</td>
+            <td>Name: {v(jd.clientRepresentative) || "-"}</td>
+          </tr>
+          <tr>
+            <td>{v(inspector.designation) || "UT NDE Level II"}</td>
+            <td>Designation: {v(jd.customerDesignation) || "-"}</td>
+            <td>Designation: {v(jd.clientDesignation) || "-"}</td>
+          </tr>
+          <tr>
+            <td style={{ height: "60px" }}>Signature:</td>
+            <td style={{ height: "60px" }}>Signature:</td>
+            <td style={{ height: "60px" }}>Signature:</td>
+          </tr>
+          <tr>
+            <td>Date: {fmtDate(jd.reportDate)}</td>
+            <td>Date: {fmtDate(jd.reportDate)}</td>
+            <td>Date: {fmtDate(jd.reportDate)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+
+  const renderObsTable = (data: any[], title: string) => (
+    <table className="obs-table mt-n1">
+      <colgroup>
+        <col style={{ width: "35px" }} />
+        <col style={{ width: "22%" }} />
+        <col style={{ width: "16%" }} />
+        <col style={{ width: "13%" }} />
+        <col style={{ width: "8%" }} />
+        <col style={{ width: "26%" }} />
+        <col style={{ width: "10%" }} />
+      </colgroup>
+      <thead style={{ display: "table-header-group" }}>
+        <tr>
+          <td colSpan={7} className="section-hdr">
+            {title}
+          </td>
+        </tr>
+        <tr>
+          <td className="col-hdr">Sr.</td>
+          <td className="col-hdr">Job Description</td>
+          <td className="col-hdr">Drg No. / Joint No.</td>
+          <td className="col-hdr">Size</td>
+          <td className="col-hdr">Qty</td>
+          <td className="col-hdr">Interpretation</td>
+          <td className="col-hdr">Evaluation</td>
+        </tr>
+      </thead>
+      <tbody>
+        {data.length === 0 ? (
+          <tr>
+            <td
+              colSpan={7}
+              style={{
+                textAlign: "center",
+                padding: "6px",
+                fontSize: "11px",
+                color: "#999",
+              }}
+            >
+              No observations recorded.
+            </td>
+          </tr>
+        ) : (
+          data.map((o, i) => (
+            <tr key={i}>
+              <td>{o.srNo}</td>
+              <td>{v(o.jobDescription)}</td>
+              <td>{v(o.drawingOrJointNo)}</td>
+              <td>{v(o.size)}</td>
+              <td>{o.quantity ?? ""}</td>
+              <td>{v(o.interpretation)}</td>
+              <td>{v(o.evaluation || o.remark || o.result)}</td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  );
+
+
+
   const ReportFooter = () => (
     <>
       <div className="footer">
@@ -399,76 +513,13 @@ export const UTReportPrintPage: React.FC = () => {
                   </td>
                 </tr>
               </thead>
-              <tfoot style={{ display: "table-footer-group" }}>
-                <tr>
-                  <td style={{ padding: 0 }}>
-                    <div className="report-footer-wrap">
-                      <table className="sign-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "33.3%" }} />
-                          <col style={{ width: "33.3%" }} />
-                          <col style={{ width: "33.4%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              EXAMINED BY
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CUSTOMER:
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CLIENT :
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              National Industrial Inspection And Training
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              {v(jd.customer)}
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              {v(jd.client)}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Name: {v(inspector.name) || "-"}</td>
-                            <td>Name: {v(jd.customerRepresentative) || "-"}</td>
-                            <td>Name: {v(jd.clientRepresentative) || "-"}</td>
-                          </tr>
-                          <tr>
-                            <td>{v(inspector.designation) || "UT NDE Level II"}</td>
-                            <td>Designation: {v(jd.customerDesignation) || "-"}</td>
-                            <td>Designation: {v(jd.clientDesignation) || "-"}</td>
-                          </tr>
-                          <tr>
-                            <td style={{ height: "60px" }}>Signature:</td>
-                            <td style={{ height: "60px" }}>Signature:</td>
-                            <td style={{ height: "60px" }}>Signature:</td>
-                          </tr>
-                          <tr>
-                            <td>Date: {fmtDate(jd.reportDate)}</td>
-                            <td>Date: {fmtDate(jd.reportDate)}</td>
-                            <td>Date: {fmtDate(jd.reportDate)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <div
-                      className="tfoot-spacer"
-                      style={{ height: "15mm" }}
-                    ></div>
-                  </td>
-                </tr>
-              </tfoot>
               <tbody style={{ display: "table-row-group" }}>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
                     <div className="report-body">
                       <div className="rpt-title">Ultrasonic Testing Report</div>
 
-                      {/* â"€â"€ JOB DETAILS â"€â"€ */}
+                      {/* --- 1. JOB DETAILS --- */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "18%" }} />
@@ -531,12 +582,14 @@ export const UTReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="lbl">Type of Joint</td>
-                            <td colSpan={3} className="val">{v(jd.typeOfJoint)}</td>
+                            <td colSpan={3} className="val">
+                              {v(jd.typeOfJoint)}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
 
-                      {/* ——— EQUIPMENT DETAILS ——— */}
+                      {/* --- 2. EQUIPMENT DETAILS --- */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "15%" }} />
@@ -562,7 +615,9 @@ export const UTReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="lbl">Calibration Due</td>
-                            <td className="val">{fmtDate(eq.calibrationDue)}</td>
+                            <td className="val">
+                              {fmtDate(eq.calibrationDue)}
+                            </td>
                             <td className="lbl">Couplant</td>
                             <td className="val">{v(eq.couplant)}</td>
                             <td className="lbl">Basic Calibration Block</td>
@@ -573,7 +628,7 @@ export const UTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* â"€â"€ SEARCH UNIT DETAILS â"€â"€ */}
+                      {/* --- 3. SEARCH UNIT DETAILS --- */}
                       <table className="report-table mt-n1">
                         <tbody>
                           <tr>
@@ -630,7 +685,7 @@ export const UTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* â"€â"€ TECHNIQUE DETAILS â"€â"€ */}
+                      {/* --- 4. TECHNIQUE DETAILS --- */}
                       <table className="report-table mt-n1">
                         <colgroup>
                           <col style={{ width: "22%" }} />
@@ -705,8 +760,8 @@ export const UTReportPrintPage: React.FC = () => {
                                   {v(
                                     (
                                       a.data as
-                                      | Record<string, string>
-                                      | undefined
+                                        | Record<string, string>
+                                        | undefined
                                     )?.[row.key],
                                   )}
                                 </td>
@@ -716,66 +771,18 @@ export const UTReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      <div style={obs.length > 5 ? { pageBreakBefore: "always" } : {}}>
-                        <table className="obs-table mt-n1">
-                          <colgroup>
-                            <col style={{ width: "35px" }} />
-                            <col style={{ width: "22%" }} />
-                            <col style={{ width: "16%" }} />
-                            <col style={{ width: "13%" }} />
-                            <col style={{ width: "8%" }} />
-                            <col style={{ width: "26%" }} />
-                            <col style={{ width: "10%" }} />
-                          </colgroup>
-                          <thead style={{ display: "table-header-group" }}>
-                            <tr>
-                              <td colSpan={7} className="section-hdr">
-                                6. OBSERVATIONS
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="col-hdr">Sr.</td>
-                              <td className="col-hdr">Job Description</td>
-                              <td className="col-hdr">Drg No. / Joint No.</td>
-                              <td className="col-hdr">Size</td>
-                              <td className="col-hdr">Qty</td>
-                              <td className="col-hdr">Interpretation</td>
-                              <td className="col-hdr">Evaluation</td>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {obs.length === 0 ? (
-                              <tr>
-                                <td
-                                  colSpan={7}
-                                  style={{
-                                    textAlign: "center",
-                                    padding: "6px",
-                                    fontSize: "11px",
-                                    color: "#999",
-                                  }}
-                                >
-                                  No observations recorded.
-                                </td>
-                              </tr>
-                            ) : (
-                              obs.map((o, i) => (
-                                <tr key={i}>
-                                  <td>{o.srNo}</td>
-                                  <td>{v(o.jobDescription)}</td>
-                                  <td>{v(o.drawingOrJointNo)}</td>
-                                  <td>{v(o.size)}</td>
-                                  <td>{o.quantity ?? ""}</td>
-                                  <td>{v(o.interpretation)}</td>
-                                  <td>{v(o.evaluation || o.remark || o.result)}</td>
-                                </tr>
-                              ))
-                            )}
-                          </tbody>
-                        </table>
+                      <div className="print-only">
+                        {renderSignatures()}
+                        <div className="page-break">
+                          {renderObsTable(obs, "6. OBSERVATIONS")}
+                          {renderSignatures()}
+                        </div>
                       </div>
 
-                      {/* --- SIGNATURES MOVED TO TFOOT --- */}
+                      <div className="no-print-screen">
+                        {renderObsTable(obs, "6. OBSERVATIONS")}
+                        {renderSignatures()}
+                      </div>
                     </div>
                   </td>
                 </tr>
