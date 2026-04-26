@@ -103,7 +103,7 @@ const PRINT_STYLES = `
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
   .report-table td, .report-table th { border: 1px solid #444; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; white-space: nowrap; width: 22%; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; white-space: nowrap; width: 22%; text-align: left; }
   .val { font-size: 11px; color: #000; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
@@ -119,8 +119,8 @@ const PRINT_STYLES = `
   .sign-table td:first-child { border-left: none; }
   .sign-table td:last-child { border-right: none; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #444; }
-  .calib-table td, .calib-table th { border: 1px solid #444; padding: 3px; font-size: 10px; text-align: left; vertical-align: middle; }
-  .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
+  .calib-table td, .calib-table th { border: 1px solid #444; padding: 3px; font-size: 10px; text-align: center; vertical-align: middle; }
+  .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; text-align: center; }
   .footer { background: #f8fafc; padding: 4px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -401,11 +401,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           <col style={{ width: "36%" }} />
                         </colgroup>
                         <tbody>
-                          <tr>
-                            <td colSpan={3} className="section-hdr">
-                              1. JOB DETAILS
-                            </td>
-                          </tr>
+
                           <tr>
                             <td colSpan={3} style={{ padding: 0 }}>
                               <div style={{ display: "flex" }}>
@@ -468,7 +464,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       <table className="report-table mt-n1">
                         <tbody>
                           <tr>
-                            <td className="section-hdr" colSpan={6}>2. ANGLE PROBE CALIBRATION</td>
+                            <td className="section-hdr" colSpan={6}>1. ANGLE PROBE CALIBRATION</td>
                           </tr>
                           <tr>
                             <td className="lbl" style={{ width: "12%" }}>Frequency</td>
@@ -540,7 +536,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       <table className="report-table mt-n1">
                         <tbody>
                           <tr>
-                            <td className="section-hdr" colSpan={4}>3. NORMAL PROBE CALIBRATION</td>
+                            <td className="section-hdr" colSpan={4}>2. NORMAL PROBE CALIBRATION</td>
                           </tr>
                           <tr>
                             <td className="lbl">Probe S. No / Type</td>
@@ -568,7 +564,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                         <table className="report-table mt-n1">
                           <tbody>
                             <tr>
-                              <td className="section-hdr" colSpan={2}>4. DISPOSITION & CONCLUSION</td>
+                              <td className="section-hdr" colSpan={2}>3. DISPOSITION & CONCLUSION</td>
                             </tr>
                             <tr>
                               <td className="lbl" style={{ width: "20%" }}>Disposition</td>
