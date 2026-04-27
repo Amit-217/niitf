@@ -417,7 +417,8 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="val">Surface Condition: <strong>{v(report.surfaceCondition)}</strong></td>
-                            <td className="val" colSpan={2}>Customer: <strong>{v(report.customer)}</strong></td>
+                            <td className="val">Customer: <strong>{v(report.customer)}</strong></td>
+                            <td className="val">Period: <strong>{v(report.periodOfInspection)}</strong></td>
                           </tr>
                           <tr>
                             <td className="val" style={{ padding: 0 }}>

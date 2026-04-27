@@ -128,8 +128,11 @@ export const UTGReportFormPage: React.FC = () => {
   const [jobClient, setJobClient] = useState("");
   const [jobReportDate, setJobReportDate] = useState("");
   const [jobProject, setJobProject] = useState("");
+  const [jobInspectionDate, setJobInspectionDate] = useState("");
+  const [jobInspectionEndDate, setJobInspectionEndDate] = useState("");
   const [jobRefStd, setJobRefStd] = useState("");
   const [jobRefStdOther, setJobRefStdOther] = useState("");
+  const [jobInspectionTime, setJobInspectionTime] = useState("");
   const [jobAcceptanceCriteria, setJobAcceptanceCriteria] = useState("");
   const [jobAcceptanceCriteriaOther, setJobAcceptanceCriteriaOther] =
     useState("");
@@ -185,14 +188,17 @@ export const UTGReportFormPage: React.FC = () => {
   const [inspectorName, setInspectorName] = useState("");
   const [inspectorQual, setInspectorQual] = useState("UTG NDE Level II");
   const [inspectorSig, setInspectorSig] = useState("");
+  const [inspectorIdNo, setInspectorIdNo] = useState("");
   const [inspectorDate, setInspectorDate] = useState("");
   const [custName, setCustName] = useState("");
   const [custDesig, setCustDesig] = useState("");
   const [custSig, setCustSig] = useState("");
+  const [custIdNo, setCustIdNo] = useState("");
   const [custDate, setCustDate] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientDesig, setClientDesig] = useState("");
   const [clientSig, setClientSig] = useState("");
+  const [clientIdNo, setClientIdNo] = useState("");
   const [clientDate, setClientDate] = useState("");
 
   // ── Helpers ──
@@ -255,6 +261,8 @@ export const UTGReportFormPage: React.FC = () => {
         setJobClient(jd.client ?? "");
         setJobReportDate(toDate(jd.reportDate));
         setJobProject(jd.project ?? "");
+        setJobInspectionDate(toDate(jd.inspectionDate));
+        setJobInspectionEndDate(toDate(jd.inspectionEndDate));
         const [refStd, refStdO] = fromOther(jd.referenceStd, [
           "ASME Sec V Article 4",
           "ASME Sec V Article 5",
@@ -262,6 +270,7 @@ export const UTGReportFormPage: React.FC = () => {
         ]);
         setJobRefStd(refStd);
         setJobRefStdOther(refStdO);
+        setJobInspectionTime(jd.inspectionTime ?? "");
         const [acc, accO] = fromOther(jd.acceptanceCriteria, [
           "ASME SEC VIII Appendix 4",
           "ASME SEC VIII Appendix 12",
@@ -402,16 +411,19 @@ export const UTGReportFormPage: React.FC = () => {
         setInspectorName(insp.name ?? "");
         setInspectorQual(insp.qualification || "UT NDE Level II");
         setInspectorSig(insp.signature ?? "");
+        setInspectorIdNo(insp.idNo ?? "");
         setInspectorDate(toDate(insp.date));
         const cust = fs.customer ?? {};
         setCustName(cust.name ?? "");
         setCustDesig(cust.designation ?? "");
         setCustSig(cust.signature ?? "");
+        setCustIdNo(cust.idNo ?? "");
         setCustDate(toDate(cust.date));
         const clientRep = fs.clientOrTPI ?? {};
         setClientName(clientRep.name ?? "");
         setClientDesig(clientRep.designation ?? "");
         setClientSig(clientRep.signature ?? "");
+        setClientIdNo(clientRep.idNo ?? "");
         setClientDate(toDate(clientRep.date));
       })
       .catch(() => toast.error("Failed to load report."));
@@ -435,7 +447,10 @@ export const UTGReportFormPage: React.FC = () => {
           client: jobClient,
           reportDate: jobReportDate || undefined,
           project: jobProject,
+          inspectionDate: jobInspectionDate || undefined,
+          inspectionEndDate: jobInspectionEndDate || undefined,
           referenceStd: resolve(jobRefStd, jobRefStdOther),
+          inspectionTime: jobInspectionTime,
           acceptanceCriteria: resolve(
             jobAcceptanceCriteria,
             jobAcceptanceCriteriaOther,
@@ -486,6 +501,7 @@ export const UTGReportFormPage: React.FC = () => {
               name: inspectorName,
               qualification: inspectorQual,
               signature: inspectorSig,
+              idNo: inspectorIdNo,
               date: inspectorDate || undefined,
             },
           ],
@@ -493,12 +509,14 @@ export const UTGReportFormPage: React.FC = () => {
             name: custName,
             designation: custDesig,
             signature: custSig,
+            idNo: custIdNo,
             date: custDate || undefined,
           },
           clientOrTPI: {
             name: clientName,
             designation: clientDesig,
             signature: clientSig,
+            idNo: clientIdNo,
             date: clientDate || undefined,
           },
         },
@@ -619,6 +637,24 @@ export const UTGReportFormPage: React.FC = () => {
             />
           </div>
           <div>
+            <label className={labelClass}>Inspection Start Date</label>
+            <input
+              type="date"
+              value={jobInspectionDate}
+              onChange={(e) => setJobInspectionDate(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Inspection End Date</label>
+            <input
+              type="date"
+              value={jobInspectionEndDate}
+              onChange={(e) => setJobInspectionEndDate(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
             <label className={labelClass}>Reference Std.</label>
             <SelectWithOther
               value={jobRefStd}
@@ -632,7 +668,16 @@ export const UTGReportFormPage: React.FC = () => {
               ]}
             />
           </div>
-
+          <div>
+            <label className={labelClass}>Inspection Time</label>
+            <input
+              type="text"
+              value={jobInspectionTime}
+              onChange={(e) => setJobInspectionTime(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. 02:00 PM to 05:00 PM"
+            />
+          </div>
           <div>
             <label className={labelClass}>Acceptance Criteria</label>
             <SelectWithOther

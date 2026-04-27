@@ -445,8 +445,23 @@ export const TPIIVRReportPrintPage: React.FC = () => {
 
                           <tr>
                             <td className="lbl">I.R No:</td>
-                            <td className="val" style={{ fontWeight: 600 }} colSpan={4}>
+                            <td className="val" style={{ fontWeight: 600 }}>
                               {v(report.irNo)}
+                            </td>
+                            <td
+                              className="val"
+                              style={{ fontWeight: 600, textAlign: "center" }}
+                            >
+                              <span
+                                style={{ fontSize: "10px", fontWeight: 600 }}
+                              >
+                                IR Rev.:{" "}
+                              </span>
+                              {v(report.irRev)}
+                            </td>
+                            <td className="lbl">Dt. of Inspection</td>
+                            <td className="val" style={{ fontWeight: 600 }}>
+                              {fmtDate(report.dtOfInspection)}
                             </td>
                           </tr>
                         </tbody>
