@@ -175,6 +175,7 @@ export const TPIIVRFormPage: React.FC = () => {
   // ── Inspection Activities & Conclusion ──
   const [inspectionActivities, setInspectionActivities] = useState("");
   const [conclusion, setConclusion] = useState("");
+  const [conclusionOther, setConclusionOther] = useState("");
 
   // ── Reference Documents ──
   const [refDocs, setRefDocs] = useState<RefDocRow[]>([emptyRefDoc()]);
@@ -280,7 +281,16 @@ export const TPIIVRFormPage: React.FC = () => {
           );
         }
         setInspectionActivities(r.inspectionActivities ?? "");
-        setConclusion(r.conclusion ?? "");
+        const conclusionOpts = [
+          "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+          "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+          "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+          "Other",
+        ];
+        const [con, conO] = fromOther(r.conclusion ?? "", conclusionOpts);
+        setConclusion(con);
+        setConclusionOther(conO);
         setRefDocs(
           r.referenceDocuments?.length ? r.referenceDocuments : [emptyRefDoc()],
         );
@@ -387,7 +397,7 @@ export const TPIIVRFormPage: React.FC = () => {
             inspectionType: i.inspectionType,
           })),
         inspectionActivities,
-        conclusion: conclusion.trim(),
+        conclusion: resolve(conclusion, conclusionOther) || undefined,
         referenceDocuments: refDocs.map((d) => ({
           document: d.document,
           referenceNumber: d.referenceNumber,
@@ -931,12 +941,18 @@ export const TPIIVRFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Conclusion</label>
-            <textarea
+            <SelectWithOther
               value={conclusion}
-              onChange={(e) => setConclusion(e.target.value)}
-              rows={3}
-              className={inputClass}
-              placeholder="Enter conclusion here..."
+              onChange={setConclusion}
+              otherValue={conclusionOther}
+              onOtherChange={setConclusionOther}
+              options={[
+                "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+                "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+                "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+                "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+                "Other",
+              ]}
             />
           </div>
         </div>

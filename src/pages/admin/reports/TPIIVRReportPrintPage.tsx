@@ -823,6 +823,22 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           )}
                         </tbody>
                       </table>
+                      
+                      {/* ── CONCLUSION ── */}
+                      <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+                        <tbody>
+                          <tr>
+                            <td className="section-hdr">
+                              7. CONCLUSION
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="val" style={{ padding: "8px", minHeight: "40px" }}>
+                              {v(report.conclusion) || "-"}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                     {/* ── end report-body ── */}
                   </td>
