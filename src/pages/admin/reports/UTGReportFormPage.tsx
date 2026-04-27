@@ -181,7 +181,7 @@ export const UTGReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // ── Examined By ──
@@ -666,16 +666,6 @@ export const UTGReportFormPage: React.FC = () => {
                 "ASME Sec V Article 5",
                 "Other",
               ]}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Inspection Time</label>
-            <input
-              type="text"
-              value={jobInspectionTime}
-              onChange={(e) => setJobInspectionTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 02:00 PM to 05:00 PM"
             />
           </div>
           <div>

@@ -617,16 +617,6 @@ export const PTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection Time</label>
-            <input
-              type="text"
-              value={jobInspectionTime}
-              onChange={(e) => setJobInspectionTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 10:00 AM - 03:30 PM"
-            />
-          </div>
-          <div>
             <label className={labelClass}>Material</label>
             <input
               type="text"
@@ -1064,27 +1054,6 @@ export const PTReportFormPage: React.FC = () => {
               ))}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* ── Conclusion ── */}
-      <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Conclusion</h2>
-        <div>
-          <label className={labelClass}>Conclusion</label>
-          <SelectWithCustom
-            value={conclusion}
-            onChange={setConclusion}
-            customValue={conclusionCustom}
-            onCustomChange={setConclusionCustom}
-            options={[
-              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-              "Other",
-            ]}
-          />
         </div>
       </div>
 

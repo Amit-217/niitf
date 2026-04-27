@@ -194,7 +194,7 @@ export const UTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // Ã¢â€â‚¬Ã¢â€â‚¬ Final Section Ã¢â€â‚¬Ã¢â€â‚¬
@@ -674,16 +674,6 @@ export const UTReportFormPage: React.FC = () => {
                 "ASTM SA 388",
                 "Other",
               ]}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Inspection Time</label>
-            <input
-              type="text"
-              value={jobInspectionTime}
-              onChange={(e) => setJobInspectionTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 02:00 PM to 05:00 PM"
             />
           </div>
           <div>
@@ -1248,28 +1238,6 @@ export const UTReportFormPage: React.FC = () => {
               ))}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Examined By Ã¢â€â‚¬Ã¢â€â‚¬ */}
-      {/* -- Conclusion -- */}
-      <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Conclusion</h2>
-        <div>
-          <label className={labelClass}>Conclusion</label>
-          <SelectWithCustom
-            value={conclusion}
-            onChange={setConclusion}
-            customValue={conclusionCustom}
-            onCustomChange={setConclusionCustom}
-            options={[
-              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-              "Other",
-            ]}
-          />
         </div>
       </div>
 
