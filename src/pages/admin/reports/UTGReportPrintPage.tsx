@@ -264,10 +264,6 @@ export const UTGReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
-  const conclusionText =
-    v((report as unknown as { conclusion?: string }).conclusion) ||
-    "Examination completed as per applicable standards. No rejectable indications observed in inspected items.";
-
   // Pagination Logic: Max 14 rows total for (SUD + Obs) on Page 1
   const firstPageCapacity = 14;
   const sudCount = sud.length;
@@ -325,25 +321,7 @@ export const UTGReportPrintPage: React.FC = () => {
     </table>
   );
 
-  const renderConclusion = () => (
-    <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
-      <table className="report-table mt-n1">
-        <tbody>
-          <tr>
-            <td colSpan={2} className="section-hdr">
-              6. CONCLUSION
-            </td>
-          </tr>
-          <tr>
-            <td className="lbl" style={{ width: "22%" }}>
-              Overall Evaluation
-            </td>
-            <td className="val">{conclusionText}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
+
 
   const ReportFooter = () => (
     <>
@@ -730,12 +708,10 @@ export const UTGReportPrintPage: React.FC = () => {
                             <div className="page-break">
                               {renderObsTable(obsPage2, "5. OBSERVATIONS (Contd.)")}
                             </div>
-                            {renderConclusion()}
                             <Signatures />
                           </>
                         ) : (
                           <>
-                            {renderConclusion()}
                             <Signatures />
                           </>
                         )}
@@ -743,7 +719,6 @@ export const UTGReportPrintPage: React.FC = () => {
 
                       <div className="no-print-screen">
                         {renderObsTable(obs, "5. OBSERVATIONS")}
-                        {renderConclusion()}
                         <Signatures />
                       </div>
                     </div>
