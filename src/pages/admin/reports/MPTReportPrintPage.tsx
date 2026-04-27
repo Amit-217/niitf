@@ -41,9 +41,7 @@ const PRINT_STYLES = `
       bottom: 2mm !important;
       left: 5mm !important;
       right: 5mm !important;
-      border-left: 1px solid #444 !important;
-      border-right: 1px solid #444 !important;
-      border-bottom: 1px solid #444 !important;
+      border: none !important;
       background: #fff !important;
       z-index: 999999 !important;
       contain: layout !important;
@@ -52,14 +50,13 @@ const PRINT_STYLES = `
       will-change: transform;
     }
     .report-body {
-      border: 1px solid #444 !important;
+      border: none !important;
       border-bottom: none !important;
       overflow: visible !important;
     }
     tfoot { display: table-footer-group !important; }
     .report-footer-wrap {
-      border: 1px solid #444 !important;
-      border-top: none !important;
+      border: none !important;
     }
     .report-footer-wrap .sign-table.mt-n1 {
       margin-top: 0 !important;
@@ -104,7 +101,11 @@ const PRINT_STYLES = `
   .bw .lbl { color: #000 !important; background: #fff !important; }
   .bw .footer { background: #fff !important; color: #000 !important; }
   .bw .report-body { color: #000 !important; }
-  .bw .report-footer-wrap { }
+  .bw .report-footer-wrap {
+    border: 1px solid #888 !important;
+    border-radius: 0 0 6px 6px !important;
+    overflow: hidden !important;
+  }
 
   .print-only { display: none !important; }
   .no-print-screen { display: block; }
@@ -129,21 +130,18 @@ const PRINT_STYLES = `
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #444; padding: 2px 6px; font-size: 11px; vertical-align: top; }
-  .sign-table td:first-child { border-left: none; }
-  .sign-table td:last-child { border-right: none; }
   .mt-n1 { margin-top: -1px; }
   .std-tag { display: inline-block; background: #e7f1fb; color: #0c447c; font-size: 10px; padding: 2px 6px; border-radius: 0; margin-right: 4px; margin-bottom: 2px; font-weight: 700; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border-top: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .report-body { border-top: none; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
   .report-footer-wrap {
     border: 1px solid #444;
-    border-top: none;
     border-radius: 0 0 6px 6px;
     overflow: hidden;
-    margin-bottom: 2px;
+    margin-bottom: 0;
   }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
@@ -498,11 +496,9 @@ export const MPTReportPrintPage = () => {
                           <tr>
                             <td className="lbl">Reference Std.</td>
                             <td className="val">
-                              {standards.length > 0 ? (
-                                standards.join(", ")
-                              ) : (
-                                "Not specified"
-                              )}
+                              {standards.length > 0
+                                ? standards.join(", ")
+                                : "Not specified"}
                             </td>
                             <td className="lbl">Inspection Date</td>
                             <td className="val">
@@ -515,11 +511,9 @@ export const MPTReportPrintPage = () => {
                           <tr>
                             <td className="lbl">Acceptance Criteria</td>
                             <td className="val">
-                              {acceptance.length > 0 ? (
-                                acceptance.join(", ")
-                              ) : (
-                                "Not specified"
-                              )}
+                              {acceptance.length > 0
+                                ? acceptance.join(", ")
+                                : "Not specified"}
                             </td>
                             <td className="lbl">Material</td>
                             <td className="val">{v(jd.material) || "-"}</td>
@@ -538,13 +532,17 @@ export const MPTReportPrintPage = () => {
                               {v(jd.extentOfExamination) || "-"}
                             </td>
                             <td className="lbl">Surface condition</td>
-                            <td className="val">{v(jd.surfaceCondition) || "-"}</td>
+                            <td className="val">
+                              {v(jd.surfaceCondition) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Type of Joint</td>
                             <td className="val">{v(jd.typeOfJoint) || "-"}</td>
                             <td className="lbl">Welding Process</td>
-                            <td className="val">{v(jd.weldingProcess) || "-"}</td>
+                            <td className="val">
+                              {v(jd.weldingProcess) || "-"}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -657,25 +655,39 @@ export const MPTReportPrintPage = () => {
                             <td className="lbl">Method</td>
                             <td className="val">{v(me.method) || "-"}</td>
                             <td className="lbl">Light Intensity</td>
-                            <td className="val">{v(me.lightIntensity) || "-"}</td>
+                            <td className="val">
+                              {v(me.lightIntensity) || "-"}
+                            </td>
                             <td className="lbl">Magnetization Type</td>
-                            <td className="val">{v(me.magnetizationType) || "-"}</td>
+                            <td className="val">
+                              {v(me.magnetizationType) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Magnetizing Method</td>
-                            <td className="val">{v(me.magnetizingMethod) || "-"}</td>
+                            <td className="val">
+                              {v(me.magnetizingMethod) || "-"}
+                            </td>
                             <td className="lbl">Light Equip. Used</td>
-                            <td className="val">{v(me.lightEquipmentUsed) || "-"}</td>
+                            <td className="val">
+                              {v(me.lightEquipmentUsed) || "-"}
+                            </td>
                             <td className="lbl">Bath Concentration</td>
-                            <td className="val">{v(me.bathConcentration) || "-"}</td>
+                            <td className="val">
+                              {v(me.bathConcentration) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Demagnetization</td>
-                            <td className="val">{v(me.demagnetization) || "-"}</td>
+                            <td className="val">
+                              {v(me.demagnetization) || "-"}
+                            </td>
                             <td className="lbl">Post Cleaning</td>
                             <td className="val">{v(me.postCleaning) || "-"}</td>
                             <td className="lbl">Gauss Meter Reading</td>
-                            <td className="val">{v(me.gaussMeterReading) || "-"}</td>
+                            <td className="val">
+                              {v(me.gaussMeterReading) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Current</td>
@@ -683,7 +695,9 @@ export const MPTReportPrintPage = () => {
                             <td className="lbl">Current Type</td>
                             <td className="val">{v(me.currentType) || "-"}</td>
                             <td className="lbl">Verified by</td>
-                            <td className="val">{v(me.magneticFieldDirectionVerifiedBy) || "-"}</td>
+                            <td className="val">
+                              {v(me.magneticFieldDirectionVerifiedBy) || "-"}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -703,24 +717,77 @@ export const MPTReportPrintPage = () => {
                               </colgroup>
                               <tbody>
                                 <tr>
-                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
-                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER:</td>
-                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT :</td>
+                                  <td
+                                    style={{
+                                      fontWeight: 600,
+                                      fontSize: "11px",
+                                    }}
+                                  >
+                                    EXAMINED BY
+                                  </td>
+                                  <td
+                                    style={{
+                                      fontWeight: 600,
+                                      fontSize: "11px",
+                                    }}
+                                  >
+                                    CUSTOMER:
+                                  </td>
+                                  <td
+                                    style={{
+                                      fontWeight: 600,
+                                      fontSize: "11px",
+                                    }}
+                                  >
+                                    CLIENT :
+                                  </td>
                                 </tr>
                                 <tr>
-                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>National Industrial Inspection And Training</td>
-                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.customer)}</td>
-                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.client)}</td>
+                                  <td
+                                    style={{
+                                      fontWeight: 600,
+                                      fontSize: "11px",
+                                    }}
+                                  >
+                                    National Industrial Inspection And Training
+                                  </td>
+                                  <td
+                                    style={{
+                                      fontWeight: 600,
+                                      fontSize: "11px",
+                                    }}
+                                  >
+                                    {v(jd.customer)}
+                                  </td>
+                                  <td
+                                    style={{
+                                      fontWeight: 600,
+                                      fontSize: "11px",
+                                    }}
+                                  >
+                                    {v(jd.client)}
+                                  </td>
                                 </tr>
                                 <tr>
                                   <td>Name: {v(inspectors[0]?.name) || "-"}</td>
                                   <td>Name: {v(fs.customer?.name) || "-"}</td>
-                                  <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
+                                  <td>
+                                    Name: {v(fs.clientOrTPI?.name) || "-"}
+                                  </td>
                                 </tr>
                                 <tr>
-                                  <td>{v(inspectors[0]?.qualification) || "MT NDE Level II"}</td>
-                                  <td>Designation: {v(fs.customer?.designation) || "-"}</td>
-                                  <td>Designation: {v(fs.clientOrTPI?.designation) || "-"}</td>
+                                  <td>
+                                    {v(inspectors[0]?.qualification) ||
+                                      "MT NDE Level II"}
+                                  </td>
+                                  <td>
+                                    Designation:{" "}
+                                    {v(fs.customer?.designation) || "-"}
+                                  </td>
+                                  <td>
+                                    Designation:{" "}
+                                    {v(fs.clientOrTPI?.designation) || "-"}
+                                  </td>
                                 </tr>
                                 <tr>
                                   <td style={{ height: "60px" }}>Signature:</td>
@@ -728,9 +795,15 @@ export const MPTReportPrintPage = () => {
                                   <td>Signature:</td>
                                 </tr>
                                 <tr>
-                                  <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
-                                  <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
-                                  <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
+                                  <td>
+                                    Date: {fmtDate(inspectors[0]?.date) || "-"}
+                                  </td>
+                                  <td>
+                                    Date: {fmtDate(fs.customer?.date) || "-"}
+                                  </td>
+                                  <td>
+                                    Date: {fmtDate(fs.clientOrTPI?.date) || "-"}
+                                  </td>
                                 </tr>
                               </tbody>
                             </table>
@@ -750,7 +823,9 @@ export const MPTReportPrintPage = () => {
                             </colgroup>
                             <thead>
                               <tr>
-                                <td colSpan={7} className="section-hdr">{title}</td>
+                                <td colSpan={7} className="section-hdr">
+                                  {title}
+                                </td>
                               </tr>
                               <tr>
                                 <td className="col-hdr">Sr.</td>
@@ -765,7 +840,15 @@ export const MPTReportPrintPage = () => {
                             <tbody>
                               {data.length === 0 ? (
                                 <tr>
-                                  <td colSpan={7} style={{ textAlign: "center", padding: "6px", fontSize: "11px", color: "#999" }}>
+                                  <td
+                                    colSpan={7}
+                                    style={{
+                                      textAlign: "center",
+                                      padding: "6px",
+                                      fontSize: "11px",
+                                      color: "#999",
+                                    }}
+                                  >
                                     No observations recorded.
                                   </td>
                                 </tr>
@@ -795,7 +878,10 @@ export const MPTReportPrintPage = () => {
 
                               {obsPage2.length > 0 && (
                                 <div style={{ pageBreakBefore: "always" }}>
-                                  {renderObsTable(obsPage2, "5. OBSERVATIONS (Contd.)")}
+                                  {renderObsTable(
+                                    obsPage2,
+                                    "5. OBSERVATIONS (Contd.)",
+                                  )}
                                   {renderSignatures()}
                                 </div>
                               )}
