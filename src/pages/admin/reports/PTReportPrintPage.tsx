@@ -95,7 +95,7 @@ const PRINT_STYLES = `
   .bw .logo-box { background: #fff !important; }
   .bw .section-hdr { background: #fff !important; color: #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border-color: #888 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
 
@@ -116,13 +116,13 @@ const PRINT_STYLES = `
   .bw .obs-table th { background: #fff !important; color: #000 !important; }
   .bw .sign-table td { border-color: #888 !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
-  .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
-  .bw .report-body { color: #000 !important; border-color: #000 !important; }
+  .bw .footer { background: #fff !important; color: #000 !important; border-color: #888 !important; }
+  .bw .report-body { color: #000 !important; border-color: #888 !important; }
   .rpt-title {
     background: #E6F1FB; text-align: center; padding: 5px;
     font-size: 16px; font-weight: 700; color: #0C447C;
     text-transform: uppercase; letter-spacing: 0.4px; 
-    border: 1px solid #444; border-top: none; border-radius: 6px 6px 0 0;
+    border: 1px solid #444; border-top: none; border-bottom: none; border-radius: 6px 6px 0 0;
   }
   .section-hdr {
     background: #185FA5; color: #fff; font-size: 13px; font-weight: 700;
