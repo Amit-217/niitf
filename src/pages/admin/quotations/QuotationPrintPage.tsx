@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { QRCodeSVG } from "qrcode.react";
 import {
   getTrainingQuotationById,
   getServiceQuotationById,
@@ -59,9 +58,8 @@ const PRINT_STYLES = `
   .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
   .hdr-center .sub { font-size: 11px; color: #374151; margin-top: 2px; line-height: 1.4; }
   .hdr-center .iso { font-size: 11px; color: #0C447C; font-weight: 700; margin-top: 2px; }
-  .q-foot { background: #f8fafc; padding: 6px 10px; font-size: 11px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .q-foot { background: #f8fafc; padding: 6px 10px; font-size: 11px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; text-align: center; }
   .footer-text-block { flex: 1; text-align: center; }
-  .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 10px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   .quotation-table th, .quotation-table td { border: 1px solid #000; padding: 5px 6px; font-size: 14px; }
@@ -197,8 +195,6 @@ export const QuotationPrintPage: React.FC = () => {
     return s;
   };
 
-  const qrUrl = `${window.location.origin}/admin/quotations/${type}/${id}/print`;
-
   const QuotationHeader = () => (
     <div className="rpt-header">
       <div className="logo-box">
@@ -226,9 +222,6 @@ export const QuotationPrintPage: React.FC = () => {
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
-        </div>
-        <div className="qr-wrap">
-          <QRCodeSVG value={qrUrl} size={48} />
         </div>
       </div>
       <div className="footer-meta">
