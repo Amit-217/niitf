@@ -147,15 +147,19 @@ const PRINT_STYLES = `
   .form-row:last-child { margin-bottom: 0; }
   .form-label { white-space: nowrap; font-size: 10px; font-weight: 600; }
   .form-val { flex: 1; border-bottom: 1px solid #555; min-width: 30px; font-size: 10px; padding-bottom: 1px; min-height: 13px; }
-  .cert-para { font-size: 11px; font-style: italic; color: #333; padding: 4px 6px; border: 1px solid #444; line-height: 1.4; break-inside: avoid; }
+  .cert-para { font-size: 11px; font-style: italic; color: #333; padding: 4px 6px; border: 1px solid #444; border-top: none; line-height: 1.4; break-inside: avoid; margin-bottom: -1px; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
   .sign-table td { border: 1px solid #444; padding: 2px 4px; font-size: 12px; vertical-align: top; }
+  .sign-table tr:first-child td { border-top: none; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
   .report-body { border-top: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
+  .sign-table tr td:first-child { border-left: none; }
+  .sign-table tr td:last-child { border-right: none; }
+  .sign-table tr:last-child td { border-bottom: none; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -489,11 +493,9 @@ export const AWSDReportPrintPage: React.FC = () => {
                 style={{
                   fontSize: "11px",
                   padding: "4px 6px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  gap: "8px",
                 }}
               >
+                <div style={{ display: "flex", justifyContent: "space-between", gap: "8px" }}>
                 <span>
                   Authorized by&nbsp;
                   <span
@@ -520,6 +522,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                     {fmtDate(cert.date)}
                   </span>
                 </span>
+                </div>
               </td>
             </tr>
           </tbody>
