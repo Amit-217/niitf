@@ -95,29 +95,29 @@ const PRINT_STYLES = `
   .bw .logo-box { background: #fff !important; }
   .bw .section-hdr { background: #fff !important; color: #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; border-color: #888 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
   .bw .accept-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .reject-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .neutral-badge { background: transparent !important; color: #000 !important; border: none !important; }
-  .bw .report-table td, .bw .report-table th { border-color: #888 !important; }
-  .bw .obs-table td, .bw .obs-table th { border-color: #888 !important; }
+  .bw .report-table td, .bw .report-table th { border-color: #000 !important; border-width: 1.2px !important; }
+  .bw .obs-table td, .bw .obs-table th { border-color: #000 !important; border-width: 1.2px !important; }
   .bw .obs-table th { background: #fff !important; color: #000 !important; }
-  .bw .sign-table td { border-color: #888 !important; }
+  .bw .sign-table td { border-color: #000 !important; border-width: 1.2px !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
-  .bw .footer { background: #fff !important; color: #000 !important; border-color: #888 !important; }
-  .bw .report-body { color: #000 !important; border-color: #888 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 5px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #444; border-top: none; border-bottom: none; border-radius: 6px 6px 0 0; }
+  .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
+  .bw .report-body { color: #000 !important; border-color: #000 !important; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 5px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1.2px solid #000; border-top: none; border-bottom: none; border-radius: 6px 6px 0 0; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 14px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: center !important; }
-  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
-  .report-table td, .report-table th { border: 1px solid #444; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
+  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1.2px solid #000; }
+  .report-table td, .report-table th { border: 1.2px solid #000; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center !important; color: #0C447C; overflow: hidden; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
   .val { font-size: 11px; color: #000; }
-  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #444; }
-  .obs-table td, .obs-table th { border: 1px solid #444; padding: 2px 3px; font-size: 10px; vertical-align: middle; text-align: center !important; word-break: break-word; }
+  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1.2px solid #000; }
+  .obs-table td, .obs-table th { border: 1.2px solid #000; padding: 2px 3px; font-size: 10px; vertical-align: middle; text-align: center !important; word-break: break-word; }
   .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 11px; font-weight: 700; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .obs-table .vcell {
@@ -143,21 +143,21 @@ const PRINT_STYLES = `
     height: 100%;
     width: 100%;
   }
-  .form-block { border: 1px solid #888; border-bottom: none; padding: 5px 8px; font-size: 10px; }
+  .form-block { border: 1px solid #000; border-bottom: none; padding: 5px 8px; font-size: 10px; }
   .form-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px; }
   .form-row:last-child { margin-bottom: 0; }
   .form-label { white-space: nowrap; font-size: 10px; font-weight: 600; }
   .form-val { flex: 1; border-bottom: 1px solid #555; min-width: 30px; font-size: 10px; padding-bottom: 1px; min-height: 13px; }
-  .cert-para { font-size: 11px; font-style: italic; color: #333; padding: 4px 6px; border: 1px solid #444; border-top: none; line-height: 1.4; break-inside: avoid; margin-bottom: -1px; }
+  .cert-para { font-size: 11px; font-style: italic; color: #333; padding: 4px 6px; border: 1.2px solid #000; border-top: none; line-height: 1.4; break-inside: avoid; margin-bottom: -1px; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #444; padding: 2px 4px; font-size: 12px; vertical-align: top; }
+  .sign-table td { border: 1.2px solid #000; padding: 2px 4px; font-size: 12px; vertical-align: top; }
   .sign-table tr:first-child td { border-top: none; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border-top: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
+  .report-body { border-top: 1.2px solid #000; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1.2px solid #000; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
   .sign-table tr td:first-child { border-left: none; }
   .sign-table tr td:last-child { border-right: none; }
   .sign-table tr:last-child td { border-bottom: none; }
@@ -497,32 +497,32 @@ export const AWSDReportPrintPage: React.FC = () => {
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", gap: "8px" }}>
-                <span>
-                  Authorized by&nbsp;
-                  <span
-                    style={{
-                      display: "inline-block",
-                      minWidth: "80px",
-                      borderBottom: "1px solid #555",
-                      verticalAlign: "bottom",
-                    }}
-                  >
-                    {v(cert.authorizedBy)}
+                  <span>
+                    Authorized by&nbsp;
+                    <span
+                      style={{
+                        display: "inline-block",
+                        minWidth: "80px",
+                        borderBottom: "1px solid #555",
+                        verticalAlign: "bottom",
+                      }}
+                    >
+                      {v(cert.authorizedBy)}
+                    </span>
                   </span>
-                </span>
-                <span>
-                  Date&nbsp;
-                  <span
-                    style={{
-                      display: "inline-block",
-                      minWidth: "60px",
-                      borderBottom: "1px solid #555",
-                      verticalAlign: "bottom",
-                    }}
-                  >
-                    {fmtDate(cert.date)}
+                  <span>
+                    Date&nbsp;
+                    <span
+                      style={{
+                        display: "inline-block",
+                        minWidth: "60px",
+                        borderBottom: "1px solid #555",
+                        verticalAlign: "bottom",
+                      }}
+                    >
+                      {fmtDate(cert.date)}
+                    </span>
                   </span>
-                </span>
                 </div>
               </td>
             </tr>
@@ -825,7 +825,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                               className="obs-table"
                               style={{
                                 borderTop:
-                                  chunkIdx > 0 ? "1px solid #444" : "none",
+                                  chunkIdx > 0 ? "1.2px solid #000" : "none",
                               }}
                             >
                               <ObsTableHeader />
@@ -835,8 +835,8 @@ export const AWSDReportPrintPage: React.FC = () => {
                                     chunkIdx === 0
                                       ? i
                                       : FIRST_PAGE_SIZE +
-                                        (chunkIdx - 1) * SUBSEQUENT_PAGE_SIZE +
-                                        i;
+                                      (chunkIdx - 1) * SUBSEQUENT_PAGE_SIZE +
+                                      i;
                                   return (
                                     <tr key={i} style={{ height: "24px" }}>
                                       <td>{v(o.lineNo || globalIdx + 1)}</td>
@@ -899,7 +899,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                                       <td>
                                         {FIRST_PAGE_SIZE +
                                           (chunkIdx - 1) *
-                                            SUBSEQUENT_PAGE_SIZE +
+                                          SUBSEQUENT_PAGE_SIZE +
                                           chunk.length +
                                           i +
                                           1}

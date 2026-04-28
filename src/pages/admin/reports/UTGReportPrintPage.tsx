@@ -77,37 +77,37 @@ const PRINT_STYLES = `
   .bw .hdr-center .sub { color: #333 !important; }
   .bw .hdr-center .iso { color: #000 !important; }
   .bw .logo-box { background: #fff !important; }
-  .bw .section-hdr { background: #fff !important; color: #000 !important; border-bottom: 1px solid #444 !important; }
+  .bw .section-hdr { background: #fff !important; color: #000 !important; border-bottom: 1px solid #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1px solid #444 !important; border-top: none !important; border-radius: 6px 6px 0 0 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1px solid #000 !important; border-top: none !important; border-radius: 6px 6px 0 0 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
   .bw .accept-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .reject-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .neutral-badge { background: transparent !important; color: #000 !important; border: none !important; }
-  .bw .report-table td, .bw .report-table th { border-color: #444 !important; }
-  .bw .obs-table td, .bw .obs-table th { border-color: #444 !important; }
+  .bw .report-table td, .bw .report-table th { border-color: #000 !important; }
+  .bw .obs-table td, .bw .obs-table th { border-color: #000 !important; }
   .bw .obs-table th { background: #fff !important; color: #000 !important; }
-  .bw .sign-table td { border-color: #444 !important; }
+  .bw .sign-table td { border-color: #000 !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
-  .bw .footer { background: #fff !important; color: #000 !important; border-color: #444 !important; }
-  .bw .report-body { color: #000 !important; border-top: 1px solid #444 !important; border-left: none !important; border-right: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
-  .bw .report-footer-wrap { border: 1px solid #444 !important; border-top: none !important; border-radius: 0 0 6px 6px !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #444; border-top: none; border-radius: 6px 6px 0 0; }
+  .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
+  .bw .report-body { color: #000 !important; border-top: 1px solid #000 !important; border-left: none !important; border-right: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
+  .bw .report-footer-wrap { border: 1px solid #000 !important; border-top: none !important; border-radius: 0 0 6px 6px !important; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #000; border-top: none; border-radius: 6px 6px 0 0; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
-  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
-  .report-table td, .report-table th { border: 1px solid #444; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
+  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #000; }
+  .report-table td, .report-table th { border: 1px solid #000; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; white-space: nowrap; width: 22%; }
   .val { font-size: 11px; color: #000; }
-  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #444; }
-  .obs-table td, .obs-table th { border: 1px solid #444; padding: 3px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
+  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #000; }
+  .obs-table td, .obs-table th { border: 1px solid #000; padding: 3px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
   .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; text-align: left; }
   .obs-table th:first-child, .obs-table td:first-child { width: 28px; min-width: 28px; max-width: 28px; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #444; padding: 2px 4px; font-size: 11px; vertical-align: top; }
+  .sign-table td { border: 1px solid #000; padding: 2px 4px; font-size: 11px; vertical-align: top; }
   .sign-table td:first-child { border-left: none; }
   .sign-table td:last-child { border-right: none; }
   .mt-n1 { margin-top: -1px; }
@@ -115,8 +115,8 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border-top: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; }
+  .report-body { border-top: 1px solid #000; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #000; border-top: 1px solid #000; border-radius: 0 0 6px 6px; overflow: hidden; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
