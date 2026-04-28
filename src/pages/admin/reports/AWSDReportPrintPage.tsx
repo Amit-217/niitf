@@ -49,6 +49,7 @@ const PRINT_STYLES = `
     tfoot { display: table-footer-group; break-inside: avoid; page-break-inside: avoid; }
     table { page-break-inside: auto; }
     tr { page-break-inside: avoid; }
+    tfoot { display: table-footer-group !important; }
 
     .print-fixed-footer {
       position: fixed !important;
@@ -946,6 +947,16 @@ export const AWSDReportPrintPage: React.FC = () => {
                 );
               })()}
 
+              <tfoot style={{ display: "table-footer-group" }}>
+                <tr>
+                  <td style={{ padding: 0 }}>
+                    <div
+                      className="tfoot-spacer"
+                      style={{ height: "30mm" }}
+                    ></div>
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </div>
 
