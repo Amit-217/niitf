@@ -353,7 +353,7 @@ export const MPTReportPrintPage = () => {
         </div>
       </div>
       <div className="footer-meta">
-        Format No: <span>FMT-NDT-01</span>
+        Format No: <span>FMT-NDT-MPT-01</span>
         &nbsp;|&nbsp; Rev. No: <span>00</span>
         &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
       </div>
