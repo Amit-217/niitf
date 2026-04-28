@@ -102,11 +102,11 @@ const SKIPS: Array<{
   key: keyof Pick<ProbeModeFormData, "half" | "one" | "oneHalf" | "two">;
   label: string;
 }> = [
-  { key: "half", label: "½" },
-  { key: "one", label: "1" },
-  { key: "oneHalf", label: "1½" },
-  { key: "two", label: "2" },
-];
+    { key: "half", label: "½" },
+    { key: "one", label: "1" },
+    { key: "oneHalf", label: "1½" },
+    { key: "two", label: "2" },
+  ];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export const VSSCUTReportFormPage: React.FC = () => {
@@ -191,7 +191,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // ── Final Section ──
@@ -346,7 +346,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
         setNpScanningDb(npc.scanningDb ?? "");
         setDisposition(r.disposition ?? "");
         const [rm, rmC] = fromOther(r.evaluation ?? r.remarks, [
-          "RECORDABLE INDICATIONS WAS OBSERVED - REFER ANNEXURE– I",
+          "RECORDABLE INDICATIONS WAS OBSERVED - REFER ANNEXURE–I",
           "NO RECORDABLE INDICATIONS WAS OBSERVED",
           "Other",
         ]);
@@ -550,9 +550,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Job Details */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
             <label className={labelClass}>Job Description</label>
@@ -1150,15 +1148,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={inspectorIdNo}
-                  onChange={(e) => setInspectorIdNo(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
                 <label className={labelClass}>Date</label>
                 <input
                   type="date"
@@ -1188,15 +1177,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={qcIdNo}
-                  onChange={(e) => setQcIdNo(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
                 <label className={labelClass}>Date</label>
                 <input
                   type="date"
@@ -1222,15 +1202,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
                   type="text"
                   value={rqsName}
                   onChange={(e) => setRqsName(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={rqsIdNo}
-                  onChange={(e) => setRqsIdNo(e.target.value)}
                   className={inputClass}
                 />
               </div>

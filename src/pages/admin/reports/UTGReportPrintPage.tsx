@@ -27,7 +27,7 @@ const PRINT_STYLES = `
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
       width: 210mm !important; 
-      margin: 0 !important; padding: 0mm 5mm 15mm 5mm !important;
+      margin: 0 !important; padding: 0mm 5mm 35mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       page-break-after: auto !important;
       box-shadow: none !important;
@@ -39,7 +39,7 @@ const PRINT_STYLES = `
     .screen-sign-table { display: none !important; }
     .print-fixed-footer {
       position: fixed !important;
-      bottom: 5mm !important;
+      bottom: 2mm !important;
       left: 5mm !important;
       right: 5mm !important;
       background: #fff !important;
@@ -116,7 +116,7 @@ const PRINT_STYLES = `
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
   .report-body { border-top: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
+  .report-footer-wrap { border: 1px solid #444; border-top: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
@@ -129,6 +129,13 @@ const PRINT_STYLES = `
     .print-blank-row { display: none; }
     .print-fixed-footer { display: none; }
     .print-sign-table { display: none; }
+    .print-only { display: none !important; }
+    .no-print-screen { display: block; }
+  }
+  @media print {
+    .print-only { display: block !important; }
+    .no-print-screen { display: none !important; }
+    .page-break { page-break-before: always; }
   }
 `;
 
@@ -257,9 +264,64 @@ export const UTGReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
-  const conclusionText =
-    v((report as unknown as { conclusion?: string }).conclusion) ||
-    "Examination completed as per applicable standards. No rejectable indications observed in inspected items.";
+  // Pagination Logic: Max 14 rows total for (SUD + Obs) on Page 1
+  const firstPageCapacity = 14;
+  const sudCount = sud.length;
+  const obsLimit = Math.max(0, firstPageCapacity - sudCount);
+  const obsPage1 = obs.slice(0, obsLimit);
+  const obsPage2 = obs.slice(obsLimit);
+
+  const renderObsTable = (data: any[], title: string) => (
+    <table className="obs-table mt-n1">
+      <colgroup>
+        <col style={{ width: "5%" }} />
+        <col style={{ width: "15%" }} />
+        <col style={{ width: "60%" }} />
+        <col style={{ width: "10%" }} />
+      </colgroup>
+      <thead style={{ display: "table-header-group" }}>
+        <tr>
+          <td colSpan={4} className="section-hdr">
+            {title}
+          </td>
+        </tr>
+        <tr>
+          <th>Sr. No.</th>
+          <th>Item Name</th>
+          <th>Measured Thickness</th>
+          <th>Evaluation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.length === 0 && sudCount === 0 ? (
+          <tr>
+            <td
+              colSpan={4}
+              style={{
+                textAlign: "center",
+                padding: "6px",
+                fontSize: "11px",
+                color: "#999",
+              }}
+            >
+              No observations recorded.
+            </td>
+          </tr>
+        ) : (
+          data.map((o: any, i: number) => (
+            <tr key={i}>
+              <td>{v(o.srNo) || i + 1}</td>
+              <td>{v(o.itemName) || "-"}</td>
+              <td>{v(o.measuredThickness) || "-"}</td>
+              <td>{v(o.evaluation || o.remark || o.result) || "-"}</td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  );
+
+
 
   const ReportFooter = () => (
     <>
@@ -283,6 +345,57 @@ export const UTGReportPrintPage: React.FC = () => {
         &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
       </div>
     </>
+  );
+
+  const Signatures = () => (
+    <div className="report-footer-wrap">
+      <table className="sign-table mt-n1">
+        <colgroup>
+          <col style={{ width: "33.3%" }} />
+          <col style={{ width: "33.3%" }} />
+          <col style={{ width: "33.4%" }} />
+        </colgroup>
+        <tbody>
+          <tr>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER:</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT :</td>
+          </tr>
+          <tr>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              National Industrial Inspection And Training
+            </td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              {v(jd.customer)}
+            </td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.client)}</td>
+          </tr>
+          <tr>
+            <td>Name: {v(inspector.name) || "-"}</td>
+            <td>Name: {v(fs.customer?.name) || "-"}</td>
+            <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
+          </tr>
+          <tr>
+            <td>
+              {v(inspector.qualification) || "UT NDE Level II"}
+              {inspector.designation ? ` / ${inspector.designation}` : ""}
+            </td>
+            <td>Designation: {v(fs.customer?.designation) || "-"}</td>
+            <td>Designation: {v(fs.clientOrTPI?.designation) || "-"}</td>
+          </tr>
+          <tr>
+            <td style={{ height: 60 }}>Signature:</td>
+            <td style={{ height: 60 }}>Signature:</td>
+            <td style={{ height: 60 }}>Signature:</td>
+          </tr>
+          <tr>
+            <td>Date: {fmtDate(inspector.date) || "-"}</td>
+            <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
+            <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   );
 
   return (
@@ -384,82 +497,7 @@ export const UTGReportPrintPage: React.FC = () => {
                   </td>
                 </tr>
               </thead>
-              <tfoot style={{ display: "table-footer-group" }}>
-                <tr>
-                  <td style={{ padding: 0 }}>
-                    <div className="report-footer-wrap">
-                      <table className="sign-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "33.3%" }} />
-                          <col style={{ width: "33.3%" }} />
-                          <col style={{ width: "33.4%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              EXAMINED BY
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CUSTOMER:
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              CLIENT :
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              National Industrial Inspection And Training
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              {v(jd.customer)}
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              {v(jd.client)}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Name: {v(inspector.name) || "-"}</td>
-                            <td>Name: {v(fs.customer?.name) || "-"}</td>
-                            <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
-                          </tr>
-                          <tr>
-                            <td>
-                              {v(inspector.qualification) || "UT NDE Level II"}
-                              {inspector.designation
-                                ? ` / ${inspector.designation}`
-                                : ""}
-                            </td>
-                            <td>
-                              Designation: {v(fs.customer?.designation) || "-"}
-                            </td>
-                            <td>
-                              Designation:{" "}
-                              {v(fs.clientOrTPI?.designation) || "-"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ height: 60 }}>Signature:</td>
-                            <td style={{ height: 60 }}>Signature:</td>
-                            <td style={{ height: 60 }}>Signature:</td>
-                          </tr>
 
-                          <tr>
-                            <td>Date: {fmtDate(inspector.date) || "-"}</td>
-                            <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
-                            <td>
-                              Date: {fmtDate(fs.clientOrTPI?.date) || "-"}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <div
-                      className="tfoot-spacer"
-                      style={{ height: "28mm" }}
-                    ></div>
-                  </td>
-                </tr>
-              </tfoot>
               <tbody style={{ display: "table-row-group" }}>
                 <tr>
                   <td style={{ padding: 0, verticalAlign: "top" }}>
@@ -510,11 +548,7 @@ export const UTGReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="lbl">Reference Std.</td>
-                            <td className="val">{v(jd.referenceStd) || "-"}</td>
-                            <td className="lbl">Inspection Time</td>
-                            <td className="val">
-                              {v(jd.inspectionTime) || "-"}
-                            </td>
+                            <td className="val" colSpan={3}>{v(jd.referenceStd) || "-"}</td>
                           </tr>
                           <tr>
                             <td className="lbl">Acceptance Criteria</td>
@@ -664,91 +698,28 @@ export const UTGReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-                      {/* ── 5. OBSERVATIONS ── */}
-                      <table className="obs-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "5%" }} />
-                          <col style={{ width: "15%" }} />
-                          <col style={{ width: "60%" }} />
-                          <col style={{ width: "10%" }} />
-                        </colgroup>
-                        <thead style={{ display: "table-header-group" }}>
-                          <tr>
-                            <td colSpan={4} className="section-hdr">
-                              5. OBSERVATIONS
-                            </td>
-                          </tr>
-                          <tr>
-                            <th>Sr. No.</th>
-                            <th>Item Name</th>
-                            <th>Measured Thickness</th>
-                            <th>Evaluation</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {obs.length === 0 ? (
-                            <tr>
-                              <td
-                                colSpan={4}
-                                style={{
-                                  textAlign: "center",
-                                  padding: "6px",
-                                  fontSize: "11px",
-                                  color: "#999",
-                                }}
-                              >
-                                No observations recorded.
-                              </td>
-                            </tr>
-                          ) : (
-                            obs.map((o: any, i: number) => (
-                              <tr key={i}>
-                                <td>{v(o.srNo) || i + 1}</td>
-                                <td>{v(o.itemName) || "-"}</td>
-                                <td>{v(o.measuredThickness) || "-"}</td>
-                                <td>
-                                  {v(o.evaluation || o.remark || o.result) ||
-                                    "-"}
-                                </td>
-                              </tr>
-                            ))
-                          )}
-                          {[...Array(4)].map((_, i) => (
-                            <tr
-                              key={`empty-obs-${i}`}
-                              className="print-blank-row"
-                            >
-                              <td style={{ height: "24px" }}></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                      {/* ── 5. OBSERVATIONS (Print vs Screen split) ── */}
+                      <div className="print-only">
+                        {renderObsTable(obsPage1, "5. OBSERVATIONS")}
+                        <Signatures />
 
-                      {/* ── 6. CONCLUSION ── */}
-                      <div
-                        style={{
-                          breakInside: "avoid",
-                          pageBreakInside: "avoid",
-                        }}
-                      >
-                        <table className="report-table mt-n1">
-                          <tbody>
-                            <tr>
-                              <td colSpan={2} className="section-hdr">
-                                6. CONCLUSION
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="lbl" style={{ width: "22%" }}>
-                                Overall Evaluation
-                              </td>
-                              <td className="val">{conclusionText}</td>
-                            </tr>
-                          </tbody>
-                        </table>
+                        {obsPage2.length > 0 ? (
+                          <>
+                            <div className="page-break">
+                              {renderObsTable(obsPage2, "5. OBSERVATIONS (Contd.)")}
+                            </div>
+                            <Signatures />
+                          </>
+                        ) : (
+                          <>
+                            <Signatures />
+                          </>
+                        )}
+                      </div>
+
+                      <div className="no-print-screen">
+                        {renderObsTable(obs, "5. OBSERVATIONS")}
+                        <Signatures />
                       </div>
                     </div>
                     {/* ── end report-body ── */}

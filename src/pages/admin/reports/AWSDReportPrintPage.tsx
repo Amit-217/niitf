@@ -53,8 +53,8 @@ const PRINT_STYLES = `
     .print-fixed-footer {
       position: fixed !important;
       bottom: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
+      left: 5mm !important;
+      right: 5mm !important;
       height: 30mm !important;
       background: #fff !important;
       z-index: 9999 !important;
@@ -66,6 +66,11 @@ const PRINT_STYLES = `
     .report { overflow: visible !important; }
     .report-body { overflow: visible !important; }
     .report-footer-wrap { break-inside: avoid !important; page-break-inside: avoid !important; }
+    .print-only { display: block !important; }
+  }
+
+  @media screen {
+    .print-only { display: none !important; }
   }
 
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -81,7 +86,7 @@ const PRINT_STYLES = `
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
-  .bw .rpt-header { background: #fff !important; border-bottom: 1px solid #444 !important; }
+  .bw .rpt-header { background: #fff !important; }
   .bw .hdr-center { color: #000 !important; }
   .bw .hdr-center .org { color: #000 !important; }
   .bw .hdr-center .sub { color: #333 !important; }
@@ -89,7 +94,7 @@ const PRINT_STYLES = `
   .bw .logo-box { background: #fff !important; }
   .bw .section-hdr { background: #fff !important; color: #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border-color: #888 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
@@ -101,33 +106,43 @@ const PRINT_STYLES = `
   .bw .obs-table th { background: #fff !important; color: #000 !important; }
   .bw .sign-table td { border-color: #888 !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
-  .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
-  .bw .report-body { color: #000 !important; border-color: #000 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 5px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #444; border-top: none; border-radius: 6px 6px 0 0; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 14px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
+  .bw .footer { background: #fff !important; color: #000 !important; border-color: #888 !important; }
+  .bw .report-body { color: #000 !important; border-color: #888 !important; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 5px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #444; border-top: none; border-bottom: none; border-radius: 6px 6px 0 0; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 14px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: center !important; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
   .report-table td, .report-table th { border: 1px solid #444; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; overflow: hidden; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: center !important; color: #0C447C; overflow: hidden; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; width: 22%; }
   .val { font-size: 11px; color: #000; }
   .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #444; }
-  .obs-table td, .obs-table th { border: 1px solid #444; padding: 2px 3px; font-size: 10px; vertical-align: middle; text-align: left; word-break: break-word; }
+  .obs-table td, .obs-table th { border: 1px solid #444; padding: 2px 3px; font-size: 10px; vertical-align: middle; text-align: center !important; word-break: break-word; }
   .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 11px; font-weight: 700; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .obs-table .vcell {
     height: 92px;
-    padding: 0 2px;
+    padding: 0;
     overflow: hidden;
+    text-align: center !important;
+    vertical-align: middle !important;
   }
   .obs-table .vtext {
     display: inline-block;
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     white-space: nowrap;
-    line-height: 1;
+    line-height: 1.1;
     font-size: 11px;
+    text-align: center;
   }
-  .form-block { border: 1px solid #888; padding: 5px 8px; font-size: 10px; }
+  .vcell-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+  }
+  .form-block { border: 1px solid #888; border-bottom: none; padding: 5px 8px; font-size: 10px; }
   .form-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px; }
   .form-row:last-child { margin-bottom: 0; }
   .form-label { white-space: nowrap; font-size: 10px; font-weight: 600; }
@@ -202,7 +217,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       const trigger = async () => {
         try {
           await document.fonts.ready;
-        } catch (_) {}
+        } catch (_) { }
         requestAnimationFrame(() => {
           setTimeout(() => {
             window.print();
@@ -255,6 +270,276 @@ export const AWSDReportPrintPage: React.FC = () => {
   const qrUrl = `${window.location.origin}/reports/public/awsd/${id}`;
   const obs = report.observations ?? [];
   const cert = report.certification ?? {};
+
+  // Pagination logic
+  const FIRST_PAGE_SIZE = 17;
+  const SUBSEQUENT_PAGE_SIZE = 25;
+  const chunks: any[][] = [];
+
+  if (obs.length === 0) {
+    chunks.push([]);
+  } else {
+    // First chunk
+    chunks.push(obs.slice(0, FIRST_PAGE_SIZE));
+    // Subsequent chunks
+    for (let i = FIRST_PAGE_SIZE; i < obs.length; i += SUBSEQUENT_PAGE_SIZE) {
+      chunks.push(obs.slice(i, i + SUBSEQUENT_PAGE_SIZE));
+    }
+  }
+
+  const ObsTableHeader = () => (
+    <thead>
+      <tr>
+        <td
+          colSpan={16}
+          className="section-hdr"
+          style={{ textAlign: "center" }}
+        >
+          OBSERVATIONS
+        </td>
+      </tr>
+      {/* Header row 1: Group labels */}
+      <tr>
+        <td className="col-hdr vcell" rowSpan={3} style={{ width: "3.5%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext">Line number</span>
+          </div>
+        </td>
+        <td className="col-hdr vcell" rowSpan={3} style={{ width: "5.5%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext">Indication number</span>
+          </div>
+        </td>
+        <td className="col-hdr vcell" rowSpan={3} style={{ width: "7%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext">Transducer angle</span>
+          </div>
+        </td>
+        <td className="col-hdr vcell" rowSpan={3} style={{ width: "4.5%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext">From Face</span>
+          </div>
+        </td>
+        <td className="col-hdr vcell" rowSpan={3} style={{ width: "3.5%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext">Leg*</span>
+          </div>
+        </td>
+        <td className="col-hdr" colSpan={4}>
+          Decibels
+        </td>
+        <td className="col-hdr" colSpan={5}>
+          Discontinuity
+        </td>
+        <td className="col-hdr vcell" rowSpan={3} style={{ width: "6.5%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext text-center">
+              Discontinuity <br />
+              evaluation
+            </span>
+          </div>
+        </td>
+        <td className="col-hdr vcell" rowSpan={3} style={{ width: "6.5%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext">Remarks</span>
+          </div>
+        </td>
+      </tr>
+      {/* Header row 2: Sub-column names (vertical) */}
+      <tr>
+        <td className="col-hdr vcell" style={{ width: "5.5%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext text-center">
+              Indication <br />
+              level
+            </span>
+          </div>
+        </td>
+        <td className="col-hdr vcell" style={{ width: "5.5%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext text-center">
+              Reference <br />
+              level
+            </span>
+          </div>
+        </td>
+        <td className="col-hdr vcell" style={{ width: "6%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext text-center">
+              Attenuation <br />
+              factor
+            </span>
+          </div>
+        </td>
+        <td className="col-hdr vcell" style={{ width: "5.5%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext text-center">
+              Indication <br />
+              rating
+            </span>
+          </div>
+        </td>
+        <td className="col-hdr vcell" rowSpan={2} style={{ width: "5%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext">Length</span>
+          </div>
+        </td>
+        <td className="col-hdr vcell" rowSpan={2} style={{ width: "5.5%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext">Angular distance</span>
+          </div>
+        </td>
+        <td className="col-hdr vcell" rowSpan={2} style={{ width: "6%" }}>
+          <div className="vcell-wrap">
+            <span className="vtext">
+              Depth from <br />
+              'A' surface
+            </span>
+          </div>
+        </td>
+        <td className="col-hdr" colSpan={2}>
+          Distance
+        </td>
+      </tr>
+      {/* Header row 3: Letter labels + From X/Y */}
+      <tr>
+        <td className="col-hdr" style={{ fontWeight: 700 }}>
+          a
+        </td>
+        <td className="col-hdr" style={{ fontWeight: 700 }}>
+          b
+        </td>
+        <td className="col-hdr" style={{ fontWeight: 700 }}>
+          c
+        </td>
+        <td className="col-hdr" style={{ fontWeight: 700 }}>
+          d
+        </td>
+        <td className="col-hdr" style={{ width: "4.5%" }}>
+          From X
+        </td>
+        <td className="col-hdr" style={{ width: "4.5%" }}>
+          From Y
+        </td>
+      </tr>
+    </thead>
+  );
+
+  const ReportSignatures = () => (
+    <>
+      {/* Certification text */}
+      <div className="cert-para">
+        We, the undersigned, certify that the statements in this record are
+        correct and that the welds were prepared and tested in conformance with
+        the requirements of Clause 8, Part F of AWS D1.1/D1.1M,&nbsp;
+        <strong>({v(cert.year) || "____"})</strong>,&nbsp; Structural Welding
+        Code—Steel.
+      </div>
+      {/* Signature block */}
+      <div className="report-footer-wrap">
+        <table className="sign-table">
+          <colgroup>
+            <col style={{ width: "50%" }} />
+            <col style={{ width: "50%" }} />
+          </colgroup>
+          <tbody>
+            <tr>
+              <td style={{ fontSize: "11px", padding: "4px 6px" }}>
+                Test date&nbsp;
+                <span
+                  style={{
+                    display: "inline-block",
+                    minWidth: "140px",
+                    borderBottom: "1px solid #555",
+                    verticalAlign: "bottom",
+                  }}
+                >
+                  {fmtDate(cert.testDate)}
+                </span>
+              </td>
+              <td style={{ fontSize: "11px", padding: "4px 6px" }}>
+                Manufacturer or Contractor&nbsp;
+                <span
+                  style={{
+                    display: "inline-block",
+                    minWidth: "100px",
+                    borderBottom: "1px solid #555",
+                    verticalAlign: "bottom",
+                  }}
+                >
+                  {v(cert.manufacturerOrContractor)}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td style={{ fontSize: "11px", padding: "4px 6px" }}>
+                Inspected by&nbsp;
+                <span
+                  style={{
+                    display: "inline-block",
+                    minWidth: "150px",
+                    borderBottom: "1px solid #555",
+                    verticalAlign: "bottom",
+                  }}
+                >
+                  {v(cert.inspectedBy)}
+                </span>
+              </td>
+              <td
+                style={{
+                  fontSize: "11px",
+                  padding: "4px 6px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: "8px",
+                }}
+              >
+                <span>
+                  Authorized by&nbsp;
+                  <span
+                    style={{
+                      display: "inline-block",
+                      minWidth: "80px",
+                      borderBottom: "1px solid #555",
+                      verticalAlign: "bottom",
+                    }}
+                  >
+                    {v(cert.authorizedBy)}
+                  </span>
+                </span>
+                <span>
+                  Date&nbsp;
+                  <span
+                    style={{
+                      display: "inline-block",
+                      minWidth: "60px",
+                      borderBottom: "1px solid #555",
+                      verticalAlign: "bottom",
+                    }}
+                  >
+                    {fmtDate(cert.date)}
+                  </span>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div
+          style={{
+            fontSize: "9px",
+            padding: "4px 6px",
+            borderTop: "1px solid #d9e1ea",
+            lineHeight: 1.4,
+          }}
+        >
+          <strong>Note:</strong> This form is applicable to Clause 8, Parts B or
+          C (Statically and Cyclically Loaded Nontubular Structures). Do{" "}
+          <strong>NOT</strong> use this form for Tubular Structures (Clause 10,
+          Part A).
+        </div>
+      </div>
+    </>
+  );
 
   const ReportFooter = () => (
     <>
@@ -386,422 +671,278 @@ export const AWSDReportPrintPage: React.FC = () => {
               </thead>
 
               {/* ── TBODY: dynamic content ── */}
-              <tbody>
-                <tr>
-                  <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body">
-                      <div className="rpt-title">
-                        Report of UT of Welds (AWS D1.1)
-                      </div>
-                      {/* ───── JOB INFORMATION (form-line style) ───── */}
-                      <div className="form-block">
-                        {/* Row 1: Project + Report No */}
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "12px",
-                            marginBottom: "4px",
-                          }}
-                        >
-                          <div
-                            className="form-row"
-                            style={{ flex: 2, marginBottom: 0 }}
-                          >
-                            <span className="form-label">Project</span>
-                            <span className="form-val">
-                              {v(report.project)}
-                            </span>
-                          </div>
-                          <div
-                            className="form-row"
-                            style={{ flex: 1, marginBottom: 0 }}
-                          >
-                            <span className="form-label">Report no.</span>
-                            <span className="form-val">
-                              {v(report.reportNo || report.id)}
-                            </span>
-                          </div>
-                        </div>
-                        {/* Row 2: Diagram + Fields */}
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "10px",
-                            alignItems: "flex-start",
-                          }}
-                        >
-                          {/* Weld reference diagram */}
-                          <div
-                            style={{
-                              width: "200px",
-                              flexShrink: 0,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              paddingTop: "4px",
-                            }}
-                          >
-                            <img
-                              src="/image.png"
-                              alt="Weld reference sketch"
-                              style={{
-                                width: "200px",
-                                height: "auto",
-                                display: "block",
-                              }}
-                            />
-                          </div>
-                          {/* Right: Form fields */}
-                          <div style={{ flex: 1 }}>
-                            <div className="form-row">
-                              <span className="form-label">
-                                Weld identification
-                              </span>
-                              <span className="form-val">
-                                {v(report.weldIdentification)}
-                              </span>
-                            </div>
-                            <div className="form-row">
-                              <span className="form-label">
-                                Material thickness
-                              </span>
-                              <span className="form-val">
-                                {v(report.materialThickness)}
-                              </span>
-                            </div>
-                            <div className="form-row">
-                              <span className="form-label">Weld joint AWS</span>
-                              <span className="form-val">
-                                {v(report.weldJointAWS)}
-                              </span>
-                            </div>
-                            <div className="form-row">
-                              <span className="form-label">
-                                Welding process
-                              </span>
-                              <span className="form-val">
-                                {v(report.weldingProcess)}
-                              </span>
-                            </div>
-                            <div className="form-row">
-                              <span className="form-label">
-                                Quality requirements—section no.
-                              </span>
-                              <span className="form-val">
-                                {v(report.qualityRequirementsSection)}
-                              </span>
-                            </div>
-                            <div className="form-row">
-                              <span className="form-label">Remarks</span>
-                              <span className="form-val">
-                                {v(report.evaluation || report.remarks)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <table className="obs-table">
-                        <thead>
-                          <tr>
-                            <td colSpan={16} className="section-hdr">
-                              OBSERVATIONS
-                            </td>
-                          </tr>
-                          {/* Header row 1: Group labels */}
-                          <tr>
-                            <td
-                              className="col-hdr vcell"
-                              rowSpan={3}
-                              style={{ width: "3.5%" }}
-                            >
-                              <span className="vtext">Line number</span>
-                            </td>
-                            <td
-                              className="col-hdr vcell"
-                              rowSpan={3}
-                              style={{ width: "5.5%" }}
-                            >
-                              <span className="vtext">Indication number</span>
-                            </td>
-                            <td
-                              className="col-hdr vcell"
-                              rowSpan={3}
-                              style={{ width: "7%" }}
-                            >
-                              <span className="vtext">Transducer angle</span>
-                            </td>
-                            <td
-                              className="col-hdr vcell"
-                              rowSpan={3}
-                              style={{ width: "4.5%" }}
-                            >
-                              <span className="vtext">From Face</span>
-                            </td>
-                            <td
-                              className="col-hdr vcell"
-                              rowSpan={3}
-                              style={{ width: "3.5%" }}
-                            >
-                              <span className="vtext">Leg*</span>
-                            </td>
-                            <td className="col-hdr" colSpan={4}>
-                              Decibels
-                            </td>
-                            <td className="col-hdr" colSpan={5}>
-                              Discontinuity
-                            </td>
-                            <td
-                              className="col-hdr vcell"
-                              rowSpan={3}
-                              style={{ width: "6.5%" }}
-                            >
-                              <span className="vtext text-center">
-                                Discontinuity <br />evaluation
-                              </span>
-                            </td>
-                            <td
-                              className="col-hdr vcell"
-                              rowSpan={3}
-                              style={{ width: "6.5%" }}
-                            >
-                              <span className="vtext">Remarks</span>
-                            </td>
-                          </tr>
-                          {/* Header row 2: Sub-column names (vertical) */}
-                          <tr>
-                            <td
-                              className="col-hdr vcell"
-                              style={{ width: "5.5%" }}
-                            >
-                              <span className="vtext text-center">Indication <br />level</span>
-                            </td>
-                            <td
-                              className="col-hdr vcell"
-                              style={{ width: "5.5%" }}
-                            >
-                              <span className="vtext text-center">Reference <br />level</span>
-                            </td>
-                            <td
-                              className="col-hdr vcell"
-                              style={{ width: "6%" }}
-                            >
-                              <span className="vtext text-center">Attenuation <br />factor</span>
-                            </td>
-                            <td
-                              className="col-hdr vcell"
-                              style={{ width: "5.5%" }}
-                            >
-                              <span className="vtext text-center">Indication <br />rating</span>
-                            </td>
-                            <td
-                              className="col-hdr vcell"
-                              rowSpan={2}
-                              style={{ width: "5%" }}
-                            >
-                              <span className="vtext">Length</span>
-                            </td>
-                            <td
-                              className="col-hdr vcell"
-                              rowSpan={2}
-                              style={{ width: "5.5%" }}
-                            >
-                              <span className="vtext">
-                                Angular distance
-                              </span>
-                            </td>
-                            <td
-                              className="col-hdr vcell"
-                              rowSpan={2}
-                              style={{ width: "6%" }}
-                            >
-                              <span className="vtext">
-                                Depth from <br />'A' surface
-                              </span>
-                            </td>
-                            <td className="col-hdr" colSpan={2}>
-                              Distance
-                            </td>
-                          </tr>
-                          {/* Header row 3: Letter labels + From X/Y */}
-                          <tr>
-                            <td className="col-hdr" style={{ fontWeight: 700 }}>
-                              a
-                            </td>
-                            <td className="col-hdr" style={{ fontWeight: 700 }}>
-                              b
-                            </td>
-                            <td className="col-hdr" style={{ fontWeight: 700 }}>
-                              c
-                            </td>
-                            <td className="col-hdr" style={{ fontWeight: 700 }}>
-                              d
-                            </td>
-                            <td className="col-hdr" style={{ width: "4.5%" }}>
-                              From X
-                            </td>
-                            <td className="col-hdr" style={{ width: "4.5%" }}>
-                              From Y
-                            </td>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {obs.map((o: any, i: number) => (
-                            <tr key={i} style={{ height: "24px" }}>
-                              <td>{v(o.lineNo)}</td>
-                              <td>{v(o.indicationNo)}</td>
-                              <td>{v(o.transducerAngle)}</td>
-                              <td>{v(o.fromFace)}</td>
-                              <td>{v(o.leg)}</td>
-                              <td>{v(o.decibels?.indicationLevel)}</td>
-                              <td>{v(o.decibels?.referenceLevel)}</td>
-                              <td>{v(o.decibels?.attenuationFactor)}</td>
-                              <td>{v(o.decibels?.indicationRating)}</td>
-                              <td>{v(o.discontinuity?.length)}</td>
-                              <td>{v(o.discontinuity?.angularDistance)}</td>
-                              <td>{v(o.discontinuity?.depthFromA)}</td>
-                              <td>{v(o.discontinuity?.distanceFromX)}</td>
-                              <td>{v(o.discontinuity?.distanceFromY)}</td>
-                              <td>{v(o.interpretation)}</td>
-                              <td>{v(o.evaluation)}</td>
-                            </tr>
-                          ))}
-                          {Array.from({
-                            length: Math.max(0, 3 - obs.length),
-                          }).map((_, i) => (
-                            <tr key={`empty-obs-${i}`} style={{ height: "24px" }}>
-                              <td>{obs.length + i + 1}</td>
-                              {Array.from({ length: 15 }).map((__, j) => (
-                                <td key={j}></td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-
-              {/* ── TFOOT: certification + signature — repeats on every page ── */}
-              <tfoot>
-                <tr>
-                  <td style={{ padding: 0 }}>
-                    {/* Certification text */}
-                    <div className="cert-para">
-                      We, the undersigned, certify that the statements in this
-                      record are correct and that the welds were prepared and
-                      tested in conformance with the requirements of Clause 8,
-                      Part F of AWS D1.1/D1.1M,&nbsp;
-                      <strong>({v(cert.year) || "____"})</strong>,&nbsp;
-                      Structural Welding Code—Steel.
-                    </div>
-                    {/* Signature block */}
-                    <div className="report-footer-wrap">
-                      <table className="sign-table">
-                        <colgroup>
-                          <col style={{ width: "50%" }} />
-                          <col style={{ width: "50%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td style={{ fontSize: "11px", padding: "4px 6px" }}>
-                              Test date&nbsp;
-                              <span
-                                style={{
-                                  display: "inline-block",
-                                  minWidth: "140px",
-                                  borderBottom: "1px solid #555",
-                                  verticalAlign: "bottom",
-                                }}
-                              >
-                                {fmtDate(cert.testDate)}
-                              </span>
-                            </td>
-                            <td style={{ fontSize: "11px", padding: "4px 6px" }}>
-                              Manufacturer or Contractor&nbsp;
-                              <span
-                                style={{
-                                  display: "inline-block",
-                                  minWidth: "100px",
-                                  borderBottom: "1px solid #555",
-                                  verticalAlign: "bottom",
-                                }}
-                              >
-                                {v(cert.manufacturerOrContractor)}
-                              </span>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ fontSize: "11px", padding: "4px 6px" }}>
-                              Inspected by&nbsp;
-                              <span
-                                style={{
-                                  display: "inline-block",
-                                  minWidth: "150px",
-                                  borderBottom: "1px solid #555",
-                                  verticalAlign: "bottom",
-                                }}
-                              >
-                                {v(cert.inspectedBy)}
-                              </span>
-                            </td>
-                            <td
-                              style={{
-                                fontSize: "11px",
-                                padding: "4px 6px",
-                                display: "flex",
-                                justifyContent: "space-between",
-                                gap: "8px",
-                              }}
-                            >
-                              <span>
-                                Authorized by&nbsp;
-                                <span
-                                  style={{
-                                    display: "inline-block",
-                                    minWidth: "80px",
-                                    borderBottom: "1px solid #555",
-                                    verticalAlign: "bottom",
-                                  }}
-                                >
-                                  {v(cert.authorizedBy)}
-                                </span>
-                              </span>
-                              <span>
-                                Date&nbsp;
-                                <span
-                                  style={{
-                                    display: "inline-block",
-                                    minWidth: "60px",
-                                    borderBottom: "1px solid #555",
-                                    verticalAlign: "bottom",
-                                  }}
-                                >
-                                  {fmtDate(cert.date)}
-                                </span>
-                              </span>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <div
+              {(() => {
+                const renderTableContent = (
+                  tableChunks: any[][],
+                  isPrint: boolean
+                ) => (
+                  <tbody className={isPrint ? "print-only" : "no-print"}>
+                    {tableChunks.map((chunk, chunkIdx) => (
+                      <tr
+                        key={chunkIdx}
                         style={{
-                          fontSize: "9px",
-                          padding: "4px 6px",
-                          borderTop: "1px solid #d9e1ea",
-                          lineHeight: 1.4,
+                          pageBreakBefore:
+                            isPrint && chunkIdx > 0 ? "always" : "auto",
                         }}
                       >
-                        <strong>Note:</strong> This form is applicable to Clause
-                        8, Parts B or C (Statically and Cyclically Loaded
-                        Nontubular Structures). Do <strong>NOT</strong> use this
-                        form for Tubular Structures (Clause 10, Part A).
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tfoot>
+                        <td style={{ padding: 0, verticalAlign: "top" }}>
+                          <div className="report-body">
+                            {chunkIdx === 0 ? (
+                              <>
+                                <div className="rpt-title">
+                                  Report of UT of Welds (AWS D1.1)
+                                </div>
+                                {/* ───── JOB INFORMATION (form-line style) ───── */}
+                                <div className="form-block">
+                                  {/* Row 1: Project + Report No */}
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      gap: "12px",
+                                      marginBottom: "4px",
+                                    }}
+                                  >
+                                    <div
+                                      className="form-row"
+                                      style={{ flex: 2, marginBottom: 0 }}
+                                    >
+                                      <span className="form-label">Project</span>
+                                      <span className="form-val">
+                                        {v(report.project)}
+                                      </span>
+                                    </div>
+                                    <div
+                                      className="form-row"
+                                      style={{ flex: 1, marginBottom: 0 }}
+                                    >
+                                      <span className="form-label">
+                                        Report no.
+                                      </span>
+                                      <span className="form-val">
+                                        {v(report.reportNo || report.id)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  {/* Row 2: Diagram + Fields */}
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      gap: "10px",
+                                      alignItems: "flex-start",
+                                    }}
+                                  >
+                                    {/* Weld reference diagram */}
+                                    <div
+                                      style={{
+                                        width: "200px",
+                                        flexShrink: 0,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        paddingTop: "4px",
+                                      }}
+                                    >
+                                      <img
+                                        src="/image.png"
+                                        alt="Weld reference sketch"
+                                        style={{
+                                          width: "200px",
+                                          height: "auto",
+                                          display: "block",
+                                        }}
+                                      />
+                                    </div>
+                                    {/* Right: Form fields */}
+                                    <div style={{ flex: 1 }}>
+                                      <div className="form-row">
+                                        <span className="form-label">
+                                          Weld identification :
+                                        </span>
+                                        <span className="form-val">
+                                          {v(report.weldIdentification)}
+                                        </span>
+                                      </div>
+                                      <div className="form-row">
+                                        <span className="form-label">
+                                          Material thickness :
+                                        </span>
+                                        <span className="form-val">
+                                          {v(report.materialThickness)}
+                                        </span>
+                                      </div>
+                                      <div className="form-row">
+                                        <span className="form-label">
+                                          Weld joint AWS :
+                                        </span>
+                                        <span className="form-val">
+                                          {v(report.weldJointAWS)}
+                                        </span>
+                                      </div>
+                                      <div className="form-row">
+                                        <span className="form-label">
+                                          Welding process :
+                                        </span>
+                                        <span className="form-val">
+                                          {v(report.weldingProcess)}
+                                        </span>
+                                      </div>
+                                      <div className="form-row">
+                                        <span className="form-label">
+                                          Quality requirements—section no. :
+                                        </span>
+                                        <span className="form-val">
+                                          {v(report.qualityRequirementsSection)}
+                                        </span>
+                                      </div>
+                                      <div className="form-row">
+                                        <span className="form-label">
+                                          Remarks :
+                                        </span>
+                                        <span className="form-val">
+                                          {v(
+                                            report.evaluation || report.remarks
+                                          )}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <div
+                                className="rpt-title"
+                                style={{ borderTop: "none" }}
+                              >
+                                Report of UT of Welds (AWS D1.1) - Continued
+                              </div>
+                            )}
+
+                            <table
+                              className="obs-table"
+                              style={{
+                                borderTop:
+                                  chunkIdx > 0 ? "1px solid #444" : "none",
+                              }}
+                            >
+                              <ObsTableHeader />
+                              <tbody>
+                                {chunk.map((o: any, i: number) => {
+                                  const globalIdx =
+                                    chunkIdx === 0
+                                      ? i
+                                      : FIRST_PAGE_SIZE +
+                                        (chunkIdx - 1) * SUBSEQUENT_PAGE_SIZE +
+                                        i;
+                                  return (
+                                    <tr key={i} style={{ height: "24px" }}>
+                                      <td>{v(o.lineNo || globalIdx + 1)}</td>
+                                      <td>{v(o.indicationNo)}</td>
+                                      <td>{v(o.transducerAngle)}</td>
+                                      <td>{v(o.fromFace)}</td>
+                                      <td>{v(o.leg)}</td>
+                                      <td>{v(o.decibels?.indicationLevel)}</td>
+                                      <td>{v(o.decibels?.referenceLevel)}</td>
+                                      <td>
+                                        {v(o.decibels?.attenuationFactor)}
+                                      </td>
+                                      <td>{v(o.decibels?.indicationRating)}</td>
+                                      <td>{v(o.discontinuity?.length)}</td>
+                                      <td>
+                                        {v(o.discontinuity?.angularDistance)}
+                                      </td>
+                                      <td>{v(o.discontinuity?.depthFromA)}</td>
+                                      <td>
+                                        {v(o.discontinuity?.distanceFromX)}
+                                      </td>
+                                      <td>
+                                        {v(o.discontinuity?.distanceFromY)}
+                                      </td>
+                                      <td>{v(o.interpretation)}</td>
+                                      <td>{v(o.evaluation)}</td>
+                                    </tr>
+                                  );
+                                })}
+                                {/* Empty rows logic for Print */}
+                                {isPrint &&
+                                  chunkIdx === 0 &&
+                                  chunk.length < FIRST_PAGE_SIZE &&
+                                  Array.from({
+                                    length: FIRST_PAGE_SIZE - chunk.length,
+                                  }).map((_, i) => (
+                                    <tr
+                                      key={`empty-p1-${i}`}
+                                      style={{ height: "24px" }}
+                                    >
+                                      <td>{chunk.length + i + 1}</td>
+                                      {Array.from({ length: 15 }).map(
+                                        (__, j) => (
+                                          <td key={j}></td>
+                                        )
+                                      )}
+                                    </tr>
+                                  ))}
+                                {isPrint &&
+                                  chunkIdx > 0 &&
+                                  chunkIdx === tableChunks.length - 1 &&
+                                  chunk.length < 3 &&
+                                  Array.from({
+                                    length: Math.max(0, 3 - chunk.length),
+                                  }).map((_, i) => (
+                                    <tr
+                                      key={`empty-last-${i}`}
+                                      style={{ height: "24px" }}
+                                    >
+                                      <td>
+                                        {FIRST_PAGE_SIZE +
+                                          (chunkIdx - 1) *
+                                            SUBSEQUENT_PAGE_SIZE +
+                                          chunk.length +
+                                          i +
+                                          1}
+                                      </td>
+                                      {Array.from({ length: 15 }).map(
+                                        (__, j) => (
+                                          <td key={j}></td>
+                                        )
+                                      )}
+                                    </tr>
+                                  ))}
+                                {/* Empty rows logic for Screen */}
+                                {!isPrint && chunk.length < 3 && (
+                                  Array.from({
+                                    length: Math.max(0, 3 - chunk.length),
+                                  }).map((_, i) => (
+                                    <tr
+                                      key={`empty-screen-${i}`}
+                                      style={{ height: "24px" }}
+                                    >
+                                      <td>{chunk.length + i + 1}</td>
+                                      {Array.from({ length: 15 }).map(
+                                        (__, j) => (
+                                          <td key={j}></td>
+                                        )
+                                      )}
+                                    </tr>
+                                  ))
+                                )}
+                              </tbody>
+                            </table>
+                            <ReportSignatures />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                );
+
+                return (
+                  <>
+                    {renderTableContent([obs], false)}
+                    {renderTableContent(chunks, true)}
+                  </>
+                );
+              })()}
+
             </table>
           </div>
 

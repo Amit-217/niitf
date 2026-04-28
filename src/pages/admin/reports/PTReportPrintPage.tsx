@@ -28,7 +28,7 @@ const PRINT_STYLES = `
     #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
     #report-root > div {
       width: 210mm !important; 
-      margin: 0 !important; padding: 0mm 5mm 15mm 5mm !important;
+      margin: 0 !important; padding: 0mm 5mm 35mm 5mm !important;
       box-sizing: border-box !important; position: relative !important;
       page-break-after: auto !important;
       box-shadow: none !important;
@@ -40,7 +40,7 @@ const PRINT_STYLES = `
     .screen-sign-table { display: none !important; }
     .print-fixed-footer {
       position: fixed !important;
-      bottom: 5mm !important;
+      bottom: 2mm !important;
       left: 5mm !important;
       right: 5mm !important;
       background: #fff !important;
@@ -67,7 +67,7 @@ const PRINT_STYLES = `
     overflow: hidden;
   }
   .report-body { border-top: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
+  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; margin-bottom: 2px; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
@@ -95,7 +95,7 @@ const PRINT_STYLES = `
   .bw .logo-box { background: #fff !important; }
   .bw .section-hdr { background: #fff !important; color: #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border-color: #888 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
 
@@ -116,13 +116,13 @@ const PRINT_STYLES = `
   .bw .obs-table th { background: #fff !important; color: #000 !important; }
   .bw .sign-table td { border-color: #888 !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
-  .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
-  .bw .report-body { color: #000 !important; border-color: #000 !important; }
+  .bw .footer { background: #fff !important; color: #000 !important; border-color: #888 !important; }
+  .bw .report-body { color: #000 !important; border-color: #888 !important; }
   .rpt-title {
     background: #E6F1FB; text-align: center; padding: 5px;
     font-size: 16px; font-weight: 700; color: #0C447C;
     text-transform: uppercase; letter-spacing: 0.4px; 
-    border: 1px solid #444; border-top: none; border-radius: 6px 6px 0 0;
+    border: 1px solid #444; border-top: none; border-bottom: none; border-radius: 6px 6px 0 0;
   }
   .section-hdr {
     background: #185FA5; color: #fff; font-size: 13px; font-weight: 700;
@@ -152,7 +152,7 @@ const PRINT_STYLES = `
   .neutral-badge { color: #000; }
   .footer {
     background: #f8fafc; padding: 5px 10px; font-size: 11px; color: #4b5563;
-    margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4;
+    margin-top: 1px; border-top: 3px solid #185FA5; line-height: 1.4;
     display: flex; align-items: center; gap: 8px;
   }
   .footer-text-block { flex: 1; text-align: center; }
@@ -395,7 +395,7 @@ export const PTReportPrintPage: React.FC = () => {
             position: "relative",
             width: "210mm",
             margin: "0 auto",
-            padding: "0mm 5mm 25mm 5mm",
+            padding: "0mm 5mm 40mm 5mm",
             background: "#fff",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
@@ -430,7 +430,7 @@ export const PTReportPrintPage: React.FC = () => {
                 <tr>
                   <td style={{ padding: 0 }}>
                     <div className="report-body">
-                      <div className="rpt-title">PENETRANT TESTING REPORT</div>
+                      <div className="rpt-title">LIQUID PENETRANT TESTING REPORT</div>
 
                       {/* --- JOB DETAILS --- */}
                       <table className="report-table">
@@ -455,8 +455,14 @@ export const PTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Project</td>
-                            <td className="val">{v(jd.project) || "-"}</td>
+                            <td className="lbl">Reference standard</td>
+                            <td className="val">
+                              {standards.length > 0 ? (
+                                standards.join(", ")
+                              ) : (
+                                "Not specified"
+                              )}
+                            </td>
                             <td className="lbl">Inspection Date</td>
                             <td className="val">
                               {dateRange(
@@ -466,14 +472,6 @@ export const PTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Reference standard</td>
-                            <td className="val">
-                              {standards.length > 0 ? (
-                                standards.join(", ")
-                              ) : (
-                                "Not specified"
-                              )}
-                            </td>
                             <td className="lbl">Acceptance Criteria</td>
                             <td className="val">
                               {acceptance.length > 0 ? (
@@ -482,34 +480,36 @@ export const PTReportPrintPage: React.FC = () => {
                                 "Not specified"
                               )}
                             </td>
-                          </tr>
-                          <tr>
                             <td className="lbl">Material</td>
                             <td className="val">{v(jd.material) || "-"}</td>
+                          </tr>
+                          <tr>
                             <td className="lbl">Stage of Inspection</td>
                             <td className="val">
                               {v(jd.stageOfInspection) || "-"}
                             </td>
-                          </tr>
-                          <tr>
                             <td className="lbl">Thickness</td>
                             <td className="val">{v(jd.thickness) || "-"}</td>
+                          </tr>
+                          <tr>
                             <td className="lbl">Extent of Examination</td>
                             <td className="val">
                               {v(jd.extentOfExamination) || "-"}
                             </td>
-                          </tr>
-                          <tr>
                             <td className="lbl">Surface condition</td>
                             <td className="val">{v(jd.surfaceCondition) || "-"}</td>
-                            <td className="lbl">Type of Joint</td>
-                            <td className="val">{v(jd.typeOfJoint) || "-"}</td>
                           </tr>
                           <tr>
-                            <td className="lbl">Surface Temperature</td>
-                            <td className="val">{v(jd.surfaceTemperature) || "-"}</td>
+                            <td className="lbl">Type of Joint</td>
+                            <td className="val">{v(jd.typeOfJoint) || "-"}</td>
                             <td className="lbl">Welding Process</td>
                             <td className="val">{v(jd.weldingProcess) || "-"}</td>
+                          </tr>
+                          <tr>
+                            <td className="lbl">Project</td>
+                            <td className="val">{v(jd.project) || "-"}</td>
+                            <td className="lbl">Surface Temperature</td>
+                            <td className="val">{v(jd.surfaceTemperature) || "-"}</td>
                           </tr>
                         </tbody>
                       </table>

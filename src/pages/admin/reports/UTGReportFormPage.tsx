@@ -171,17 +171,13 @@ export const UTGReportFormPage: React.FC = () => {
   // ── Observations ──
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
-  // -- Conclusion --
-  const [conclusion, setConclusion] = useState("");
-  const [conclusionOther, setConclusionOther] = useState("");
-
   // ── Users for inspector dropdown ──
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
   useEffect(() => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // ── Examined By ──
@@ -396,16 +392,6 @@ export const UTGReportFormPage: React.FC = () => {
             })),
           );
         }
-        const conclusionOpts = [
-          "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-          "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-          "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-          "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-          "Other",
-        ];
-        const [con, conO] = fromOther(r.conclusion ?? "", conclusionOpts);
-        setConclusion(con);
-        setConclusionOther(conO);
         const fs = r.finalSection ?? {};
         const insp = fs.inspector?.[0] ?? {};
         setInspectorName(insp.name ?? "");
@@ -493,7 +479,6 @@ export const UTGReportFormPage: React.FC = () => {
             measuredThickness: o.measuredThickness,
             evaluation: o.evaluation,
           })),
-        conclusion: resolve(conclusion, conclusionOther) || undefined,
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
           inspector: [
@@ -666,16 +651,6 @@ export const UTGReportFormPage: React.FC = () => {
                 "ASME Sec V Article 5",
                 "Other",
               ]}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Inspection Time</label>
-            <input
-              type="text"
-              value={jobInspectionTime}
-              onChange={(e) => setJobInspectionTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 02:00 PM to 05:00 PM"
             />
           </div>
           <div>
@@ -1064,27 +1039,6 @@ export const UTGReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* -- Conclusion -- */}
-      <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Conclusion</h2>
-        <div>
-          <label className={labelClass}>Conclusion</label>
-          <SelectWithOther
-            value={conclusion}
-            onChange={setConclusion}
-            otherValue={conclusionOther}
-            onOtherChange={setConclusionOther}
-            options={[
-              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-              "Other",
-            ]}
-          />
-        </div>
-      </div>
-
       {/* ── Examined By ── */}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -1129,16 +1083,6 @@ export const UTGReportFormPage: React.FC = () => {
                   value={inspectorSig}
                   onChange={(e) => setInspectorSig(e.target.value)}
                   className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={inspectorIdNo}
-                  onChange={(e) => setInspectorIdNo(e.target.value)}
-                  className={inputClass}
-                  placeholder="e.g. 115"
                 />
               </div>
               <div>
@@ -1189,15 +1133,6 @@ export const UTGReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={custIdNo}
-                  onChange={(e) => setCustIdNo(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
                 <label className={labelClass}>Date</label>
                 <input
                   type="date"
@@ -1241,15 +1176,6 @@ export const UTGReportFormPage: React.FC = () => {
                   type="text"
                   value={clientSig}
                   onChange={(e) => setClientSig(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={clientIdNo}
-                  onChange={(e) => setClientIdNo(e.target.value)}
                   className={inputClass}
                 />
               </div>

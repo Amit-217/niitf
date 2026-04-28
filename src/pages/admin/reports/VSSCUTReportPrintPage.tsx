@@ -57,17 +57,17 @@ const PRINT_STYLES = `
       page-break-inside: avoid !important;
     }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
   .report { background: #fff; border: none; border-radius: 0; overflow: hidden; }
   .rpt-header { padding: 2px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
   .logo-box { width: 160px; height: 110px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-8px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
-  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
+  .hdr-center .org { font-size: 23px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .sub { font-size: 11px; color: #374151; margin-top: 2px; line-height: 1.4; }
+  .hdr-center .iso { font-size: 11px; color: #0C447C; font-weight: 700; margin-top: 2px; }
+  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 10px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
 
   /* B&W mode */
@@ -82,7 +82,7 @@ const PRINT_STYLES = `
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
   .bw .calib-table th { background: #fff !important; color: #000 !important; }
   .bw .calib-table td:first-child { background: #fff !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1px solid #444 !important; border-top: none !important; border-radius: 6px 6px 0 0 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1px solid #444 !important; border-top: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
@@ -98,13 +98,13 @@ const PRINT_STYLES = `
   .bw .report-body { color: #000 !important; border-top: 1px solid #444 !important; border-left: none !important; border-right: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
   .bw .report-footer-wrap { border: 1px solid #444 !important; border-top: none !important; border-radius: 0 0 6px 6px !important; }
 
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #444; border-top: none; border-radius: 6px 6px 0 0; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 4px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #444; border-top: none; border-bottom: none; border-radius: 6px 6px 0 0; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 4px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
-  .report-table td, .report-table th { border: 1px solid #444; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; white-space: nowrap; width: 22%; }
-  .val { font-size: 11px; color: #000; }
+  .report-table td, .report-table th { border: 1px solid #444; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 12px; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 12px; text-align: left; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 12px; white-space: nowrap; width: 22%; text-align: left; }
+  .val { font-size: 12px; color: #000; }
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
@@ -115,13 +115,13 @@ const PRINT_STYLES = `
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #444; padding: 3px 4px; font-size: 11px; vertical-align: top; }
+  .sign-table td { border: 1px solid #444; padding: 3px 4px; font-size: 12px; vertical-align: top; }
   .sign-table td:first-child { border-left: none; }
   .sign-table td:last-child { border-right: none; }
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #444; }
-  .calib-table td, .calib-table th { border: 1px solid #444; padding: 3px; font-size: 10px; text-align: left; vertical-align: middle; }
-  .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
-  .footer { background: #f8fafc; padding: 4px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .calib-table td, .calib-table th { border: 1px solid #444; padding: 3px; font-size: 11px; text-align: center; vertical-align: middle; }
+  .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; text-align: center; }
+  .footer { background: #f8fafc; padding: 4px 10px; font-size: 11px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
@@ -251,10 +251,6 @@ export const VSSCUTReportPrintPage: React.FC = () => {
   const fs = (report as any).finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
   const ct = apc.calibTable ?? {};
-  const conclusionText =
-    v((report as unknown as { conclusion?: string }).conclusion) ||
-    "Examination completed as per applicable standards. No rejectable indications observed in inspected items.";
-
   const ReportFooter = () => (
     <>
       <div className="footer">
@@ -401,18 +397,14 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           <col style={{ width: "36%" }} />
                         </colgroup>
                         <tbody>
-                          <tr>
-                            <td colSpan={3} className="section-hdr">
-                              1. JOB DETAILS
-                            </td>
-                          </tr>
+
                           <tr>
                             <td colSpan={3} style={{ padding: 0 }}>
                               <div style={{ display: "flex" }}>
-                                <div style={{ width: "50%", padding: "4px 6px", fontWeight: 700, fontSize: "11px" }}>
+                                <div style={{ width: "50%", padding: "4px 6px", fontWeight: 700, fontSize: "12px" }}>
                                   Report No. {v(report.reportNo)}
                                 </div>
-                                <div style={{ width: "50%", padding: "4px 6px", fontWeight: 700, fontSize: "11px", borderLeft: "1px solid #444" }}>
+                                <div style={{ width: "50%", padding: "4px 6px", fontWeight: 700, fontSize: "12px", borderLeft: "1px solid #444" }}>
                                   Job Description: {v(report.jobDescription)}
                                 </div>
                               </div>
@@ -468,15 +460,18 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       <table className="report-table mt-n1">
                         <tbody>
                           <tr>
-                            <td className="section-hdr" colSpan={6}>2. ANGLE PROBE CALIBRATION</td>
+                            <td className="section-hdr" colSpan={3}>1. ANGLE PROBE CALIBRATION</td>
                           </tr>
                           <tr>
-                            <td className="lbl" style={{ width: "12%" }}>Frequency</td>
-                            <td className="val" style={{ width: "21.3%", fontWeight: 700 }}>{v(apc.frequency)}</td>
-                            <td className="lbl" style={{ width: "12%" }}>Size</td>
-                            <td className="val" style={{ width: "21.3%", fontWeight: 700 }}>{v(apc.size)}</td>
-                            <td className="lbl" style={{ width: "12%" }}>Type</td>
-                            <td className="val" style={{ width: "21.4%", fontWeight: 700 }}>{v(apc.type)}</td>
+                            <td className="val" style={{ width: "33.3%" }}>
+                              Frequency: <strong>{v(apc.frequency)}</strong>
+                            </td>
+                            <td className="val" style={{ width: "33.3%" }}>
+                              Size: <strong>{v(apc.size)}</strong>
+                            </td>
+                            <td className="val" style={{ width: "33.4%" }}>
+                              Type: <strong>{v(apc.type)}</strong>
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -540,49 +535,35 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       <table className="report-table mt-n1">
                         <tbody>
                           <tr>
-                            <td className="section-hdr" colSpan={4}>3. NORMAL PROBE CALIBRATION</td>
+                            <td className="section-hdr" colSpan={3}>2. NORMAL PROBE CALIBRATION</td>
                           </tr>
                           <tr>
-                            <td className="lbl">Probe S. No / Type</td>
-                            <td className="val">{v(npc.probeType)}</td>
-                            <td className="lbl">Frequency</td>
-                            <td className="val">{v(npc.frequency)}</td>
+                            <td className="val" style={{ width: "33.3%" }}>
+                              Probe S. No / Type: <strong>{v(npc.probeType)}</strong>
+                            </td>
+                            <td className="val" style={{ width: "33.3%" }}>
+                              Frequency: <strong>{v(npc.frequency)}</strong>
+                            </td>
+                            <td className="val" style={{ width: "33.4%" }}>
+                              Size: <strong>{v(npc.size)}</strong>
+                            </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Size</td>
-                            <td className="val">{v(npc.size)}</td>
-                            <td className="lbl">Skip</td>
-                            <td className="val">{v(npc.skip)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">BP – %FSH</td>
-                            <td className="val">{v(npc.bp)}</td>
-                            <td className="lbl">DAC dB</td>
-                            <td className="val">{v(npc.dacDb)}</td>
+                            <td className="val">
+                              Skip: <strong>{v(npc.skip)}</strong>
+                            </td>
+                            <td className="val">
+                              BP – %FSH: <strong>{v(npc.bp)}</strong>
+                            </td>
+                            <td className="val">
+                              DAC dB: <strong>{v(npc.dacDb)}</strong>
+                            </td>
                           </tr>
                         </tbody>
                       </table>
 
-                      {/* --- DISPOSITION & CONCLUSION --- */}
+                      {/* --- SIGNATURE --- */}
                       <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
-                        <table className="report-table mt-n1">
-                          <tbody>
-                            <tr>
-                              <td className="section-hdr" colSpan={2}>4. DISPOSITION & CONCLUSION</td>
-                            </tr>
-                            <tr>
-                              <td className="lbl" style={{ width: "20%" }}>Disposition</td>
-                              <td style={{ fontWeight: 700, color: report.disposition === "ACCEPTED" ? "#276749" : "#c53030" }}>
-                                {v(report.disposition)}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="lbl">Evaluation</td>
-                              <td className="val">{v(report.evaluation || report.remarks || conclusionText)}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-
                         <div className="report-footer-wrap">
                           <table className="sign-table mt-n1">
                             <colgroup>
@@ -592,14 +573,14 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                             </colgroup>
                             <tbody>
                               <tr>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER:</td>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT :</td>
+                                <td style={{ fontWeight: 600, fontSize: "12px" }}>EXAMINED BY</td>
+                                <td style={{ fontWeight: 600, fontSize: "12px" }}>CUSTOMER:</td>
+                                <td style={{ fontWeight: 600, fontSize: "12px" }}>CLIENT :</td>
                               </tr>
                               <tr>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>National Industrial Inspection And Training</td>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(report.customer)}</td>
-                                <td style={{ fontWeight: 600, fontSize: "11px" }}>-</td>
+                                <td style={{ fontWeight: 600, fontSize: "12px" }}>National Industrial Inspection And Training</td>
+                                <td style={{ fontWeight: 600, fontSize: "12px" }}>{v(report.customer)}</td>
+                                <td style={{ fontWeight: 600, fontSize: "12px" }}>-</td>
                               </tr>
                               <tr>
                                 <td>Name: {v(inspector.name) || "-"}</td>

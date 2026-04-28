@@ -617,16 +617,6 @@ export const PTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection Time</label>
-            <input
-              type="text"
-              value={jobInspectionTime}
-              onChange={(e) => setJobInspectionTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 10:00 AM - 03:30 PM"
-            />
-          </div>
-          <div>
             <label className={labelClass}>Material</label>
             <input
               type="text"
@@ -1067,27 +1057,6 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Conclusion ── */}
-      <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Conclusion</h2>
-        <div>
-          <label className={labelClass}>Conclusion</label>
-          <SelectWithCustom
-            value={conclusion}
-            onChange={setConclusion}
-            customValue={conclusionCustom}
-            onCustomChange={setConclusionCustom}
-            options={[
-              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-              "Other",
-            ]}
-          />
-        </div>
-      </div>
-
       {/* Ã¢"â‚¬Ã¢"â‚¬ Examined By Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -1121,15 +1090,6 @@ export const PTReportFormPage: React.FC = () => {
                   type="text"
                   value={inspectorQual}
                   onChange={(e) => setInspectorQual(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={inspectorIdNo}
-                  onChange={(e) => setInspectorIdNo(e.target.value)}
                   className={inputClass}
                 />
               </div>
@@ -1172,15 +1132,6 @@ export const PTReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={custIdNo}
-                  onChange={(e) => setCustIdNo(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
                 <label className={labelClass}>Date</label>
                 <input
                   type="date"
@@ -1215,15 +1166,6 @@ export const PTReportFormPage: React.FC = () => {
                   type="text"
                   value={clientDesig}
                   onChange={(e) => setClientDesig(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={clientIdNo}
-                  onChange={(e) => setClientIdNo(e.target.value)}
                   className={inputClass}
                 />
               </div>

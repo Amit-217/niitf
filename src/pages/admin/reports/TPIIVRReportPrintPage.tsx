@@ -409,8 +409,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             <td>Name: {v(sigs.niit?.name) || "-"}</td>
                           </tr>
                           <tr>
-                            <td style={{ height: 28 }}>Signature:</td>
-                            <td style={{ height: 28 }}>Signature:</td>
+                            <td style={{ height: "60px" }}>Signature:</td>
+                            <td style={{ height: "60px" }}>Signature:</td>
                           </tr>
                           <tr>
                             <td>Date: {fmtDate(sigs.vendor?.date) || "-"}</td>
@@ -691,22 +691,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                               </tr>
                             ))
                           )}
-                          {[...Array(4)].map((_, i) => (
-                            <tr
-                              key={`empty-item-${i}`}
-                              style={{ height: "24px" }}
-                            >
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                            </tr>
-                          ))}
+
                         </tbody>
                       </table>
 
@@ -838,24 +823,22 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           )}
                         </tbody>
                       </table>
-                      <table className="report-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "22%" }} />
-                          <col style={{ width: "78%" }} />
-                        </colgroup>
+                      
+                      {/* ── CONCLUSION ── */}
+                      <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
                         <tbody>
                           <tr>
-                            <td colSpan={2} className="section-hdr">
-                              7. Conclusion
+                            <td className="section-hdr">
+                              7. CONCLUSION
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Overall Evaluation</td>
-                            <td className="val">{v(report.conclusion)}</td>
+                            <td className="val" style={{ padding: "8px", minHeight: "40px" }}>
+                              {v(report.conclusion) || "-"}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
-
                     </div>
                     {/* ── end report-body ── */}
                   </td>

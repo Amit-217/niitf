@@ -195,7 +195,7 @@ export const MPTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   useEffect(() => {
@@ -345,13 +345,13 @@ export const MPTReportFormPage: React.FC = () => {
         setInspectors(
           fs.inspector?.length
             ? fs.inspector.map((i: any) => ({
-                name: i.name ?? "",
-                qualification: i.qualification || "MT NDE Level II",
-                designation: i.designation ?? "",
-                signature: i.signature ?? "",
-                idNo: i.idNo ?? "",
-                date: toDate(i.date),
-              }))
+              name: i.name ?? "",
+              qualification: i.qualification || "MT NDE Level II",
+              designation: i.designation ?? "",
+              signature: i.signature ?? "",
+              idNo: i.idNo ?? "",
+              date: toDate(i.date),
+            }))
             : [emptyInspector()],
         );
         const cust = fs.customer ?? {};
@@ -696,19 +696,6 @@ export const MPTReportFormPage: React.FC = () => {
               value={jobInspectionEndDate}
               onChange={(e) => setJobInspectionEndDate(e.target.value)}
               className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobInspectionTime">
-              Inspection Time
-            </label>
-            <input
-              id="jobInspectionTime"
-              type="text"
-              value={jobInspectionTime}
-              onChange={(e) => setJobInspectionTime(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 10:30 AM to 05:30 PM"
             />
           </div>
           <div>
@@ -1298,27 +1285,6 @@ export const MPTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Conclusion ── */}
-      <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Conclusion</h2>
-        <div>
-          <label className={labelClass}>Conclusion</label>
-          <SelectWithOther
-            id="conclusion"
-            value={conclusion}
-            onChange={setConclusion}
-            otherValue={conclusionOther}
-            onOtherChange={setConclusionOther}
-            options={[
-              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-              "Other",
-            ]}
-          />
-        </div>
-      </div>
 
       {/* Ã¢"â‚¬Ã¢"â‚¬ Examined By Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
@@ -1410,17 +1376,6 @@ export const MPTReportFormPage: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>I.D. No.</label>
-                      <input
-                        type="text"
-                        value={insp.idNo}
-                        onChange={(e) =>
-                          updateInsp(idx, "idNo", e.target.value)
-                        }
-                        className={inputClass}
-                      />
-                    </div>
-                    <div>
                       <label className={labelClass}>Date</label>
                       <input
                         type="date"
@@ -1474,15 +1429,6 @@ export const MPTReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={custIdNo}
-                  onChange={(e) => setCustIdNo(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
                 <label className={labelClass}>Date</label>
                 <input
                   type="date"
@@ -1527,15 +1473,6 @@ export const MPTReportFormPage: React.FC = () => {
                   type="text"
                   value={clientSig}
                   onChange={(e) => setClientSig(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>I.D. No.</label>
-                <input
-                  type="text"
-                  value={clientIdNo}
-                  onChange={(e) => setClientIdNo(e.target.value)}
                   className={inputClass}
                 />
               </div>
