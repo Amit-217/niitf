@@ -156,7 +156,7 @@ export const InvoicePrintPage: React.FC = () => {
           window.print();
           document.body.classList.remove("autoprint-mode");
         });
-      }, 1200); 
+      }, 1200);
       return () => clearTimeout(t);
     }
   }, [isLoading, data, isAutoPrint]);
@@ -221,6 +221,8 @@ export const InvoicePrintPage: React.FC = () => {
         <br />
         Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
         www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
+        <br />
+        Powered by: Viplora Tech
       </div>
       <div className="footer-meta">
         Invoice No: <span>{data.invoiceNo}</span>
@@ -372,11 +374,11 @@ export const InvoicePrintPage: React.FC = () => {
                                       <br />
                                       GST No.: 27ABJPK8603R1ZY
                                       <br />
-                                      State Name=Maharashtra&nbsp; Code =27
+                                      State Name: Maharashtra&nbsp; Code =27
                                       <br />
-                                      CONTACT= 9850923725, 9421606761
+                                      CONTACT: 9850923725, 9421606761
                                       <br />
-                                      E-Mail = niit004@gmail.com
+                                      E-Mail: niit004@gmail.com
                                     </div>
                                   </td>
                                 </tr>
