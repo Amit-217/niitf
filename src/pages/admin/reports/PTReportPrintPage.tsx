@@ -95,7 +95,7 @@ const PRINT_STYLES = `
   .bw .logo-box { background: #fff !important; }
   .bw .section-hdr { background: #fff !important; color: #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; border-color: #888 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border-color: #000 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
 
@@ -420,7 +420,9 @@ export const PTReportPrintPage: React.FC = () => {
                           <br />
                           FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
                         </div>
-                        <div className="iso">(AN ISO 9001:2015 CERTIFIED ORGANIZATION)</div>
+                        <div className="iso">
+                          (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -430,7 +432,9 @@ export const PTReportPrintPage: React.FC = () => {
                 <tr>
                   <td style={{ padding: 0 }}>
                     <div className="report-body">
-                      <div className="rpt-title">LIQUID PENETRANT TESTING REPORT</div>
+                      <div className="rpt-title">
+                        LIQUID PENETRANT TESTING REPORT
+                      </div>
 
                       {/* --- JOB DETAILS --- */}
                       <table className="report-table">
@@ -441,10 +445,18 @@ export const PTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl" style={{ width: "22%" }}>Customer</td>
-                            <td className="val" style={{ width: "28%" }}>{v(jd.customer)}</td>
-                            <td className="lbl" style={{ width: "22%" }}>Report No.:</td>
-                            <td className="val" style={{ width: "28%" }}>{v(report.reportNo)}</td>
+                            <td className="lbl" style={{ width: "22%" }}>
+                              Customer
+                            </td>
+                            <td className="val" style={{ width: "28%" }}>
+                              {v(jd.customer)}
+                            </td>
+                            <td className="lbl" style={{ width: "22%" }}>
+                              Report No.:
+                            </td>
+                            <td className="val" style={{ width: "28%" }}>
+                              {v(report.reportNo)}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Client</td>
@@ -457,11 +469,9 @@ export const PTReportPrintPage: React.FC = () => {
                           <tr>
                             <td className="lbl">Reference standard</td>
                             <td className="val">
-                              {standards.length > 0 ? (
-                                standards.join(", ")
-                              ) : (
-                                "Not specified"
-                              )}
+                              {standards.length > 0
+                                ? standards.join(", ")
+                                : "Not specified"}
                             </td>
                             <td className="lbl">Inspection Date</td>
                             <td className="val">
@@ -474,11 +484,9 @@ export const PTReportPrintPage: React.FC = () => {
                           <tr>
                             <td className="lbl">Acceptance Criteria</td>
                             <td className="val">
-                              {acceptance.length > 0 ? (
-                                acceptance.join(", ")
-                              ) : (
-                                "Not specified"
-                              )}
+                              {acceptance.length > 0
+                                ? acceptance.join(", ")
+                                : "Not specified"}
                             </td>
                             <td className="lbl">Material</td>
                             <td className="val">{v(jd.material) || "-"}</td>
@@ -497,19 +505,25 @@ export const PTReportPrintPage: React.FC = () => {
                               {v(jd.extentOfExamination) || "-"}
                             </td>
                             <td className="lbl">Surface condition</td>
-                            <td className="val">{v(jd.surfaceCondition) || "-"}</td>
+                            <td className="val">
+                              {v(jd.surfaceCondition) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Type of Joint</td>
                             <td className="val">{v(jd.typeOfJoint) || "-"}</td>
                             <td className="lbl">Welding Process</td>
-                            <td className="val">{v(jd.weldingProcess) || "-"}</td>
+                            <td className="val">
+                              {v(jd.weldingProcess) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Project</td>
                             <td className="val">{v(jd.project) || "-"}</td>
                             <td className="lbl">Surface Temperature</td>
-                            <td className="val">{v(jd.surfaceTemperature) || "-"}</td>
+                            <td className="val">
+                              {v(jd.surfaceTemperature) || "-"}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -523,12 +537,21 @@ export const PTReportPrintPage: React.FC = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td className="lbl" style={{ width: "22%" }}>Penetrant Method</td>
-                            <td className="val" colSpan={3}>{v(md.penetrantMethod)}</td>
+                            <td className="lbl" style={{ width: "22%" }}>
+                              Penetrant Method
+                            </td>
+                            <td className="val" colSpan={3}>
+                              {v(md.penetrantMethod)}
+                            </td>
                           </tr>
                           <tr>
-                            <td className="lbl">Excess Penetrant <br />Removal method</td>
-                            <td className="val" colSpan={3}>{v(md.excessPenetrantRemovalMethod)}</td>
+                            <td className="lbl">
+                              Excess Penetrant <br />
+                              Removal method
+                            </td>
+                            <td className="val" colSpan={3}>
+                              {v(md.excessPenetrantRemovalMethod)}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -598,7 +621,9 @@ export const PTReportPrintPage: React.FC = () => {
                             <td className="lbl">Light Intensity</td>
                             <td className="val">{v(desc.lightIntensity)}</td>
                             <td className="lbl">Light Equip. Used</td>
-                            <td className="val">{v(desc.lightEquipmentUsed)}</td>
+                            <td className="val">
+                              {v(desc.lightEquipmentUsed)}
+                            </td>
                             <td className="lbl">Drying Time</td>
                             <td className="val">{v(desc.dryingTime)}</td>
                           </tr>
@@ -620,24 +645,79 @@ export const PTReportPrintPage: React.FC = () => {
                               </colgroup>
                               <tbody>
                                 <tr>
-                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
-                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER:</td>
-                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT :</td>
+                                  <td
+                                    style={{
+                                      fontWeight: 600,
+                                      fontSize: "11px",
+                                    }}
+                                  >
+                                    EXAMINED BY
+                                  </td>
+                                  <td
+                                    style={{
+                                      fontWeight: 600,
+                                      fontSize: "11px",
+                                    }}
+                                  >
+                                    CUSTOMER:
+                                  </td>
+                                  <td
+                                    style={{
+                                      fontWeight: 600,
+                                      fontSize: "11px",
+                                    }}
+                                  >
+                                    CLIENT :
+                                  </td>
                                 </tr>
                                 <tr>
-                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>National Industrial Inspection And Training</td>
-                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.customer)}</td>
-                                  <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.client)}</td>
+                                  <td
+                                    style={{
+                                      fontWeight: 600,
+                                      fontSize: "11px",
+                                    }}
+                                  >
+                                    National Industrial Inspection And Training
+                                  </td>
+                                  <td
+                                    style={{
+                                      fontWeight: 600,
+                                      fontSize: "11px",
+                                    }}
+                                  >
+                                    {v(jd.customer)}
+                                  </td>
+                                  <td
+                                    style={{
+                                      fontWeight: 600,
+                                      fontSize: "11px",
+                                    }}
+                                  >
+                                    {v(jd.client)}
+                                  </td>
                                 </tr>
                                 <tr>
                                   <td>Name: {v(inspector.name) || "-"}</td>
-                                  <td>Name: {v(jd.customerRepresentative) || "-"}</td>
-                                  <td>Name: {v(jd.clientRepresentative) || "-"}</td>
+                                  <td>
+                                    Name: {v(jd.customerRepresentative) || "-"}
+                                  </td>
+                                  <td>
+                                    Name: {v(jd.clientRepresentative) || "-"}
+                                  </td>
                                 </tr>
                                 <tr>
-                                  <td>{v(inspector.designation) || "PT NDE Level II"}</td>
-                                  <td>Designation: {v(jd.customerDesignation) || "-"}</td>
-                                  <td>Designation: {v(jd.clientDesignation) || "-"}</td>
+                                  <td>
+                                    {v(inspector.designation) ||
+                                      "PT NDE Level II"}
+                                  </td>
+                                  <td>
+                                    Designation:{" "}
+                                    {v(jd.customerDesignation) || "-"}
+                                  </td>
+                                  <td>
+                                    Designation:{" "}
+                                    {v(jd.clientDesignation) || "-"}
+                                  </td>
                                 </tr>
                                 <tr>
                                   <td style={{ height: "60px" }}>Signature:</td>
@@ -667,7 +747,9 @@ export const PTReportPrintPage: React.FC = () => {
                             </colgroup>
                             <thead>
                               <tr>
-                                <td colSpan={7} className="section-hdr">{title}</td>
+                                <td colSpan={7} className="section-hdr">
+                                  {title}
+                                </td>
                               </tr>
                               <tr>
                                 <td className="col-hdr">Sr.</td>
@@ -682,7 +764,15 @@ export const PTReportPrintPage: React.FC = () => {
                             <tbody>
                               {data.length === 0 ? (
                                 <tr>
-                                  <td colSpan={7} style={{ textAlign: "center", padding: "6px", fontSize: "11px", color: "#999" }}>
+                                  <td
+                                    colSpan={7}
+                                    style={{
+                                      textAlign: "center",
+                                      padding: "6px",
+                                      fontSize: "11px",
+                                      color: "#999",
+                                    }}
+                                  >
                                     No observations recorded.
                                   </td>
                                 </tr>
@@ -712,7 +802,10 @@ export const PTReportPrintPage: React.FC = () => {
 
                               {obsPage2.length > 0 && (
                                 <div style={{ pageBreakBefore: "always" }}>
-                                  {renderObsTable(obsPage2, "5. OBSERVATIONS (Contd.)")}
+                                  {renderObsTable(
+                                    obsPage2,
+                                    "5. OBSERVATIONS (Contd.)",
+                                  )}
                                   {renderSignatures()}
                                 </div>
                               )}
