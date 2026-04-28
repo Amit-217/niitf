@@ -123,13 +123,13 @@ export const QuotationPrintPage: React.FC = () => {
         window.scrollTo(0, document.body.scrollHeight);
         window.scrollTo(0, 1);
         window.scrollTo(0, 0);
-        
+
         // Force a tiny delay after scrolling before printing
         requestAnimationFrame(() => {
           window.print();
           document.body.classList.remove("autoprint-mode");
         });
-      }, 1200); 
+      }, 1200);
       return () => clearTimeout(t);
     }
   }, [isLoading, data, isAutoPrint]);
@@ -222,6 +222,8 @@ export const QuotationPrintPage: React.FC = () => {
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
+          <br />
+          Powered by: Viplora Tech
         </div>
       </div>
       <div className="footer-meta">
