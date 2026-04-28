@@ -82,7 +82,7 @@ const PRINT_STYLES = `
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
   .bw .calib-table th { background: #fff !important; color: #000 !important; }
   .bw .calib-table td:first-child { background: #fff !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1px solid #444 !important; border-top: none !important; border-radius: 6px 6px 0 0 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1px solid #444 !important; border-top: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
@@ -98,7 +98,7 @@ const PRINT_STYLES = `
   .bw .report-body { color: #000 !important; border-top: 1px solid #444 !important; border-left: none !important; border-right: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
   .bw .report-footer-wrap { border: 1px solid #444 !important; border-top: none !important; border-radius: 0 0 6px 6px !important; }
 
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #444; border-top: none; border-radius: 6px 6px 0 0; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #444; border-top: none; border-bottom: none; border-radius: 6px 6px 0 0; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 4px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
   .report-table td, .report-table th { border: 1px solid #444; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 12px; }
