@@ -48,10 +48,8 @@ const PRINT_STYLES = `
   }
   body { font-family: 'Times New Roman', Times, serif; font-size: 13px; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  table { border-collapse: collapse; width: 100%; }
+  table { border-collapse: collapse; width: calc(100% - 1px); }
   .outer-border { border: none; }
-  .outer-border ~ .outer-border > *:first-child > tr:first-child > td,
-  .outer-border ~ .outer-border > *:first-child > tr:first-child > th { border-top: none !important; }
   .cell { border: 1px solid #000; padding: 3px 5px; vertical-align: top; }
   .cell-center { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; text-align: center; }
   .cell-right { border: 1px solid #000; padding: 3px 5px; vertical-align: top; text-align: right; }
@@ -84,7 +82,6 @@ const PRINT_STYLES = `
   .inv-foot { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 1px solid #185FA5; line-height: 1.4; text-align: center; }
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
-  .gst-inner-table > tbody > tr:first-child > td { border-top: none !important; }
   .hsn-table.outer-border, .hsn-table.outer-border thead tr:first-child th { border-top: 1px solid #000 !important; }
 `;
 
@@ -622,7 +619,7 @@ export const InvoicePrintPage: React.FC = () => {
                     {/* ── LINE ITEMS TABLE ── */}
                     <table
                       className="outer-border"
-                      style={{ borderTop: "none", marginTop: 0 }}
+                      style={{ borderTop: "none", marginTop: "-1px" }}
                     >
                       <thead>
                         <tr>
@@ -717,6 +714,7 @@ export const InvoicePrintPage: React.FC = () => {
                               width: "45%",
                               padding: 0,
                               verticalAlign: "top",
+                              borderBottom: "1px solid #000",
                             }}
                           >
                             <table
