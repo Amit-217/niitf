@@ -156,7 +156,7 @@ export const InvoicePrintPage: React.FC = () => {
           window.print();
           document.body.classList.remove("autoprint-mode");
         });
-      }, 1200); 
+      }, 1200);
       return () => clearTimeout(t);
     }
   }, [isLoading, data, isAutoPrint]);
@@ -221,6 +221,8 @@ export const InvoicePrintPage: React.FC = () => {
         <br />
         Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
         www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
+        <br />
+        Powered by: Viplora Tech
       </div>
       <div className="footer-meta">
         Invoice No: <span>{data.invoiceNo}</span>
@@ -259,21 +261,6 @@ export const InvoicePrintPage: React.FC = () => {
           }}
         >
           Print / Save PDF
-        </button>
-        <button
-          onClick={() => window.history.back()}
-          style={{
-            padding: "7px 16px",
-            background: "#6b7280",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
-          }}
-        >
-          Back
         </button>
       </div>
 
@@ -340,7 +327,7 @@ export const InvoicePrintPage: React.FC = () => {
                               width: "50%",
                               padding: 0,
                               verticalAlign: "top",
-                              height: "100%",
+                              height: "1px",
                             }}
                           >
                             <table style={{ width: "100%", height: "100%" }}>
@@ -372,11 +359,11 @@ export const InvoicePrintPage: React.FC = () => {
                                       <br />
                                       GST No.: 27ABJPK8603R1ZY
                                       <br />
-                                      State Name=Maharashtra&nbsp; Code =27
+                                      State Name: Maharashtra&nbsp; Code: 27
                                       <br />
-                                      CONTACT= 9850923725, 9421606761
+                                      CONTACT: 9850923725, 9421606761
                                       <br />
-                                      E-Mail = niit004@gmail.com
+                                      E-Mail: niit004@gmail.com
                                     </div>
                                   </td>
                                 </tr>
@@ -427,13 +414,13 @@ export const InvoicePrintPage: React.FC = () => {
                                       className="red"
                                       style={{ fontSize: 14 }}
                                     >
-                                      State Name=Maharashtra Code =27
+                                      State Name: Maharashtra Code: 27
                                     </div>
                                     <div
                                       className="red"
                                       style={{ fontSize: 14 }}
                                     >
-                                      GST No={customer?.gstNo || ""}
+                                      GST No: {customer?.gstNo || ""}
                                     </div>
                                   </td>
                                 </tr>
@@ -699,10 +686,10 @@ export const InvoicePrintPage: React.FC = () => {
                             colSpan={5}
                             style={{ textAlign: "right" }}
                           >
-                            Total=
+                            Total
                           </td>
                           <td className="items-td-right bold">
-                            {fmtNum(data.subtotal)}
+                            ₹ {fmtNum(data.subtotal)}
                           </td>
                         </tr>
                       </tbody>
@@ -795,7 +782,7 @@ export const InvoicePrintPage: React.FC = () => {
                                     Grand Total
                                   </td>
                                   <td className="gst-value bold red">
-                                    {fmtNum(data.grandTotal)}
+                                    ₹ {fmtNum(data.grandTotal)}
                                   </td>
                                 </tr>
                               </tbody>
