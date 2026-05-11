@@ -4,7 +4,7 @@ import { getInvoiceById } from "../../../api/invoiceApi";
 import { getCustomerById } from "../../../api/customerApi";
 
 const PRINT_STYLES = `
-  @page { size: A4 portrait; margin: 8mm 8mm; }
+  @page { size: A4 portrait; margin: 2mm 8mm; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
   @media screen { 
     body.autoprint-mode { background: #fff !important; }
@@ -48,10 +48,8 @@ const PRINT_STYLES = `
   }
   body { font-family: 'Times New Roman', Times, serif; font-size: 13px; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  table { border-collapse: collapse; width: 100%; }
+  table { border-collapse: collapse; width: calc(100% - 1px); }
   .outer-border { border: none; }
-  .outer-border ~ .outer-border > *:first-child > tr:first-child > td,
-  .outer-border ~ .outer-border > *:first-child > tr:first-child > th { border-top: none !important; }
   .cell { border: 1px solid #000; padding: 3px 5px; vertical-align: top; }
   .cell-center { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; text-align: center; }
   .cell-right { border: 1px solid #000; padding: 3px 5px; vertical-align: top; text-align: right; }
@@ -75,16 +73,15 @@ const PRINT_STYLES = `
   .sig-cell { border: 1px solid #000; padding: 5px; height: 60px; vertical-align: top; }
   .footer-note { text-align: center; font-size: 11px; color: #555; padding: 3px; border-top: 1px solid #000; }
   .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 130px; height: 130px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
-  .logo-box img { width: 100%; height: 100%; object-fit: contain; }
+  .logo-box { width: 140px; height: 90px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
+  .logo-box img { width: 130px; height: 80px; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .org { font-size: 20px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
   .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
   .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
   .inv-foot { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 1px solid #185FA5; line-height: 1.4; text-align: center; }
   .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
-  .gst-inner-table > tbody > tr:first-child > td { border-top: none !important; }
   .hsn-table.outer-border, .hsn-table.outer-border thead tr:first-child th { border-top: 1px solid #000 !important; }
 `;
 
@@ -276,7 +273,7 @@ export const InvoicePrintPage: React.FC = () => {
             margin: "0 auto",
             background: "#fff",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-            padding: "5mm 5mm 35mm 5mm",
+            padding: "0 5mm 35mm 5mm",
             fontFamily: "'Times New Roman', Times, serif",
             fontSize: 12,
             color: "#000",
@@ -295,7 +292,7 @@ export const InvoicePrintPage: React.FC = () => {
           >
             <thead style={{ display: "table-header-group" }}>
               <tr>
-                <td style={{ padding: "2mm 0 0 0" }}>
+                <td style={{ padding: "0" }}>
                   <InvoiceHeader />
                 </td>
               </tr>
@@ -622,7 +619,7 @@ export const InvoicePrintPage: React.FC = () => {
                     {/* ── LINE ITEMS TABLE ── */}
                     <table
                       className="outer-border"
-                      style={{ borderTop: "none", marginTop: 0 }}
+                      style={{ borderTop: "none", marginTop: "-1px" }}
                     >
                       <thead>
                         <tr>
@@ -717,6 +714,7 @@ export const InvoicePrintPage: React.FC = () => {
                               width: "45%",
                               padding: 0,
                               verticalAlign: "top",
+                              borderBottom: "1px solid #000",
                             }}
                           >
                             <table
