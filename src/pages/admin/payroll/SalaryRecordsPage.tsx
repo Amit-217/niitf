@@ -30,6 +30,7 @@ interface SalaryRecord {
   absentDays: number;
   deductionAmount: number;
   advanceTotal: number;
+  pfAmount: number;
   netSalary: number;
   status: string;
   note?: string;
@@ -504,6 +505,10 @@ export const SalaryRecordsPage = () => {
                         <span className="text-[8px] opacity-70">
                           ({record.absentDays}A)
                         </span>
+                      </div>
+                      <div className="text-[10px] font-bold text-blue-600">
+                        - ₹{(record.pfAmount || 0).toLocaleString()}{" "}
+                        <span className="text-[8px] opacity-70">(PF)</span>
                       </div>
                       <div className="text-[10px] font-bold text-amber-600">
                         - ₹{(record.advanceTotal || 0).toLocaleString()}{" "}
