@@ -78,30 +78,30 @@ const PRINT_STYLES = `
   .bw .hdr-center .sub { color: #333 !important; }
   .bw .hdr-center .iso { color: #000 !important; }
   .bw .logo-box { background: #fff !important; }
-  .bw .section-hdr { background: #fff !important; color: #000 !important; border-bottom: 1px solid #444 !important; }
+  .bw .section-hdr { background: #fff !important; color: #000 !important; border-bottom: 1px solid #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
   .bw .calib-table th { background: #fff !important; color: #000 !important; }
   .bw .calib-table td:first-child { background: #fff !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1px solid #444 !important; border-top: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1px solid #000 !important; border-top: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
   .bw .accept-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .reject-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .neutral-badge { background: transparent !important; color: #000 !important; border: none !important; }
-  .bw .report-table td, .bw .report-table th { border-color: #444 !important; }
-  .bw .obs-table td, .bw .obs-table th { border-color: #444 !important; }
+  .bw .report-table td, .bw .report-table th { border-color: #000 !important; }
+  .bw .obs-table td, .bw .obs-table th { border-color: #000 !important; }
   .bw .obs-table th { background: #fff !important; color: #000 !important; }
-  .bw .sign-table td { border-color: #444 !important; }
+  .bw .sign-table td { border-color: #000 !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
-  .bw .footer { background: #fff !important; color: #000 !important; border-color: #444 !important; }
-  .bw .report-body { color: #000 !important; border-top: 1px solid #444 !important; border-left: none !important; border-right: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
-  .bw .report-footer-wrap { border: 1px solid #444 !important; border-top: none !important; border-radius: 0 0 6px 6px !important; }
+  .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
+  .bw .report-body { color: #000 !important; border-top: 1px solid #000 !important; border-left: none !important; border-right: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
+  .bw .report-footer-wrap { border: 1px solid #000 !important; border-top: none !important; border-radius: 0 0 6px 6px !important; }
 
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #444; border-top: none; border-bottom: none; border-radius: 6px 6px 0 0; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #000; border-top: none; border-bottom: none; border-radius: 6px 6px 0 0; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 4px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
-  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
-  .report-table td, .report-table th { border: 1px solid #444; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 12px; }
+  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #000; }
+  .report-table td, .report-table th { border: 1px solid #000; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 12px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 12px; text-align: left; color: #0C447C; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 12px; white-space: nowrap; width: 22%; text-align: left; }
   .val { font-size: 12px; color: #000; }
@@ -110,16 +110,16 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border-top: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
+  .report-body { border-top: 1px solid #000; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #000; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #444; padding: 3px 4px; font-size: 12px; vertical-align: top; }
+  .sign-table td { border: 1px solid #000; padding: 3px 4px; font-size: 12px; vertical-align: top; }
   .sign-table td:first-child { border-left: none; }
   .sign-table td:last-child { border-right: none; }
-  .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #444; }
-  .calib-table td, .calib-table th { border: 1px solid #444; padding: 3px; font-size: 11px; text-align: center; vertical-align: middle; }
+  .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #000; }
+  .calib-table td, .calib-table th { border: 1px solid #000; padding: 3px; font-size: 11px; text-align: center; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; text-align: center; }
   .footer { background: #f8fafc; padding: 4px 10px; font-size: 11px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
@@ -404,7 +404,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                                 <div style={{ width: "50%", padding: "4px 6px", fontWeight: 700, fontSize: "12px" }}>
                                   Report No. {v(report.reportNo)}
                                 </div>
-                                <div style={{ width: "50%", padding: "4px 6px", fontWeight: 700, fontSize: "12px", borderLeft: "1px solid #444" }}>
+                                <div style={{ width: "50%", padding: "4px 6px", fontWeight: 700, fontSize: "12px", borderLeft: "1px solid #000" }}>
                                   Job Description: {v(report.jobDescription)}
                                 </div>
                               </div>
@@ -422,7 +422,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="val" style={{ padding: 0 }}>
-                              <div style={{ padding: "2px 6px", borderBottom: "1px solid #444" }}>Material: <strong>{v(report.material)}</strong></div>
+                              <div style={{ padding: "2px 6px", borderBottom: "1px solid #000" }}>Material: <strong>{v(report.material)}</strong></div>
                               <div style={{ padding: "2px 6px" }}>Equipment: <strong>{v(report.equipmentUsed)}</strong></div>
                             </td>
                             <td className="val">Technique: <strong>{v(report.scanningTechnique)}</strong></td>
@@ -430,7 +430,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="val" style={{ padding: 0 }}>
-                              <div style={{ padding: "2px 6px", borderBottom: "1px solid #444" }}>Couplant: <strong>{v(report.couplant)}</strong></div>
+                              <div style={{ padding: "2px 6px", borderBottom: "1px solid #000" }}>Couplant: <strong>{v(report.couplant)}</strong></div>
                               <div style={{ padding: "2px 6px" }}>Datum: <strong>{v(report.referenceDatum)}</strong></div>
                             </td>
                             <td className="val">Area Scanned: <strong>{v(report.areaScanned)}</strong></td>

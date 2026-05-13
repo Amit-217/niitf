@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
-  Download,
   Calculator,
   CreditCard,
   Eye,
@@ -10,7 +9,7 @@ import {
   TrendingUp,
   Users,
   Loader2,
-  Trash2,
+  Info,
 } from "lucide-react";
 import {
   generateSalary,
@@ -67,10 +66,41 @@ export const SalaryRecordsPage = () => {
   const [isCreatePayrollOpen, setIsCreatePayrollOpen] = useState(false);
   const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null);
 
+  const handleOpenInfo = (record: any) => {
+    const empId = record.employeeId?._id || record.employeeId;
+    const empName = record.employeeId?.name || record.employeeDetails?.name;
+    const empIdStr = record.employeeId?.empId || record.employeeDetails?.empId;
+    navigate(`/admin/payroll/employee/${empId}/detail`, {
+      state: { employee: { name: empName, empId: empIdStr } },
+    });
+  };
+
   // For bulk generation modal/logic
   const [employees, setEmployees] = useState<any[]>([]);
   const [selectedGenEmployee, setSelectedGenEmployee] = useState("");
+  const [advanceDeduction, setAdvanceDeduction] = useState<number | "">(0);
+  const [outstandingAdvance, setOutstandingAdvance] = useState(0);
   const [monthlyAttendance, setMonthlyAttendance] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (selectedGenEmployee) {
+      const fetchOutstanding = async () => {
+        try {
+          const res: any = await api.get(
+            `/admin/advance/outstanding/${selectedGenEmployee}`,
+          );
+          setOutstandingAdvance(res.data?.totalOutstanding || 0);
+          setAdvanceDeduction(0); // Reset deduction when employee changes
+        } catch (e) {
+          setOutstandingAdvance(0);
+        }
+      };
+      fetchOutstanding();
+    } else {
+      setOutstandingAdvance(0);
+      setAdvanceDeduction(0);
+    }
+  }, [selectedGenEmployee]);
 
   useEffect(() => {
     const loadPageData = async () => {
@@ -222,6 +252,7 @@ export const SalaryRecordsPage = () => {
         employeeId: selectedGenEmployee,
         month: month,
         note: note,
+        advanceDeduction: Number(advanceDeduction || 0),
       });
       toast.success("Salary generated successfully");
       setNote("");
@@ -264,79 +295,6 @@ export const SalaryRecordsPage = () => {
     } catch (error: any) {
       toast.error(error.message || error || "Failed to delete record");
     }
-  };
-
-  const downloadSalarySlip = (record: any) => {
-    const printWindow = window.open("", "_blank", "width=800,height=1000");
-    if (!printWindow) return;
-
-    const html = `
-            <html>
-                <head>
-                    <title>Salary Slip - ${record.employeeId?.name || "Employee"}</title>
-                    <style>
-                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #1e293b; line-height: 1.6; }
-                        .header { text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px; }
-                        .header h1 { margin: 0; color: #1d4ed8; font-size: 28px; letter-spacing: -0.025em; }
-                        .header p { margin: 5px 0 0; color: #64748b; font-weight: 500; }
-                        .info-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-                        .info-item { background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; }
-                        .info-item label { display: block; font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-                        .info-item span { font-size: 15px; font-weight: 700; color: #0f172a; }
-                        h3 { font-size: 14px; font-weight: 800; color: #334155; text-transform: uppercase; letter-spacing: 0.05em; margin: 30px 0 15px; border-left: 4px solid #3b82f6; padding-left: 12px; }
-                        .row { display: flex; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 14px; font-weight: 600; }
-                        .row.total { background: #eff6ff; border-bottom: none; border-radius: 12px; margin-top: 15px; padding: 20px 15px; font-size: 20px; color: #1d4ed8; }
-                        .total-label { font-weight: 800; }
-                        .total-amount { font-weight: 900; }
-                        .footer { text-align: center; margin-top: 50px; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 20px; font-weight: 500; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>NIIT NDT SERVICES</h1>
-                        <p>Monthly Salary Remittance Advice</p>
-                    </div>
-                    
-                    <div class="info-grid">
-                        <div class="info-item"><label>Employee Name</label><span>${record.employeeId?.name || "N/A"}</span></div>
-                        <div class="info-item"><label>Employee ID</label><span>${record.employeeId?.empId || "N/A"}</span></div>
-                        <div class="info-item"><label>Payment Month</label><span>${record.month}</span></div>
-                        <div class="info-item"><label>Status</label><span>${record.status}</span></div>
-                    </div>
-
-                    <h3>Earnings & Deductions</h3>
-                    <div class="row"><span>Basic Salary:</span> <span>₹${(record.baseSalary || 0).toLocaleString()}</span></div>
-                    <div class="row" style="color: #16a34a"><span>Overtime (${record.overtimeUnits || 0} Units):</span> <span>+ ₹${(record.overtimeAmount || 0).toLocaleString()}</span></div>
-                    <div class="row" style="color: #dc2626"><span>Absent (${record.absentDays || 0} Days):</span> <span>- ₹${(record.deductionAmount || 0).toLocaleString()}</span></div>
-                    <div class="row" style="color: #ea580c"><span>Advance:</span> <span>- ₹${(record.advanceTotal || 0).toLocaleString()}</span></div>
-                    
-                    <div class="row total">
-                        <span class="total-label">Net Take Home:</span>
-                        <span class="total-amount">₹${(record.netSalary || 0).toLocaleString()}</span>
-                    </div>
-
-                    ${
-                      record.note
-                        ? `
-                    <div style="margin-top: 20px; padding: 10px; border-left: 4px solid #2563eb; background: #f8fafc; font-size: 12px;">
-                        <strong>Note:</strong> ${record.note}
-                    </div>
-                    `
-                        : ""
-                    }
-
-                    <div class="footer">This is a system generated document. Powered by Viplora Tech.</div>
-                </body>
-            </html>
-        `;
-
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-    }, 500);
   };
 
   const totalNetPayout = [...records, ...previews].reduce(
@@ -558,6 +516,13 @@ export const SalaryRecordsPage = () => {
                     <td className="px-4 py-4">
                       <div className="flex items-center justify-center gap-2">
                         <button
+                          onClick={() => handleOpenInfo(record)}
+                          className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+                          title="View Salary & Advance Details"
+                        >
+                          <Info size={16} />
+                        </button>
+                        <button
                           onClick={() => {
                             const normalizedRecord = record.isPreview
                               ? {
@@ -583,36 +548,11 @@ export const SalaryRecordsPage = () => {
                               },
                             });
                           }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 text-xs font-bold hover:bg-gray-50 transition-all"
+                          className="p-1.5 text-gray-500 hover:bg-gray-100 rounded-lg transition-all"
                           title="View"
                         >
                           <Eye size={16} />
-                          View
                         </button>
-                        {!record.isPreview && (
-                          <>
-                            <button
-                              onClick={() => downloadSalarySlip(record)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-600 text-white text-xs font-bold hover:bg-primary-700 transition-all"
-                              title="Generate Slip"
-                            >
-                              <Download size={16} />
-                              Generate
-                            </button>
-                            <button
-                              onClick={() =>
-                                handleDelete(
-                                  record._id,
-                                  record.employeeId?.name,
-                                )
-                              }
-                              className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                              title="Delete Record"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </>
-                        )}
                       </div>
                     </td>
                   </tr>
@@ -688,6 +628,36 @@ export const SalaryRecordsPage = () => {
                   className="w-full p-3 border border-gray-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-primary-500/20 font-medium text-gray-700"
                 />
               </div>
+              <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600">
+                    Total Outstanding Advance
+                  </label>
+                  <span className="text-sm font-black text-amber-700">
+                    ₹{outstandingAdvance.toLocaleString()}
+                  </span>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-[0.15em] text-gray-500 mb-2">
+                    Deduct for this month
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-2.5 text-gray-400 font-bold text-sm">
+                      ₹
+                    </span>
+                    <input
+                      type="number"
+                      max={outstandingAdvance}
+                      value={advanceDeduction}
+                      onChange={(e) =>
+                        setAdvanceDeduction(Number(e.target.value))
+                      }
+                      placeholder="Enter amount to deduct..."
+                      className="w-full pl-7 pr-4 py-2.5 border border-amber-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500/20 font-black text-gray-700 bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
@@ -717,6 +687,7 @@ export const SalaryRecordsPage = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };

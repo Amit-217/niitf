@@ -164,9 +164,12 @@ function numberToWords(n: number): string {
 
   const intPart = Math.floor(Math.abs(n));
   const decPart = Math.round((Math.abs(n) - intPart) * 100);
-  let result = "Indian Rupees " + helper(intPart).trim();
-  if (decPart > 0) result += " and " + helper(decPart).trim() + " Paise";
-  result += " only.";
+  let result = helper(intPart).trim();
+  if (decPart > 0) {
+    result += " Rupees and " + helper(decPart).trim() + " Paise only.";
+  } else {
+    result += " Rupees only.";
+  }
   return result;
 }
 
@@ -213,19 +216,24 @@ export const InvoiceFormPage: React.FC = () => {
           typeof inv.customerId === "object"
             ? inv.customerId?._id || ""
             : inv.customerId || "";
-        const matchedCustomer = custData?.data?.data?.find(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (c: any) => c._id === resolvedCustomerId,
-        ) || custData?.data?.find(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (c: any) => c._id === resolvedCustomerId,
-        );
+        const matchedCustomer =
+          custData?.data?.data?.find(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (c: any) => c._id === resolvedCustomerId,
+          ) ||
+          custData?.data?.find(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (c: any) => c._id === resolvedCustomerId,
+          );
         setForm({
           ...defaultForm,
           ...inv,
           customerId: resolvedCustomerId,
           customerName:
-            matchedCustomer?.companyName || matchedCustomer?.name || inv.customerName || "",
+            matchedCustomer?.companyName ||
+            matchedCustomer?.name ||
+            inv.customerName ||
+            "",
           date: inv.date
             ? new Date(inv.date).toISOString().slice(0, 10)
             : defaultForm.date,
@@ -432,28 +440,25 @@ export const InvoiceFormPage: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Customer <span className="text-red-500">*</span>
             </label>
-            <input
-              list="customer-list"
+            <select
               className="input-field w-full"
-              value={form.customerName}
-              placeholder="Type or search customer..."
+              value={form.customerId}
               onChange={(e) => {
-                const typed = e.target.value;
-                const match = customers.find(
-                  (c) => (c.companyName || c.name) === typed,
-                );
+                const match = customers.find((c) => c._id === e.target.value);
                 setForm((prev) => ({
                   ...prev,
-                  customerName: typed,
-                  customerId: match ? match._id : "",
+                  customerId: e.target.value,
+                  customerName: match ? (match.companyName || match.name) : "",
                 }));
               }}
-            />
-            <datalist id="customer-list">
+            >
+              <option value="">-- Select Customer --</option>
               {customers.map((c) => (
-                <option key={c._id} value={c.companyName || c.name} />
+                <option key={c._id} value={c._id}>
+                  {c.companyName || c.name}
+                </option>
               ))}
-            </datalist>
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -491,7 +496,9 @@ export const InvoiceFormPage: React.FC = () => {
                 <input
                   className="input-field w-full"
                   value={form.paymentModeCustom}
-                  onChange={(e) => setField("paymentModeCustom", e.target.value)}
+                  onChange={(e) =>
+                    setField("paymentModeCustom", e.target.value)
+                  }
                   placeholder="Specify custom payment terms..."
                 />
               )}
