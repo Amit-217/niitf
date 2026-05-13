@@ -33,7 +33,6 @@ export interface AdvancePayload {
     amount: number;
     date: string; // YYYY-MM-DD
     remarks?: string;
-    repaymentMonth: string; // YYYY-MM
 }
 
 export interface GenerateSalaryPayload {
@@ -103,7 +102,19 @@ export const getEmployeeMonthlyAdvances = (employeeId: string, month: string) =>
 export const getAllAdvancesForMonth = (month: string) =>
     api.get(`/admin/advance/month/all?month=${month}`);
 
+export const getEmployeeOutstandingAdvance = (employeeId: string) =>
+    api.get(`/admin/advance/outstanding/${employeeId}`);
+
+export const getEmployeeAdvanceHistory = (employeeId: string) =>
+    api.get(`/admin/advance/history/${employeeId}`);
+
 // --- Salary Record Endpoints ---
+export interface GenerateSalaryPayload {
+    employeeId: string;
+    month: string; // YYYY-MM
+    note?: string;
+    advanceDeduction?: number;
+}
 export const generateSalary = (data: GenerateSalaryPayload) =>
     api.post('/admin/salary-record/generate', data);
 
@@ -115,6 +126,9 @@ export const getEmployeeSalaryRecord = (employeeId: string, month: string) =>
 
 export const getAllSalaryRecordsForMonth = (month: string) =>
     api.get(`/admin/salary-record?month=${month}`);
+
+export const getEmployeeSalaryHistory = (employeeId: string) =>
+    api.get(`/admin/salary-record/history/${employeeId}`);
 
 export const deleteSalaryRecord = (id: string) =>
     api.delete(`/admin/salary-record/remove/${id}`);

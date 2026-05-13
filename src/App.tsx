@@ -59,6 +59,7 @@ import { InvoicesListPage } from "./pages/admin/invoices/InvoicesListPage";
 import { InvoiceFormPage } from "./pages/admin/invoices/InvoiceFormPage";
 import { InvoicePrintPage } from "./pages/admin/invoices/InvoicePrintPage";
 import { SalarySlipPage } from "./pages/admin/payroll/SalarySlipPage";
+import { EmployeeSalaryDetailPage } from "./pages/admin/payroll/EmployeeSalaryDetailPage";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -238,6 +239,7 @@ function App() {
           <Route path="payroll/overtime" element={<OvertimePage />} />
           <Route path="payroll/advances" element={<AdvancesPage />} />
           <Route path="payroll/records" element={<SalaryRecordsPage />} />
+          <Route path="payroll/employee/:id/detail" element={<EmployeeSalaryDetailPage />} />
           <Route path="my-tasks" element={<MyTasksPage />} />
           <Route path="tasks" element={<AdminTasksPage />} />
           <Route path="batches" element={<BatchesPage />} />
