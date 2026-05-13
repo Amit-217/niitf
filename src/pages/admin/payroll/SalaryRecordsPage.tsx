@@ -9,6 +9,7 @@ import {
   TrendingUp,
   Users,
   Loader2,
+  Info,
 } from "lucide-react";
 import {
   generateSalary,
@@ -513,7 +514,14 @@ export const SalaryRecordsPage = () => {
                     </td>
 
                     <td className="px-4 py-4">
-                      <div className="flex items-center justify-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => handleOpenInfo(record)}
+                          className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+                          title="View Salary & Advance Details"
+                        >
+                          <Info size={16} />
+                        </button>
                         <button
                           onClick={() => {
                             const normalizedRecord = record.isPreview
