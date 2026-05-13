@@ -197,66 +197,6 @@ export const EmployeeSalaryDetailPage = () => {
                         </div>
                     </div>
 
-                    {/* Advance History Table */}
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                        <div className="px-6 py-4 border-b border-gray-100">
-                            <h2 className="font-bold text-gray-800 flex items-center gap-2">
-                                <Wallet size={16} className="text-red-500" />
-                                All Advance Records
-                            </h2>
-                        </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm text-left whitespace-nowrap">
-                                <thead className="bg-gray-50/70 border-b border-gray-100">
-                                    <tr>
-                                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-400">Date</th>
-                                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-400">Amount</th>
-                                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-400">Repaid</th>
-                                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-400">Balance</th>
-                                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-400">Status</th>
-                                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-400">Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-50">
-                                    {advances.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={6} className="px-4 py-8 text-center text-gray-400">No advances recorded</td>
-                                        </tr>
-                                    ) : (
-                                        advances.map((adv) => (
-                                            <tr key={adv._id} className="hover:bg-gray-50/50 transition-colors">
-                                                <td className="px-4 py-3 text-gray-600">{new Date(adv.date).toLocaleDateString()}</td>
-                                                <td className="px-4 py-3 font-bold text-gray-900">₹{adv.amount.toLocaleString()}</td>
-                                                <td className="px-4 py-3 font-bold text-emerald-600">₹{(adv.repaidAmount || 0).toLocaleString()}</td>
-                                                <td className="px-4 py-3 font-bold text-red-600">₹{(adv.amount - (adv.repaidAmount || 0)).toLocaleString()}</td>
-                                                <td className="px-4 py-3">
-                                                    <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-black uppercase ${
-                                                        adv.status === 'PAID' ? 'bg-emerald-100 text-emerald-700' :
-                                                        adv.status === 'PARTIAL' ? 'bg-blue-100 text-blue-700' :
-                                                        'bg-amber-100 text-amber-700'
-                                                    }`}>
-                                                        {adv.status || 'PENDING'}
-                                                    </span>
-                                                </td>
-                                                <td className="px-4 py-3 text-gray-400">{adv.remarks || '—'}</td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                                {advances.length > 0 && (
-                                    <tfoot className="bg-gray-50 border-t border-gray-200">
-                                        <tr>
-                                            <td className="px-4 py-3 text-[10px] font-black uppercase text-gray-500 tracking-wider">Totals</td>
-                                            <td className="px-4 py-3 font-black text-gray-900">₹{totalAdvanceTaken.toLocaleString()}</td>
-                                            <td className="px-4 py-3 font-black text-emerald-600">₹{totalRepaid.toLocaleString()}</td>
-                                            <td className="px-4 py-3 font-black text-red-600">₹{totalOutstanding.toLocaleString()}</td>
-                                            <td colSpan={2}></td>
-                                        </tr>
-                                    </tfoot>
-                                )}
-                            </table>
-                        </div>
-                    </div>
                 </>
             )}
         </div>
