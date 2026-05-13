@@ -79,6 +79,7 @@ export const SalaryRecordsPage = () => {
   const [employees, setEmployees] = useState<any[]>([]);
   const [selectedGenEmployee, setSelectedGenEmployee] = useState("");
   const [advanceDeduction, setAdvanceDeduction] = useState<number | "">(0);
+  const [pfDeduction, setPfDeduction] = useState<number | "">(0);
   const [outstandingAdvance, setOutstandingAdvance] = useState(0);
   const [monthlyAttendance, setMonthlyAttendance] = useState<any[]>([]);
 
@@ -251,11 +252,11 @@ export const SalaryRecordsPage = () => {
       await generateSalary({
         employeeId: selectedGenEmployee,
         month: month,
-        note: note,
         advanceDeduction: Number(advanceDeduction || 0),
+        pfDeduction: Number(pfDeduction || 0),
       });
       toast.success("Salary generated successfully");
-      setNote("");
+      setPfDeduction(0);
       fetchMonthRecords();
     } catch (error: any) {
       toast.error(error.message || error || "Failed to generate salary");
@@ -616,19 +617,23 @@ export const SalaryRecordsPage = () => {
                   {formatMonthLabel(month)}
                 </div>
               </div>
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-[0.2em] text-gray-500 mb-2">
-                  Note
+              <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
+                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-2">
+                  PF Deduction
                 </label>
-                <input
-                  type="text"
-                  placeholder="Add a note (optional)..."
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  className="w-full p-3 border border-gray-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-primary-500/20 font-medium text-gray-700"
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-gray-400 font-bold text-sm">₹</span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={pfDeduction}
+                    onChange={(e) => setPfDeduction(Number(e.target.value))}
+                    placeholder="Enter PF amount..."
+                    className="w-full pl-7 pr-4 py-2.5 border border-blue-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 font-black text-gray-700 bg-white"
+                  />
+                </div>
               </div>
-              <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 space-y-3">
+              <div className={`bg-amber-50 border border-amber-100 rounded-2xl p-4 space-y-3 ${outstandingAdvance === 0 ? "opacity-50" : ""}`}>
                 <div className="flex items-center justify-between">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600">
                     Total Outstanding Advance
@@ -649,11 +654,12 @@ export const SalaryRecordsPage = () => {
                       type="number"
                       max={outstandingAdvance}
                       value={advanceDeduction}
+                      disabled={outstandingAdvance === 0}
                       onChange={(e) =>
                         setAdvanceDeduction(Number(e.target.value))
                       }
                       placeholder="Enter amount to deduct..."
-                      className="w-full pl-7 pr-4 py-2.5 border border-amber-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500/20 font-black text-gray-700 bg-white"
+                      className="w-full pl-7 pr-4 py-2.5 border border-amber-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500/20 font-black text-gray-700 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
                     />
                   </div>
                 </div>

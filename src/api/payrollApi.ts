@@ -102,6 +102,9 @@ export const getEmployeeMonthlyAdvances = (employeeId: string, month: string) =>
 export const getAllAdvancesForMonth = (month: string) =>
     api.get(`/admin/advance/month/all?month=${month}`);
 
+export const getAllAdvances = () =>
+    api.get('/admin/advance/all');
+
 export const getEmployeeOutstandingAdvance = (employeeId: string) =>
     api.get(`/admin/advance/outstanding/${employeeId}`);
 
@@ -114,6 +117,7 @@ export interface GenerateSalaryPayload {
     month: string; // YYYY-MM
     note?: string;
     advanceDeduction?: number;
+    pfDeduction?: number;
 }
 export const generateSalary = (data: GenerateSalaryPayload) =>
     api.post('/admin/salary-record/generate', data);
