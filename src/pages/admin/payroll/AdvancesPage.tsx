@@ -22,6 +22,7 @@ interface Advance {
   date: string;
   amount: number;
   repaidAmount?: number;
+  repaidDate?: string;
   status?: string;
   remarks?: string;
 }
@@ -495,10 +496,9 @@ export const AdvancesPage = () => {
                   <thead className="text-gray-500 border-b border-gray-100">
                     <tr>
                       <th className="py-2 pr-4">#</th>
-                      <th className="py-2 pr-4">Date</th>
-                      <th className="py-2 pr-4">Amount</th>
-                      <th className="py-2 pr-4">Paid</th>
-                      <th className="py-2 pr-4">Balance</th>
+                      <th className="py-2 pr-4">Disbursed On</th>
+                      <th className="py-2 pr-4">Repaid On</th>
+                      <th className="py-2 pr-4">Repaid Amount</th>
                       <th className="py-2 pr-4 text-center">Status</th>
                       <th className="py-2">Remarks</th>
                     </tr>
@@ -512,17 +512,15 @@ export const AdvancesPage = () => {
                         <td className="py-2.5 pr-4 text-gray-500">
                           {new Date(h.date).toLocaleDateString()}
                         </td>
-                        <td className="py-2.5 pr-4 font-bold text-gray-900">
-                          ₹{h.amount.toLocaleString()}
+                        <td className="py-2.5 pr-4 text-gray-500">
+                          {h.repaidDate
+                            ? new Date(h.repaidDate).toLocaleDateString()
+                            : <span className="text-gray-300">—</span>}
                         </td>
-                        <td className="py-2.5 pr-4 text-emerald-600 font-bold">
-                          ₹{(h.repaidAmount || 0).toLocaleString()}
-                        </td>
-                        <td className="py-2.5 pr-4 text-red-600 font-bold">
-                          ₹
-                          {(
-                            h.amount - (h.repaidAmount || 0)
-                          ).toLocaleString()}
+                        <td className="py-2.5 pr-4 font-bold text-emerald-600">
+                          {h.repaidAmount
+                            ? `₹${h.repaidAmount.toLocaleString()}`
+                            : <span className="text-gray-300">—</span>}
                         </td>
                         <td className="py-2.5 pr-4 text-center">
                           <span
