@@ -82,24 +82,29 @@ export const SalaryRecordsPage = () => {
   const [advanceDeduction, setAdvanceDeduction] = useState<number | "">(0);
   const [pfDeduction, setPfDeduction] = useState<number | "">(0);
   const [outstandingAdvance, setOutstandingAdvance] = useState(0);
+  const [selectedEmpBaseSalary, setSelectedEmpBaseSalary] = useState<number | null>(null);
   const [monthlyAttendance, setMonthlyAttendance] = useState<any[]>([]);
 
   useEffect(() => {
     if (selectedGenEmployee) {
-      const fetchOutstanding = async () => {
+      const fetchEmployeeData = async () => {
         try {
-          const res: any = await api.get(
-            `/admin/advance/outstanding/${selectedGenEmployee}`,
-          );
-          setOutstandingAdvance(res.data?.totalOutstanding || 0);
-          setAdvanceDeduction(0); // Reset deduction when employee changes
+          const [advRes, salRes]: any[] = await Promise.all([
+            api.get(`/admin/advance/outstanding/${selectedGenEmployee}`),
+            api.get(`/admin/salary-config/current/${selectedGenEmployee}`),
+          ]);
+          setOutstandingAdvance(advRes.data?.totalOutstanding || 0);
+          setSelectedEmpBaseSalary(salRes.data?.monthlySalary || null);
+          setAdvanceDeduction(0);
         } catch (e) {
           setOutstandingAdvance(0);
+          setSelectedEmpBaseSalary(null);
         }
       };
-      fetchOutstanding();
+      fetchEmployeeData();
     } else {
       setOutstandingAdvance(0);
+      setSelectedEmpBaseSalary(null);
       setAdvanceDeduction(0);
     }
   }, [selectedGenEmployee]);
@@ -570,33 +575,33 @@ export const SalaryRecordsPage = () => {
       </div>
 
       {isCreatePayrollOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div
             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
             onClick={() => setIsCreatePayrollOpen(false)}
           />
-          <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-primary-600 to-indigo-600 px-6 py-5 text-white flex items-start justify-between gap-4">
+          <div className="relative bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:max-w-xl max-h-[92vh] flex flex-col overflow-hidden">
+            <div className="bg-gradient-to-r from-primary-600 to-indigo-600 px-5 py-4 sm:px-6 sm:py-5 text-white flex items-start justify-between gap-4 shrink-0">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.3em] text-primary-100 font-black">
                   Create Payroll
                 </p>
-                <h3 className="text-xl font-black mt-1">
+                <h3 className="text-lg sm:text-xl font-black mt-1">
                   Generate salary for {formatMonthLabel(month)}
                 </h3>
-                <p className="text-primary-100 text-sm mt-1">
+                <p className="text-primary-100 text-xs sm:text-sm mt-1">
                   Select an employee and create payroll for the chosen month.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsCreatePayrollOpen(false)}
-                className="p-2 rounded-xl hover:bg-white/10 transition-colors"
+                className="p-2 rounded-xl hover:bg-white/10 transition-colors shrink-0"
               >
                 <X size={18} />
               </button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 sm:p-6 space-y-3 sm:space-y-4 overflow-y-auto flex-1">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-[0.2em] text-gray-500 mb-2">
                   Select Employee
@@ -622,6 +627,45 @@ export const SalaryRecordsPage = () => {
                   {formatMonthLabel(month)}
                 </div>
               </div>
+
+              {/* Payable Days + Amount for selected employee */}
+              {selectedGenEmployee && (() => {
+                const summary = getAttendanceSummary(selectedGenEmployee);
+                const isFullMonth = summary.payableDays >= summary.daysInMonth;
+                const payableAmount = selectedEmpBaseSalary != null
+                  ? isFullMonth
+                    ? selectedEmpBaseSalary
+                    : (selectedEmpBaseSalary / summary.daysInMonth) * summary.payableDays
+                  : null;
+                return (
+                  <div className={`rounded-2xl border p-4 space-y-2 ${isFullMonth ? "bg-emerald-50 border-emerald-100" : "bg-gray-50 border-gray-200"}`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">
+                        Payable Days
+                      </span>
+                      <span className={`text-sm font-black ${isFullMonth ? "text-emerald-700" : "text-primary-700"}`}>
+                        {summary.payableDays} / {summary.daysInMonth}
+                        {isFullMonth && (
+                          <span className="ml-2 text-[10px] bg-emerald-200 text-emerald-800 px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                            Full Month
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                    {payableAmount != null && (
+                      <div className="flex items-center justify-between border-t border-dashed border-gray-200 pt-2">
+                        <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">
+                          Payable Amount
+                        </span>
+                        <span className={`text-base font-black ${isFullMonth ? "text-emerald-700" : "text-primary-700"}`}>
+                          ₹{Math.round(payableAmount).toLocaleString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
               <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-2">
                   PF Deduction
@@ -669,7 +713,7 @@ export const SalaryRecordsPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-3 pt-2 pb-1">
                 <button
                   type="button"
                   onClick={() => setIsCreatePayrollOpen(false)}
