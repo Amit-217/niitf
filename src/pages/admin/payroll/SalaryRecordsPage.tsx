@@ -82,7 +82,9 @@ export const SalaryRecordsPage = () => {
   const [advanceDeduction, setAdvanceDeduction] = useState<number | "">(0);
   const [pfDeduction, setPfDeduction] = useState<number | "">(0);
   const [outstandingAdvance, setOutstandingAdvance] = useState(0);
-  const [selectedEmpBaseSalary, setSelectedEmpBaseSalary] = useState<number | null>(null);
+  const [selectedEmpBaseSalary, setSelectedEmpBaseSalary] = useState<
+    number | null
+  >(null);
   const [monthlyAttendance, setMonthlyAttendance] = useState<any[]>([]);
 
   useEffect(() => {
@@ -513,7 +515,7 @@ export const SalaryRecordsPage = () => {
                       </div>
                       <div className="text-[10px] font-bold text-blue-600">
                         - ₹{(record.pfAmount || 0).toLocaleString()}{" "}
-                        <span className="text-[8px] opacity-70">(PF)</span>
+                        <span className="text-[8px] opacity-70">(SD)</span>
                       </div>
                       <div className="text-[10px] font-bold text-amber-600">
                         - ₹{(record.advanceTotal || 0).toLocaleString()}{" "}
@@ -629,49 +631,61 @@ export const SalaryRecordsPage = () => {
               </div>
 
               {/* Payable Days + Amount for selected employee */}
-              {selectedGenEmployee && (() => {
-                const summary = getAttendanceSummary(selectedGenEmployee);
-                const isFullMonth = summary.payableDays >= summary.daysInMonth;
-                const payableAmount = selectedEmpBaseSalary != null
-                  ? isFullMonth
-                    ? selectedEmpBaseSalary
-                    : (selectedEmpBaseSalary / summary.daysInMonth) * summary.payableDays
-                  : null;
-                return (
-                  <div className={`rounded-2xl border p-4 space-y-2 ${isFullMonth ? "bg-emerald-50 border-emerald-100" : "bg-gray-50 border-gray-200"}`}>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">
-                        Payable Days
-                      </span>
-                      <span className={`text-sm font-black ${isFullMonth ? "text-emerald-700" : "text-primary-700"}`}>
-                        {summary.payableDays} / {summary.daysInMonth}
-                        {isFullMonth && (
-                          <span className="ml-2 text-[10px] bg-emerald-200 text-emerald-800 px-1.5 py-0.5 rounded-full uppercase tracking-wider">
-                            Full Month
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                    {payableAmount != null && (
-                      <div className="flex items-center justify-between border-t border-dashed border-gray-200 pt-2">
+              {selectedGenEmployee &&
+                (() => {
+                  const summary = getAttendanceSummary(selectedGenEmployee);
+                  const isFullMonth =
+                    summary.payableDays >= summary.daysInMonth;
+                  const payableAmount =
+                    selectedEmpBaseSalary != null
+                      ? isFullMonth
+                        ? selectedEmpBaseSalary
+                        : (selectedEmpBaseSalary / summary.daysInMonth) *
+                          summary.payableDays
+                      : null;
+                  return (
+                    <div
+                      className={`rounded-2xl border p-4 space-y-2 ${isFullMonth ? "bg-emerald-50 border-emerald-100" : "bg-gray-50 border-gray-200"}`}
+                    >
+                      <div className="flex items-center justify-between">
                         <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">
-                          Payable Amount
+                          Payable Days
                         </span>
-                        <span className={`text-base font-black ${isFullMonth ? "text-emerald-700" : "text-primary-700"}`}>
-                          ₹{Math.round(payableAmount).toLocaleString()}
+                        <span
+                          className={`text-sm font-black ${isFullMonth ? "text-emerald-700" : "text-primary-700"}`}
+                        >
+                          {summary.payableDays} / {summary.daysInMonth}
+                          {isFullMonth && (
+                            <span className="ml-2 text-[10px] bg-emerald-200 text-emerald-800 px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                              Full Month
+                            </span>
+                          )}
                         </span>
                       </div>
-                    )}
-                  </div>
-                );
-              })()}
+                      {payableAmount != null && (
+                        <div className="flex items-center justify-between border-t border-dashed border-gray-200 pt-2">
+                          <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">
+                            Payable Amount
+                          </span>
+                          <span
+                            className={`text-base font-black ${isFullMonth ? "text-emerald-700" : "text-primary-700"}`}
+                          >
+                            ₹{Math.round(payableAmount).toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
               <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-2">
-                  PF Deduction
+                  standard Deduction
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-gray-400 font-bold text-sm">₹</span>
+                  <span className="absolute left-3 top-2.5 text-gray-400 font-bold text-sm">
+                    ₹
+                  </span>
                   <input
                     type="number"
                     min={0}
@@ -682,7 +696,9 @@ export const SalaryRecordsPage = () => {
                   />
                 </div>
               </div>
-              <div className={`bg-amber-50 border border-amber-100 rounded-2xl p-4 space-y-3 ${outstandingAdvance === 0 ? "opacity-50" : ""}`}>
+              <div
+                className={`bg-amber-50 border border-amber-100 rounded-2xl p-4 space-y-3 ${outstandingAdvance === 0 ? "opacity-50" : ""}`}
+              >
                 <div className="flex items-center justify-between">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600">
                     Total Outstanding Advance
@@ -742,7 +758,6 @@ export const SalaryRecordsPage = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
