@@ -86,16 +86,16 @@ export const AdminTasksPage = () => {
     status: "ASSIGNED" as "ASSIGNED" | "IN_PROGRESS" | "COMPLETED",
   });
 
-  const fetchTasks = async () => {
-    setIsLoading(true);
+  const fetchTasks = async (silent = false) => {
+    if (!silent) setIsLoading(true);
     try {
       const res = await getAllTasks({ isArchived: viewArchived });
       const allTasks = res.data?.data || (Array.isArray(res.data) ? res.data : []);
       setTasks(allTasks);
     } catch (error) {
-      toast.error("Failed to load tasks");
+      if (!silent) toast.error("Failed to load tasks");
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
     }
   };
 
@@ -111,6 +111,65 @@ export const AdminTasksPage = () => {
   useEffect(() => {
     fetchTasks();
   }, [viewArchived]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      fetchTasks(true);
+    }, 5000);
+    const handleRefresh = () => fetchTasks(true);
+    window.addEventListener("notifications:refresh", handleRefresh);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("notifications:refresh", handleRefresh);
+    };
+  }, [viewArchived]);
+
+  useEffect(() => {
+    if (!selectedTask?._id) return;
+    const updated = tasks.find((t) => t._id === selectedTask._id);
+    if (updated && updated.status !== selectedTask.status) {
+      setSelectedTask(updated);
+    }
+  }, [tasks, selectedTask?._id]);
+
+  useEffect(() => {
+    if (!selectedMyTask?._id) return;
+    const updated = tasks.find((t) => t._id === selectedMyTask._id);
+    if (updated && updated.status !== selectedMyTask.status) {
+      setSelectedMyTask(updated);
+    }
+  }, [tasks, selectedMyTask?._id]);
+
+  useEffect(() => {
+    if (!isViewDrawerOpen || !selectedTask?._id) return;
+
+    const timer = window.setInterval(async () => {
+      try {
+        const res = await getTaskUpdates(selectedTask._id);
+        setTaskUpdates(res.data || []);
+      } catch {
+        // Silent polling
+      }
+
+      await fetchTasks(true);
+    }, 2000);
+
+    return () => window.clearInterval(timer);
+  }, [isViewDrawerOpen, selectedTask?._id]);
+
+  useEffect(() => {
+    if (!isViewDrawerOpen || !selectedTask?._id) return;
+    if (selectedTask.status !== "COMPLETED") return;
+
+    (async () => {
+      try {
+        const res = await getTaskUpdates(selectedTask._id);
+        setTaskUpdates(res.data || []);
+      } catch {
+        // ignore
+      }
+    })();
+  }, [isViewDrawerOpen, selectedTask?._id, selectedTask?.status]);
 
   useEffect(() => {
     if (isCreateDrawerOpen) {

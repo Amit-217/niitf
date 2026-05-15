@@ -200,7 +200,7 @@ export const DashboardLayout: React.FC = () => {
   }, [notifications.length]);
 
   const fetchMyTaskCount = useCallback(async () => {
-    if (role !== "ADMIN" && role !== "SUPER_ADMIN") {
+    if (role === "STUDENT") {
       setMyTaskCount(0);
       return;
     }
@@ -212,13 +212,16 @@ export const DashboardLayout: React.FC = () => {
 
     try {
       const res = await getAllTasks();
-      const tasks = res.data || [];
-      const count = tasks.filter((task: any) => {
+      const allTasks = res.data?.data || (Array.isArray(res.data) ? res.data : []);
+      const count = allTasks
+        .filter((task: any) => {
         const isAssignedToMe = (task.assignedTo || []).some(
           (emp: any) => String(emp?._id || emp) === String(currentUserId),
         );
         return isAssignedToMe;
-      }).length;
+        })
+        .filter((task: any) => task?.status === "ASSIGNED" || task?.status === "IN_PROGRESS")
+        .length;
       setMyTaskCount(count);
     } catch {
       setMyTaskCount(0);
@@ -228,8 +231,8 @@ export const DashboardLayout: React.FC = () => {
   useEffect(() => {
     fetchNotifications();
     fetchMyTaskCount();
-    const timer = window.setInterval(fetchNotifications, 10000);
-    const taskTimer = window.setInterval(fetchMyTaskCount, 10000);
+    const timer = window.setInterval(fetchNotifications, 5000);
+    const taskTimer = window.setInterval(fetchMyTaskCount, 5000);
     const handleNotificationRefresh = () => {
       fetchNotifications();
     };

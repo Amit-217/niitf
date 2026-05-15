@@ -72,7 +72,7 @@ export const MyTasksPage = () => {
   const [updates, setUpdates] = useState<any[]>([]);
   const [isSubmitting, setSubmitting] = useState(false);
   const [statusFilter, setStatusFilter] = useState<
-    "ALL" | "IN_PROGRESS" | "COMPLETED"
+    "ALL" | "IN_PROGRESS" | "ASSIGNED" | "COMPLETED"
   >("ALL");
 
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
@@ -102,6 +102,13 @@ export const MyTasksPage = () => {
 
   useEffect(() => {
     fetchMyTasks();
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      fetchMyTasks(true);
+    }, 5000);
+    return () => window.clearInterval(timer);
   }, []);
 
   const filteredTasks = tasks.filter((task) => {
@@ -292,6 +299,11 @@ export const MyTasksPage = () => {
               id: "IN_PROGRESS",
               label: "In Progress",
               count: tasks.filter((t) => t.status === "IN_PROGRESS").length,
+            },
+            {
+              id: "ASSIGNED",
+              label: "Pending",
+              count: tasks.filter((t) => t.status === "ASSIGNED").length,
             },
             {
               id: "COMPLETED",
