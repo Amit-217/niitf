@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { Wallet, Download, Table2 } from "lucide-react";
+import { Wallet, Download, Table2, Eye, X, Loader2 } from "lucide-react";
 import {
   createAdvance,
   getEmployeeMonthlyAdvances,
   getAllAdvances,
+  getEmployeeAdvanceHistory,
 } from "../../../api/payrollApi";
 import api from "../../../api/axios";
 import { Pagination } from "../../../components/Pagination";
@@ -13,6 +14,18 @@ interface User {
   _id: string;
   name: string;
   empId: string;
+}
+
+interface Advance {
+  _id: string;
+  employeeId?: { _id?: string; name?: string; empId?: string };
+  date: string;
+  amount: number;
+  repaidAmount?: number;
+  repaidDate?: string;
+  updatedAt?: string;
+  status?: string;
+  remarks?: string;
 }
 
 export const AdvancesPage = () => {
@@ -35,6 +48,14 @@ export const AdvancesPage = () => {
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+
+  // History modal state
+  const [historyEmp, setHistoryEmp] = useState<{
+    name?: string;
+    empId?: string;
+  } | null>(null);
+  const [historyData, setHistoryData] = useState<Advance[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   useEffect(() => {
     api
@@ -92,6 +113,22 @@ export const AdvancesPage = () => {
     }
   };
 
+  const openHistory = async (adv: Advance) => {
+    const empId = adv.employeeId?._id;
+    if (!empId) return;
+    setHistoryEmp(adv.employeeId ?? null);
+    setHistoryData([]);
+    setHistoryLoading(true);
+    try {
+      const res = await getEmployeeAdvanceHistory(empId);
+      setHistoryData(res.data || []);
+    } catch {
+      toast.error("Failed to load advance history");
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
   const totalMonthlyAdvances = recentAdvances.reduce(
     (sum, adv) => sum + adv.amount,
     0,
@@ -121,6 +158,13 @@ export const AdvancesPage = () => {
     link.click();
     window.URL.revokeObjectURL(url);
   };
+
+  const totalHistoryAmount = historyData.reduce((s, a) => s + a.amount, 0);
+  const totalHistoryPaid = historyData.reduce(
+    (s, a) => s + (a.repaidAmount || 0),
+    0,
+  );
+  const totalHistoryBalance = totalHistoryAmount - totalHistoryPaid;
 
   return (
     <div className="space-y-6">
@@ -305,13 +349,14 @@ export const AdvancesPage = () => {
                 <th className="px-4 py-3">Balance</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Remarks</th>
+                <th className="px-4 py-3 text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {allAdvances.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     className="px-4 py-8 text-center text-gray-500"
                   >
                     No advances recorded.
@@ -354,6 +399,15 @@ export const AdvancesPage = () => {
                     <td className="px-4 py-3 text-gray-500">
                       {adv.remarks || "-"}
                     </td>
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={() => openHistory(adv)}
+                        className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                        title="View History"
+                      >
+                        <Eye size={16} />
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
@@ -372,6 +426,139 @@ export const AdvancesPage = () => {
           }}
         />
       </div>
+
+      {/* Advance History Modal */}
+      {historyEmp && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setHistoryEmp(null)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-xl w-full max-w-2xl flex flex-col max-h-[85vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-5 border-b border-gray-200">
+              <div>
+                <h2 className="text-base font-semibold text-gray-800 flex items-center gap-2">
+                  <Wallet size={18} className="text-primary-600" />
+                  Advance History —{" "}
+                  <span className="text-primary-600">{historyEmp.name}</span>
+                  <span className="text-gray-400 font-normal text-sm">
+                    ({historyEmp.empId})
+                  </span>
+                </h2>
+              </div>
+              <button
+                onClick={() => setHistoryEmp(null)}
+                className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Summary Cards */}
+            {!historyLoading && historyData.length > 0 && (
+              <div className="grid grid-cols-3 gap-3 px-5 pt-4">
+                <div className="bg-gray-50 rounded-lg p-3 text-center border border-gray-100">
+                  <p className="text-xs text-gray-500 mb-0.5">Total Advance</p>
+                  <p className="font-bold text-gray-900 text-sm">
+                    ₹{totalHistoryAmount.toLocaleString()}
+                  </p>
+                </div>
+                <div className="bg-emerald-50 rounded-lg p-3 text-center border border-emerald-100">
+                  <p className="text-xs text-emerald-600 mb-0.5">Total Paid</p>
+                  <p className="font-bold text-emerald-700 text-sm">
+                    ₹{totalHistoryPaid.toLocaleString()}
+                  </p>
+                </div>
+                <div className="bg-red-50 rounded-lg p-3 text-center border border-red-100">
+                  <p className="text-xs text-red-500 mb-0.5">Outstanding</p>
+                  <p className="font-bold text-red-600 text-sm">
+                    ₹{totalHistoryBalance.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Table */}
+            <div className="overflow-y-auto flex-1 px-5 pb-5 pt-3">
+              {historyLoading ? (
+                <div className="flex items-center justify-center py-12 text-gray-400 gap-2">
+                  <Loader2 size={20} className="animate-spin" />
+                  <span className="text-sm">Loading history…</span>
+                </div>
+              ) : historyData.length === 0 ? (
+                <p className="text-center text-gray-400 text-sm py-10">
+                  No advance records found for this employee.
+                </p>
+              ) : (
+                <table className="w-full text-sm text-left whitespace-nowrap">
+                  <thead className="text-gray-500 border-b border-gray-100">
+                    <tr>
+                      <th className="py-2 pr-4">#</th>
+                      <th className="py-2 pr-4">Disbursed On</th>
+                      <th className="py-2 pr-4">Repaid On</th>
+                      <th className="py-2 pr-4">Repaid Amount</th>
+                      <th className="py-2 pr-4 text-center">Status</th>
+                      <th className="py-2">Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {historyData.map((h, idx) => (
+                      <tr key={h._id} className="hover:bg-gray-50/60">
+                        <td className="py-2.5 pr-4 text-gray-400">
+                          {idx + 1}
+                        </td>
+                        <td className="py-2.5 pr-4 text-gray-500">
+                          {new Date(h.date).toLocaleDateString()}
+                        </td>
+                        <td className="py-2.5 pr-4 text-gray-500">
+                          {h.repaidDate
+                            ? new Date(h.repaidDate).toLocaleDateString()
+                            : h.repaidAmount
+                              ? new Date(h.updatedAt!).toLocaleDateString()
+                              : <span className="text-gray-300">—</span>}
+                        </td>
+                        <td className="py-2.5 pr-4 font-bold text-emerald-600">
+                          {h.repaidAmount
+                            ? `₹${h.repaidAmount.toLocaleString()}`
+                            : <span className="text-gray-300">—</span>}
+                        </td>
+                        <td className="py-2.5 pr-4 text-center">
+                          <span
+                            className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                              h.status === "PAID"
+                                ? "bg-emerald-100 text-emerald-700"
+                                : h.status === "PARTIAL"
+                                  ? "bg-blue-100 text-blue-700"
+                                  : "bg-amber-100 text-amber-700"
+                            }`}
+                          >
+                            {h.status || "Pending"}
+                          </span>
+                        </td>
+                        <td className="py-2.5 text-gray-500">
+                          {h.remarks || "-"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            <div className="flex justify-end px-5 pb-4">
+              <button
+                onClick={() => setHistoryEmp(null)}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
