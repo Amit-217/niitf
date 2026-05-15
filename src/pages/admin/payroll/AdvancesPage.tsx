@@ -23,6 +23,7 @@ interface Advance {
   amount: number;
   repaidAmount?: number;
   repaidDate?: string;
+  updatedAt?: string;
   status?: string;
   remarks?: string;
 }
@@ -515,7 +516,9 @@ export const AdvancesPage = () => {
                         <td className="py-2.5 pr-4 text-gray-500">
                           {h.repaidDate
                             ? new Date(h.repaidDate).toLocaleDateString()
-                            : <span className="text-gray-300">—</span>}
+                            : h.repaidAmount
+                              ? new Date(h.updatedAt!).toLocaleDateString()
+                              : <span className="text-gray-300">—</span>}
                         </td>
                         <td className="py-2.5 pr-4 font-bold text-emerald-600">
                           {h.repaidAmount
