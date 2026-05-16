@@ -104,6 +104,32 @@ export const StudentsPage = () => {
       .catch(() => {});
   }, []);
 
+  // Auto-open pre-filled form when arriving from an enquiry conversion
+  useEffect(() => {
+    const pending = sessionStorage.getItem("pendingStudent");
+    if (!pending) return;
+    try {
+      const data = JSON.parse(pending);
+      setEditTarget(null);
+      setForm({
+        ...INITIAL_FORM,
+        fullName: data.fullName || "",
+        mobile: data.mobile || "",
+        email: data.email || "",
+        city: data.city || "",
+        enquiryId: data.enquiryId || "",
+      });
+      setDrawerOpen(true);
+      if (data.fullName) {
+        toast.info(`Converting enquiry for ${data.fullName}.`);
+      }
+    } catch {
+      // ignore malformed payload
+    } finally {
+      sessionStorage.removeItem("pendingStudent");
+    }
+  }, []);
+
   const openCreate = () => {
     setEditTarget(null);
     setForm(INITIAL_FORM);
