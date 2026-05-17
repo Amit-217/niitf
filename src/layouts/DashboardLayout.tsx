@@ -74,11 +74,9 @@ export const DashboardLayout: React.FC = () => {
   const user = userStr ? JSON.parse(userStr) : null;
   const role = user?.role || "EMPLOYEE";
   const basePath =
-    role === "STUDENT"
-      ? "student"
-      : role === "ADMIN" || role === "SUPER_ADMIN"
-        ? "admin"
-        : "employee";
+    role === "ADMIN" || role === "SUPER_ADMIN"
+      ? "admin"
+      : "employee";
   const currentUserId = user?.userId || user?.id || user?._id || "";
 
   const normalizeNotificationId = (value: any) => {
@@ -200,11 +198,6 @@ export const DashboardLayout: React.FC = () => {
   }, [notifications.length]);
 
   const fetchMyTaskCount = useCallback(async () => {
-    if (role === "STUDENT") {
-      setMyTaskCount(0);
-      return;
-    }
-
     if (!currentUserId) {
       setMyTaskCount(0);
       return;
@@ -346,23 +339,7 @@ export const DashboardLayout: React.FC = () => {
 
   const isAdminRole = role === "ADMIN" || role === "SUPER_ADMIN";
 
-  const groups =
-    role === "STUDENT"
-      ? [
-          {
-            name: "Exam Center",
-            key: "examCenter",
-            icon: FileText,
-            links: [
-              {
-                name: "My Tests",
-                path: `/${basePath}/dashboard`,
-                icon: FileText,
-              },
-            ],
-          },
-        ]
-      : [
+  const groups = [
           ...(isAdminRole
             ? [
                 {
@@ -429,19 +406,9 @@ export const DashboardLayout: React.FC = () => {
                       icon: GraduationCap,
                     },
                     {
-                      name: "CBT Tests",
-                      path: `/${basePath}/tests`,
-                      icon: FileText,
-                    },
-                    {
                       name: "Enquiries",
                       path: `/${basePath}/enquiries`,
                       icon: CircleHelp,
-                    },
-                    {
-                      name: "Test Login Portal",
-                      path: "/student-login",
-                      icon: BookOpen,
                     },
                   ],
                 },
@@ -472,16 +439,7 @@ export const DashboardLayout: React.FC = () => {
           },
         ];
 
-  const standaloneLinks =
-    role === "STUDENT"
-      ? [
-          {
-            name: "Dashboard",
-            path: `/${basePath}/dashboard`,
-            icon: LayoutDashboard,
-          },
-        ]
-      : [
+  const standaloneLinks = [
           {
             name: "Dashboard",
             path: `/${basePath}/dashboard`,

@@ -11,12 +11,10 @@ import { Login } from "./pages/auth/Login";
 import { ForgotPassword } from "./pages/auth/ForgotPassword";
 import { VerifyOtp } from "./pages/auth/VerifyOtp";
 import { ResetPassword } from "./pages/auth/ResetPassword";
-import { StudentLogin } from "./pages/student/auth/StudentLogin";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import { AdminDashboard } from "./pages/dashboard/AdminDashboard";
 import { EmployeeDashboard } from "./pages/dashboard/EmployeeDashboard";
 import { Settings } from "./pages/settings/Settings";
-import { StudentDashboard } from "./pages/student/dashboard/StudentDashboard";
 import { UsersPage } from "./pages/users/UsersPage";
 import { CoursesPage } from "./pages/courses/CoursesPage";
 import { BatchesPage } from "./pages/batches/BatchesPage";
@@ -49,9 +47,6 @@ import { TPIIVRReportPrintPage } from "./pages/admin/reports/TPIIVRReportPrintPa
 import { AWSDReportFormPage } from "./pages/admin/reports/AWSDReportFormPage";
 import { AWSDReportPrintPage } from "./pages/admin/reports/AWSDReportPrintPage";
 import { AdmissionsPage } from "./pages/admin/admissions/AdmissionsPage";
-import { TestsPage } from "./pages/admin/tests/TestsPage";
-import { TakeTestPage } from "./pages/student/tests/TakeTestPage";
-import { StudentExamAccessPage } from "./pages/student/tests/StudentExamAccessPage";
 import { QuotationsListPage } from "./pages/admin/quotations/QuotationsListPage";
 import { QuotationFormPage } from "./pages/admin/quotations/QuotationFormPage";
 import { QuotationPrintPage } from "./pages/admin/quotations/QuotationPrintPage";
@@ -118,12 +113,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const user = getSessionUser();
 
   if (!user) {
-    const isStudentRoute =
-      location.pathname.startsWith("/student") ||
-      location.pathname.startsWith("/test/");
     return (
       <Navigate
-        to={isStudentRoute ? "/student/login" : "/login"}
+        to="/login"
         state={{ from: location }}
         replace
       />
@@ -135,8 +127,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (allowedRoles && !allowedRoles.includes(userRole)) {
     if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
       return <Navigate to="/admin/dashboard" replace />;
-    } else if (userRole === "STUDENT") {
-      return <Navigate to="/student/exam" replace />;
     } else {
       return <Navigate to="/employee/dashboard" replace />;
     }
@@ -157,9 +147,6 @@ const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({
   const role = user.role || "EMPLOYEE";
   if (role === "ADMIN" || role === "SUPER_ADMIN") {
     return <Navigate to="/admin/dashboard" replace />;
-  }
-  if (role === "STUDENT") {
-    return <Navigate to="/student/exam" replace />;
   }
   return <Navigate to="/employee/dashboard" replace />;
 };
@@ -185,38 +172,9 @@ function App() {
             </PublicOnlyRoute>
           }
         />
-        <Route
-          path="/student/login"
-          element={
-            <PublicOnlyRoute>
-              <StudentLogin />
-            </PublicOnlyRoute>
-          }
-        />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-
-        <Route
-          path="/student/exam"
-          element={
-            <ProtectedRoute allowedRoles={["STUDENT"]}>
-              <StudentExamAccessPage />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Student/Employee Exam Route (Full screen, no layout) */}
-        <Route
-          path="/test/:id"
-          element={
-            <ProtectedRoute
-              allowedRoles={["STUDENT", "EMPLOYEE", "ADMIN", "SUPER_ADMIN"]}
-            >
-              <TakeTestPage />
-            </ProtectedRoute>
-          }
-        />
 
         {/* Admin Dashboard Routes */}
         <Route
@@ -245,7 +203,6 @@ function App() {
           <Route path="batches" element={<BatchesPage />} />
           <Route path="students" element={<StudentsPage />} />
           <Route path="admissions" element={<AdmissionsPage />} />
-          <Route path="tests" element={<TestsPage />} />
           <Route path="enquiries" element={<EnquiriesPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="customers/:id" element={<CustomerDetailPage />} />
@@ -346,22 +303,6 @@ function App() {
           <Route
             path="*"
             element={<Navigate to="/employee/dashboard" replace />}
-          />
-        </Route>
-
-        {/* Student Dashboard Routes */}
-        <Route
-          path="/student"
-          element={
-            <ProtectedRoute allowedRoles={["STUDENT"]}>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="dashboard" element={<StudentDashboard />} />
-          <Route
-            path="*"
-            element={<Navigate to="/student/dashboard" replace />}
           />
         </Route>
 
