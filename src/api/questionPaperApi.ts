@@ -28,7 +28,16 @@ export interface PassageQuestion {
   questions: SubQuestion[];
 }
 
-export type QuestionItem = DirectQuestion | PassageQuestion;
+export interface SubjectiveQuestion {
+  _id?: string;
+  type: 'subjective';
+  questionText: string;
+  correctAnswer: string;
+  marks: number;
+  explanation?: string;
+}
+
+export type QuestionItem = DirectQuestion | PassageQuestion | SubjectiveQuestion;
 
 export interface QuestionPaperPayload {
   title: string;

@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   XCircle,
   BookOpen,
+  PencilLine,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "../../../api/axios";
@@ -45,7 +46,15 @@ interface PassageQuestion {
   questions: SubQuestion[];
 }
 
-type QuestionItem = DirectQuestion | PassageQuestion;
+interface SubjectiveQuestion {
+  type: "subjective";
+  questionText: string;
+  correctAnswer: string;
+  marks: number;
+  explanation?: string;
+}
+
+type QuestionItem = DirectQuestion | PassageQuestion | SubjectiveQuestion;
 
 interface QuestionPaper {
   _id: string;
@@ -248,6 +257,55 @@ const ViewPaperModal: React.FC<ViewModalProps> = ({ paper, onClose }) => {
               );
             }
 
+            // Subjective
+            if (item.type === "subjective") {
+              return (
+                <div
+                  key={qi}
+                  className="border border-violet-200 rounded-xl overflow-hidden shadow-sm"
+                >
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-violet-50 border-b border-violet-200">
+                    <span className="w-6 h-6 rounded-full bg-violet-500 text-white text-xs font-black flex items-center justify-center flex-shrink-0">
+                      {qi + 1}
+                    </span>
+                    <PencilLine size={13} className="text-violet-600" />
+                    <span className="text-xs font-bold text-violet-700 uppercase tracking-wide">
+                      Subjective
+                    </span>
+                  </div>
+                  <div className="p-4 bg-white">
+                    <p className="text-sm font-semibold text-gray-900 mb-3 leading-relaxed">
+                      {item.questionText}
+                    </p>
+                    {/* Student answer placeholder */}
+                    <div className="w-full border border-dashed border-violet-300 rounded-lg px-3 py-2 text-sm text-gray-400 bg-violet-50/40 mb-3">
+                      Student types answer here…
+                    </div>
+                    {/* Correct answer */}
+                    <div className="flex items-start gap-2 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-lg">
+                      <CheckCircle2 size={14} className="text-emerald-600 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wide mb-0.5">
+                          Correct Answer
+                        </p>
+                        <p className="text-sm text-emerald-800 font-medium">
+                          {item.correctAnswer}
+                        </p>
+                      </div>
+                      <span className="text-xs font-bold text-violet-700 bg-violet-50 border border-violet-200 px-2.5 py-1 rounded-full flex-shrink-0">
+                        {item.marks} {item.marks === 1 ? "mark" : "marks"}
+                      </span>
+                    </div>
+                    {item.explanation && (
+                      <p className="text-xs text-gray-400 italic mt-2">
+                        {item.explanation}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            }
+
             // Direct MCQ
             return (
               <div
@@ -382,21 +440,6 @@ const QuestionPaperCard: React.FC<CardProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            <span
-              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${
-                paper.isActive
-                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                  : "bg-gray-100 text-gray-500 border-gray-200"
-              }`}
-            >
-              {paper.isActive ? (
-                <CheckCircle2 size={10} />
-              ) : (
-                <XCircle size={10} />
-              )}
-              {paper.isActive ? "Active" : "Inactive"}
-            </span>
-
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen(!menuOpen)}

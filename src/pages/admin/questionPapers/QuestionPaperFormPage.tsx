@@ -12,6 +12,7 @@ import {
   ChevronDown,
   BookOpen,
   AlignLeft,
+  PencilLine,
 } from "lucide-react";
 import api from "../../../api/axios";
 
@@ -49,7 +50,15 @@ interface PassageItem {
   questions: SubQuestion[];
 }
 
-type QuestionItem = DirectItem | PassageItem;
+interface SubjectiveItem {
+  type: "subjective";
+  questionText: string;
+  correctAnswer: string;
+  marks: number;
+  explanation: string;
+}
+
+type QuestionItem = DirectItem | PassageItem | SubjectiveItem;
 
 // ── Defaults ──────────────────────────────────────────────────────────────────
 
@@ -76,13 +85,21 @@ const defaultPassage = (): PassageItem => ({
   questions: [defaultSubQuestion()],
 });
 
+const defaultSubjective = (): SubjectiveItem => ({
+  type: "subjective",
+  questionText: "",
+  correctAnswer: "",
+  marks: 1,
+  explanation: "",
+});
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const computeTotal = (items: QuestionItem[]) =>
   items.reduce((sum, item) => {
     if (item.type === "passage")
       return sum + item.questions.reduce((s, q) => s + (Number(q.marks) || 0), 0);
-    return sum + (Number(item.marks) || 0);
+    return sum + (Number((item as DirectItem | SubjectiveItem).marks) || 0);
   }, 0);
 
 const countAllQuestions = (items: QuestionItem[]) =>
@@ -261,6 +278,15 @@ export const QuestionPaperFormPage: React.FC = () => {
                   })),
                 };
               }
+              if (q.type === "subjective") {
+                return {
+                  type: "subjective",
+                  questionText: q.questionText || "",
+                  correctAnswer: q.correctAnswer || "",
+                  marks: q.marks ?? 1,
+                  explanation: q.explanation || "",
+                };
+              }
               return {
                 type: "direct",
                 questionText: q.questionText || "",
@@ -380,6 +406,16 @@ export const QuestionPaperFormPage: React.FC = () => {
     });
   };
 
+  // ── Subjective helpers ─────────────────────────────────────────────────────
+
+  const updateSubjective = (idx: number, updates: Partial<SubjectiveItem>) => {
+    setItems((prev) => {
+      const next = [...prev];
+      next[idx] = { ...next[idx], ...updates } as SubjectiveItem;
+      return next;
+    });
+  };
+
   const removeSubQuestion = (itemIdx: number, subIdx: number) => {
     setItems((prev) => {
       const item = prev[itemIdx] as PassageItem;
@@ -410,6 +446,15 @@ export const QuestionPaperFormPage: React.FC = () => {
         }
         if (item.options.filter((o) => o.trim()).length < 2) {
           toast.error(`Question ${i + 1}: At least 2 options are required.`);
+          return false;
+        }
+      } else if (item.type === "subjective") {
+        if (!item.questionText.trim()) {
+          toast.error(`Question ${i + 1}: Question text is required.`);
+          return false;
+        }
+        if (!item.correctAnswer.trim()) {
+          toast.error(`Question ${i + 1}: Correct answer is required.`);
           return false;
         }
       } else {
@@ -627,46 +672,55 @@ export const QuestionPaperFormPage: React.FC = () => {
         {/* ── Question Items ── */}
         <div className="space-y-5">
           {items.map((item, idx) => {
-            const isPassage = item.type === "passage";
 
             return (
               <div
                 key={idx}
                 className={`border rounded-xl overflow-hidden ${
-                  isPassage
+                  item.type === "passage"
                     ? "border-amber-200"
+                    : item.type === "subjective"
+                    ? "border-violet-200"
                     : "border-gray-200"
                 }`}
               >
                 {/* Item header bar */}
                 <div
                   className={`flex items-center justify-between px-4 py-2.5 border-b ${
-                    isPassage
+                    item.type === "passage"
                       ? "bg-amber-50 border-amber-200"
+                      : item.type === "subjective"
+                      ? "bg-violet-50 border-violet-200"
                       : "bg-gray-50 border-gray-200"
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <span
                       className={`w-6 h-6 rounded-full text-white text-xs font-black flex items-center justify-center ${
-                        isPassage ? "bg-amber-500" : "bg-blue-600"
+                        item.type === "passage"
+                          ? "bg-amber-500"
+                          : item.type === "subjective"
+                          ? "bg-violet-500"
+                          : "bg-blue-600"
                       }`}
                     >
                       {idx + 1}
                     </span>
                     <span
                       className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide ${
-                        isPassage ? "text-amber-700" : "text-gray-500"
+                        item.type === "passage"
+                          ? "text-amber-700"
+                          : item.type === "subjective"
+                          ? "text-violet-700"
+                          : "text-gray-500"
                       }`}
                     >
-                      {isPassage ? (
-                        <>
-                          <BookOpen size={13} /> Passage Section
-                        </>
+                      {item.type === "passage" ? (
+                        <><BookOpen size={13} /> Passage Section</>
+                      ) : item.type === "subjective" ? (
+                        <><PencilLine size={13} /> Subjective</>
                       ) : (
-                        <>
-                          <AlignLeft size={13} /> Direct MCQ
-                        </>
+                        <><AlignLeft size={13} /> Direct MCQ</>
                       )}
                     </span>
                   </div>
@@ -701,7 +755,7 @@ export const QuestionPaperFormPage: React.FC = () => {
                 </div>
 
                 {/* ── Direct MCQ body ── */}
-                {!isPassage && (
+                {item.type === "direct" && (
                   <div className="p-4 space-y-4 bg-white">
                     <div>
                       <label className={labelClass}>Question Text *</label>
@@ -790,8 +844,74 @@ export const QuestionPaperFormPage: React.FC = () => {
                   </div>
                 )}
 
+                {/* ── Subjective body ── */}
+                {item.type === "subjective" && (
+                  <div className="p-4 space-y-4 bg-white">
+                    <div>
+                      <label className={`${labelClass} text-violet-700`}>Question Text *</label>
+                      <textarea
+                        value={(item as SubjectiveItem).questionText}
+                        onChange={(e) =>
+                          updateSubjective(idx, { questionText: e.target.value })
+                        }
+                        rows={2}
+                        placeholder="Enter the question. Students will type their answer in a text box..."
+                        className={`${inputClass} resize-none border-violet-200 focus:ring-violet-400`}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className={`${labelClass} text-violet-700`}>
+                          Correct Answer *
+                        </label>
+                        <input
+                          type="text"
+                          value={(item as SubjectiveItem).correctAnswer}
+                          onChange={(e) =>
+                            updateSubjective(idx, { correctAnswer: e.target.value })
+                          }
+                          placeholder="Expected answer (used for auto-grading)"
+                          className={`${inputClass} border-violet-200 focus:ring-violet-400`}
+                        />
+                        <p className="text-[10px] text-gray-400 mt-1">
+                          Student's answer will be checked against this.
+                        </p>
+                      </div>
+                      <div>
+                        <label className={labelClass}>Marks</label>
+                        <input
+                          type="number"
+                          value={(item as SubjectiveItem).marks}
+                          onChange={(e) =>
+                            updateSubjective(idx, {
+                              marks: Math.max(0.5, Number(e.target.value) || 1),
+                            })
+                          }
+                          min="0.5"
+                          step="0.5"
+                          className={inputClass}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className={labelClass}>Explanation (optional)</label>
+                      <input
+                        type="text"
+                        value={(item as SubjectiveItem).explanation}
+                        onChange={(e) =>
+                          updateSubjective(idx, { explanation: e.target.value })
+                        }
+                        placeholder="Brief explanation for the correct answer..."
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {/* ── Passage body ── */}
-                {isPassage && (
+                {item.type === "passage" && (
                   <div className="p-4 bg-white space-y-3">
                     {/* Passage text */}
                     <div>
@@ -848,7 +968,7 @@ export const QuestionPaperFormPage: React.FC = () => {
         </div>
 
         {/* ── Add buttons ── */}
-        <div className="grid grid-cols-2 gap-3 mt-5">
+        <div className="grid grid-cols-3 gap-3 mt-5">
           <button
             type="button"
             onClick={() => setItems((prev) => [...prev, defaultDirect()])}
@@ -856,7 +976,7 @@ export const QuestionPaperFormPage: React.FC = () => {
           >
             <Plus size={15} />
             <AlignLeft size={14} />
-            Add Direct MCQ
+            Direct MCQ
           </button>
           <button
             type="button"
@@ -865,7 +985,16 @@ export const QuestionPaperFormPage: React.FC = () => {
           >
             <Plus size={15} />
             <BookOpen size={14} />
-            Add Passage Section
+            Passage Section
+          </button>
+          <button
+            type="button"
+            onClick={() => setItems((prev) => [...prev, defaultSubjective()])}
+            className="py-3 border-2 border-dashed border-violet-200 text-violet-500 hover:text-violet-600 hover:border-violet-300 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2"
+          >
+            <Plus size={15} />
+            <PencilLine size={14} />
+            Subjective
           </button>
         </div>
       </div>
