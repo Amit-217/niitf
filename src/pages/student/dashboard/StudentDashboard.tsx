@@ -1,109 +1,138 @@
-import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import { FileText, Play, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../../api/axios';
+import { ClipboardList, CheckCircle, Clock, TrendingUp, ChevronRight, CalendarDays } from 'lucide-react';
+import { getMyTests, MyTest } from '../../../api/studentTestApi';
+import { toast } from 'react-toastify';
 
-interface Test {
-    _id: string;
-    testName: string;
-    durationMinutes: number;
-    totalMarks: number;
-    passingMarks: number;
-    startTime: string;
-    endTime: string;
-    batchId: {
-        _id: string;
-        batchName: string;
+const getEffectiveStatus = (t: MyTest): string => {
+    if (t.status === 'Cancelled') return 'Cancelled';
+    const now = Date.now();
+    const start = new Date(t.scheduledAt).getTime();
+    const durationMs = (t.duration || t.questionPaper.duration || 60) * 60 * 1000;
+    if (now < start) return 'Upcoming';
+    if (now < start + durationMs) return 'Ongoing';
+    return 'Completed';
+};
+
+const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
+    const map: Record<string, string> = {
+        Upcoming: 'bg-blue-50 text-blue-700 border-blue-200',
+        Ongoing: 'bg-green-50 text-green-700 border-green-200',
+        Completed: 'bg-gray-100 text-gray-600 border-gray-200',
+        Cancelled: 'bg-red-50 text-red-600 border-red-200',
     };
-}
+    return (
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border ${map[status] || 'bg-gray-100 text-gray-600 border-gray-200'}`}>
+            {status}
+        </span>
+    );
+};
 
-export const StudentDashboard = () => {
-    const [tests, setTests] = useState<Test[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+const StudentDashboard: React.FC = () => {
     const navigate = useNavigate();
+    const [tests, setTests] = useState<MyTest[]>([]);
+    const [loading, setLoading] = useState(true);
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : null;
 
     useEffect(() => {
-        const fetchExams = async () => {
-            try {
-                const res: any = await api.get('/tests/available');
-                setTests(res.data?.data || []);
-            } catch (err: any) {
-                toast.error("Failed to load examinations");
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchExams();
+        getMyTests()
+            .then((res) => setTests(res.tests || []))
+            .catch(() => toast.error('Failed to load tests'))
+            .finally(() => setLoading(false));
     }, []);
 
-    const now = new Date();
+    const upcoming = tests.filter((t) => getEffectiveStatus(t) === 'Upcoming' && !t.submission);
+    const ongoing = tests.filter((t) => getEffectiveStatus(t) === 'Ongoing');
+    const completed = tests.filter((t) => t.submission?.status === 'Submitted' || t.submission?.status === 'TimedOut');
+    const avgScore = completed.length
+        ? Math.round(completed.reduce((sum, t) => sum + (t.submission?.percentage || 0), 0) / completed.length)
+        : 0;
+
+    const actionableTests = tests.filter((t) => {
+        const s = getEffectiveStatus(t);
+        return s === 'Ongoing' || (s === 'Upcoming' && !t.submission);
+    }).slice(0, 5);
 
     return (
-        <div className="space-y-6 max-w-5xl mx-auto">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 shadow-lg text-white">
-                <h1 className="text-3xl font-black mb-2 flex items-center gap-3">
-                    <FileText size={32} /> Examination Portal
-                </h1>
-                <p className="opacity-90 font-medium">View and attempt your assigned online CBT tests.</p>
+        <div className="space-y-6">
+            {/* Welcome */}
+            <div className="bg-gradient-to-r from-indigo-600 to-indigo-500 rounded-2xl p-6 text-white">
+                <p className="text-indigo-200 text-sm font-medium mb-1">Welcome back,</p>
+                <h1 className="text-2xl font-bold">{user?.fullName || 'Student'}</h1>
+                <p className="text-indigo-200 text-sm mt-1">Student ID: {user?.studentId || '—'}</p>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
-                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    Available Examinations
-                </h3>
-
-                {isLoading ? (
-                    <div className="py-12 text-center text-gray-400 font-semibold animate-pulse">Loading tests...</div>
-                ) : tests.length === 0 ? (
-                    <div className="py-16 text-center border-2 border-dashed border-gray-200 rounded-2xl">
-                        <FileText size={48} className="mx-auto text-gray-300 mb-4" />
-                        <h4 className="text-gray-900 font-bold">No Tests Available</h4>
-                        <p className="text-gray-500 text-sm mt-1">Check back later or contact your administrator.</p>
+            {/* Stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {[
+                    { label: 'Upcoming', value: upcoming.length, icon: Clock, color: 'text-blue-600 bg-blue-50' },
+                    { label: 'Active Now', value: ongoing.length, icon: ClipboardList, color: 'text-green-600 bg-green-50' },
+                    { label: 'Completed', value: completed.length, icon: CheckCircle, color: 'text-gray-600 bg-gray-100' },
+                    { label: 'Avg Score', value: `${avgScore}%`, icon: TrendingUp, color: 'text-indigo-600 bg-indigo-50' },
+                ].map(({ label, value, icon: Icon, color }) => (
+                    <div key={label} className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
+                            <Icon size={18} />
+                        </div>
+                        <div>
+                            <p className="text-xs text-gray-500">{label}</p>
+                            <p className="text-xl font-bold text-gray-900">{value}</p>
+                        </div>
                     </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {tests.map(test => {
-                            const start = new Date(test.startTime);
-                            const end = new Date(test.endTime);
-                            const isLive = now >= start && now <= end;
-                            const isPast = now > end;
-                            const isFuture = now < start;
+                ))}
+            </div>
 
+            {/* Upcoming / Active tests */}
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <h2 className="font-semibold text-gray-900">Upcoming & Active Tests</h2>
+                    <button
+                        onClick={() => navigate('/student/tests')}
+                        className="text-sm text-indigo-600 hover:underline flex items-center gap-1"
+                    >
+                        View all <ChevronRight size={14} />
+                    </button>
+                </div>
+
+                {loading ? (
+                    <div className="p-8 text-center text-gray-400 text-sm">Loading...</div>
+                ) : actionableTests.length === 0 ? (
+                    <div className="p-8 text-center text-gray-400 text-sm">No upcoming tests at the moment.</div>
+                ) : (
+                    <ul className="divide-y divide-gray-100">
+                        {actionableTests.map((t) => {
+                            const isOngoing = getEffectiveStatus(t) === 'Ongoing';
                             return (
-                                <div key={test._id} className="border border-gray-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-md transition-all group flex flex-col justify-between">
-                                    <div>
-                                        <div className="flex justify-between items-start mb-3">
-                                            <h4 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-tight">
-                                                {test.testName}
-                                            </h4>
-                                            {isLive && <span className="flex items-center gap-1 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase px-2 py-0.5 rounded-full"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> LIVE</span>}
-                                            {isPast && <span className="bg-gray-100 text-gray-600 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-gray-200">EXPIRED</span>}
-                                            {isFuture && <span className="bg-amber-100 text-amber-700 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">UPCOMING</span>}
-                                        </div>
-                                        
-                                        <div className="space-y-1.5 mb-5 text-xs text-gray-500 font-semibold">
-                                            <div className="flex items-center gap-2 px-1"><Clock size={14} className="text-gray-400" /> {test.durationMinutes} Minutes</div>
-                                            <div className="flex items-center gap-2 px-1"><CheckCircle2 size={14} className="text-gray-400" /> Marks: {test.totalMarks} (Pass: {test.passingMarks})</div>
-                                            <div className="flex items-center gap-2 px-1 text-gray-400"><AlertCircle size={14} /> Available: {start.toLocaleString()} - {end.toLocaleString()}</div>
+                                <li key={t._id} className="px-5 py-4 flex items-center gap-4">
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-gray-900 truncate">{t.questionPaper.title}</p>
+                                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                                            <span className="text-xs text-gray-500">{t.batch.batchName}</span>
+                                            <span className="text-gray-300">·</span>
+                                            <span className="flex items-center gap-1 text-xs text-gray-500">
+                                                <CalendarDays size={11} />
+                                                {new Date(t.scheduledAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+                                            </span>
+                                            <StatusBadge status={getEffectiveStatus(t)} />
                                         </div>
                                     </div>
-                                    
-                                    <button 
-                                        onClick={() => navigate(`/test/${test._id}`)}
-                                        disabled={!isLive}
-                                        className={`w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all border
-                                            ${isLive ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-600 hover:text-white' : 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed opacity-70'}
-                                        `}
-                                    >
-                                        <Play size={14} /> {isLive ? 'Attempt Exam' : 'Unavailable'}
-                                    </button>
-                                </div>
+                                    {isOngoing && (
+                                        <button
+                                            onClick={() => navigate(`/student/tests/${t._id}/take`)}
+                                            className="flex-shrink-0 px-4 py-1.5 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+                                        >
+                                            Start Test
+                                        </button>
+                                    )}
+                                </li>
                             );
                         })}
-                    </div>
+                    </ul>
                 )}
             </div>
         </div>
     );
 };
+
+export default StudentDashboard;
