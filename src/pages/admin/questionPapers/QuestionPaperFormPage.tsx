@@ -37,6 +37,7 @@ interface SubQuestion {
 
 interface DirectItem {
   type: "direct";
+  subtype?: "mcq" | "truefalse";
   questionText: string;
   options: string[];
   correctOptionIndex: number;
@@ -64,8 +65,19 @@ type QuestionItem = DirectItem | PassageItem | SubjectiveItem;
 
 const defaultDirect = (): DirectItem => ({
   type: "direct",
+  subtype: "mcq",
   questionText: "",
   options: ["", "", "", ""],
+  correctOptionIndex: 0,
+  marks: 1,
+  explanation: "",
+});
+
+const defaultTrueFalse = (): DirectItem => ({
+  type: "direct",
+  subtype: "truefalse",
+  questionText: "",
+  options: ["True", "False"],
   correctOptionIndex: 0,
   marks: 1,
   explanation: "",
@@ -696,6 +708,8 @@ export const QuestionPaperFormPage: React.FC = () => {
                         <><BookOpen size={13} /> Passage Section</>
                       ) : item.type === "subjective" ? (
                         <><PencilLine size={13} /> Subjective</>
+                      ) : (item as DirectItem).subtype === "truefalse" ? (
+                        <><AlignLeft size={13} /> True / False</>
                       ) : (
                         <><AlignLeft size={13} /> Direct MCQ</>
                       )}
@@ -752,37 +766,46 @@ export const QuestionPaperFormPage: React.FC = () => {
                         Answer Options — select the correct one
                       </label>
                       <div className="space-y-2">
-                        {(item as DirectItem).options.map((opt, oi) => (
-                          <div key={oi} className="flex items-center gap-2.5">
-                            <input
-                              type="radio"
-                              name={`direct-correct-${idx}`}
-                              checked={(item as DirectItem).correctOptionIndex === oi}
-                              onChange={() =>
-                                updateDirect(idx, { correctOptionIndex: oi })
-                              }
-                              className="w-4 h-4 text-blue-600 cursor-pointer flex-shrink-0"
-                            />
-                            <span
-                              className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 transition-colors ${
-                                (item as DirectItem).correctOptionIndex === oi
-                                  ? "bg-emerald-500 text-white"
-                                  : "bg-gray-200 text-gray-600"
-                              }`}
-                            >
-                              {String.fromCharCode(65 + oi)}
-                            </span>
-                            <input
-                              type="text"
-                              value={opt}
-                              onChange={(e) =>
-                                updateDirectOption(idx, oi, e.target.value)
-                              }
-                              placeholder={`Option ${String.fromCharCode(65 + oi)}`}
-                              className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                            />
-                          </div>
-                        ))}
+                        {(item as DirectItem).options.map((opt, oi) => {
+                          const isTF = (item as DirectItem).subtype === "truefalse";
+                          return (
+                            <div key={oi} className="flex items-center gap-2.5">
+                              <input
+                                type="radio"
+                                name={`direct-correct-${idx}`}
+                                checked={(item as DirectItem).correctOptionIndex === oi}
+                                onChange={() =>
+                                  updateDirect(idx, { correctOptionIndex: oi })
+                                }
+                                className="w-4 h-4 text-blue-600 cursor-pointer flex-shrink-0"
+                              />
+                              <span
+                                className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 transition-colors ${
+                                  (item as DirectItem).correctOptionIndex === oi
+                                    ? "bg-emerald-500 text-white"
+                                    : "bg-gray-200 text-gray-600"
+                                }`}
+                              >
+                                {String.fromCharCode(65 + oi)}
+                              </span>
+                              {isTF ? (
+                                <span className="flex-1 border border-gray-200 bg-gray-50 rounded-lg px-3 py-1.5 text-sm text-gray-700 font-medium">
+                                  {opt}
+                                </span>
+                              ) : (
+                                <input
+                                  type="text"
+                                  value={opt}
+                                  onChange={(e) =>
+                                    updateDirectOption(idx, oi, e.target.value)
+                                  }
+                                  placeholder={`Option ${String.fromCharCode(65 + oi)}`}
+                                  className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                       <p className="text-[10px] text-gray-400 mt-1.5">
                         Click the radio button next to the correct answer.
@@ -945,7 +968,7 @@ export const QuestionPaperFormPage: React.FC = () => {
         </div>
 
         {/* ── Add buttons ── */}
-        <div className="grid grid-cols-3 gap-3 mt-5">
+        <div className="grid grid-cols-4 gap-3 mt-5">
           <button
             type="button"
             onClick={() => setItems((prev) => [...prev, defaultDirect()])}
@@ -954,6 +977,14 @@ export const QuestionPaperFormPage: React.FC = () => {
             <Plus size={15} />
             <AlignLeft size={14} />
             Direct MCQ
+          </button>
+          <button
+            type="button"
+            onClick={() => setItems((prev) => [...prev, defaultTrueFalse()])}
+            className="py-3 border-2 border-dashed border-teal-200 text-teal-600 hover:text-teal-700 hover:border-teal-300 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2"
+          >
+            <Plus size={15} />
+            True / False
           </button>
           <button
             type="button"
