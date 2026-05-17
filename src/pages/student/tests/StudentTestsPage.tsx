@@ -6,10 +6,14 @@ import { toast } from 'react-toastify';
 
 type FilterStatus = 'All' | 'Upcoming' | 'Ongoing' | 'Completed' | 'Cancelled';
 
-const DIFFICULTY_COLOR: Record<string, string> = {
-    Easy: 'text-green-600 bg-green-50 border-green-200',
-    Medium: 'text-yellow-600 bg-yellow-50 border-yellow-200',
-    Hard: 'text-red-600 bg-red-50 border-red-200',
+const getEffectiveStatus = (t: MyTest): string => {
+    if (t.status === 'Cancelled') return 'Cancelled';
+    const now = Date.now();
+    const start = new Date(t.scheduledAt).getTime();
+    const durationMs = (t.duration || t.questionPaper.duration || 60) * 60 * 1000;
+    if (now < start) return 'Upcoming';
+    if (now < start + durationMs) return 'Ongoing';
+    return 'Completed';
 };
 
 const STATUS_COLOR: Record<string, string> = {
@@ -33,15 +37,15 @@ const StudentTestsPage: React.FC = () => {
     }, []);
 
     const filtered = filter === 'All' ? tests : tests.filter((t) => {
-        if (filter === 'Completed') return t.submission?.status === 'Submitted' || t.submission?.status === 'TimedOut';
-        return t.status === filter;
+        if (filter === 'Completed') return t.submission?.status === 'Submitted' || t.submission?.status === 'TimedOut' || getEffectiveStatus(t) === 'Completed';
+        return getEffectiveStatus(t) === filter;
     });
 
     const getAction = (t: MyTest) => {
         if (t.submission?.status === 'Submitted' || t.submission?.status === 'TimedOut') {
             return { label: 'View Result', onClick: () => navigate(`/student/tests/${t._id}/result`), style: 'bg-gray-100 text-gray-700 hover:bg-gray-200' };
         }
-        if (t.status === 'Ongoing') {
+        if (getEffectiveStatus(t) === 'Ongoing') {
             return { label: 'Start Test', onClick: () => navigate(`/student/tests/${t._id}/take`), style: 'bg-indigo-600 text-white hover:bg-indigo-700' };
         }
         return null;
@@ -78,6 +82,7 @@ const StudentTestsPage: React.FC = () => {
             ) : (
                 <div className="grid gap-4">
                     {filtered.map((t) => {
+                        const effectiveStatus = getEffectiveStatus(t);
                         const action = getAction(t);
                         const isSubmitted = t.submission?.status === 'Submitted' || t.submission?.status === 'TimedOut';
                         const duration = t.duration || t.questionPaper.duration;
@@ -87,14 +92,9 @@ const StudentTestsPage: React.FC = () => {
                                 <div className="flex flex-wrap items-start justify-between gap-4">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex flex-wrap items-center gap-2 mb-1">
-                                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border ${STATUS_COLOR[t.status] || 'bg-gray-100 text-gray-600 border-gray-200'}`}>
-                                                {t.status}
+                                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border ${STATUS_COLOR[effectiveStatus] || 'bg-gray-100 text-gray-600 border-gray-200'}`}>
+                                                {effectiveStatus}
                                             </span>
-                                            {t.questionPaper.difficulty && (
-                                                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border ${DIFFICULTY_COLOR[t.questionPaper.difficulty] || ''}`}>
-                                                    {t.questionPaper.difficulty}
-                                                </span>
-                                            )}
                                         </div>
                                         <h3 className="font-semibold text-gray-900 text-base truncate">{t.questionPaper.title}</h3>
                                         <p className="text-sm text-gray-500">{t.batch.batchName} · {t.questionPaper.paperId}</p>

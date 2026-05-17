@@ -4,10 +4,14 @@ import { ClipboardList, CheckCircle, Clock, TrendingUp, ChevronRight, CalendarDa
 import { getMyTests, MyTest } from '../../../api/studentTestApi';
 import { toast } from 'react-toastify';
 
-const DIFFICULTY_COLOR: Record<string, string> = {
-    Easy: 'text-green-600 bg-green-50 border-green-200',
-    Medium: 'text-yellow-600 bg-yellow-50 border-yellow-200',
-    Hard: 'text-red-600 bg-red-50 border-red-200',
+const getEffectiveStatus = (t: MyTest): string => {
+    if (t.status === 'Cancelled') return 'Cancelled';
+    const now = Date.now();
+    const start = new Date(t.scheduledAt).getTime();
+    const durationMs = (t.duration || t.questionPaper.duration || 60) * 60 * 1000;
+    if (now < start) return 'Upcoming';
+    if (now < start + durationMs) return 'Ongoing';
+    return 'Completed';
 };
 
 const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
@@ -38,16 +42,17 @@ const StudentDashboard: React.FC = () => {
             .finally(() => setLoading(false));
     }, []);
 
-    const upcoming = tests.filter((t) => t.status === 'Upcoming' && !t.submission);
-    const ongoing = tests.filter((t) => t.status === 'Ongoing');
+    const upcoming = tests.filter((t) => getEffectiveStatus(t) === 'Upcoming' && !t.submission);
+    const ongoing = tests.filter((t) => getEffectiveStatus(t) === 'Ongoing');
     const completed = tests.filter((t) => t.submission?.status === 'Submitted' || t.submission?.status === 'TimedOut');
     const avgScore = completed.length
         ? Math.round(completed.reduce((sum, t) => sum + (t.submission?.percentage || 0), 0) / completed.length)
         : 0;
 
-    const actionableTests = tests.filter(
-        (t) => t.status === 'Ongoing' || (t.status === 'Upcoming' && !t.submission)
-    ).slice(0, 5);
+    const actionableTests = tests.filter((t) => {
+        const s = getEffectiveStatus(t);
+        return s === 'Ongoing' || (s === 'Upcoming' && !t.submission);
+    }).slice(0, 5);
 
     return (
         <div className="space-y-6">
@@ -97,7 +102,7 @@ const StudentDashboard: React.FC = () => {
                 ) : (
                     <ul className="divide-y divide-gray-100">
                         {actionableTests.map((t) => {
-                            const isOngoing = t.status === 'Ongoing';
+                            const isOngoing = getEffectiveStatus(t) === 'Ongoing';
                             return (
                                 <li key={t._id} className="px-5 py-4 flex items-center gap-4">
                                     <div className="flex-1 min-w-0">
@@ -109,7 +114,7 @@ const StudentDashboard: React.FC = () => {
                                                 <CalendarDays size={11} />
                                                 {new Date(t.scheduledAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
                                             </span>
-                                            <StatusBadge status={t.status} />
+                                            <StatusBadge status={getEffectiveStatus(t)} />
                                         </div>
                                     </div>
                                     {isOngoing && (
