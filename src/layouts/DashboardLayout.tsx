@@ -22,6 +22,7 @@ import {
   ChevronUp,
   Building2,
   FileBarChart2,
+  ClipboardList,
 } from "lucide-react";
 
 import { toast } from "react-toastify";
@@ -409,6 +410,11 @@ export const DashboardLayout: React.FC = () => {
                       name: "Enquiries",
                       path: `/${basePath}/enquiries`,
                       icon: CircleHelp,
+                    },
+                    {
+                      name: "Question Papers",
+                      path: `/${basePath}/question-papers`,
+                      icon: ClipboardList,
                     },
                   ],
                 },
