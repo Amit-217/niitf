@@ -2,13 +2,33 @@ import api from './axios';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-export interface Question {
+export interface SubQuestion {
+  _id?: string;
   questionText: string;
   options: string[];
   correctOptionIndex: number;
   marks: number;
   explanation?: string;
 }
+
+export interface DirectQuestion {
+  _id?: string;
+  type: 'direct';
+  questionText: string;
+  options: string[];
+  correctOptionIndex: number;
+  marks: number;
+  explanation?: string;
+}
+
+export interface PassageQuestion {
+  _id?: string;
+  type: 'passage';
+  passageText: string;
+  questions: SubQuestion[];
+}
+
+export type QuestionItem = DirectQuestion | PassageQuestion;
 
 export interface QuestionPaperPayload {
   title: string;
@@ -18,7 +38,7 @@ export interface QuestionPaperPayload {
   passingMarks?: number;
   difficulty?: 'Easy' | 'Medium' | 'Hard';
   instructions?: string;
-  questions: Question[];
+  questions: QuestionItem[];
   isActive?: boolean;
 }
 

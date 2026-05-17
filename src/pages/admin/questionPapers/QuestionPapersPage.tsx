@@ -15,19 +15,37 @@ import {
   Eye,
   CheckCircle2,
   XCircle,
+  BookOpen,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "../../../api/axios";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-interface Question {
+interface SubQuestion {
   questionText: string;
   options: string[];
   correctOptionIndex: number;
   marks: number;
   explanation?: string;
 }
+
+interface DirectQuestion {
+  type: "direct";
+  questionText: string;
+  options: string[];
+  correctOptionIndex: number;
+  marks: number;
+  explanation?: string;
+}
+
+interface PassageQuestion {
+  type: "passage";
+  passageText: string;
+  questions: SubQuestion[];
+}
+
+type QuestionItem = DirectQuestion | PassageQuestion;
 
 interface QuestionPaper {
   _id: string;
@@ -39,7 +57,7 @@ interface QuestionPaper {
   passingMarks: number;
   difficulty: "Easy" | "Medium" | "Hard";
   instructions?: string;
-  questions: Question[];
+  questions: QuestionItem[];
   isActive: boolean;
   createdAt: string;
 }
@@ -104,7 +122,12 @@ const ViewPaperModal: React.FC<ViewModalProps> = ({ paper, onClose }) => {
         {/* Stats bar */}
         <div className="grid grid-cols-4 bg-gray-50 border-b border-gray-100 flex-shrink-0">
           {[
-            { label: "Questions", value: paper.questions?.length || 0 },
+            {
+              label: "Questions",
+              value: (paper.questions || []).reduce((sum, item) =>
+                item.type === "passage" ? sum + item.questions.length : sum + 1, 0
+              ),
+            },
             { label: "Total Marks", value: paper.totalMarks },
             { label: "Pass Marks", value: paper.passingMarks },
             { label: "Duration", value: `${paper.duration}m` },
@@ -140,64 +163,148 @@ const ViewPaperModal: React.FC<ViewModalProps> = ({ paper, onClose }) => {
             </div>
           )}
 
-          {paper.questions?.map((q, qi) => (
-            <div
-              key={qi}
-              className="border border-gray-100 rounded-xl p-4 shadow-sm bg-white"
-            >
-              <div className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-black flex items-center justify-center mt-0.5">
-                  {qi + 1}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900 mb-3 leading-relaxed">
-                    {q.questionText}
-                  </p>
-                  <div className="space-y-2">
-                    {q.options.map((opt, oi) =>
-                      opt ? (
-                        <div
-                          key={oi}
-                          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm ${
-                            oi === q.correctOptionIndex
-                              ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
-                              : "bg-gray-50 border border-gray-100 text-gray-700"
-                          }`}
-                        >
-                          <span
-                            className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 ${
-                              oi === q.correctOptionIndex
-                                ? "bg-emerald-500 text-white"
-                                : "bg-gray-200 text-gray-600"
+          {paper.questions?.map((item, qi) => {
+            if (item.type === "passage") {
+              return (
+                <div
+                  key={qi}
+                  className="border border-amber-200 rounded-xl overflow-hidden shadow-sm"
+                >
+                  {/* Passage header */}
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border-b border-amber-200">
+                    <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-black flex items-center justify-center flex-shrink-0">
+                      {qi + 1}
+                    </span>
+                    <BookOpen size={13} className="text-amber-600" />
+                    <span className="text-xs font-bold text-amber-700 uppercase tracking-wide">
+                      Passage Section
+                    </span>
+                  </div>
+                  {/* Passage text */}
+                  <div className="px-4 py-3 bg-amber-50/40 border-b border-amber-100">
+                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                      {item.passageText}
+                    </p>
+                  </div>
+                  {/* Sub-questions */}
+                  <div className="p-4 space-y-3 bg-white">
+                    {item.questions.map((sq, sqIdx) => (
+                      <div
+                        key={sqIdx}
+                        className="border border-amber-100 rounded-xl p-3"
+                      >
+                        <div className="flex items-start gap-2.5">
+                          <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs font-black flex items-center justify-center mt-0.5">
+                            {sqIdx + 1}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-900 mb-2.5 leading-relaxed">
+                              {sq.questionText}
+                            </p>
+                            <div className="space-y-1.5">
+                              {sq.options.map((opt, oi) =>
+                                opt ? (
+                                  <div
+                                    key={oi}
+                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
+                                      oi === sq.correctOptionIndex
+                                        ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
+                                        : "bg-gray-50 border border-gray-100 text-gray-700"
+                                    }`}
+                                  >
+                                    <span
+                                      className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 ${
+                                        oi === sq.correctOptionIndex
+                                          ? "bg-emerald-500 text-white"
+                                          : "bg-gray-200 text-gray-600"
+                                      }`}
+                                    >
+                                      {String.fromCharCode(65 + oi)}
+                                    </span>
+                                    <span className="flex-1">{opt}</span>
+                                    {oi === sq.correctOptionIndex && (
+                                      <CheckCircle2 size={13} className="text-emerald-600 flex-shrink-0" />
+                                    )}
+                                  </div>
+                                ) : null
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3 mt-2">
+                              {sq.explanation && (
+                                <p className="text-xs text-gray-400 italic flex-1">
+                                  {sq.explanation}
+                                </p>
+                              )}
+                              <span className="ml-auto text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full flex-shrink-0">
+                                {sq.marks} {sq.marks === 1 ? "mark" : "marks"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+
+            // Direct MCQ
+            return (
+              <div
+                key={qi}
+                className="border border-gray-100 rounded-xl p-4 shadow-sm bg-white"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-black flex items-center justify-center mt-0.5">
+                    {qi + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 mb-3 leading-relaxed">
+                      {item.questionText}
+                    </p>
+                    <div className="space-y-2">
+                      {item.options.map((opt, oi) =>
+                        opt ? (
+                          <div
+                            key={oi}
+                            className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm ${
+                              oi === item.correctOptionIndex
+                                ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
+                                : "bg-gray-50 border border-gray-100 text-gray-700"
                             }`}
                           >
-                            {String.fromCharCode(65 + oi)}
-                          </span>
-                          <span className="flex-1">{opt}</span>
-                          {oi === q.correctOptionIndex && (
-                            <CheckCircle2
-                              size={14}
-                              className="text-emerald-600 flex-shrink-0"
-                            />
-                          )}
-                        </div>
-                      ) : null
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3 mt-3">
-                    {q.explanation && (
-                      <p className="text-xs text-gray-400 italic flex-1">
-                        {q.explanation}
-                      </p>
-                    )}
-                    <span className="ml-auto text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full flex-shrink-0">
-                      {q.marks} {q.marks === 1 ? "mark" : "marks"}
-                    </span>
+                            <span
+                              className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 ${
+                                oi === item.correctOptionIndex
+                                  ? "bg-emerald-500 text-white"
+                                  : "bg-gray-200 text-gray-600"
+                              }`}
+                            >
+                              {String.fromCharCode(65 + oi)}
+                            </span>
+                            <span className="flex-1">{opt}</span>
+                            {oi === item.correctOptionIndex && (
+                              <CheckCircle2 size={14} className="text-emerald-600 flex-shrink-0" />
+                            )}
+                          </div>
+                        ) : null
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 mt-3">
+                      {item.explanation && (
+                        <p className="text-xs text-gray-400 italic flex-1">
+                          {item.explanation}
+                        </p>
+                      )}
+                      <span className="ml-auto text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full flex-shrink-0">
+                        {item.marks} {item.marks === 1 ? "mark" : "marks"}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="p-4 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex-shrink-0">
@@ -359,7 +466,9 @@ const QuestionPaperCard: React.FC<CardProps> = ({
           <div className="bg-gray-50 rounded-xl p-2.5 text-center">
             <p className="text-[10px] text-gray-400 font-medium">Questions</p>
             <p className="text-base font-black text-gray-800">
-              {paper.questions?.length || 0}
+              {(paper.questions || []).reduce((sum, item) =>
+                item.type === "passage" ? sum + item.questions.length : sum + 1, 0
+              )}
             </p>
           </div>
           <div className="bg-gray-50 rounded-xl p-2.5 text-center">
@@ -627,8 +736,11 @@ export const QuestionPapersPage: React.FC = () => {
               <strong>"{deleteTarget.title}"</strong>
             </p>
             <p className="text-sm text-gray-400 mb-6">
-              All {deleteTarget.questions?.length || 0} questions will be
-              permanently removed.
+              All{" "}
+              {(deleteTarget.questions || []).reduce((sum, item) =>
+                item.type === "passage" ? sum + item.questions.length : sum + 1, 0
+              )}{" "}
+              questions will be permanently removed.
             </p>
             <div className="flex gap-3">
               <button
