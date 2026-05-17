@@ -58,6 +58,12 @@ import { EmployeeSalaryDetailPage } from "./pages/admin/payroll/EmployeeSalaryDe
 import { QuestionPapersPage } from "./pages/admin/questionPapers/QuestionPapersPage";
 import { QuestionPaperFormPage } from "./pages/admin/questionPapers/QuestionPaperFormPage";
 import { AssignTestPage } from "./pages/admin/assignedTests/AssignTestPage";
+import { StudentLogin } from "./pages/auth/StudentLogin";
+import StudentLayout from "./layouts/StudentLayout";
+import StudentDashboard from "./pages/student/dashboard/StudentDashboard";
+import StudentTestsPage from "./pages/student/tests/StudentTestsPage";
+import TakeTestPage from "./pages/student/tests/TakeTestPage";
+import StudentTestResultPage from "./pages/student/tests/StudentTestResultPage";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -128,7 +134,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const userRole = user.role || "EMPLOYEE";
 
   if (allowedRoles && !allowedRoles.includes(userRole)) {
-    if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
+    if (userRole === "STUDENT") {
+      return <Navigate to="/student/dashboard" replace />;
+    } else if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
       return <Navigate to="/admin/dashboard" replace />;
     } else {
       return <Navigate to="/employee/dashboard" replace />;
@@ -148,6 +156,9 @@ const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({
   }
 
   const role = user.role || "EMPLOYEE";
+  if (role === "STUDENT") {
+    return <Navigate to="/student/dashboard" replace />;
+  }
   if (role === "ADMIN" || role === "SUPER_ADMIN") {
     return <Navigate to="/admin/dashboard" replace />;
   }
@@ -178,6 +189,31 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route
+          path="/student-login"
+          element={
+            <PublicOnlyRoute>
+              <StudentLogin />
+            </PublicOnlyRoute>
+          }
+        />
+
+        {/* Student Portal Routes */}
+        <Route
+          path="/student"
+          element={
+            <ProtectedRoute allowedRoles={["STUDENT"]}>
+              <StudentLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/student/dashboard" replace />} />
+          <Route path="dashboard" element={<StudentDashboard />} />
+          <Route path="tests" element={<StudentTestsPage />} />
+          <Route path="tests/:id/take" element={<TakeTestPage />} />
+          <Route path="tests/:id/result" element={<StudentTestResultPage />} />
+          <Route path="*" element={<Navigate to="/student/dashboard" replace />} />
+        </Route>
 
         {/* Admin Dashboard Routes */}
         <Route

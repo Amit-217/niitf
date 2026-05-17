@@ -15,6 +15,8 @@ import {
   Users,
   ClipboardList,
   CheckCircle2,
+  TrendingUp,
+  XCircle,
 } from "lucide-react";
 import api from "../../../api/axios";
 import { Pagination } from "../../../components/Pagination";
@@ -371,6 +373,26 @@ const AssignModal: React.FC<ModalProps> = ({
 
 // ── View Results Modal ────────────────────────────────────────────────────────
 
+interface Submission {
+  _id: string;
+  submissionId: string;
+  student: { _id: string; studentId: string; fullName: string; email: string };
+  status: "InProgress" | "Submitted" | "TimedOut";
+  score: number;
+  totalMarks: number;
+  percentage: number;
+  isPassed: boolean;
+  submittedAt: string;
+  startedAt: string;
+}
+
+interface ResultsSummary {
+  appeared: number;
+  passed: number;
+  failed: number;
+  avgScore: number;
+}
+
 interface ResultsModalProps {
   test: AssignedTest;
   onClose: () => void;
@@ -378,10 +400,23 @@ interface ResultsModalProps {
 
 const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
   const effectiveDuration = test.duration || test.questionPaper?.duration;
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [summary, setSummary] = useState<ResultsSummary | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.get(`/assigned-tests/${test._id}/results`)
+      .then((res: any) => {
+        setSubmissions(res.submissions || []);
+        setSummary(res.summary || null);
+      })
+      .catch(() => toast.error("Failed to load results."))
+      .finally(() => setLoading(false));
+  }, [test._id]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl animate-in zoom-in-95 fade-in duration-200 max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl animate-in zoom-in-95 fade-in duration-200 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
           <div>
@@ -390,94 +425,128 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
               {test.questionPaper?.title} · {test.batch?.batchName}
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-          >
+          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
             <X size={16} />
           </button>
         </div>
 
-        {/* Info bar */}
+        {/* Test info bar */}
         <div className="grid grid-cols-4 bg-gray-50 border-b border-gray-100 flex-shrink-0">
           {[
             { label: "Scheduled", value: formatDateTime(test.scheduledAt) },
             { label: "Duration", value: `${effectiveDuration ?? "—"} min` },
-            {
-              label: "Total Marks",
-              value: test.questionPaper?.totalMarks ?? "—",
-            },
-            {
-              label: "Pass Marks",
-              value: test.questionPaper?.passingMarks ?? "—",
-            },
+            { label: "Total Marks", value: test.questionPaper?.totalMarks ?? "—" },
+            { label: "Pass Marks", value: test.questionPaper?.passingMarks ?? "—" },
           ].map((s) => (
-            <div
-              key={s.label}
-              className="text-center py-3 px-2 border-r border-gray-100 last:border-r-0"
-            >
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">
-                {s.label}
-              </p>
-              <p className="text-xs font-black text-gray-800 mt-0.5 leading-tight">
-                {s.value}
-              </p>
+            <div key={s.label} className="text-center py-3 px-2 border-r border-gray-100 last:border-r-0">
+              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">{s.label}</p>
+              <p className="text-xs font-black text-gray-800 mt-0.5 leading-tight">{s.value}</p>
             </div>
           ))}
         </div>
 
-        {/* Results area */}
-        <div className="flex-1 overflow-y-auto px-6 py-8">
-          {test.status === "Upcoming" || test.status === "Ongoing" ? (
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
-                <CalendarClock size={28} className="text-blue-400" />
-              </div>
-              <p className="text-gray-600 font-semibold">
-                {test.status === "Upcoming"
-                  ? "Test has not started yet"
-                  : "Test is currently in progress"}
-              </p>
-              <p className="text-sm text-gray-400 mt-1">
-                Results will appear here once the test is completed.
-              </p>
-              <div
-                className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-full text-xs font-semibold border ${STATUS_STYLES[test.status]}`}
-              >
-                <Clock size={11} />
-                {test.status}
-              </div>
-            </div>
-          ) : test.status === "Cancelled" ? (
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
-                <X size={28} className="text-red-400" />
-              </div>
-              <p className="text-gray-600 font-semibold">Test was cancelled</p>
-              <p className="text-sm text-gray-400 mt-1">
-                No results available.
-              </p>
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto">
+          {loading ? (
+            <div className="py-16 flex justify-center">
+              <Loader2 size={28} className="animate-spin text-blue-500" />
             </div>
           ) : (
-            /* Completed — placeholder for results table */
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 size={28} className="text-emerald-500" />
-              </div>
-              <p className="text-gray-600 font-semibold">Test Completed</p>
-              <p className="text-sm text-gray-400 mt-1">
-                Student results will appear here once the result module is set
-                up.
-              </p>
-            </div>
+            <>
+              {/* Summary cards */}
+              {summary && (
+                <div className="grid grid-cols-4 gap-3 p-4 border-b border-gray-100">
+                  {[
+                    { label: "Appeared", value: summary.appeared, icon: Users, color: "text-blue-600 bg-blue-50" },
+                    { label: "Passed", value: summary.passed, icon: CheckCircle2, color: "text-emerald-600 bg-emerald-50" },
+                    { label: "Failed", value: summary.failed, icon: XCircle, color: "text-red-500 bg-red-50" },
+                    { label: "Avg Score", value: `${summary.avgScore}%`, icon: TrendingUp, color: "text-indigo-600 bg-indigo-50" },
+                  ].map(({ label, value, icon: Icon, color }) => (
+                    <div key={label} className="bg-white rounded-xl border border-gray-200 p-3 flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${color}`}>
+                        <Icon size={15} />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wide">{label}</p>
+                        <p className="text-base font-bold text-gray-900 leading-tight">{value}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Results table */}
+              {submissions.length === 0 ? (
+                <div className="py-12 text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                    <BarChart3 size={22} className="text-gray-400" />
+                  </div>
+                  <p className="text-sm font-semibold text-gray-600">No submissions yet</p>
+                  <p className="text-xs text-gray-400 mt-1">Students haven't started this test.</p>
+                </div>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
+                    <tr>
+                      <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">#</th>
+                      <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Student</th>
+                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Score</th>
+                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">%</th>
+                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Result</th>
+                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Submitted</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {submissions.map((s, i) => (
+                      <tr key={s._id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-3 text-xs text-gray-400 font-medium">{i + 1}</td>
+                        <td className="px-4 py-3">
+                          <p className="font-semibold text-gray-900 text-sm leading-tight">{s.student?.fullName || "—"}</p>
+                          <p className="text-[10px] text-gray-400">{s.student?.studentId} · {s.student?.email}</p>
+                        </td>
+                        <td className="px-4 py-3 text-center font-bold text-gray-800">
+                          {s.status === "InProgress" ? "—" : `${s.score}/${s.totalMarks}`}
+                        </td>
+                        <td className="px-4 py-3 text-center font-bold text-gray-800">
+                          {s.status === "InProgress" ? "—" : `${s.percentage}%`}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {s.status === "InProgress" ? (
+                            <span className="text-xs text-gray-400">—</span>
+                          ) : s.isPassed ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              <CheckCircle2 size={10} /> Pass
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-200">
+                              <XCircle size={10} /> Fail
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-bold border ${
+                            s.status === "Submitted" ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : s.status === "TimedOut" ? "bg-amber-50 text-amber-700 border-amber-200"
+                            : "bg-blue-50 text-blue-600 border-blue-200"
+                          }`}>
+                            {s.status === "TimedOut" ? "Timed Out" : s.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-xs text-gray-500">
+                          {s.submittedAt ? formatDateTime(s.submittedAt) : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </>
           )}
         </div>
 
         <div className="p-4 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex-shrink-0">
-          <button
-            onClick={onClose}
-            className="w-full py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all"
-          >
+          <button onClick={onClose} className="w-full py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all">
             Close
           </button>
         </div>

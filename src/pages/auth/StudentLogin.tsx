@@ -17,12 +17,15 @@ export const StudentLogin: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const apiResponse: any = await api.post('/auth/student-login', { 
-                email, 
-                password,
-                rememberMe 
+            // Convert YYYY-MM-DD (from date input) → DD/MM/YYYY (backend expects)
+            const [year, month, day] = password.split('-');
+            const dob = `${day}/${month}/${year}`;
+
+            const authData: any = await api.post('/auth/student-login', {
+                email,
+                dob,
+                rememberMe,
             });
-            const authData = apiResponse.data;
 
             // Store token and user data
             localStorage.setItem('accessToken', authData.accessToken);
