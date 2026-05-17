@@ -238,7 +238,6 @@ export const QuestionPaperFormPage: React.FC = () => {
   const [subject, setSubject] = useState("");
   const [duration, setDuration] = useState("60");
   const [passingMarks, setPassingMarks] = useState("");
-  const [difficulty, setDifficulty] = useState<"Easy" | "Medium" | "Hard">("Medium");
   const [instructions, setInstructions] = useState("");
 
   // Question items (direct or passage)
@@ -259,7 +258,6 @@ export const QuestionPaperFormPage: React.FC = () => {
         setSubject(p.subject || "");
         setDuration(String(p.duration || 60));
         setPassingMarks(String(p.passingMarks || ""));
-        setDifficulty(p.difficulty || "Medium");
         setInstructions(p.instructions || "");
 
         if (p.questions?.length) {
@@ -493,7 +491,6 @@ export const QuestionPaperFormPage: React.FC = () => {
         passingMarks: passingMarks
           ? Number(passingMarks)
           : Math.floor(totalMarks * 0.4),
-        difficulty,
         instructions: instructions.trim() || null,
         questions: items,
       };
@@ -590,26 +587,6 @@ export const QuestionPaperFormPage: React.FC = () => {
             />
           </div>
 
-          <div>
-            <label className={labelClass}>Difficulty</label>
-            <div className="relative">
-              <select
-                value={difficulty}
-                onChange={(e) =>
-                  setDifficulty(e.target.value as "Easy" | "Medium" | "Hard")
-                }
-                className={`${inputClass} appearance-none cursor-pointer pr-8`}
-              >
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-              </select>
-              <ChevronDown
-                size={15}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-              />
-            </div>
-          </div>
 
           <div>
             <label className={labelClass}>Duration (minutes) *</label>
