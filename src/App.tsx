@@ -57,6 +57,7 @@ import { SalarySlipPage } from "./pages/admin/payroll/SalarySlipPage";
 import { EmployeeSalaryDetailPage } from "./pages/admin/payroll/EmployeeSalaryDetailPage";
 import { QuestionPapersPage } from "./pages/admin/questionPapers/QuestionPapersPage";
 import { QuestionPaperFormPage } from "./pages/admin/questionPapers/QuestionPaperFormPage";
+import { AssignTestPage } from "./pages/admin/assignedTests/AssignTestPage";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -209,6 +210,7 @@ function App() {
           <Route path="question-papers" element={<QuestionPapersPage />} />
           <Route path="question-papers/new" element={<QuestionPaperFormPage />} />
           <Route path="question-papers/:id/edit" element={<QuestionPaperFormPage />} />
+          <Route path="assign-tests" element={<AssignTestPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="customers/:id" element={<CustomerDetailPage />} />
 

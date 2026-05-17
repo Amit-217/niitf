@@ -23,6 +23,7 @@ import {
   Building2,
   FileBarChart2,
   ClipboardList,
+  CalendarClock,
 } from "lucide-react";
 
 import { toast } from "react-toastify";
@@ -415,6 +416,11 @@ export const DashboardLayout: React.FC = () => {
                       name: "Question Papers",
                       path: `/${basePath}/question-papers`,
                       icon: ClipboardList,
+                    },
+                    {
+                      name: "Assign Tests",
+                      path: `/${basePath}/assign-tests`,
+                      icon: CalendarClock,
                     },
                   ],
                 },

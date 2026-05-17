@@ -1,0 +1,844 @@
+import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import {
+  CalendarClock,
+  Plus,
+  Search,
+  Pencil,
+  Trash2,
+  X,
+  Loader2,
+  RefreshCw,
+  ChevronDown,
+  BarChart3,
+  Clock,
+  Users,
+  ClipboardList,
+  CheckCircle2,
+} from "lucide-react";
+import api from "../../../api/axios";
+import { Pagination } from "../../../components/Pagination";
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+interface QP {
+  _id: string;
+  paperId: string;
+  title: string;
+  duration: number;
+  totalMarks: number;
+  passingMarks: number;
+  difficulty: string;
+}
+
+interface BatchRef {
+  _id: string;
+  batchId: string;
+  batchName: string;
+  status: string;
+}
+
+interface AssignedTest {
+  _id: string;
+  assignId: string;
+  questionPaper: QP;
+  batch: BatchRef;
+  scheduledAt: string;
+  duration?: number;
+  status: "Upcoming" | "Ongoing" | "Completed" | "Cancelled";
+  createdAt: string;
+}
+
+interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+const STATUS_STYLES: Record<string, string> = {
+  Upcoming: "bg-blue-50 text-blue-700 border-blue-200",
+  Ongoing: "bg-amber-50 text-amber-700 border-amber-200",
+  Completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  Cancelled: "bg-red-50 text-red-600 border-red-200",
+};
+
+const DIFFICULTY_STYLES: Record<string, string> = {
+  Easy: "bg-emerald-100 text-emerald-700",
+  Medium: "bg-amber-100 text-amber-700",
+  Hard: "bg-rose-100 text-rose-700",
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+const formatDateTime = (iso: string) => {
+  const d = new Date(iso);
+  return d.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
+const toDatetimeLocal = (iso: string) => {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
+// ── Assign / Edit Modal ───────────────────────────────────────────────────────
+
+interface ModalProps {
+  editTarget: AssignedTest | null;
+  onClose: () => void;
+  onSaved: () => void;
+}
+
+const AssignModal: React.FC<ModalProps> = ({
+  editTarget,
+  onClose,
+  onSaved,
+}) => {
+  const isEdit = Boolean(editTarget);
+
+  const [questionPapers, setQuestionPapers] = useState<QP[]>([]);
+  const [batches, setBatches] = useState<BatchRef[]>([]);
+  const [loadingOptions, setLoadingOptions] = useState(true);
+
+  const [selectedPaper, setSelectedPaper] = useState(
+    editTarget?.questionPaper?._id || "",
+  );
+  const [selectedBatch, setSelectedBatch] = useState(
+    editTarget?.batch?._id || "",
+  );
+  const [scheduledAt, setScheduledAt] = useState(
+    editTarget?.scheduledAt ? toDatetimeLocal(editTarget.scheduledAt) : "",
+  );
+  const [duration, setDuration] = useState(
+    String(editTarget?.duration || editTarget?.questionPaper?.duration || ""),
+  );
+  const [status, setStatus] = useState<AssignedTest["status"]>(
+    editTarget?.status || "Upcoming",
+  );
+  const [saving, setSaving] = useState(false);
+
+  // Auto-fill duration when paper is selected
+  const handlePaperChange = (paperId: string) => {
+    setSelectedPaper(paperId);
+    const paper = questionPapers.find((p) => p._id === paperId);
+    if (paper && !isEdit) setDuration(String(paper.duration));
+  };
+
+  // Load papers and batches
+  useEffect(() => {
+    const load = async () => {
+      setLoadingOptions(true);
+      try {
+        const [papersRes, batchesRes]: any[] = await Promise.all([
+          api.get("/question-papers?limit=200&status=Active"),
+          api.get("/batches?limit=200"),
+        ]);
+        setQuestionPapers(papersRes?.data || []);
+        setBatches(batchesRes?.data || []);
+      } catch {
+        toast.error("Failed to load options.");
+      } finally {
+        setLoadingOptions(false);
+      }
+    };
+    load();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPaper) {
+      toast.error("Please select a question paper.");
+      return;
+    }
+    if (!selectedBatch) {
+      toast.error("Please select a batch.");
+      return;
+    }
+    if (!scheduledAt) {
+      toast.error("Please set a scheduled date and time.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const payload = {
+        questionPaper: selectedPaper,
+        batch: selectedBatch,
+        scheduledAt: new Date(scheduledAt).toISOString(),
+        duration: duration ? Number(duration) : undefined,
+        status,
+      };
+
+      if (isEdit) {
+        await api.put(`/assigned-tests/${editTarget!._id}`, payload);
+        toast.success("Test assignment updated!");
+      } else {
+        await api.post("/assigned-tests", payload);
+        toast.success("Test assigned successfully!");
+      }
+
+      onSaved();
+      onClose();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to save.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-in zoom-in-95 fade-in duration-200">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
+            <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white">
+              <CalendarClock size={14} />
+            </span>
+            {isEdit ? "Edit Assignment" : "Assign Test to Batch"}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {loadingOptions ? (
+          <div className="py-16 flex justify-center">
+            <Loader2 size={28} className="animate-spin text-blue-500" />
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            {/* Question Paper */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                Question Paper *
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedPaper}
+                  onChange={(e) => handlePaperChange(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8 transition-colors"
+                >
+                  <option value="">-- Select Question Paper --</option>
+                  {questionPapers.map((p) => (
+                    <option key={p._id} value={p._id}>
+                      [{p.paperId}] {p.title}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={14}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                />
+              </div>
+              {selectedPaper &&
+                (() => {
+                  const p = questionPapers.find((x) => x._id === selectedPaper);
+                  return p ? (
+                    <div className="mt-1.5 flex items-center gap-2 text-xs text-gray-500">
+                      <span
+                        className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${DIFFICULTY_STYLES[p.difficulty] || "bg-gray-100 text-gray-600"}`}
+                      >
+                        {p.difficulty}
+                      </span>
+                      <span>{p.totalMarks} marks</span>
+                      <span>·</span>
+                      <span>{p.duration} min</span>
+                    </div>
+                  ) : null;
+                })()}
+            </div>
+
+            {/* Batch */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                Batch *
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedBatch}
+                  onChange={(e) => setSelectedBatch(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8 transition-colors"
+                >
+                  <option value="">-- Select Batch --</option>
+                  {batches.map((b) => (
+                    <option key={b._id} value={b._id}>
+                      [{b.batchId}] {b.batchName}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={14}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                />
+              </div>
+            </div>
+
+            {/* Date & Time */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                Scheduled Date & Time *
+              </label>
+              <input
+                type="datetime-local"
+                value={scheduledAt}
+                onChange={(e) => setScheduledAt(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              />
+            </div>
+
+            {/* Duration & Status row */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Duration (minutes)
+                </label>
+                <input
+                  type="number"
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                  min="1"
+                  placeholder="Auto from paper"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Status
+                </label>
+                <div className="relative">
+                  <select
+                    value={status}
+                    onChange={(e) =>
+                      setStatus(e.target.value as AssignedTest["status"])
+                    }
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8 transition-colors"
+                  >
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="Ongoing">Ongoing</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                  <ChevronDown
+                    size={14}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="flex-1 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-bold disabled:opacity-70 flex items-center justify-center gap-2 hover:from-blue-700 hover:to-indigo-700 transition-all"
+              >
+                {saving ? (
+                  <Loader2 size={15} className="animate-spin" />
+                ) : (
+                  <CalendarClock size={15} />
+                )}
+                {isEdit ? "Update" : "Assign Test"}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ── View Results Modal ────────────────────────────────────────────────────────
+
+interface ResultsModalProps {
+  test: AssignedTest;
+  onClose: () => void;
+}
+
+const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
+  const effectiveDuration = test.duration || test.questionPaper?.duration;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl animate-in zoom-in-95 fade-in duration-200 max-h-[90vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
+          <div>
+            <h2 className="text-base font-bold text-gray-900">Test Results</h2>
+            <p className="text-xs text-gray-400 mt-0.5 truncate">
+              {test.questionPaper?.title} · {test.batch?.batchName}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Info bar */}
+        <div className="grid grid-cols-4 bg-gray-50 border-b border-gray-100 flex-shrink-0">
+          {[
+            { label: "Scheduled", value: formatDateTime(test.scheduledAt) },
+            { label: "Duration", value: `${effectiveDuration ?? "—"} min` },
+            {
+              label: "Total Marks",
+              value: test.questionPaper?.totalMarks ?? "—",
+            },
+            {
+              label: "Pass Marks",
+              value: test.questionPaper?.passingMarks ?? "—",
+            },
+          ].map((s) => (
+            <div
+              key={s.label}
+              className="text-center py-3 px-2 border-r border-gray-100 last:border-r-0"
+            >
+              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">
+                {s.label}
+              </p>
+              <p className="text-xs font-black text-gray-800 mt-0.5 leading-tight">
+                {s.value}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Results area */}
+        <div className="flex-1 overflow-y-auto px-6 py-8">
+          {test.status === "Upcoming" || test.status === "Ongoing" ? (
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
+                <CalendarClock size={28} className="text-blue-400" />
+              </div>
+              <p className="text-gray-600 font-semibold">
+                {test.status === "Upcoming"
+                  ? "Test has not started yet"
+                  : "Test is currently in progress"}
+              </p>
+              <p className="text-sm text-gray-400 mt-1">
+                Results will appear here once the test is completed.
+              </p>
+              <div
+                className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-full text-xs font-semibold border ${STATUS_STYLES[test.status]}`}
+              >
+                <Clock size={11} />
+                {test.status}
+              </div>
+            </div>
+          ) : test.status === "Cancelled" ? (
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+                <X size={28} className="text-red-400" />
+              </div>
+              <p className="text-gray-600 font-semibold">Test was cancelled</p>
+              <p className="text-sm text-gray-400 mt-1">
+                No results available.
+              </p>
+            </div>
+          ) : (
+            /* Completed — placeholder for results table */
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-4">
+                <CheckCircle2 size={28} className="text-emerald-500" />
+              </div>
+              <p className="text-gray-600 font-semibold">Test Completed</p>
+              <p className="text-sm text-gray-400 mt-1">
+                Student results will appear here once the result module is set
+                up.
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="p-4 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex-shrink-0">
+          <button
+            onClick={onClose}
+            className="w-full py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
+
+export const AssignTestPage: React.FC = () => {
+  const [tests, setTests] = useState<AssignedTest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
+
+  const [showModal, setShowModal] = useState(false);
+  const [editTarget, setEditTarget] = useState<AssignedTest | null>(null);
+  const [viewResults, setViewResults] = useState<AssignedTest | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<AssignedTest | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const fetchTests = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+      if (search) params.set("search", search);
+      if (statusFilter !== "All") params.set("status", statusFilter);
+
+      const res: any = await api.get(`/assigned-tests?${params.toString()}`);
+      setTests(res?.data || []);
+      setPagination(res?.pagination || null);
+    } catch {
+      toast.error("Failed to load assigned tests.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const t = setTimeout(() => fetchTests(), search ? 400 : 0);
+    return () => clearTimeout(t);
+  }, [page, limit, search, statusFilter]);
+
+  const openAssign = () => {
+    setEditTarget(null);
+    setShowModal(true);
+  };
+
+  const openEdit = (test: AssignedTest) => {
+    setEditTarget(test);
+    setShowModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await api.delete(`/assigned-tests/${deleteTarget._id}`);
+      toast.success("Assignment deleted.");
+      setDeleteTarget(null);
+      fetchTests();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to delete.");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      {/* ── Page Header ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white">
+              <CalendarClock size={18} />
+            </span>
+            Assign Tests
+          </h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Assign question papers to batches and schedule test dates
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={fetchTests}
+            className="p-2.5 border border-gray-200 rounded-xl text-gray-500 hover:text-gray-800 hover:bg-gray-50 transition-colors"
+          >
+            <RefreshCw size={16} />
+          </button>
+          <button
+            onClick={openAssign}
+            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-200"
+          >
+            <Plus size={16} /> Assign Test
+          </button>
+        </div>
+      </div>
+
+      {/* ── Filters ── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="relative md:col-span-2">
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          />
+          <input
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            placeholder="Search by paper title, batch or assign ID..."
+            className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
+          />
+        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setPage(1);
+          }}
+          className="px-4 py-2.5 text-sm rounded-xl border border-gray-200 focus:outline-none appearance-none bg-white"
+        >
+          <option value="All">All Status</option>
+          <option value="Upcoming">Upcoming</option>
+          <option value="Ongoing">Ongoing</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      {/* ── Table ── */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider w-10">
+                  #
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Question Paper
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Batch
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Scheduled At
+                </th>
+                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Duration
+                </th>
+                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="px-4 py-12 text-center text-gray-400">
+                    <Loader2 size={28} className="animate-spin text-blue-500 inline" />
+                  </td>
+                </tr>
+              ) : tests.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-4 py-12 text-center">
+                    <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-3">
+                      <CalendarClock size={24} className="text-blue-400" />
+                    </div>
+                    <p className="text-gray-600 font-semibold text-sm">No assigned tests found</p>
+                    <p className="text-xs text-gray-400 mt-1">Click "Assign Test" to schedule a test for a batch</p>
+                    <button
+                      onClick={openAssign}
+                      className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+                    >
+                      <Plus size={13} /> Assign Test
+                    </button>
+                  </td>
+                </tr>
+              ) : (
+                tests.map((test, idx) => {
+                  const effectiveDuration = test.duration || test.questionPaper?.duration;
+                  return (
+                    <tr key={test._id} className="hover:bg-gray-50 transition-colors">
+                      {/* # */}
+                      <td className="px-4 py-3 text-gray-400 text-xs font-medium">
+                        {(page - 1) * limit + idx + 1}
+                      </td>
+
+                      {/* Question Paper */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-start gap-2">
+                          <span className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <ClipboardList size={13} className="text-indigo-500" />
+                          </span>
+                          <div>
+                            <p className="font-semibold text-gray-900 text-sm leading-tight line-clamp-1">
+                              {test.questionPaper?.title || "—"}
+                            </p>
+                            <p className="text-[10px] text-gray-400 mt-0.5">
+                              {test.questionPaper?.paperId}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Batch */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0">
+                            <Users size={11} className="text-teal-500" />
+                          </span>
+                          <div>
+                            <p className="font-semibold text-gray-900 text-sm line-clamp-1">
+                              {test.batch?.batchName || "—"}
+                            </p>
+                            <p className="text-[10px] text-gray-400">
+                              {test.batch?.batchId}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Scheduled At */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1.5 text-sm text-gray-700">
+                          <Clock size={13} className="text-gray-400 flex-shrink-0" />
+                          <span className="font-medium">{formatDateTime(test.scheduledAt)}</span>
+                        </div>
+                      </td>
+
+                      {/* Duration */}
+                      <td className="px-4 py-3 text-center">
+                        <span className="text-sm font-semibold text-gray-700">
+                          {effectiveDuration ? `${effectiveDuration} min` : "—"}
+                        </span>
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-4 py-3 text-center">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${
+                            STATUS_STYLES[test.status] || "bg-gray-50 text-gray-500 border-gray-200"
+                          }`}
+                        >
+                          {test.status}
+                        </span>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => setViewResults(test)}
+                            title="View Results"
+                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                          >
+                            <BarChart3 size={13} />
+                            Results
+                          </button>
+                          <button
+                            onClick={() => openEdit(test)}
+                            title="Edit"
+                            className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            onClick={() => setDeleteTarget(test)}
+                            title="Delete"
+                            className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+        {pagination && (
+          <Pagination
+            page={page}
+            totalPages={pagination.totalPages}
+            total={pagination.total}
+            limit={limit}
+            onPageChange={setPage}
+            onLimitChange={(l) => { setLimit(l); setPage(1); }}
+          />
+        )}
+      </div>
+
+      {/* ── Assign / Edit Modal ── */}
+      {showModal && (
+        <AssignModal
+          editTarget={editTarget}
+          onClose={() => {
+            setShowModal(false);
+            setEditTarget(null);
+          }}
+          onSaved={fetchTests}
+        />
+      )}
+
+      {/* ── View Results Modal ── */}
+      {viewResults && (
+        <ViewResultsModal
+          test={viewResults}
+          onClose={() => setViewResults(null)}
+        />
+      )}
+
+      {/* ── Delete Confirmation ── */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center animate-in zoom-in-95 fade-in duration-200">
+            <div className="w-12 h-12 rounded-2xl bg-red-100 flex items-center justify-center mx-auto mb-4">
+              <Trash2 size={22} className="text-red-600" />
+            </div>
+            <h3 className="text-lg font-bold mb-2">Remove Assignment?</h3>
+            <p className="text-sm text-gray-500 mb-1">
+              <strong>{deleteTarget.questionPaper?.title}</strong>
+            </p>
+            <p className="text-sm text-gray-400 mb-6">
+              Assigned to <strong>{deleteTarget.batch?.batchName}</strong>
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className="flex-1 py-2.5 border rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex-1 py-2.5 bg-red-600 text-white rounded-xl text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-red-700 transition-colors"
+              >
+                {deleting ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Trash2 size={14} />
+                )}
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
