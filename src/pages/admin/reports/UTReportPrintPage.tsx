@@ -264,16 +264,8 @@ export const UTReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
-  const rejectedCount = obs.filter((o) =>
-    /reject|repair|fail|not ok/i.test(
-      v(o.evaluation || o.remark || o.result || o.interpretation),
-    ),
-  ).length;
-  const conclusionText =
-    v((report as unknown as { conclusion?: string }).conclusion) ||
-    (rejectedCount > 0
-      ? `Examination completed. ${rejectedCount} rejectable indication(s) identified; repair and re-examination required before final acceptance.`
-      : "Examination completed as per applicable standards. No rejectable indications observed in inspected items.");
+
+
 
   const calibAngles = [
     { label: "0°", data: apc.deg0 },
@@ -305,13 +297,13 @@ export const UTReportPrintPage: React.FC = () => {
           </tr>
           <tr>
             <td>Name: {v(inspector.name) || "-"}</td>
-            <td>Name: {v(jd.customerRepresentative) || "-"}</td>
-            <td>Name: {v(jd.clientRepresentative) || "-"}</td>
+            <td>Name: {v((jd as any).customerRepresentative) || "-"}</td>
+            <td>Name: {v((jd as any).clientRepresentative) || "-"}</td>
           </tr>
           <tr>
             <td>{v(inspector.designation) || "UT NDE Level II"}</td>
-            <td>Designation: {v(jd.customerDesignation) || "-"}</td>
-            <td>Designation: {v(jd.clientDesignation) || "-"}</td>
+            <td>Designation: {v((jd as any).customerDesignation) || "-"}</td>
+            <td>Designation: {v((jd as any).clientDesignation) || "-"}</td>
           </tr>
           <tr>
             <td style={{ height: "60px" }}>Signature:</td>

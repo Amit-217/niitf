@@ -179,24 +179,6 @@ const splitTags = (text?: string | null) =>
     .map((item) => item.trim())
     .filter(Boolean);
 
-const resultClass = (value?: string | null) => {
-  const t = v(value).toLowerCase();
-  if (
-    t.includes("reject") ||
-    t.includes("repair") ||
-    t.includes("fail") ||
-    t.includes("not ok")
-  )
-    return "reject-badge";
-  if (
-    t.includes("accept") ||
-    t.includes("pass") ||
-    t.includes("ok") ||
-    t.includes("clear")
-  )
-    return "accept-badge";
-  return "neutral-badge";
-};
 
 export const MPTReportPrintPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -326,15 +308,7 @@ export const MPTReportPrintPage = () => {
     return legacy.evaluation || legacy.result || legacy.remark || "";
   };
 
-  const rejectedCount = obs.filter((o) =>
-    /reject|repair|fail|not ok/i.test(v(getEvaluation(o) || o.interpretation)),
-  ).length;
-  const conclusionText =
-    v((report as unknown as { conclusion?: string }).conclusion) ||
-    v((fs as unknown as { conclusion?: string }).conclusion) ||
-    (rejectedCount > 0
-      ? `Examination completed. ${rejectedCount} rejectable indication(s) identified; repair and re-examination required before final acceptance.`
-      : "Examination completed as per applicable standards. No rejectable indications observed in inspected items.");
+
 
   const ReportFooter = () => (
     <>
@@ -783,11 +757,11 @@ export const MPTReportPrintPage = () => {
                                   </td>
                                   <td>
                                     Designation:{" "}
-                                    {v(fs.customer?.designation) || "-"}
+                                    {v((fs.customer as any)?.designation) || "-"}
                                   </td>
                                   <td>
                                     Designation:{" "}
-                                    {v(fs.clientOrTPI?.designation) || "-"}
+                                    {v((fs.clientOrTPI as any)?.designation) || "-"}
                                   </td>
                                 </tr>
                                 <tr>

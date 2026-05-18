@@ -300,16 +300,7 @@ export const PTReportPrintPage: React.FC = () => {
 
   const standards = splitTags(jd.referenceStandard);
   const acceptance = splitTags(jd.acceptanceCriteria);
-  const rejectedCount = (report.observations ?? []).filter((o) =>
-    /reject|repair|fail|not ok/i.test(
-      v(o.evaluation || o.remark || o.result || o.interpretation),
-    ),
-  ).length;
-  const conclusionText =
-    v((report as unknown as { conclusion?: string }).conclusion) ||
-    (rejectedCount > 0
-      ? `Examination completed. ${rejectedCount} rejectable indication(s) identified; repair and re-examination required before final acceptance.`
-      : "Examination completed as per applicable standards. No rejectable indications observed in inspected items.");
+
 
   const ReportFooter = () => (
     <>
@@ -699,10 +690,10 @@ export const PTReportPrintPage: React.FC = () => {
                                 <tr>
                                   <td>Name: {v(inspector.name) || "-"}</td>
                                   <td>
-                                    Name: {v(jd.customerRepresentative) || "-"}
+                                    Name: {v((jd as any).customerRepresentative) || "-"}
                                   </td>
                                   <td>
-                                    Name: {v(jd.clientRepresentative) || "-"}
+                                    Name: {v((jd as any).clientRepresentative) || "-"}
                                   </td>
                                 </tr>
                                 <tr>
@@ -712,11 +703,11 @@ export const PTReportPrintPage: React.FC = () => {
                                   </td>
                                   <td>
                                     Designation:{" "}
-                                    {v(jd.customerDesignation) || "-"}
+                                    {v((jd as any).customerDesignation) || "-"}
                                   </td>
                                   <td>
                                     Designation:{" "}
-                                    {v(jd.clientDesignation) || "-"}
+                                    {v((jd as any).clientDesignation) || "-"}
                                   </td>
                                 </tr>
                                 <tr>

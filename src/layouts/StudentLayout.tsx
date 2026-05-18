@@ -2,7 +2,6 @@ import React from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { LogOut, GraduationCap, LayoutDashboard, ClipboardList } from 'lucide-react';
 import api from '../api/axios';
-import { toast } from 'react-toastify';
 
 const StudentLayout: React.FC = () => {
     const navigate = useNavigate();

@@ -9,7 +9,6 @@ import {
   Loader2,
   ClipboardList,
   Target,
-  ChevronDown,
   BookOpen,
   AlignLeft,
   PencilLine,

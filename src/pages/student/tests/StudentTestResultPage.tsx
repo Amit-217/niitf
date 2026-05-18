@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { CheckCircle, XCircle, MinusCircle, Trophy, RotateCcw, ClipboardList } from 'lucide-react';
+import { CheckCircle, XCircle, MinusCircle, Trophy, ClipboardList } from 'lucide-react';
 import { getTestResult, AnswerPayload } from '../../../api/studentTestApi';
 import { toast } from 'react-toastify';
 

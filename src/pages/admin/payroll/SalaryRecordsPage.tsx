@@ -15,8 +15,6 @@ import {
   generateSalary,
   previewSalary,
   getAllSalaryRecordsForMonth,
-  deleteSalaryRecord,
-  updateSalaryRecordStatus,
 } from "../../../api/payrollApi";
 import api from "../../../api/axios";
 
@@ -50,22 +48,12 @@ interface AttendanceSummary {
 export const SalaryRecordsPage = () => {
   const navigate = useNavigate();
 
-  const getLastMonthValue = () => {
-    const d = new Date();
-    d.setMonth(d.getMonth() - 1);
-    return d.toISOString().substring(0, 7);
-  };
-
-  const PAYROLL_DAYS = 30;
-
   const [month, setMonth] = useState(new Date().toISOString().substring(0, 7)); // Default to current month
   const [records, setRecords] = useState<SalaryRecord[]>([]);
   const [previews, setPreviews] = useState<any[]>([]);
   const [isLoadingRecords, setIsLoadingRecords] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [note, setNote] = useState("");
   const [isCreatePayrollOpen, setIsCreatePayrollOpen] = useState(false);
-  const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null);
 
   const handleOpenInfo = (record: any) => {
     const empId = record.employeeId?._id || record.employeeId;
@@ -185,29 +173,6 @@ export const SalaryRecordsPage = () => {
     }
   };
 
-  const fetchEmployees = async () => {
-    try {
-      const res = await api.get("/users?status=active&limit=100");
-      setEmployees(res.data || []);
-    } catch (error) {
-      toast.error("Failed to load employees for generation");
-    }
-  };
-
-  const fetchMonthlyAttendance = async () => {
-    try {
-      const res: any = await api.get(`/admin/attendance/month?month=${month}`);
-      const items = Array.isArray(res.data)
-        ? res.data
-        : Array.isArray(res)
-          ? res
-          : [];
-      setMonthlyAttendance(items);
-    } catch (error) {
-      setMonthlyAttendance([]);
-    }
-  };
-
   const formatMonthLabel = (value: string) =>
     new Date(`${value}-01T00:00:00Z`).toLocaleDateString(undefined, {
       month: "long",
@@ -270,39 +235,6 @@ export const SalaryRecordsPage = () => {
       toast.error(error.message || error || "Failed to generate salary");
     } finally {
       setIsGenerating(false);
-    }
-  };
-
-  const handleStatusChange = async (
-    recordId: string,
-    status: "DRAFT" | "PAID",
-  ) => {
-    setStatusUpdatingId(recordId);
-    try {
-      await updateSalaryRecordStatus(recordId, status);
-      toast.success("Salary status updated");
-      fetchMonthRecords();
-    } catch (error: any) {
-      toast.error(error.message || error || "Failed to update salary status");
-    } finally {
-      setStatusUpdatingId(null);
-    }
-  };
-
-  const handleDelete = async (id: string, name: string) => {
-    if (
-      !window.confirm(
-        `Are you sure you want to delete the salary record for ${name}?`,
-      )
-    )
-      return;
-
-    try {
-      await deleteSalaryRecord(id);
-      toast.success("Salary record deleted");
-      fetchMonthRecords();
-    } catch (error: any) {
-      toast.error(error.message || error || "Failed to delete record");
     }
   };
 
