@@ -22,6 +22,8 @@ import {
   ChevronUp,
   Building2,
   FileBarChart2,
+  ClipboardList,
+  CalendarClock,
 } from "lucide-react";
 
 import { toast } from "react-toastify";
@@ -74,11 +76,9 @@ export const DashboardLayout: React.FC = () => {
   const user = userStr ? JSON.parse(userStr) : null;
   const role = user?.role || "EMPLOYEE";
   const basePath =
-    role === "STUDENT"
-      ? "student"
-      : role === "ADMIN" || role === "SUPER_ADMIN"
-        ? "admin"
-        : "employee";
+    role === "ADMIN" || role === "SUPER_ADMIN"
+      ? "admin"
+      : "employee";
   const currentUserId = user?.userId || user?.id || user?._id || "";
 
   const normalizeNotificationId = (value: any) => {
@@ -200,11 +200,6 @@ export const DashboardLayout: React.FC = () => {
   }, [notifications.length]);
 
   const fetchMyTaskCount = useCallback(async () => {
-    if (role !== "ADMIN" && role !== "SUPER_ADMIN") {
-      setMyTaskCount(0);
-      return;
-    }
-
     if (!currentUserId) {
       setMyTaskCount(0);
       return;
@@ -212,13 +207,16 @@ export const DashboardLayout: React.FC = () => {
 
     try {
       const res = await getAllTasks();
-      const tasks = res.data || [];
-      const count = tasks.filter((task: any) => {
+      const allTasks = res.data?.data || (Array.isArray(res.data) ? res.data : []);
+      const count = allTasks
+        .filter((task: any) => {
         const isAssignedToMe = (task.assignedTo || []).some(
           (emp: any) => String(emp?._id || emp) === String(currentUserId),
         );
         return isAssignedToMe;
-      }).length;
+        })
+        .filter((task: any) => task?.status === "ASSIGNED" || task?.status === "IN_PROGRESS")
+        .length;
       setMyTaskCount(count);
     } catch {
       setMyTaskCount(0);
@@ -228,8 +226,8 @@ export const DashboardLayout: React.FC = () => {
   useEffect(() => {
     fetchNotifications();
     fetchMyTaskCount();
-    const timer = window.setInterval(fetchNotifications, 10000);
-    const taskTimer = window.setInterval(fetchMyTaskCount, 10000);
+    const timer = window.setInterval(fetchNotifications, 5000);
+    const taskTimer = window.setInterval(fetchMyTaskCount, 5000);
     const handleNotificationRefresh = () => {
       fetchNotifications();
     };
@@ -343,23 +341,7 @@ export const DashboardLayout: React.FC = () => {
 
   const isAdminRole = role === "ADMIN" || role === "SUPER_ADMIN";
 
-  const groups =
-    role === "STUDENT"
-      ? [
-          {
-            name: "Exam Center",
-            key: "examCenter",
-            icon: FileText,
-            links: [
-              {
-                name: "My Tests",
-                path: `/${basePath}/dashboard`,
-                icon: FileText,
-              },
-            ],
-          },
-        ]
-      : [
+  const groups = [
           ...(isAdminRole
             ? [
                 {
@@ -426,19 +408,19 @@ export const DashboardLayout: React.FC = () => {
                       icon: GraduationCap,
                     },
                     {
-                      name: "CBT Tests",
-                      path: `/${basePath}/tests`,
-                      icon: FileText,
-                    },
-                    {
                       name: "Enquiries",
                       path: `/${basePath}/enquiries`,
                       icon: CircleHelp,
                     },
                     {
-                      name: "Test Login Portal",
-                      path: "/student-login",
-                      icon: BookOpen,
+                      name: "Question Papers",
+                      path: `/${basePath}/question-papers`,
+                      icon: ClipboardList,
+                    },
+                    {
+                      name: "Assign Tests",
+                      path: `/${basePath}/assign-tests`,
+                      icon: CalendarClock,
                     },
                   ],
                 },
@@ -469,16 +451,7 @@ export const DashboardLayout: React.FC = () => {
           },
         ];
 
-  const standaloneLinks =
-    role === "STUDENT"
-      ? [
-          {
-            name: "Dashboard",
-            path: `/${basePath}/dashboard`,
-            icon: LayoutDashboard,
-          },
-        ]
-      : [
+  const standaloneLinks = [
           {
             name: "Dashboard",
             path: `/${basePath}/dashboard`,

@@ -7,7 +7,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../../api/axios';
-import { StaffProfileDrawer } from '../../components/StaffProfileDrawer';
 import { Pagination } from '../../components/Pagination';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -242,7 +241,6 @@ export const UsersPage: React.FC = () => {
     const [modal, setModal] = useState<{ type: 'create' | 'edit'; user?: UserType } | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<{ user: UserType; type: 'soft' | 'hard' } | null>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
-    const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
 
     const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
     const currentUserRole: Role = storedUser.role || 'EMPLOYEE';
@@ -395,13 +393,10 @@ export const UsersPage: React.FC = () => {
                                 <div className="flex items-center gap-2 text-xs text-gray-600"><Mail size={14} className="text-gray-400" /> {user.email}</div>
                                 {user.mobile && <div className="flex items-center gap-2 text-xs text-gray-600"><Phone size={14} className="text-gray-400" /> {user.mobile}</div>}
                             </div>
-                            <div className="flex gap-2">
-                                <button onClick={() => setSelectedStaffId(user._id)} className="flex-1 py-2.5 bg-violet-50 text-violet-700 rounded-xl font-bold text-[10px] uppercase border border-violet-100">Intelligence</button>
-                                <div className="flex gap-1">
-                                    <button onClick={() => setModal({ type: 'edit', user })} className="p-2.5 rounded-xl border border-gray-100 text-gray-400 hover:text-violet-600"><Edit2 size={18} /></button>
-                                    <button onClick={() => user.isActive ? setDeleteTarget({ user, type: 'soft' }) : handleActivate(user)} className={`p-2.5 rounded-xl border border-gray-100 ${user.isActive ? 'text-amber-500' : 'text-emerald-500'}`}>{user.isActive ? <ShieldOff size={18} /> : <ShieldCheck size={18} />}</button>
-                                    {currentUserRole === 'SUPER_ADMIN' && <button onClick={() => setDeleteTarget({ user, type: 'hard' })} className="p-2.5 rounded-xl border border-gray-100 text-red-500"><Trash2 size={18} /></button>}
-                                </div>
+                            <div className="flex gap-1">
+                                <button onClick={() => setModal({ type: 'edit', user })} className="p-2.5 rounded-xl border border-gray-100 text-gray-400 hover:text-violet-600"><Edit2 size={18} /></button>
+                                <button onClick={() => user.isActive ? setDeleteTarget({ user, type: 'soft' }) : handleActivate(user)} className={`p-2.5 rounded-xl border border-gray-100 ${user.isActive ? 'text-amber-500' : 'text-emerald-500'}`}>{user.isActive ? <ShieldOff size={18} /> : <ShieldCheck size={18} />}</button>
+                                {currentUserRole === 'SUPER_ADMIN' && <button onClick={() => setDeleteTarget({ user, type: 'hard' })} className="p-2.5 rounded-xl border border-gray-100 text-red-500"><Trash2 size={18} /></button>}
                             </div>
                         </div>
                     ))
@@ -440,7 +435,6 @@ export const UsersPage: React.FC = () => {
                                     <td className="px-4 py-4 text-xs font-medium text-gray-400 whitespace-nowrap">{formatDate(user.createdAt)}</td>
                                     <td className="px-4 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button onClick={() => setSelectedStaffId(user._id)} className="px-3 py-1.5 bg-primary-50 text-primary-700 rounded-lg font-bold text-[10px] border border-primary-100 hover:bg-primary-600 hover:text-white transition-all uppercase tracking-wider">Intelligence</button>
                                             <div className="flex items-center gap-1">
                                                 <button onClick={() => setModal({ type: 'edit', user })} className="p-1.5 rounded-lg text-gray-400 hover:text-violet-600" title="Edit"><Edit2 size={16} /></button>
                                                 {user.isActive ? <button onClick={() => setDeleteTarget({ user, type: 'soft' })} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-500" title="Deactivate"><ShieldOff size={16} /></button> : <button onClick={() => handleActivate(user)} className="p-1.5 rounded-lg text-gray-400 hover:text-emerald-500" title="Activate"><ShieldCheck size={16} /></button>}
@@ -457,7 +451,6 @@ export const UsersPage: React.FC = () => {
 
             <Pagination page={safePage} totalPages={totalPages} total={filtered.length} limit={limit} onPageChange={setPage} onLimitChange={l => { setLimit(l); setPage(1); }} />
 
-            {selectedStaffId && <StaffProfileDrawer employeeId={selectedStaffId} onClose={() => setSelectedStaffId(null)} />}
             {modal && <UserModal mode={modal.type} editUser={modal.user} currentUserRole={currentUserRole} onClose={() => setModal(null)} onSuccess={fetchUsers} />}
             {deleteTarget && <DeleteConfirm user={deleteTarget.user} type={deleteTarget.type} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} loading={deleteLoading} />}
         </div>

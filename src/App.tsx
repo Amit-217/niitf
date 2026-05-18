@@ -11,12 +11,10 @@ import { Login } from "./pages/auth/Login";
 import { ForgotPassword } from "./pages/auth/ForgotPassword";
 import { VerifyOtp } from "./pages/auth/VerifyOtp";
 import { ResetPassword } from "./pages/auth/ResetPassword";
-import { StudentLogin } from "./pages/student/auth/StudentLogin";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import { AdminDashboard } from "./pages/dashboard/AdminDashboard";
 import { EmployeeDashboard } from "./pages/dashboard/EmployeeDashboard";
 import { Settings } from "./pages/settings/Settings";
-import { StudentDashboard } from "./pages/student/dashboard/StudentDashboard";
 import { UsersPage } from "./pages/users/UsersPage";
 import { CoursesPage } from "./pages/courses/CoursesPage";
 import { BatchesPage } from "./pages/batches/BatchesPage";
@@ -49,9 +47,6 @@ import { TPIIVRReportPrintPage } from "./pages/admin/reports/TPIIVRReportPrintPa
 import { AWSDReportFormPage } from "./pages/admin/reports/AWSDReportFormPage";
 import { AWSDReportPrintPage } from "./pages/admin/reports/AWSDReportPrintPage";
 import { AdmissionsPage } from "./pages/admin/admissions/AdmissionsPage";
-import { TestsPage } from "./pages/admin/tests/TestsPage";
-import { TakeTestPage } from "./pages/student/tests/TakeTestPage";
-import { StudentExamAccessPage } from "./pages/student/tests/StudentExamAccessPage";
 import { QuotationsListPage } from "./pages/admin/quotations/QuotationsListPage";
 import { QuotationFormPage } from "./pages/admin/quotations/QuotationFormPage";
 import { QuotationPrintPage } from "./pages/admin/quotations/QuotationPrintPage";
@@ -60,6 +55,15 @@ import { InvoiceFormPage } from "./pages/admin/invoices/InvoiceFormPage";
 import { InvoicePrintPage } from "./pages/admin/invoices/InvoicePrintPage";
 import { SalarySlipPage } from "./pages/admin/payroll/SalarySlipPage";
 import { EmployeeSalaryDetailPage } from "./pages/admin/payroll/EmployeeSalaryDetailPage";
+import { QuestionPapersPage } from "./pages/admin/questionPapers/QuestionPapersPage";
+import { QuestionPaperFormPage } from "./pages/admin/questionPapers/QuestionPaperFormPage";
+import { AssignTestPage } from "./pages/admin/assignedTests/AssignTestPage";
+import { StudentLogin } from "./pages/auth/StudentLogin";
+import StudentLayout from "./layouts/StudentLayout";
+import StudentDashboard from "./pages/student/dashboard/StudentDashboard";
+import StudentTestsPage from "./pages/student/tests/StudentTestsPage";
+import TakeTestPage from "./pages/student/tests/TakeTestPage";
+import StudentTestResultPage from "./pages/student/tests/StudentTestResultPage";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -118,12 +122,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const user = getSessionUser();
 
   if (!user) {
-    const isStudentRoute =
-      location.pathname.startsWith("/student") ||
-      location.pathname.startsWith("/test/");
     return (
       <Navigate
-        to={isStudentRoute ? "/student/login" : "/login"}
+        to="/login"
         state={{ from: location }}
         replace
       />
@@ -133,10 +134,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const userRole = user.role || "EMPLOYEE";
 
   if (allowedRoles && !allowedRoles.includes(userRole)) {
-    if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
+    if (userRole === "STUDENT") {
+      return <Navigate to="/student/dashboard" replace />;
+    } else if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
       return <Navigate to="/admin/dashboard" replace />;
-    } else if (userRole === "STUDENT") {
-      return <Navigate to="/student/exam" replace />;
     } else {
       return <Navigate to="/employee/dashboard" replace />;
     }
@@ -155,11 +156,11 @@ const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({
   }
 
   const role = user.role || "EMPLOYEE";
+  if (role === "STUDENT") {
+    return <Navigate to="/student/dashboard" replace />;
+  }
   if (role === "ADMIN" || role === "SUPER_ADMIN") {
     return <Navigate to="/admin/dashboard" replace />;
-  }
-  if (role === "STUDENT") {
-    return <Navigate to="/student/exam" replace />;
   }
   return <Navigate to="/employee/dashboard" replace />;
 };
@@ -185,38 +186,34 @@ function App() {
             </PublicOnlyRoute>
           }
         />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route
-          path="/student/login"
+          path="/student-login"
           element={
             <PublicOnlyRoute>
               <StudentLogin />
             </PublicOnlyRoute>
           }
         />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
 
+        {/* Student Portal Routes */}
         <Route
-          path="/student/exam"
+          path="/student"
           element={
             <ProtectedRoute allowedRoles={["STUDENT"]}>
-              <StudentExamAccessPage />
+              <StudentLayout />
             </ProtectedRoute>
           }
-        />
-
-        {/* Student/Employee Exam Route (Full screen, no layout) */}
-        <Route
-          path="/test/:id"
-          element={
-            <ProtectedRoute
-              allowedRoles={["STUDENT", "EMPLOYEE", "ADMIN", "SUPER_ADMIN"]}
-            >
-              <TakeTestPage />
-            </ProtectedRoute>
-          }
-        />
+        >
+          <Route index element={<Navigate to="/student/dashboard" replace />} />
+          <Route path="dashboard" element={<StudentDashboard />} />
+          <Route path="tests" element={<StudentTestsPage />} />
+          <Route path="tests/:id/take" element={<TakeTestPage />} />
+          <Route path="tests/:id/result" element={<StudentTestResultPage />} />
+          <Route path="*" element={<Navigate to="/student/dashboard" replace />} />
+        </Route>
 
         {/* Admin Dashboard Routes */}
         <Route
@@ -245,8 +242,11 @@ function App() {
           <Route path="batches" element={<BatchesPage />} />
           <Route path="students" element={<StudentsPage />} />
           <Route path="admissions" element={<AdmissionsPage />} />
-          <Route path="tests" element={<TestsPage />} />
           <Route path="enquiries" element={<EnquiriesPage />} />
+          <Route path="question-papers" element={<QuestionPapersPage />} />
+          <Route path="question-papers/new" element={<QuestionPaperFormPage />} />
+          <Route path="question-papers/:id/edit" element={<QuestionPaperFormPage />} />
+          <Route path="assign-tests" element={<AssignTestPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="customers/:id" element={<CustomerDetailPage />} />
 
@@ -346,22 +346,6 @@ function App() {
           <Route
             path="*"
             element={<Navigate to="/employee/dashboard" replace />}
-          />
-        </Route>
-
-        {/* Student Dashboard Routes */}
-        <Route
-          path="/student"
-          element={
-            <ProtectedRoute allowedRoles={["STUDENT"]}>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="dashboard" element={<StudentDashboard />} />
-          <Route
-            path="*"
-            element={<Navigate to="/student/dashboard" replace />}
           />
         </Route>
 

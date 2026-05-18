@@ -64,7 +64,7 @@ export const EmployeeTasksPage = () => {
   const [statusDraft, setStatusDraft] = useState<'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED'>('ASSIGNED');
   const [updates, setUpdates] = useState<any[]>([]);
   const [isSubmitting, setSubmitting] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'IN_PROGRESS' | 'COMPLETED'>('IN_PROGRESS');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'IN_PROGRESS' | 'ASSIGNED' | 'COMPLETED'>('IN_PROGRESS');
 
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const currentUserId = currentUser?.userId || currentUser?.id || currentUser?._id || null;
@@ -91,10 +91,42 @@ export const EmployeeTasksPage = () => {
     fetchMyTasks();
   }, []);
 
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      fetchMyTasks(true);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!isTaskModalOpen || !selectedTask?._id) return;
+
+    const timer = window.setInterval(async () => {
+      try {
+        const res = await getTaskUpdates(selectedTask._id);
+        setUpdates(res.data || []);
+      } catch {
+        // Silent: keep the UI stable during background polling
+      }
+
+      await fetchMyTasks(true);
+    }, 2000);
+
+    return () => window.clearInterval(timer);
+  }, [isTaskModalOpen, selectedTask?._id]);
+
   const filteredTasks = tasks.filter((task) => {
     if (statusFilter === 'ALL') return true;
     return task.status === statusFilter;
   });
+
+  useEffect(() => {
+    if (!selectedTask?._id) return;
+    const updated = tasks.find((t) => t._id === selectedTask._id);
+    if (updated && updated.status !== selectedTask.status) {
+      setSelectedTask(updated);
+    }
+  }, [tasks, selectedTask?._id]);
 
   useEffect(() => {
     const taskId = (location.state as { taskId?: string } | null)?.taskId;
@@ -149,7 +181,9 @@ export const EmployeeTasksPage = () => {
       window.dispatchEvent(new Event('notifications:refresh'));
       await fetchMyTasks(true);
 
-      if (statusDraft === 'COMPLETED') setTaskModalOpen(false);
+      if (statusDraft === 'COMPLETED') {
+        setStatusFilter('COMPLETED');
+      }
     } catch (error: any) {
       toast.error(error.message || 'Failed to submit update');
     } finally {
@@ -225,6 +259,7 @@ export const EmployeeTasksPage = () => {
           {[
             { id: 'ALL', label: 'All Tasks', count: tasks.length },
             { id: 'IN_PROGRESS', label: 'In Progress', count: tasks.filter(t => t.status === 'IN_PROGRESS').length },
+            { id: 'ASSIGNED', label: 'Pending', count: tasks.filter(t => t.status === 'ASSIGNED').length },
             { id: 'COMPLETED', label: 'Completed', count: tasks.filter(t => t.status === 'COMPLETED').length },
           ].map((f) => (
             <button

@@ -498,14 +498,16 @@ export const EnquiriesPage: React.FC = () => {
 
   const handleConvert = (enq: Enquiry) => {
     sessionStorage.setItem(
-      "pendingAdmission",
+      "pendingStudent",
       JSON.stringify({
-        studentName: enq.name,
+        enquiryId: enq._id,
+        fullName: enq.name,
         mobile: enq.mobile,
-        courseId: enq.courseInterestedId?.courseId,
+        email: enq.email,
+        city: enq.city,
       }),
     );
-    navigate("/admin/admissions");
+    navigate("/admin/students");
   };
 
   const handleDelete = async () => {

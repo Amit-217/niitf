@@ -241,24 +241,24 @@ export const AttendancePage = () => {
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2"><CalendarIcon className="text-primary-600" size={26} /> Attendance Center</h1>
-                    <p className="text-sm text-gray-500 mt-1">Mark daily presence and generate reports</p>
+                <div className="min-w-0">
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2"><CalendarIcon className="text-primary-600 shrink-0" size={24} /> <span className="truncate">Attendance Center</span></h1>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1">Mark daily presence and generate reports</p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     <button
                         onClick={() => navigate('/admin/attendance/history')}
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-xs hover:bg-gray-50 transition-all shadow-sm"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-xs hover:bg-gray-50 transition-all shadow-sm"
                     >
-                        <History size={14} /> History
+                        <History size={14} /> <span className="hidden sm:inline">History</span>
                     </button>
                     <button
                         onClick={handleExportCSV}
                         disabled={exportLoading}
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-xs hover:bg-gray-50 transition-all shadow-sm"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-xs hover:bg-gray-50 transition-all shadow-sm"
                     >
-                        <Download size={14} /> {exportLoading ? 'Exporting...' : 'Export CSV'}
+                        <Download size={14} /> <span className="hidden sm:inline">{exportLoading ? 'Exporting...' : 'Export CSV'}</span>
                     </button>
                     <div className="flex bg-gray-100 p-1 rounded-xl">
                         <button onClick={() => setViewMode('daily')} className={`p-1.5 rounded-lg transition-all ${viewMode === 'daily' ? 'bg-white shadow-sm text-primary-600' : 'text-gray-400'}`}><List size={18} /></button>
@@ -317,31 +317,29 @@ export const AttendancePage = () => {
             </div>
 
             {viewMode === 'daily' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
                     {isLoading ? (
                         <div className="col-span-full py-20 text-center"><Loader2 className="animate-spin inline-block text-primary-500" size={32} /></div>
                     ) : displayData.map((row) => (
-                        <div key={row.employee._id} className={"bg-white rounded-2xl border p-4 transition-all duration-300 " + (row.status ? 'border-gray-100 shadow-sm' : 'border-dashed border-primary-200 bg-primary-50/10')}>
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center text-primary-700 font-black border border-primary-200 shadow-sm text-sm transform transition-transform hover:scale-105">
+                        <div key={row.employee._id} className={"bg-white rounded-2xl border p-4 transition-all duration-300 min-w-0 " + (row.status ? 'border-gray-100 shadow-sm' : 'border-dashed border-primary-200 bg-primary-50/10')}>
+                            <div className="flex items-start justify-between gap-2 mb-3">
+                                <div className="flex items-start gap-3 min-w-0 flex-1">
+                                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center text-primary-700 font-black border border-primary-200 shadow-sm text-sm transform transition-transform hover:scale-105 shrink-0">
                                         {row.employee.name.charAt(0)}
                                     </div>
-                                    <div className="min-w-0">
+                                    <div className="min-w-0 flex-1">
                                         <p className="text-sm font-black text-gray-900 truncate">{row.employee.name}</p>
-                                        <div className="flex items-center gap-1.5 mt-0.5">
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{row.employee.empId}</span>
-                                            {/* Monthly Summary Badges */}
-                                            <div className="flex items-center gap-1">
-                                                <span className="bg-emerald-50 text-emerald-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-emerald-100">P:{row.stats.P}</span>
-                                                <span className="bg-red-50 text-red-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-red-100">A:{row.stats.A}</span>
-                                                <span className="bg-amber-50 text-amber-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-amber-100">L:{row.stats.L}</span>
-                                                <span className="bg-blue-50 text-blue-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-blue-100">H:{row.stats.H}</span>
-                                            </div>
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mt-0.5">{row.employee.empId}</span>
+                                        {/* Monthly Summary Badges — wrap when needed */}
+                                        <div className="flex flex-wrap items-center gap-1 mt-1.5">
+                                            <span className="bg-emerald-50 text-emerald-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-emerald-100">P:{row.stats.P}</span>
+                                            <span className="bg-red-50 text-red-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-red-100">A:{row.stats.A}</span>
+                                            <span className="bg-amber-50 text-amber-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-amber-100">L:{row.stats.L}</span>
+                                            <span className="bg-blue-50 text-blue-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-blue-100">H:{row.stats.H}</span>
                                         </div>
                                     </div>
                                 </div>
-                                <span className={"px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter border " + getStatusColor(row.status)}>
+                                <span className={"px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter border shrink-0 whitespace-nowrap " + getStatusColor(row.status)}>
                                     {row.status || 'Unmarked'}
                                 </span>
                             </div>
@@ -354,8 +352,9 @@ export const AttendancePage = () => {
                                     { s: 'HOLIDAY', icon: Coffee, label: 'O' }
                                 ].map((opt) => (
                                     <button
+                                        key={opt.s}
                                         onClick={() => handleStatusChange(row.employee._id, opt.s as any)}
-                                        className={"flex flex-col items-center justify-center py-3 rounded-2xl border transition-all duration-300 transform active:scale-95 " + (row.status === opt.s
+                                        className={"flex flex-col items-center justify-center py-2.5 sm:py-3 rounded-2xl border transition-all duration-300 transform active:scale-95 " + (row.status === opt.s
                                             ? 'bg-primary-600 border-primary-600 text-white shadow-lg shadow-primary-200 ring-2 ring-primary-100'
                                             : 'bg-white border-gray-100 text-gray-400 hover:bg-gray-50 hover:border-primary-200 hover:text-primary-600')}
                                     >
