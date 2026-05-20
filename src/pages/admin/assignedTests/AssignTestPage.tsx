@@ -75,6 +75,16 @@ const DIFFICULTY_STYLES: Record<string, string> = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+const getEffectiveStatus = (test: AssignedTest): AssignedTest["status"] => {
+  if (test.status === "Cancelled") return "Cancelled";
+  const now = Date.now();
+  const start = new Date(test.scheduledAt).getTime();
+  const durationMs = (test.duration || test.questionPaper?.duration || 60) * 60 * 1000;
+  if (now < start) return "Upcoming";
+  if (now < start + durationMs) return "Ongoing";
+  return "Completed";
+};
+
 const formatDateTime = (iso: string) => {
   const d = new Date(iso);
   return d.toLocaleString("en-IN", {
@@ -571,6 +581,7 @@ export const AssignTestPage: React.FC = () => {
   const [viewResults, setViewResults] = useState<AssignedTest | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AssignedTest | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [tick, setTick] = useState(0);
 
   const fetchTests = async () => {
     setLoading(true);
@@ -593,6 +604,12 @@ export const AssignTestPage: React.FC = () => {
     const t = setTimeout(() => fetchTests(), search ? 400 : 0);
     return () => clearTimeout(t);
   }, [page, limit, search, statusFilter]);
+
+  // Re-render every 60s so time-based statuses stay current
+  useEffect(() => {
+    const interval = setInterval(() => setTick((n) => n + 1), 60_000);
+    return () => clearInterval(interval);
+  }, []);
 
   const openAssign = () => {
     setEditTarget(null);
@@ -712,7 +729,7 @@ export const AssignTestPage: React.FC = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody key={tick} className="divide-y divide-gray-100">
               {loading ? (
                 <tr>
                   <td colSpan={7} className="px-4 py-12 text-center text-gray-400">
@@ -738,6 +755,7 @@ export const AssignTestPage: React.FC = () => {
               ) : (
                 tests.map((test, idx) => {
                   const effectiveDuration = test.duration || test.questionPaper?.duration;
+                  const effectiveStatus = getEffectiveStatus(test);
                   return (
                     <tr key={test._id} className="hover:bg-gray-50 transition-colors">
                       {/* # */}
@@ -798,10 +816,10 @@ export const AssignTestPage: React.FC = () => {
                       <td className="px-4 py-3 text-center">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${
-                            STATUS_STYLES[test.status] || "bg-gray-50 text-gray-500 border-gray-200"
+                            STATUS_STYLES[effectiveStatus] || "bg-gray-50 text-gray-500 border-gray-200"
                           }`}
                         >
-                          {test.status}
+                          {effectiveStatus}
                         </span>
                       </td>
 

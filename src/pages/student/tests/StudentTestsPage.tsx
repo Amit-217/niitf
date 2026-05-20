@@ -28,12 +28,19 @@ const StudentTestsPage: React.FC = () => {
     const [tests, setTests] = useState<MyTest[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<FilterStatus>('All');
+    const [tick, setTick] = useState(0);
 
     useEffect(() => {
         getMyTests()
             .then((res) => setTests(res.tests || []))
             .catch(() => toast.error('Failed to load tests'))
             .finally(() => setLoading(false));
+    }, []);
+
+    // Re-render every 60s so time-based statuses stay current
+    useEffect(() => {
+        const interval = setInterval(() => setTick((n) => n + 1), 60_000);
+        return () => clearInterval(interval);
     }, []);
 
     const filtered = filter === 'All' ? tests : tests.filter((t) => {
@@ -80,7 +87,7 @@ const StudentTestsPage: React.FC = () => {
             ) : filtered.length === 0 ? (
                 <div className="py-16 text-center text-gray-400">No tests found.</div>
             ) : (
-                <div className="grid gap-4">
+                <div key={tick} className="grid gap-4">
                     {filtered.map((t) => {
                         const effectiveStatus = getEffectiveStatus(t);
                         const action = getAction(t);
