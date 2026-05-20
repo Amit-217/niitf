@@ -171,10 +171,10 @@ export const EmployeeSalaryDetailPage = () => {
                       Total Salary
                     </th>
                     <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-400">
-                      Standard Deduction
+                      Absent Deduction
                     </th>
                     <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-400">
-                      PF Deduction
+                      Standard Deduction
                     </th>
                     <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-400">
                       Repayment
