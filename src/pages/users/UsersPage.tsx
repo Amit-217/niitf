@@ -99,6 +99,20 @@ const UserModal: React.FC<UserModalProps> = ({ mode, editUser, currentUserRole, 
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    const pwdChecks = {
+        length:    form.password.length >= 8,
+        uppercase: /[A-Z]/.test(form.password),
+        lowercase: /[a-z]/.test(form.password),
+        number:    /[0-9]/.test(form.password),
+        special:   /[^A-Za-z0-9]/.test(form.password),
+    };
+    const pwdScore = Object.values(pwdChecks).filter(Boolean).length;
+    const pwdStrength = pwdScore <= 1 ? { label: 'Weak', color: 'bg-red-500', text: 'text-red-600', bars: 1 }
+        : pwdScore === 2 ? { label: 'Fair',   color: 'bg-orange-400', text: 'text-orange-600', bars: 2 }
+        : pwdScore === 3 ? { label: 'Good',   color: 'bg-yellow-400', text: 'text-yellow-600', bars: 3 }
+        : pwdScore === 4 ? { label: 'Strong', color: 'bg-emerald-500', text: 'text-emerald-600', bars: 4 }
+        :                  { label: 'Very Strong', color: 'bg-emerald-600', text: 'text-emerald-700', bars: 5 };
+
     const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
         setForm(prev => ({ ...prev, [key]: e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value }));
 
@@ -167,9 +181,39 @@ const UserModal: React.FC<UserModalProps> = ({ mode, editUser, currentUserRole, 
                                 <div className="md:col-span-2">
                                     <label className={labelClass}>Password *</label>
                                     <div className="relative">
-                                        <input className={`${inputClass} py-3 pr-10`} type={showPassword ? 'text' : 'password'} placeholder="Min. 6 characters" value={form.password} onChange={set('password')} required minLength={6} />
+                                        <input className={`${inputClass} py-3 pr-10`} type={showPassword ? 'text' : 'password'} placeholder="Min. 8 characters" value={form.password} onChange={set('password')} required minLength={8} />
                                         <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
                                     </div>
+                                    {form.password.length > 0 && (
+                                        <div className="mt-2.5 space-y-2">
+                                            {/* Strength bar */}
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex gap-1 flex-1">
+                                                    {[1,2,3,4,5].map((i) => (
+                                                        <div key={i} className={`h-1.5 flex-1 rounded-full transition-colors ${i <= pwdStrength.bars ? pwdStrength.color : 'bg-gray-200'}`} />
+                                                    ))}
+                                                </div>
+                                                <span className={`text-xs font-semibold ${pwdStrength.text}`}>{pwdStrength.label}</span>
+                                            </div>
+                                            {/* Checklist */}
+                                            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                                                {([
+                                                    [pwdChecks.length,    '8+ characters'],
+                                                    [pwdChecks.uppercase, 'Uppercase letter'],
+                                                    [pwdChecks.lowercase, 'Lowercase letter'],
+                                                    [pwdChecks.number,    'Number'],
+                                                    [pwdChecks.special,   'Special character'],
+                                                ] as [boolean, string][]).map(([ok, label]) => (
+                                                    <span key={label} className={`flex items-center gap-1.5 text-xs ${ok ? 'text-emerald-600' : 'text-gray-400'}`}>
+                                                        <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[9px] font-bold ${ok ? 'bg-emerald-500' : 'bg-gray-300'}`}>
+                                                            {ok ? '✓' : ''}
+                                                        </span>
+                                                        {label}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </>
                         )}
