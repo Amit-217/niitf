@@ -175,8 +175,8 @@ export const SalaryConfigPage = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Settings2 className="text-primary-600" size={26} />
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <Settings2 className="text-primary-600 shrink-0" size={22} />
           Salary Configuration
         </h1>
         <p className="hidden sm:block text-sm text-gray-500 mt-1">
@@ -185,28 +185,28 @@ export const SalaryConfigPage = () => {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Table2 className="text-gray-500" size={18} />
-            <h3 className="font-semibold text-gray-700">
+        <div className="p-4 border-b border-gray-200 bg-gray-50 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <Table2 className="text-gray-500 shrink-0" size={18} />
+            <h3 className="font-semibold text-gray-700 truncate">
               Salary Config Records
             </h3>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => openGenerateModal()}
-              className="flex items-center gap-2 px-4 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm"
             >
               <Plus size={14} />
-              Generate New
+              <span className="hidden sm:inline">Generate New</span>
             </button>
             <button
               onClick={exportCSV}
-              className="flex items-center gap-2 px-4 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm"
             >
               <Download size={14} />
-              Export CSV
+              <span className="hidden sm:inline">Export CSV</span>
             </button>
           </div>
         </div>
@@ -303,16 +303,16 @@ export const SalaryConfigPage = () => {
             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
             onClick={closeGenerateModal}
           />
-          <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-3xl lg:max-w-4xl overflow-hidden animate-in fade-in zoom-in duration-200 border border-white">
-            <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white flex items-start justify-between gap-4">
+          <div className="relative bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-3xl lg:max-w-4xl overflow-hidden animate-in fade-in zoom-in duration-200 border border-white">
+            <div className="px-4 py-4 sm:px-8 sm:py-6 border-b border-gray-100 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.35em] text-violet-100/80">
                   {selectedUser ? "Edit Window" : "Generate Window"}
                 </p>
-                <h3 className="text-xl sm:text-2xl font-bold text-white mt-1">
+                <h3 className="text-lg sm:text-2xl font-bold text-white mt-1">
                   Salary Configuration
                 </h3>
-                <p className="text-sm text-violet-100/80 mt-1 max-w-2xl">
+                <p className="hidden sm:block text-sm text-violet-100/80 mt-1 max-w-2xl">
                   {selectedUser
                     ? "Update the employee, effective date, and monthly salary."
                     : "Choose the employee, set the effective date, and save the new salary record."}
@@ -329,7 +329,7 @@ export const SalaryConfigPage = () => {
 
             <form
               onSubmit={handleSave}
-              className="p-8 space-y-6 max-h-[80vh] overflow-y-auto"
+              className="p-4 sm:p-8 space-y-6 max-h-[80vh] overflow-y-auto"
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 <div className="rounded-3xl border border-gray-100 bg-gray-50/80 p-5 sm:p-6 space-y-5">
@@ -464,13 +464,13 @@ export const SalaryConfigPage = () => {
             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
             onClick={closeConfigView}
           />
-          <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-3xl lg:max-w-4xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white flex items-start justify-between gap-4">
+          <div className="relative bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-3xl lg:max-w-4xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="px-4 py-4 sm:px-8 sm:py-6 border-b border-gray-100 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.35em] text-violet-100/80">
                   Salary Config Details
                 </p>
-                <h3 className="text-xl sm:text-2xl font-bold text-white mt-1">
+                <h3 className="text-lg sm:text-2xl font-bold text-white mt-1">
                   {selectedConfig.employeeId?.name || "Employee"}
                 </h3>
                 <p className="text-sm text-violet-100/80 mt-1 max-w-2xl">
@@ -488,7 +488,7 @@ export const SalaryConfigPage = () => {
               </button>
             </div>
 
-            <div className="p-8 space-y-6 max-h-[80vh] overflow-y-auto">
+            <div className="p-4 sm:p-8 space-y-6 max-h-[80vh] overflow-y-auto">
               {viewLoading ? (
                 <div className="py-16 text-center text-gray-400 font-medium animate-pulse">
                   Loading salary config details...

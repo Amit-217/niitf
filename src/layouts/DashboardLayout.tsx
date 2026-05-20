@@ -76,9 +76,7 @@ export const DashboardLayout: React.FC = () => {
   const user = userStr ? JSON.parse(userStr) : null;
   const role = user?.role || "EMPLOYEE";
   const basePath =
-    role === "ADMIN" || role === "SUPER_ADMIN"
-      ? "admin"
-      : "employee";
+    role === "ADMIN" || role === "SUPER_ADMIN" ? "admin" : "employee";
   const currentUserId = user?.userId || user?.id || user?._id || "";
 
   const normalizeNotificationId = (value: any) => {
@@ -207,16 +205,19 @@ export const DashboardLayout: React.FC = () => {
 
     try {
       const res = await getAllTasks();
-      const allTasks = res.data?.data || (Array.isArray(res.data) ? res.data : []);
+      const allTasks =
+        res.data?.data || (Array.isArray(res.data) ? res.data : []);
       const count = allTasks
         .filter((task: any) => {
-        const isAssignedToMe = (task.assignedTo || []).some(
-          (emp: any) => String(emp?._id || emp) === String(currentUserId),
-        );
-        return isAssignedToMe;
+          const isAssignedToMe = (task.assignedTo || []).some(
+            (emp: any) => String(emp?._id || emp) === String(currentUserId),
+          );
+          return isAssignedToMe;
         })
-        .filter((task: any) => task?.status === "ASSIGNED" || task?.status === "IN_PROGRESS")
-        .length;
+        .filter(
+          (task: any) =>
+            task?.status === "ASSIGNED" || task?.status === "IN_PROGRESS",
+        ).length;
       setMyTaskCount(count);
     } catch {
       setMyTaskCount(0);
@@ -280,6 +281,7 @@ export const DashboardLayout: React.FC = () => {
 
   const handleBellClick = async () => {
     setIsProfileDropdownOpen(false);
+    setIsMobileSidebarOpen(false);
     if (!isNotificationOpen) {
       await fetchNotifications();
     }
@@ -342,128 +344,128 @@ export const DashboardLayout: React.FC = () => {
   const isAdminRole = role === "ADMIN" || role === "SUPER_ADMIN";
 
   const groups = [
-          ...(isAdminRole
-            ? [
-                {
-                  name: "User Management",
-                  key: "userManagement",
-                  icon: Users,
-                  links: [
-                    { name: "Users", path: `/${basePath}/users`, icon: Users },
-                    {
-                      name: "Salary Generation",
-                      path: `/${basePath}/payroll/records`,
-                      icon: LayoutDashboard,
-                    },
-                    {
-                      name: "Payroll Config",
-                      path: `/${basePath}/payroll/config`,
-                      icon: Briefcase,
-                    },
-                    {
-                      name: "Attendance",
-                      path: `/${basePath}/attendance`,
-                      icon: Clock,
-                    },
-                    {
-                      name: "Admin Task",
-                      path: `/${basePath}/tasks`,
-                      icon: ListTodo,
-                    },
-                    {
-                      name: "Overtime",
-                      path: `/${basePath}/payroll/overtime`,
-                      icon: Clock,
-                    },
-                    {
-                      name: "Advances",
-                      path: `/${basePath}/payroll/advances`,
-                      icon: Briefcase,
-                    },
-                  ],
-                },
-                {
-                  name: "Student Management",
-                  key: "studentManagement",
-                  icon: GraduationCap,
-                  links: [
-                    {
-                      name: "Courses",
-                      path: `/${basePath}/courses`,
-                      icon: BookOpen,
-                    },
-                    {
-                      name: "Batches",
-                      path: `/${basePath}/batches`,
-                      icon: Clock,
-                    },
-                    {
-                      name: "Students",
-                      path: `/${basePath}/students`,
-                      icon: Users,
-                    },
-                    {
-                      name: "Admissions",
-                      path: `/${basePath}/admissions`,
-                      icon: GraduationCap,
-                    },
-                    {
-                      name: "Enquiries",
-                      path: `/${basePath}/enquiries`,
-                      icon: CircleHelp,
-                    },
-                    {
-                      name: "Question Papers",
-                      path: `/${basePath}/question-papers`,
-                      icon: ClipboardList,
-                    },
-                    {
-                      name: "Assign Tests",
-                      path: `/${basePath}/assign-tests`,
-                      icon: CalendarClock,
-                    },
-                  ],
-                },
-              ]
-            : []),
+    ...(isAdminRole
+      ? [
           {
-            name: "Customer Management",
-            key: "customerManagement",
-            icon: Building2,
+            name: "User Management",
+            key: "userManagement",
+            icon: Users,
             links: [
-              { name: "Customer", path: `/${basePath}/customers`, icon: Users },
+              { name: "Users", path: `/${basePath}/users`, icon: Users },
               {
-                name: "All Reports",
-                path: `/${basePath}/reports`,
-                icon: FileBarChart2,
+                name: "Salary Generation",
+                path: `/${basePath}/payroll/records`,
+                icon: LayoutDashboard,
               },
               {
-                name: "Quotations",
-                path: `/${basePath}/quotations`,
-                icon: FileText,
+                name: "Payroll Config",
+                path: `/${basePath}/payroll/config`,
+                icon: Briefcase,
               },
               {
-                name: "Invoices",
-                path: `/${basePath}/invoices`,
-                icon: FileText,
+                name: "Attendance",
+                path: `/${basePath}/attendance`,
+                icon: Clock,
+              },
+              {
+                name: "Admin Task",
+                path: `/${basePath}/tasks`,
+                icon: ListTodo,
+              },
+              {
+                name: "Overtime",
+                path: `/${basePath}/payroll/overtime`,
+                icon: Clock,
+              },
+              {
+                name: "Advances",
+                path: `/${basePath}/payroll/advances`,
+                icon: Briefcase,
               },
             ],
           },
-        ];
+          {
+            name: "Student Management",
+            key: "studentManagement",
+            icon: GraduationCap,
+            links: [
+              {
+                name: "Courses",
+                path: `/${basePath}/courses`,
+                icon: BookOpen,
+              },
+              {
+                name: "Batches",
+                path: `/${basePath}/batches`,
+                icon: Clock,
+              },
+              {
+                name: "Students",
+                path: `/${basePath}/students`,
+                icon: Users,
+              },
+              {
+                name: "Admissions",
+                path: `/${basePath}/admissions`,
+                icon: GraduationCap,
+              },
+              {
+                name: "Enquiries",
+                path: `/${basePath}/enquiries`,
+                icon: CircleHelp,
+              },
+              {
+                name: "Question Papers",
+                path: `/${basePath}/question-papers`,
+                icon: ClipboardList,
+              },
+              {
+                name: "Assign Tests",
+                path: `/${basePath}/assign-tests`,
+                icon: CalendarClock,
+              },
+            ],
+          },
+        ]
+      : []),
+    {
+      name: "Customer Management",
+      key: "customerManagement",
+      icon: Building2,
+      links: [
+        { name: "Customer", path: `/${basePath}/customers`, icon: Users },
+        {
+          name: "All Reports",
+          path: `/${basePath}/reports`,
+          icon: FileBarChart2,
+        },
+        {
+          name: "Quotations",
+          path: `/${basePath}/quotations`,
+          icon: FileText,
+        },
+        {
+          name: "Invoices",
+          path: `/${basePath}/invoices`,
+          icon: FileText,
+        },
+      ],
+    },
+  ];
 
   const standaloneLinks = [
-          {
-            name: "Dashboard",
-            path: `/${basePath}/dashboard`,
-            icon: LayoutDashboard,
-          },
-          {
-            name: "My Tasks",
-            path: `/${basePath}/my-tasks`,
-            icon: ListTodo,
-          },
-          { name: "Settings", path: `/${basePath}/settings`, icon: Briefcase },
-        ];
+    {
+      name: "Dashboard",
+      path: `/${basePath}/dashboard`,
+      icon: LayoutDashboard,
+    },
+    {
+      name: "My Tasks",
+      path: `/${basePath}/my-tasks`,
+      icon: ListTodo,
+    },
+    { name: "Settings", path: `/${basePath}/settings`, icon: Briefcase },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -509,7 +511,7 @@ export const DashboardLayout: React.FC = () => {
             </button>
 
             {isNotificationOpen && (
-              <div className="absolute right-0 mt-2 w-80 max-w-[90vw] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
+              <div className="fixed top-[4.25rem] right-2 sm:right-4 lg:right-6 w-80 max-w-[calc(100vw-1rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[9999]">
                 <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/70">
                   <div>
                     <p className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">
@@ -697,7 +699,7 @@ export const DashboardLayout: React.FC = () => {
         {/* ── Sidebar ───────────────────────────────────────────────── */}
         <aside
           className={`
-                        fixed lg:sticky top-[76px] left-0 h-[calc(100dvh-76px)] max-h-[calc(100dvh-76px)]
+                        fixed lg:sticky top-16 left-0 h-[calc(100dvh-4rem)] max-h-[calc(100dvh-4rem)]
                         bg-white border border-gray-200 rounded-r-2xl
                         shadow-lg z-20 flex flex-col overflow-visible
                         transition-all duration-300 ease-in-out
@@ -946,7 +948,7 @@ export const DashboardLayout: React.FC = () => {
         </aside>
 
         {/* ── Main Content ───────────────────────────────────────────── */}
-        <main className="flex-1 overflow-y-auto bg-gray-50/50 min-w-0">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50/50 min-w-0">
           <div className="container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl animate-in fade-in slide-in-from-bottom-2 duration-500">
             <Breadcrumbs />
             <Outlet />

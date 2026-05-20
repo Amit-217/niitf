@@ -28,6 +28,7 @@ const StudentTestsPage: React.FC = () => {
     const [tests, setTests] = useState<MyTest[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<FilterStatus>('All');
+    const [tick, setTick] = useState(0);
 
     useEffect(() => {
         getMyTests()
@@ -36,17 +37,31 @@ const StudentTestsPage: React.FC = () => {
             .finally(() => setLoading(false));
     }, []);
 
+    // Re-render every 60s so time-based statuses stay current
+    useEffect(() => {
+        const interval = setInterval(() => setTick((n) => n + 1), 60_000);
+        return () => clearInterval(interval);
+    }, []);
+
     const filtered = filter === 'All' ? tests : tests.filter((t) => {
         if (filter === 'Completed') return t.submission?.status === 'Submitted' || t.submission?.status === 'TimedOut' || getEffectiveStatus(t) === 'Completed';
         return getEffectiveStatus(t) === filter;
     });
 
     const getAction = (t: MyTest) => {
-        if (t.submission?.status === 'Submitted' || t.submission?.status === 'TimedOut') {
-            return { label: 'View Result', onClick: () => navigate(`/student/tests/${t._id}/result`), style: 'bg-gray-100 text-gray-700 hover:bg-gray-200' };
+        const sub = t.submission;
+        const status = getEffectiveStatus(t);
+        // Submitted — always show View Result
+        if (sub?.status === 'Submitted' || sub?.status === 'TimedOut') {
+            return { type: 'button', label: 'View Result', onClick: () => navigate(`/student/tests/${t._id}/result`), style: 'bg-gray-100 text-gray-700 hover:bg-gray-200' } as const;
         }
-        if (getEffectiveStatus(t) === 'Ongoing') {
-            return { label: 'Start Test', onClick: () => navigate(`/student/tests/${t._id}/take`), style: 'bg-indigo-600 text-white hover:bg-indigo-700' };
+        // Ongoing — allow attending
+        if (status === 'Ongoing') {
+            return { type: 'button', label: 'Attend Exam', onClick: () => navigate(`/student/tests/${t._id}/take`), style: 'bg-indigo-600 text-white hover:bg-indigo-700' } as const;
+        }
+        // Completed without submission — absent
+        if (status === 'Completed') {
+            return { type: 'absent' } as const;
         }
         return null;
     };
@@ -80,11 +95,12 @@ const StudentTestsPage: React.FC = () => {
             ) : filtered.length === 0 ? (
                 <div className="py-16 text-center text-gray-400">No tests found.</div>
             ) : (
-                <div className="grid gap-4">
+                <div key={tick} className="grid gap-4">
                     {filtered.map((t) => {
                         const effectiveStatus = getEffectiveStatus(t);
                         const action = getAction(t);
                         const isSubmitted = t.submission?.status === 'Submitted' || t.submission?.status === 'TimedOut';
+                        const isAbsent = effectiveStatus === 'Completed' && !isSubmitted;
                         const duration = t.duration || t.questionPaper.duration;
 
                         return (
@@ -100,13 +116,19 @@ const StudentTestsPage: React.FC = () => {
                                         <p className="text-sm text-gray-500">{t.batch.batchName} · {t.questionPaper.paperId}</p>
                                     </div>
 
-                                    {action && (
+                                    {action?.type === 'button' && (
                                         <button
                                             onClick={action.onClick}
                                             className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${action.style}`}
                                         >
                                             {action.label}
                                         </button>
+                                    )}
+                                    {action?.type === 'absent' && (
+                                        <span className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-orange-50 text-orange-600 border border-orange-200">
+                                            <XCircle size={14} />
+                                            Absent
+                                        </span>
                                     )}
                                 </div>
 
@@ -139,6 +161,19 @@ const StudentTestsPage: React.FC = () => {
                                         <span className="text-sm text-gray-600">
                                             {t.submission.percentage}%
                                         </span>
+                                    </div>
+                                )}
+
+                                {isAbsent && (
+                                    <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-4">
+                                        <span className="flex items-center gap-1.5 text-sm font-semibold text-red-600">
+                                            <XCircle size={14} />
+                                            Failed
+                                        </span>
+                                        <span className="text-sm text-gray-600">
+                                            Score: <strong>0/{t.questionPaper.totalMarks}</strong>
+                                        </span>
+                                        <span className="text-sm text-gray-600">0%</span>
                                     </div>
                                 )}
                             </div>

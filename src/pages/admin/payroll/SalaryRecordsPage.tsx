@@ -247,39 +247,37 @@ export const SalaryRecordsPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <CreditCard className="text-primary-600" size={26} />
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <CreditCard className="text-primary-600 shrink-0" size={22} />
             Payroll Records
           </h1>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-sm text-gray-500 font-medium">
               {formatMonthLabel(month)}
             </span>
-            <span className="w-1 h-1 rounded-full bg-gray-300"></span>
-            <span className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-gray-200">
+            <span className="hidden sm:inline w-1 h-1 rounded-full bg-gray-300"></span>
+            <span className="hidden sm:inline text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-gray-200">
               {daysInThisMonth} Days Logic
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <input
-              type="month"
-              value={month}
-              onChange={(e) => setMonth(e.target.value)}
-              className="bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold text-sm outline-none focus:ring-2 focus:ring-primary-500/20 transition-all cursor-pointer shadow-sm"
-            />
-          </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <input
+            type="month"
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+            className="bg-white border border-gray-200 text-gray-700 px-3 py-2 rounded-xl font-bold text-sm outline-none focus:ring-2 focus:ring-primary-500/20 transition-all cursor-pointer shadow-sm"
+          />
           <button
             type="button"
             onClick={() => setIsCreatePayrollOpen(true)}
-            className="px-4 py-2.5 bg-primary-600 text-white rounded-xl font-bold text-sm shadow-md shadow-primary-200 hover:bg-primary-700 transition-all flex items-center gap-2"
+            className="px-3 py-2 bg-primary-600 text-white rounded-xl font-bold text-sm shadow-md shadow-primary-200 hover:bg-primary-700 transition-all flex items-center gap-1.5"
           >
-            <Calculator size={16} />
-            Create Payroll
+            <Calculator size={15} />
+            <span className="hidden sm:inline">Create Payroll</span>
           </button>
         </div>
       </div>
