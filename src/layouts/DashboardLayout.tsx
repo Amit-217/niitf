@@ -281,6 +281,7 @@ export const DashboardLayout: React.FC = () => {
 
   const handleBellClick = async () => {
     setIsProfileDropdownOpen(false);
+    setIsMobileSidebarOpen(false);
     if (!isNotificationOpen) {
       await fetchNotifications();
     }
@@ -698,7 +699,7 @@ export const DashboardLayout: React.FC = () => {
         {/* ── Sidebar ───────────────────────────────────────────────── */}
         <aside
           className={`
-                        fixed lg:sticky top-[76px] left-0 h-[calc(100dvh-76px)] max-h-[calc(100dvh-76px)]
+                        fixed lg:sticky top-16 left-0 h-[calc(100dvh-4rem)] max-h-[calc(100dvh-4rem)]
                         bg-white border border-gray-200 rounded-r-2xl
                         shadow-lg z-20 flex flex-col overflow-visible
                         transition-all duration-300 ease-in-out
@@ -947,7 +948,7 @@ export const DashboardLayout: React.FC = () => {
         </aside>
 
         {/* ── Main Content ───────────────────────────────────────────── */}
-        <main className="flex-1 overflow-y-auto bg-gray-50/50 min-w-0">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50/50 min-w-0">
           <div className="container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl animate-in fade-in slide-in-from-bottom-2 duration-500">
             <Breadcrumbs />
             <Outlet />
