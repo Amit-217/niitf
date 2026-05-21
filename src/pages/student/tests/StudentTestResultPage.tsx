@@ -131,19 +131,25 @@ const StudentTestResultPage: React.FC = () => {
 
     const correct = reviewItems.filter((r) => r.isCorrect === true).length;
     const wrong = reviewItems.filter((r) => r.isCorrect === false).length;
-    const skipped = reviewItems.filter((r) => r.isCorrect === null || (r.type !== 'subjective' && r.selectedOptionIndex == null)).length;
+    // Count skipped: MCQ with no selected option, or subjective with no text answer
+    const skipped = reviewItems.filter((r) =>
+        r.type === 'subjective' ? !r.textAnswer : r.selectedOptionIndex == null
+    ).length;
+
+    // Derive isPassed from score vs passingMarks — backend field can be stale/incorrect
+    const isPassed = submission.score >= test.questionPaper.passingMarks;
 
     return (
         <div className="space-y-6">
             {/* Score card */}
-            <div className={`rounded-2xl p-6 text-white ${submission.isPassed ? 'bg-gradient-to-r from-green-600 to-emerald-500' : 'bg-gradient-to-r from-red-600 to-rose-500'}`}>
+            <div className={`rounded-2xl p-6 text-white ${isPassed ? 'bg-gradient-to-r from-green-600 to-emerald-500' : 'bg-gradient-to-r from-red-600 to-rose-500'}`}>
                 <div className="flex items-center gap-3 mb-3">
-                    {submission.isPassed
+                    {isPassed
                         ? <Trophy size={28} className="text-yellow-300" />
                         : <XCircle size={28} className="text-red-200" />
                     }
                     <div>
-                        <h1 className="text-xl font-bold">{submission.isPassed ? 'Congratulations! You Passed!' : 'Test Completed'}</h1>
+                        <h1 className="text-xl font-bold">{isPassed ? 'Congratulations! You Passed!' : 'Test Completed'}</h1>
                         <p className="text-sm opacity-80">{test.questionPaper.title}</p>
                     </div>
                 </div>

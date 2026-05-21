@@ -33,7 +33,12 @@ const StudentDashboard: React.FC = () => {
     const [tests, setTests] = useState<MyTest[]>([]);
     const [loading, setLoading] = useState(true);
     const userStr = localStorage.getItem('user');
-    const user = userStr ? JSON.parse(userStr) : null;
+    let user = null;
+    try {
+        user = userStr ? JSON.parse(userStr) : null;
+    } catch {
+        user = null;
+    }
 
     useEffect(() => {
         getMyTests()
