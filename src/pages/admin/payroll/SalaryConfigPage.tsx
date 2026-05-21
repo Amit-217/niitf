@@ -24,11 +24,24 @@ interface User {
 }
 
 export const SalaryConfigPage = () => {
+  const getCurrentMonthLocal = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const monthIndex = now.getMonth() + 1;
+    return `${year}-${String(monthIndex).padStart(2, "0")}`;
+  };
+
+  const toMonthInputValue = (date: Date) => {
+    const year = date.getFullYear();
+    const monthIndex = date.getMonth() + 1;
+    return `${year}-${String(monthIndex).padStart(2, "0")}`;
+  };
+
   const [employees, setEmployees] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>("");
   const [monthlySalary, setMonthlySalary] = useState<number | "">("");
   const [effectiveFrom, setEffectiveFrom] = useState<string>(
-    new Date().toISOString().substring(0, 7),
+    getCurrentMonthLocal(),
   );
   const [allConfigs, setAllConfigs] = useState<any[]>([]);
   const [selectedConfig, setSelectedConfig] = useState<any | null>(null);
@@ -46,10 +59,78 @@ export const SalaryConfigPage = () => {
     fetchAllConfigs();
   }, []);
 
+  // The salary-config table should show ONE row per employee.
+  // Older/inactive rows stay only inside the "View" drawer (salary history).
+  const pickOneConfigPerEmployee = (configs: any[]) => {
+    const safeDate = (value?: string) => {
+      if (!value) return null;
+      const parsed = new Date(value.includes("T") ? value : `${value}T00:00:00Z`);
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    };
+
+    const getMonthStart = (date: Date) =>
+      new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
+
+    const currentMonthStart = getMonthStart(new Date());
+    const grouped = new Map<string, any[]>();
+
+    for (const config of configs || []) {
+      const employeeKey = String(
+        config?.employeeId?._id || config?.employeeId || "",
+      );
+      if (!employeeKey) continue;
+      const list = grouped.get(employeeKey) || [];
+      list.push(config);
+      grouped.set(employeeKey, list);
+    }
+
+    const selected: any[] = [];
+    for (const [, list] of grouped.entries()) {
+      const withDates = list
+        .map((c) => ({
+          c,
+          effective: safeDate(c?.effectiveFrom),
+          created: safeDate(c?.createdAt),
+        }))
+        .filter((x) => x.effective);
+
+      const pastOrCurrent = withDates
+        .filter((x) => x.effective!.getTime() <= currentMonthStart.getTime())
+        .sort(
+          (a, b) =>
+            b.effective!.getTime() - a.effective!.getTime() ||
+            (b.created?.getTime() || 0) - (a.created?.getTime() || 0),
+        );
+
+      if (pastOrCurrent.length) {
+        selected.push(pastOrCurrent[0].c);
+        continue;
+      }
+
+      const future = withDates
+        .filter((x) => x.effective!.getTime() > currentMonthStart.getTime())
+        .sort(
+          (a, b) =>
+            a.effective!.getTime() - b.effective!.getTime() ||
+            (b.created?.getTime() || 0) - (a.created?.getTime() || 0),
+        );
+
+      if (future.length) selected.push(future[0].c);
+    }
+
+    return selected.sort((a, b) => {
+      const ad = safeDate(a?.effectiveFrom);
+      const bd = safeDate(b?.effectiveFrom);
+      return (bd?.getTime() || 0) - (ad?.getTime() || 0);
+    });
+  };
+
   const fetchAllConfigs = async () => {
     try {
       const res = await getAllSalaryConfigs();
-      setAllConfigs(res.data || []);
+      const raw = res?.data;
+      const list = Array.isArray(raw) ? raw : [];
+      setAllConfigs(pickOneConfigPerEmployee(list));
     } catch (error) {
       console.error(error);
     }
@@ -141,11 +222,11 @@ export const SalaryConfigPage = () => {
       setSelectedUser(employeeId);
       setMonthlySalary(Number(config.monthlySalary || 0));
       const parsed = parseDate(config.effectiveFrom) || new Date();
-      setEffectiveFrom(parsed.toISOString().substring(0, 7));
+      setEffectiveFrom(toMonthInputValue(parsed));
     } else {
       setSelectedUser("");
       setMonthlySalary("");
-      setEffectiveFrom(new Date().toISOString().substring(0, 7));
+      setEffectiveFrom(getCurrentMonthLocal());
     }
     setIsGenerateModalOpen(true);
   };
@@ -579,9 +660,7 @@ export const SalaryConfigPage = () => {
                         <p className="text-base font-bold text-blue-900 mt-1">
                           Rs.{" "}
                           {Number(
-                            viewCurrentSalary?.monthlySalary ??
-                              selectedConfig.monthlySalary ??
-                              0,
+                            selectedConfig.monthlySalary ?? 0,
                           ).toLocaleString()}
                         </p>
                       </div>
@@ -591,8 +670,7 @@ export const SalaryConfigPage = () => {
                         </p>
                         <p className="text-base font-bold text-blue-900 mt-1">
                           {formatMonthLabel(
-                            viewCurrentSalary?.effectiveFrom ||
-                              selectedConfig.effectiveFrom,
+                            selectedConfig.effectiveFrom,
                           )}
                         </p>
                       </div>

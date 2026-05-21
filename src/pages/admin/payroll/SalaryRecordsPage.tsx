@@ -53,7 +53,14 @@ interface AttendanceSummary {
 export const SalaryRecordsPage = () => {
   const navigate = useNavigate();
 
-  const [month, setMonth] = useState(new Date().toISOString().substring(0, 7)); // Default to current month
+  const getCurrentMonthLocal = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const monthIndex = now.getMonth() + 1;
+    return `${year}-${String(monthIndex).padStart(2, "0")}`;
+  };
+
+  const [month, setMonth] = useState(getCurrentMonthLocal()); // Default to current month (local)
   const [records, setRecords] = useState<SalaryRecord[]>([]);
   const [previews, setPreviews] = useState<any[]>([]);
   const [isLoadingRecords, setIsLoadingRecords] = useState(false);
@@ -87,7 +94,8 @@ export const SalaryRecordsPage = () => {
         try {
           const [advRes, salRes]: any[] = await Promise.all([
             api.get(`/admin/advance/outstanding/${selectedGenEmployee}`),
-            getSalaryConfigByDate(selectedGenEmployee, month),
+            // Salary-config endpoint accepts YYYY-MM, but we pass an explicit date for clarity.
+            getSalaryConfigByDate(selectedGenEmployee, `${month}-01`),
           ]);
           setOutstandingAdvance(advRes.data?.totalOutstanding || 0);
           setSelectedEmpBaseSalary(salRes.data?.data?.monthlySalary || null);
