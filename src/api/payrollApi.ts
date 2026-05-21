@@ -35,12 +35,6 @@ export interface AdvancePayload {
     remarks?: string;
 }
 
-export interface GenerateSalaryPayload {
-    employeeId: string;
-    month: string; // YYYY-MM
-    note?: string;
-}
-
 // --- Attendance Endpoints ---
 export const markAttendance = (data: AttendancePayload) =>
     api.post('/admin/attendance', data);
@@ -64,11 +58,20 @@ export const createSalaryConfig = (data: SalaryConfigPayload) =>
 export const getCurrentSalaryConfig = (employeeId: string) =>
     api.get(`/admin/salary-config/current/${employeeId}`);
 
+export const getSalaryConfigByDate = (employeeId: string, date: string) =>
+    api.get(`/admin/salary-config/by-date/${employeeId}?date=${date}`);
+
 export const getAllSalaryConfigs = () =>
     api.get('/admin/salary-config/all');
 
 export const getSalaryHistory = (employeeId: string) =>
     api.get(`/admin/salary-config/history/${employeeId}`);
+
+export const getSalaryConfigFuture = (employeeId: string) =>
+    api.get(`/admin/salary-config/future/${employeeId}`);
+
+export const getSalaryConfigOverview = (employeeId: string) =>
+    api.get(`/admin/salary-config/overview/${employeeId}`);
 
 export const toggleSalaryConfig = (id: string) =>
     api.patch(`/admin/salary-config/${id}/toggle`);
@@ -117,7 +120,8 @@ export interface GenerateSalaryPayload {
     month: string; // YYYY-MM
     note?: string;
     advanceDeduction?: number;
-    pfDeduction?: number;
+    standardDeduction?: number;
+    bonusAmount?: number;
 }
 export const generateSalary = (data: GenerateSalaryPayload) =>
     api.post('/admin/salary-record/generate', data);

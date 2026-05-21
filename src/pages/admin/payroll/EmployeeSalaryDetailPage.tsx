@@ -210,7 +210,7 @@ export const EmployeeSalaryDetailPage = () => {
                           ₹{(rec.deductionAmount || 0).toLocaleString()}
                         </td>
                         <td className="px-4 py-3 text-orange-500 font-semibold">
-                          ₹{(rec.pfAmount || 0).toLocaleString()}
+                          ₹{(rec.standardDeduction || 0).toLocaleString()}
                         </td>
                         <td className="px-4 py-3 text-emerald-600 font-bold">
                           ₹{(rec.advanceTotal || 0).toLocaleString()}
@@ -243,7 +243,7 @@ export const EmployeeSalaryDetailPage = () => {
                       <td className="px-4 py-3 font-black text-orange-500">
                         ₹
                         {salaryRecords
-                          .reduce((s, r) => s + (r.pfAmount || 0), 0)
+                          .reduce((s, r) => s + (r.standardDeduction || 0), 0)
                           .toLocaleString()}
                       </td>
                       <td className="px-4 py-3 font-black text-emerald-600">

@@ -65,11 +65,6 @@ export const SalarySlipPage = () => {
                 <p style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.25em;color:#9ca3af;">Net Salary</p>
                 <p style="font-size:30px;font-weight:900;color:#1d4ed8;margin-top:8px;">&#8377;${Math.round(record.netSalary || 0).toLocaleString()}</p>
             </div>
-            <div style="flex:1;background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:18px;">
-                <p style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.25em;color:#9ca3af;">Status</p>
-                <p style="font-size:20px;font-weight:900;color:#111827;margin-top:8px;">${record.status === 'LIVE_BALANCE' ? 'Live Preview' : record.status}</p>
-                ${record.createdAt ? `<p style="font-size:11px;color:#6b7280;margin-top:4px;">Generated on ${new Date(record.createdAt).toLocaleDateString()}</p>` : ''}
-            </div>
         </div>
     </div>
 
@@ -93,6 +88,10 @@ export const SalarySlipPage = () => {
                 <p style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#38bdf8;">Holiday</p>
                 <p style="font-size:26px;font-weight:900;color:#0c4a6e;margin-top:6px;">${summary.holidayDays}</p>
             </div>
+            <div style="flex:1;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
+                <p style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#64748b;">Not Marked</p>
+                <p style="font-size:26px;font-weight:900;color:#0f172a;margin-top:6px;">${summary.notMarkedDays}</p>
+            </div>
         </div>
         <div style="background:#ecfdf5;border:1px solid #d1fae5;border-radius:10px;padding:10px 14px;font-size:11px;font-weight:700;color:#065f46;margin-top:14px;">
             Calculation Factor: ${summary.daysInMonth} Days Month.
@@ -109,12 +108,20 @@ export const SalarySlipPage = () => {
             <span style="font-weight:700;color:#111827;">&#8377;${(record.baseSalary || 0).toLocaleString()}</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:14px;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+            <span style="color:#6b7280;">Bonus</span>
+            <span style="font-weight:700;color:#16a34a;">+ &#8377;${(record.bonusAmount || 0).toLocaleString()}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;padding:10px 0;border-bottom:1px solid #f1f5f9;">
             <span style="color:#6b7280;">Overtime (${record.overtimeUnits || 0} units)</span>
             <span style="font-weight:700;color:#16a34a;">+ &#8377;${(record.overtimeAmount || 0).toLocaleString()}</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:14px;padding:10px 0;border-bottom:1px solid #f1f5f9;">
             <span style="color:#6b7280;">Absent deduction (${record.absentDays || 0} days)</span>
             <span style="font-weight:700;color:#dc2626;">- &#8377;${(record.deductionAmount || 0).toLocaleString()}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+            <span style="color:#6b7280;">Standard deduction</span>
+            <span style="font-weight:700;color:#dc2626;">- &#8377;${(record.standardDeduction || 0).toLocaleString()}</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:14px;padding:10px 0;">
             <span style="color:#6b7280;">Advance recovery</span>
@@ -167,19 +174,10 @@ export const SalarySlipPage = () => {
                     <h2 className="text-2xl font-black text-gray-900 mt-1">{record.employeeId?.name || 'Employee'}</h2>
                     <p className="text-sm text-gray-500 mt-1">{record.employeeId?.empId || 'N/A'} · {monthLabel}</p>
 
-                    <div className="grid grid-cols-2 gap-3 mt-5">
+                    <div className="grid grid-cols-1 gap-3 mt-5">
                         <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
                             <p className="text-[10px] uppercase tracking-[0.25em] text-gray-400 font-black">Net Salary</p>
                             <p className="text-3xl font-black text-primary-700 mt-2">₹{Math.round(record.netSalary || 0).toLocaleString()}</p>
-                        </div>
-                        <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
-                            <p className="text-[10px] uppercase tracking-[0.25em] text-gray-400 font-black">Status</p>
-                            <p className="text-xl font-black mt-2 text-gray-900">
-                                {record.status === 'LIVE_BALANCE' ? 'Live Preview' : record.status}
-                            </p>
-                            {record.createdAt && (
-                                <p className="text-xs text-gray-500 mt-1">Generated on {new Date(record.createdAt).toLocaleDateString()}</p>
-                            )}
                         </div>
                     </div>
                 </div>
@@ -187,7 +185,7 @@ export const SalarySlipPage = () => {
                 {/* Attendance */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                     <h4 className="text-sm font-black text-emerald-900 uppercase tracking-[0.2em]">Attendance Overview</h4>
-                    <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-3">
                         <div className="rounded-xl bg-white border border-emerald-100 p-3">
                             <p className="text-[10px] uppercase text-emerald-500 font-black tracking-widest">Present</p>
                             <p className="text-2xl font-black text-emerald-700 mt-1">{summary.presentDays}</p>
@@ -203,6 +201,10 @@ export const SalarySlipPage = () => {
                         <div className="rounded-xl bg-white border border-sky-100 p-3">
                             <p className="text-[10px] uppercase text-sky-500 font-black tracking-widest">Holiday</p>
                             <p className="text-2xl font-black text-sky-700 mt-1">{summary.holidayDays}</p>
+                        </div>
+                        <div className="rounded-xl bg-slate-50/60 border border-slate-200 p-3">
+                            <p className="text-[10px] uppercase text-slate-500 font-black tracking-widest">Not Marked</p>
+                            <p className="text-2xl font-black text-slate-900 mt-1">{summary.notMarkedDays}</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-2 text-[10px] text-emerald-800 mt-4 font-bold bg-emerald-100/50 p-2.5 rounded-xl border border-emerald-100">
@@ -224,12 +226,20 @@ export const SalarySlipPage = () => {
                             <span className="font-bold text-gray-900">₹{(record.baseSalary || 0).toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between gap-4">
+                            <span className="text-gray-500">Bonus</span>
+                            <span className="font-bold text-emerald-600">+ ₹{(record.bonusAmount || 0).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between gap-4">
                             <span className="text-gray-500">Overtime ({record.overtimeUnits || 0} units)</span>
                             <span className="font-bold text-emerald-600">+ ₹{(record.overtimeAmount || 0).toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between gap-4">
                             <span className="text-gray-500">Absent deduction ({record.absentDays || 0} days)</span>
                             <span className="font-bold text-rose-600">- ₹{(record.deductionAmount || 0).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between gap-4">
+                            <span className="text-gray-500">Standard deduction</span>
+                            <span className="font-bold text-rose-600">- ₹{(record.standardDeduction || 0).toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between gap-4">
                             <span className="text-gray-500">Advance recovery</span>

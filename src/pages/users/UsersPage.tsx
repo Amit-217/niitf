@@ -458,7 +458,7 @@ export const UsersPage: React.FC = () => {
                                 <th className="text-left px-4 py-4 font-bold uppercase tracking-wider text-[10px]">Role</th>
                                 <th className="text-left px-4 py-4 font-bold uppercase tracking-wider text-[10px]">Status</th>
                                 <th className="text-left px-4 py-4 font-bold uppercase tracking-wider text-[10px]">Joined</th>
-                                <th className="text-right px-4 py-4 font-bold uppercase tracking-wider text-[10px]">Actions</th>
+                                <th className="text-center px-4 py-4 font-bold uppercase tracking-wider text-[10px]">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">

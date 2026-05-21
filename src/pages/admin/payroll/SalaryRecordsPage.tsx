@@ -10,11 +10,14 @@ import {
   Users,
   Loader2,
   Info,
+  Trash2,
 } from "lucide-react";
 import {
   generateSalary,
   previewSalary,
   getAllSalaryRecordsForMonth,
+  getSalaryConfigByDate,
+  deleteSalaryRecord,
 } from "../../../api/payrollApi";
 import api from "../../../api/axios";
 
@@ -23,12 +26,14 @@ interface SalaryRecord {
   employeeId: any;
   month: string;
   baseSalary: number;
+  grossSalary?: number;
   overtimeUnits: number;
   overtimeAmount: number;
   absentDays: number;
   deductionAmount: number;
+  standardDeduction: number;
   advanceTotal: number;
-  pfAmount: number;
+  bonusAmount?: number;
   netSalary: number;
   status: string;
   note?: string;
@@ -48,7 +53,14 @@ interface AttendanceSummary {
 export const SalaryRecordsPage = () => {
   const navigate = useNavigate();
 
-  const [month, setMonth] = useState(new Date().toISOString().substring(0, 7)); // Default to current month
+  const getCurrentMonthLocal = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const monthIndex = now.getMonth() + 1;
+    return `${year}-${String(monthIndex).padStart(2, "0")}`;
+  };
+
+  const [month, setMonth] = useState(getCurrentMonthLocal()); // Default to current month (local)
   const [records, setRecords] = useState<SalaryRecord[]>([]);
   const [previews, setPreviews] = useState<any[]>([]);
   const [isLoadingRecords, setIsLoadingRecords] = useState(false);
@@ -68,7 +80,8 @@ export const SalaryRecordsPage = () => {
   const [employees, setEmployees] = useState<any[]>([]);
   const [selectedGenEmployee, setSelectedGenEmployee] = useState("");
   const [advanceDeduction, setAdvanceDeduction] = useState<number | "">(0);
-  const [pfDeduction, setPfDeduction] = useState<number | "">(0);
+  const [standardDeduction, setStandardDeduction] = useState<number | "">(0);
+  const [bonusAmount, setBonusAmount] = useState<number | "">(0);
   const [outstandingAdvance, setOutstandingAdvance] = useState(0);
   const [selectedEmpBaseSalary, setSelectedEmpBaseSalary] = useState<
     number | null
@@ -81,11 +94,13 @@ export const SalaryRecordsPage = () => {
         try {
           const [advRes, salRes]: any[] = await Promise.all([
             api.get(`/admin/advance/outstanding/${selectedGenEmployee}`),
-            api.get(`/admin/salary-config/current/${selectedGenEmployee}`),
+            // Salary-config endpoint accepts YYYY-MM, but we pass an explicit date for clarity.
+            getSalaryConfigByDate(selectedGenEmployee, `${month}-01`),
           ]);
           setOutstandingAdvance(advRes.data?.totalOutstanding || 0);
-          setSelectedEmpBaseSalary(salRes.data?.monthlySalary || null);
+          setSelectedEmpBaseSalary(salRes.data?.data?.monthlySalary || null);
           setAdvanceDeduction(0);
+          setStandardDeduction(0);
         } catch (e) {
           setOutstandingAdvance(0);
           setSelectedEmpBaseSalary(null);
@@ -97,7 +112,7 @@ export const SalaryRecordsPage = () => {
       setSelectedEmpBaseSalary(null);
       setAdvanceDeduction(0);
     }
-  }, [selectedGenEmployee]);
+  }, [selectedGenEmployee, month]);
 
   useEffect(() => {
     const loadPageData = async () => {
@@ -133,13 +148,10 @@ export const SalaryRecordsPage = () => {
 
     setPreviews([]);
     try {
-      const currentMonthStr = new Date().toISOString().substring(0, 7);
-      const res: any = await getAllSalaryRecordsForMonth(month);
-      const existingRecords = res.data || res || [];
-      setRecords(Array.isArray(existingRecords) ? existingRecords : []);
+        const res: any = await getAllSalaryRecordsForMonth(month);
+        const existingRecords = res.data || res || [];
+        setRecords(Array.isArray(existingRecords) ? existingRecords : []);
 
-      // If it's the current month, fetch previews for employees who don't have records yet
-      if (month === currentMonthStr) {
         const previewPromises = targetEmployees.map(async (emp) => {
           const hasRecord = existingRecords.some((r: any) => {
             const rId = r.employeeId?._id || r.employeeId;
@@ -167,17 +179,10 @@ export const SalaryRecordsPage = () => {
           Boolean,
         );
         setPreviews(fetchedPreviews);
+      } catch (error) {
+        console.error("Fetch records error:", error);
       }
-    } catch (error) {
-      console.error("Fetch records error:", error);
-    }
-  };
-
-  const formatMonthLabel = (value: string) =>
-    new Date(`${value}-01T00:00:00Z`).toLocaleDateString(undefined, {
-      month: "long",
-      year: "numeric",
-    });
+    };
 
   const getDaysInMonth = (monthValue: string) => {
     const [year, monthNumber] = monthValue.split("-").map(Number);
@@ -215,6 +220,17 @@ export const SalaryRecordsPage = () => {
     };
   };
 
+  const formatMonthLabel = (value: string) =>
+    new Date(`${value}-01T00:00:00Z`).toLocaleDateString(undefined, {
+      month: "long",
+      year: "numeric",
+    });
+
+  const totalNetPayout = [...(records || []), ...(previews || [])].reduce(
+    (s, r) => s + (Number(r?.netSalary) || 0),
+    0,
+  );
+
   const handleGenerate = async () => {
     if (!selectedGenEmployee) {
       toast.error("Please select an employee to generate salary");
@@ -226,10 +242,12 @@ export const SalaryRecordsPage = () => {
         employeeId: selectedGenEmployee,
         month: month,
         advanceDeduction: Number(advanceDeduction || 0),
-        pfDeduction: Number(pfDeduction || 0),
+        standardDeduction: Number(standardDeduction || 0),
+        bonusAmount: Number(bonusAmount || 0),
       });
       toast.success("Salary generated successfully");
-      setPfDeduction(0);
+      setStandardDeduction(0);
+      setBonusAmount(0);
       fetchMonthRecords();
     } catch (error: any) {
       toast.error(error.message || error || "Failed to generate salary");
@@ -238,10 +256,17 @@ export const SalaryRecordsPage = () => {
     }
   };
 
-  const totalNetPayout = [...records, ...previews].reduce(
-    (acc, r) => acc + (r.netSalary || 0),
-    0,
-  );
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this salary record? Associated advance deductions will be reverted.")) return;
+    try {
+      await deleteSalaryRecord(id);
+      toast.success("Salary record deleted successfully");
+      fetchMonthRecords();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to delete record");
+    }
+  };
+
   const totalEmployees = employees.length;
   const daysInThisMonth = getDaysInMonth(month);
 
@@ -419,10 +444,12 @@ export const SalaryRecordsPage = () => {
                               <span className="px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 text-[10px] font-black border border-sky-100">
                                 H {summary.holidayDays}
                               </span>
+                              <span className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 text-[10px] font-black border border-gray-200">
+                                NM {summary.notMarkedDays}
+                              </span>
                             </div>
                             <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
-                              {summary.payableDays} payable /{" "}
-                              {summary.daysInMonth} days
+                              {summary.payableDays} payable / {summary.daysInMonth} days
                             </p>
                           </div>
                         );
@@ -435,6 +462,11 @@ export const SalaryRecordsPage = () => {
                       <div className="text-[10px] font-bold text-emerald-600">
                         + ₹{(record.overtimeAmount || 0).toLocaleString()} (OT)
                       </div>
+                      {record.bonusAmount > 0 && (
+                        <div className="text-[10px] font-bold text-emerald-600">
+                          + ₹{(record.bonusAmount || 0).toLocaleString()} (Bonus)
+                        </div>
+                      )}
                     </td>
                     <td className="px-4 py-4">
                       <div className="text-[10px] font-bold text-red-600 flex items-center gap-1">
@@ -444,12 +476,12 @@ export const SalaryRecordsPage = () => {
                         </span>
                       </div>
                       <div className="text-[10px] font-bold text-blue-600">
-                        - ₹{(record.pfAmount || 0).toLocaleString()}{" "}
-                        <span className="text-[8px] opacity-70">(SD)</span>
+                        - ₹{(record.standardDeduction || 0).toLocaleString()}{" "}
+                        <span className="text-[8px] opacity-70">(Standard Deduction)</span>
                       </div>
                       <div className="text-[10px] font-bold text-amber-600">
                         - ₹{(record.advanceTotal || 0).toLocaleString()}{" "}
-                        <span className="text-[8px] opacity-70">(Adv)</span>
+                        <span className="text-[8px] opacity-70">(Advance)</span>
                       </div>
                     </td>
                     <td className="px-4 py-4 font-black text-primary-700 text-base">
@@ -496,6 +528,15 @@ export const SalaryRecordsPage = () => {
                         >
                           <Eye size={16} />
                         </button>
+                        {!record.isPreview && (
+                          <button
+                            onClick={() => handleDelete(record._id)}
+                            className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                            title="Delete"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -610,7 +651,7 @@ export const SalaryRecordsPage = () => {
 
               <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-2">
-                  standard Deduction
+                  Standard Deduction
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-gray-400 font-bold text-sm">
@@ -619,10 +660,28 @@ export const SalaryRecordsPage = () => {
                   <input
                     type="number"
                     min={0}
-                    value={pfDeduction}
-                    onChange={(e) => setPfDeduction(Number(e.target.value))}
-                    placeholder="Enter PF amount..."
+                    value={standardDeduction}
+                    onChange={(e) => setStandardDeduction(Number(e.target.value))}
+                    placeholder="Enter deduction amount..."
                     className="w-full pl-7 pr-4 py-2.5 border border-blue-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 font-black text-gray-700 bg-white"
+                  />
+                </div>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-2xl p-4">
+                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-2">
+                  Bonus Amount
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-gray-400 font-bold text-sm">
+                    ₹
+                  </span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={bonusAmount}
+                    onChange={(e) => setBonusAmount(Number(e.target.value))}
+                    placeholder="Enter bonus amount..."
+                    className="w-full pl-7 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary-500/20 font-black text-gray-700 bg-white"
                   />
                 </div>
               </div>
@@ -659,6 +718,35 @@ export const SalaryRecordsPage = () => {
                   </div>
                 </div>
               </div>
+
+              {/* LIVE PREVIEW SECTION */}
+              {selectedGenEmployee && (() => {
+                const previewData = previews.find(p => (p.employeeId?._id || p.employeeId) === selectedGenEmployee);
+                if (previewData) {
+                  const dynamicGross = (previewData.baseSalary || 0) + (previewData.overtimeAmount || 0) + Number(bonusAmount || 0);
+                  const dynamicNet = Math.max(0, dynamicGross - (previewData.deductionAmount || 0) - Number(standardDeduction || 0) - Number(advanceDeduction || 0));
+                  return (
+                    <div className="bg-primary-50 border border-primary-100 rounded-2xl p-4 mt-2">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-black uppercase tracking-[0.2em] text-primary-600">
+                          Live Net Salary Preview
+                        </span>
+                        <span className="text-lg font-black text-primary-700">
+                          ₹{Math.round(dynamicNet).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-[10px] font-bold">
+                        <span className="text-emerald-600">+ Gross: ₹{Math.round(dynamicGross).toLocaleString()}</span>
+                        <span className="text-red-600">- Absent/Leave: ₹{Math.round(previewData.deductionAmount).toLocaleString()}</span>
+                        {Number(standardDeduction) > 0 && <span className="text-blue-600">- Std Ded: ₹{Math.round(Number(standardDeduction)).toLocaleString()}</span>}
+                        {Number(advanceDeduction) > 0 && <span className="text-amber-600">- Advance: ₹{Math.round(Number(advanceDeduction)).toLocaleString()}</span>}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+
               <div className="flex gap-3 pt-2 pb-1">
                 <button
                   type="button"

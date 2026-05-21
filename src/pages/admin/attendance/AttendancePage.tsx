@@ -23,7 +23,7 @@ interface User {
 
 interface AttendanceRecord {
     _id: string;
-    employeeId: User;
+    employeeId: User | string;
     date: string;
     status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT';
 }
@@ -37,6 +37,11 @@ export const AttendancePage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [viewMode, setViewMode] = useState<'daily' | 'monthly'>('daily');
     const [exportLoading, setExportLoading] = useState(false);
+
+    const normalizeText = (value: unknown) => (typeof value === 'string' ? value : value == null ? '' : String(value));
+    const toLower = (value: unknown) => normalizeText(value).toLowerCase();
+    const getEmployeeId = (value: User | string | undefined | null) =>
+        typeof value === 'string' ? value : value?._id;
 
     // Fetch all active employees (Admin, Super Admin, and Employees)
     const fetchEmployees = async () => {
@@ -112,7 +117,7 @@ export const AttendancePage = () => {
 
         try {
             for (const emp of targets) {
-                const record = attendanceRecords.find(r => r.employeeId._id === emp._id);
+                const record = attendanceRecords.find(r => getEmployeeId(r.employeeId) === emp._id);
                 if (record) {
                     await updateAttendance(record._id, status);
                 } else {
@@ -165,7 +170,7 @@ export const AttendancePage = () => {
 
     // Handle single attendance marking/updating
     const handleStatusChange = async (employeeId: string, status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT') => {
-        const existingRecord = attendanceRecords.find(r => r.employeeId._id === employeeId);
+        const existingRecord = attendanceRecords.find(r => getEmployeeId(r.employeeId) === employeeId);
 
         try {
             if (existingRecord) {
@@ -186,11 +191,13 @@ export const AttendancePage = () => {
     };
 
     // Match employees with their records
-    const displayData = employees.filter(emp =>
-        emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        emp.empId.toLowerCase().includes(searchQuery.toLowerCase())
-    ).map(emp => {
-        const record = attendanceRecords.find(r => r.employeeId._id === emp._id);
+    const filteredEmployees = employees.filter((emp) => {
+        const query = toLower(searchQuery);
+        return toLower(emp?.name).includes(query) || toLower((emp as any)?.empId).includes(query);
+    });
+
+    const displayData = filteredEmployees.map(emp => {
+        const record = attendanceRecords.find(r => getEmployeeId(r.employeeId) === emp._id);
         
         // Calculate monthly stats for this employee
         const eMonthlyRecords = monthlyData[emp._id] || [];
@@ -381,25 +388,25 @@ export const AttendancePage = () => {
                             <tbody className="divide-y divide-gray-50">
                                 {isLoading ? (
                                     <tr><td colSpan={daysInMonth + 1} className="py-24 text-center"><Loader2 className="animate-spin inline-block text-primary-500" size={40} /></td></tr>
-                                ) : employees.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase())).map(emp => {
+                                ) : filteredEmployees.map(emp => {
                                     const employeeMonthRecords = monthlyData[emp._id] || [];
                                     const leaveCount = employeeMonthRecords.filter((record) => record.status === 'LEAVE').length;
 
                                     return (
                                     <tr key={emp._id} className="group hover:bg-primary-50/30 transition-all duration-300">
                                         <td className="px-6 py-4 sticky left-0 bg-white/90 backdrop-blur-md z-10 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.1)] group-hover:bg-primary-50/40">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary-100 to-white flex items-center justify-center text-xs font-black text-primary-700 border border-primary-200 shadow-sm transition-transform group-hover:scale-110">
-                                    {emp.name.charAt(0).toUpperCase()}
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <p className="text-sm font-black text-gray-900 truncate tracking-tight">{emp.name}</p>
-                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{emp.empId}</p>
-                                                    <p className="text-[10px] text-amber-600 font-black uppercase tracking-wider mt-0.5">
-                                                        Leave {leaveCount}
-                                                    </p>
-                                                </div>
-                                            </div>
+	                                            <div className="flex items-center gap-3">
+	                                                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary-100 to-white flex items-center justify-center text-xs font-black text-primary-700 border border-primary-200 shadow-sm transition-transform group-hover:scale-110">
+	                                    {(normalizeText(emp?.name).trim().charAt(0) || '?').toUpperCase()}
+	                                                </div>
+	                                                <div className="min-w-0">
+	                                                    <p className="text-sm font-black text-gray-900 truncate tracking-tight">{normalizeText(emp?.name)}</p>
+	                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{normalizeText((emp as any)?.empId)}</p>
+	                                                    <p className="text-[10px] text-amber-600 font-black uppercase tracking-wider mt-0.5">
+	                                                        Leave {leaveCount}
+	                                                    </p>
+	                                                </div>
+	                                            </div>
                                         </td>
                                         {dayLabels.map(day => {
                                             const dateStr = `${year}-${String(monthVal).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
