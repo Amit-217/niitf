@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import {
   createSalaryConfig,
-  getCurrentSalaryConfig,
+  getSalaryConfigOverview,
   getAllSalaryConfigs,
   getSalaryHistory,
 } from "../../../api/payrollApi";
@@ -28,11 +28,12 @@ export const SalaryConfigPage = () => {
   const [selectedUser, setSelectedUser] = useState<string>("");
   const [monthlySalary, setMonthlySalary] = useState<number | "">("");
   const [effectiveFrom, setEffectiveFrom] = useState<string>(
-    new Date().toISOString().split("T")[0],
+    new Date().toISOString().substring(0, 7),
   );
   const [allConfigs, setAllConfigs] = useState<any[]>([]);
   const [selectedConfig, setSelectedConfig] = useState<any | null>(null);
   const [viewCurrentSalary, setViewCurrentSalary] = useState<any>(null);
+  const [viewOverview, setViewOverview] = useState<any>(null);
   const [viewHistory, setViewHistory] = useState<any[]>([]);
   const [viewLoading, setViewLoading] = useState(false);
   const [isViewDrawerOpen, setIsViewDrawerOpen] = useState(false);
@@ -75,6 +76,31 @@ export const SalaryConfigPage = () => {
       : "-";
   };
 
+  const getMonthStart = (date: Date) =>
+    new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
+
+  const getConfigStatus = (config: any) => {
+    const parsed = parseDate(config?.effectiveFrom);
+    if (!parsed) return config?.isActive ? "Active" : "Inactive";
+
+    const configMonth = getMonthStart(parsed);
+    const currentMonth = getMonthStart(new Date());
+
+    if (configMonth.getTime() > currentMonth.getTime()) return "Future";
+    return config?.isActive ? "Active" : "Inactive";
+  };
+
+  const getStatusClasses = (status: string) => {
+    switch (status) {
+      case "Active":
+        return "bg-emerald-100 text-emerald-700";
+      case "Future":
+        return "bg-amber-100 text-amber-700";
+      default:
+        return "bg-gray-100 text-gray-600";
+    }
+  };
+
   const openConfigView = async (config: any) => {
     setSelectedConfig(config);
     setIsViewDrawerOpen(true);
@@ -82,14 +108,19 @@ export const SalaryConfigPage = () => {
 
     try {
       const employeeId = config.employeeId?._id || config.employeeId;
-      const [currentRes, historyRes] = await Promise.all([
-        getCurrentSalaryConfig(employeeId),
+      const [overviewRes, historyRes] = await Promise.all([
+        getSalaryConfigOverview(employeeId),
         getSalaryHistory(employeeId),
       ]);
-      setViewCurrentSalary(currentRes.data || null);
-      setViewHistory(historyRes.data || []);
+      const overviewData = overviewRes?.data?.data || overviewRes?.data || overviewRes || {};
+      const historyData = historyRes?.data?.data || historyRes?.data || historyRes || [];
+
+      setViewOverview(overviewData || null);
+      setViewCurrentSalary(overviewData?.activeConfig || null);
+      setViewHistory(Array.isArray(historyData) ? historyData : []);
     } catch (error) {
       setViewCurrentSalary(null);
+      setViewOverview(null);
       setViewHistory([]);
     } finally {
       setViewLoading(false);
@@ -100,6 +131,7 @@ export const SalaryConfigPage = () => {
     setIsViewDrawerOpen(false);
     setSelectedConfig(null);
     setViewCurrentSalary(null);
+    setViewOverview(null);
     setViewHistory([]);
   };
 
@@ -109,11 +141,11 @@ export const SalaryConfigPage = () => {
       setSelectedUser(employeeId);
       setMonthlySalary(Number(config.monthlySalary || 0));
       const parsed = parseDate(config.effectiveFrom) || new Date();
-      setEffectiveFrom(parsed.toISOString().split("T")[0]);
+      setEffectiveFrom(parsed.toISOString().substring(0, 7));
     } else {
       setSelectedUser("");
       setMonthlySalary("");
-      setEffectiveFrom(new Date().toISOString().split("T")[0]);
+      setEffectiveFrom(new Date().toISOString().substring(0, 7));
     }
     setIsGenerateModalOpen(true);
   };
@@ -137,7 +169,7 @@ export const SalaryConfigPage = () => {
       await createSalaryConfig({
         employeeId: selectedUser,
         monthlySalary: Number(monthlySalary),
-        effectiveFrom,
+        effectiveFrom: effectiveFrom.length === 7 ? `${effectiveFrom}-01` : effectiveFrom,
         repaymentMonth: "",
       } as any);
       toast.success("Salary configuration updated");
@@ -157,7 +189,7 @@ export const SalaryConfigPage = () => {
     const rows = allConfigs
       .map(
         (c) =>
-          `"${c.employeeId?.name || "-"}","${c.employeeId?.empId || "-"}","${c.monthlySalary}","${formatDate(c.effectiveFrom)}","${c.isActive ? "Active" : "Inactive"}"`,
+          `"${c.employeeId?.name || "-"}","${c.employeeId?.empId || "-"}","${c.monthlySalary}","${formatDate(c.effectiveFrom)}","${getConfigStatus(c)}"`,
       )
       .join("\n");
 
@@ -261,12 +293,10 @@ export const SalaryConfigPage = () => {
                     <td className="px-4 py-3">
                       <span
                         className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                          config.isActive
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-gray-100 text-gray-600"
+                          getStatusClasses(getConfigStatus(config))
                         }`}
                       >
-                        {config.isActive ? "Active" : "Inactive"}
+                        {getConfigStatus(config)}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -355,17 +385,17 @@ export const SalaryConfigPage = () => {
 
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">
-                        Effective From
+                        Effective Month
                       </label>
                       <input
-                        type="date"
+                        type="month"
                         value={effectiveFrom}
                         onChange={(e) => setEffectiveFrom(e.target.value)}
                         className="w-full px-4 py-3 border border-gray-300 rounded-2xl bg-white focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 outline-none font-semibold text-gray-900 shadow-sm"
                         required
                       />
                       <p className="text-xs text-gray-500">
-                        Salary becomes active from this date.
+                        Salary config applies to the selected month.
                       </p>
                     </div>
                   </div>
@@ -446,11 +476,11 @@ export const SalaryConfigPage = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-violet-600 text-white font-black rounded-xl hover:bg-violet-700 transition-colors flex items-center justify-center gap-2 shadow-md shadow-violet-100 active:scale-95 duration-100"
+                  className="px-6 py-2.5 bg-violet-600 text-white font-black rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-violet-100 active:scale-95 duration-100 disabled:opacity-50 disabled:cursor-not-allowed hover:not-disabled:bg-violet-700"
                   disabled={!selectedUser}
                 >
                   <Plus size={18} />
-                  Set Active Configuration
+                  Save Salary Config
                 </button>
               </div>
             </form>
@@ -512,7 +542,7 @@ export const SalaryConfigPage = () => {
                         Status
                       </p>
                       <p className="text-lg font-bold mt-2 text-gray-900">
-                        {selectedConfig.isActive ? "ACTIVE" : "INACTIVE"}
+                        {getConfigStatus(selectedConfig).toUpperCase()}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
                         Updated{" "}
@@ -585,6 +615,29 @@ export const SalaryConfigPage = () => {
                     </div>
                   </div>
 
+                  {viewOverview?.futureConfigs?.length > 0 && (
+                    <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5">
+                      <h4 className="text-sm font-black text-amber-900 uppercase tracking-[0.2em]">
+                        Upcoming Configurations
+                      </h4>
+                      <div className="mt-4 space-y-3">
+                        {viewOverview.futureConfigs.map((futureConfig: any) => (
+                          <div
+                            key={futureConfig._id}
+                            className="rounded-xl bg-white border border-amber-100 p-3"
+                          >
+                            <p className="text-sm font-bold text-amber-800">
+                              {formatMonthLabel(futureConfig.effectiveFrom)}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Rs. {Number(futureConfig.monthlySalary || 0).toLocaleString()}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="rounded-2xl border border-gray-100 overflow-hidden">
                     <div className="px-5 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                       <h4 className="text-sm font-black text-gray-800 uppercase tracking-[0.2em]">
@@ -642,12 +695,11 @@ export const SalaryConfigPage = () => {
                                 <td className="px-5 py-3 text-center">
                                   <span
                                     className={`inline-flex px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tighter border ${
-                                      record.isActive
-                                        ? "bg-emerald-100 text-emerald-700 border-emerald-200"
-                                        : "bg-gray-100 text-gray-500 border-gray-200"
+                                        getStatusClasses(getConfigStatus(record)) +
+                                          " border-transparent"
                                     }`}
                                   >
-                                    {record.isActive ? "ACTIVE" : "INACTIVE"}
+                                      {getConfigStatus(record).toUpperCase()}
                                   </span>
                                 </td>
                               </tr>
