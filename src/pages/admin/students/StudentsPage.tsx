@@ -141,11 +141,13 @@ export const StudentsPage = () => {
       fullName: s.fullName,
       mobile: s.mobile,
       email: s.email || "",
-      dob: s.dob ? new Date(s.dob).toISOString().split('T')[0] : "",
+      // Use substring(0,10) to avoid UTC-to-local timezone shift that would display the wrong date
+      dob: s.dob ? s.dob.substring(0, 10) : "",
       city: s.city || "",
       qualification: s.qualification || "",
       sponsorType: s.sponsorType,
       companyName: s.companyName || "",
+      enquiryId: "",
     });
     setDrawerOpen(true);
   };
@@ -291,7 +293,7 @@ export const StudentsPage = () => {
                       {s.email}
                     </td>
                     <td className="px-4 py-3 text-emerald-600 font-mono text-xs font-bold">
-                      {s.dob ? new Date(s.dob).toISOString().split('T')[0] : "—"}
+                      {s.dob ? s.dob.substring(0, 10) : "—"}
                     </td>
                     <td className="px-4 py-3 text-gray-600">{s.mobile}</td>
                     <td className="px-4 py-3 text-gray-500">{s.city || "—"}</td>
@@ -433,6 +435,8 @@ export const StudentsPage = () => {
                       <label className={labelClass}>Active Mobile *</label>
                       <input
                         required
+                        type="tel"
+                        inputMode="numeric"
                         value={form.mobile}
                         onChange={(e) =>
                           setForm((f) => ({ ...f, mobile: e.target.value }))

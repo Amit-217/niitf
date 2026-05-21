@@ -13,7 +13,7 @@ interface User {
 
 interface AttendanceRecord {
     _id: string;
-    employeeId: User;
+    employeeId: User | string; // API may return a populated object or a raw ID string
     date: string;
     status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT';
     markedBy?: User;

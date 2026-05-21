@@ -46,18 +46,6 @@ const labelClass =
   "block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide";
 
 export const AdmissionsPage = () => {
-  // Delete admission
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this admission?"))
-      return;
-    try {
-      await api.delete(`/admin/admissions/${id}`);
-      toast.success("Admission deleted!");
-      fetchAdmissions();
-    } catch (err: any) {
-      toast.error(err?.message || err?.error || "Failed to delete admission");
-    }
-  };
   const [admissions, setAdmissions] = useState<Admission[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -154,14 +142,6 @@ export const AdmissionsPage = () => {
         count = res.pagination?.total || items.length;
       }
 
-      if (items.length > 0) {
-        console.log("[Admissions] Sample item payload:", {
-          totalFees: items[0]?.totalFees,
-          totalPaid: items[0]?.totalPaid,
-          balance: items[0]?.balance,
-          paymentStatus: items[0]?.paymentStatus,
-        });
-      }
       setAdmissions(items);
       setTotal(count);
     } catch (error) {
@@ -176,7 +156,20 @@ export const AdmissionsPage = () => {
     fetchAdmissions();
   }, [fetchAdmissions]);
 
-  // Handle Conversion from Enquiry
+  // Delete admission — defined after fetchAdmissions so the reference is always stable
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this admission?"))
+      return;
+    try {
+      await api.delete(`/admin/admissions/${id}`);
+      toast.success("Admission deleted!");
+      fetchAdmissions();
+    } catch (err: any) {
+      toast.error(err?.message || err?.error || "Failed to delete admission");
+    }
+  };
+
+  // Handle Conversion from Enquiry — run only once on mount
   useEffect(() => {
     const pending = sessionStorage.getItem("pendingAdmission");
     if (pending) {
@@ -192,7 +185,7 @@ export const AdmissionsPage = () => {
       );
       sessionStorage.removeItem("pendingAdmission");
     }
-  }, [isCreateOpen]);
+  }, []);
 
   useEffect(() => {
     if (!isCreateOpen) return;

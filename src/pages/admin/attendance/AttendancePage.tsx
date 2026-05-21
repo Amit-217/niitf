@@ -47,7 +47,7 @@ export const AttendancePage = () => {
     const fetchEmployees = async () => {
         try {
             // Remove role=EMPLOYEE filter to show admins as well
-            const response: any = await api.get('/users?status=active&limit=100');
+            const response: any = await api.get('/users?status=active&limit=500');
             setEmployees(response.data || []);
         } catch (error: any) {
             toast.error('Failed to load employees');
@@ -98,7 +98,9 @@ export const AttendancePage = () => {
         fetchAttendance();
         // Always fetch monthly data for the stats shown on cards
         fetchMonthlyData();
-    }, [selectedDate, employees.length]);
+    // employees (not just .length) so a replaced list with same count still triggers
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedDate, employees]);
 
     // Re-fetch monthly data specifically when month changes (substring 0,7)
     useEffect(() => {
@@ -183,8 +185,9 @@ export const AttendancePage = () => {
                 });
                 toast.success(`Marked as ${status}`);
             }
-            fetchAttendance();
-            fetchMonthlyData(); // Refresh stats on card too
+            // Await both so errors are surfaced and UI stays in sync
+            try { await fetchAttendance(); } catch { /* already handled inside */ }
+            try { await fetchMonthlyData(); } catch { /* already handled inside */ }
         } catch (error: any) {
             toast.error(error.message || error || 'Failed to update attendance');
         }
