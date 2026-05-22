@@ -440,7 +440,11 @@ export const UsersPage: React.FC = () => {
                             <div className="flex gap-1">
                                 <button onClick={() => setModal({ type: 'edit', user })} className="p-2.5 rounded-xl border border-gray-100 text-gray-400 hover:text-violet-600"><Edit2 size={18} /></button>
                                 <button onClick={() => user.isActive ? setDeleteTarget({ user, type: 'soft' }) : handleActivate(user)} className={`p-2.5 rounded-xl border border-gray-100 ${user.isActive ? 'text-amber-500' : 'text-emerald-500'}`}>{user.isActive ? <ShieldOff size={18} /> : <ShieldCheck size={18} />}</button>
-                                {currentUserRole === 'SUPER_ADMIN' && <button onClick={() => setDeleteTarget({ user, type: 'hard' })} className="p-2.5 rounded-xl border border-gray-100 text-red-500"><Trash2 size={18} /></button>}
+                                {currentUserRole === 'SUPER_ADMIN' && user.role !== 'SUPER_ADMIN' && (
+                                    <button onClick={() => setDeleteTarget({ user, type: 'hard' })} className="p-2.5 rounded-xl border border-gray-100 text-red-500">
+                                        <Trash2 size={18} />
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))
@@ -482,7 +486,11 @@ export const UsersPage: React.FC = () => {
                                             <div className="flex items-center gap-1">
                                                 <button onClick={() => setModal({ type: 'edit', user })} className="p-1.5 rounded-lg text-gray-400 hover:text-violet-600" title="Edit"><Edit2 size={16} /></button>
                                                 {user.isActive ? <button onClick={() => setDeleteTarget({ user, type: 'soft' })} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-500" title="Deactivate"><ShieldOff size={16} /></button> : <button onClick={() => handleActivate(user)} className="p-1.5 rounded-lg text-gray-400 hover:text-emerald-500" title="Activate"><ShieldCheck size={16} /></button>}
-                                                {currentUserRole === 'SUPER_ADMIN' && <button onClick={() => setDeleteTarget({ user, type: 'hard' })} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500" title="Delete Permanent"><Trash2 size={16} /></button>}
+                                                {currentUserRole === 'SUPER_ADMIN' && user.role !== 'SUPER_ADMIN' && (
+                                                    <button onClick={() => setDeleteTarget({ user, type: 'hard' })} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500" title="Delete Permanent">
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </td>
