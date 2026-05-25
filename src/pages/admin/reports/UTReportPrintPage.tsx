@@ -265,8 +265,6 @@ export const UTReportPrintPage: React.FC = () => {
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
 
-
-
   const calibAngles = [
     { label: "0°", data: apc.deg0 },
     { label: "45°", data: apc.deg45 },
@@ -284,7 +282,7 @@ export const UTReportPrintPage: React.FC = () => {
         </colgroup>
         <tbody>
           <tr>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY:</td>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER:</td>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT :</td>
           </tr>
@@ -292,8 +290,12 @@ export const UTReportPrintPage: React.FC = () => {
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
               National Industrial Inspection And Training
             </td>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.customer)}</td>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.client)}</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              {v(jd.customer)}
+            </td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              {v(jd.client)}
+            </td>
           </tr>
           <tr>
             <td>Name: {v(inspector.name) || "-"}</td>
@@ -378,8 +380,6 @@ export const UTReportPrintPage: React.FC = () => {
       </tbody>
     </table>
   );
-
-
 
   const ReportFooter = () => (
     <>
@@ -757,8 +757,8 @@ export const UTReportPrintPage: React.FC = () => {
                                   {v(
                                     (
                                       a.data as
-                                      | Record<string, string>
-                                      | undefined
+                                        | Record<string, string>
+                                        | undefined
                                     )?.[row.key],
                                   )}
                                 </td>

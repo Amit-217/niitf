@@ -672,17 +672,17 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                             <tbody>
                               <tr>
                                 <td
-                                  style={{ fontWeight: 600, fontSize: "12px" }}
+                                  style={{ fontWeight: 600, fontSize: "11px" }}
                                 >
-                                  EXAMINED BY
+                                  EXAMINED BY:
                                 </td>
                                 <td
-                                  style={{ fontWeight: 600, fontSize: "12px" }}
+                                  style={{ fontWeight: 600, fontSize: "11px" }}
                                 >
                                   CUSTOMER:
                                 </td>
                                 <td
-                                  style={{ fontWeight: 600, fontSize: "12px" }}
+                                  style={{ fontWeight: 600, fontSize: "11px" }}
                                 >
                                   CLIENT :
                                 </td>
