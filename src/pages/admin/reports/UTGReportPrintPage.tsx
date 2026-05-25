@@ -701,19 +701,17 @@ export const UTGReportPrintPage: React.FC = () => {
                       {/* ── 5. OBSERVATIONS (Print vs Screen split) ── */}
                       <div className="print-only">
                         {renderObsTable(obsPage1, "5. OBSERVATIONS")}
-                        <Signatures />
 
                         {obsPage2.length > 0 ? (
                           <>
+                            <Signatures />
                             <div className="page-break">
                               {renderObsTable(obsPage2, "5. OBSERVATIONS (Contd.)")}
                             </div>
                             <Signatures />
                           </>
                         ) : (
-                          <>
-                            <Signatures />
-                          </>
+                          <Signatures />
                         )}
                       </div>
 
