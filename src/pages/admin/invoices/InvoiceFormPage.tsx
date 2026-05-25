@@ -9,7 +9,7 @@ import {
 } from "../../../api/invoiceApi";
 import { getCustomers } from "../../../api/customerApi";
 
-const UNITS = ["Nos", "Lump Sum", "Kg", "Meter", "Set", "Hours", "Days"];
+const UNITS = ["Nos", "No"];
 const PAYMENT_MODES = [
   "Immediate after submission bill",
   "30 Days",
@@ -425,7 +425,7 @@ export const InvoiceFormPage: React.FC = () => {
               onChange={(e) => setField("date", e.target.value)}
             />
           </div>
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Due Date
             </label>
@@ -435,7 +435,7 @@ export const InvoiceFormPage: React.FC = () => {
               value={form.dueDate}
               onChange={(e) => setField("dueDate", e.target.value)}
             />
-          </div>
+          </div> */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Customer <span className="text-red-500">*</span>
@@ -448,7 +448,7 @@ export const InvoiceFormPage: React.FC = () => {
                 setForm((prev) => ({
                   ...prev,
                   customerId: e.target.value,
-                  customerName: match ? (match.companyName || match.name) : "",
+                  customerName: match ? match.companyName || match.name : "",
                 }));
               }}
             >
