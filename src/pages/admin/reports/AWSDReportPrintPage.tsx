@@ -26,11 +26,10 @@ const PRINT_STYLES = `
     body {
       margin: 0;
       background: #fff;
-      padding-bottom: 35mm !important;
     }
     #report-root {
       background: #fff !important;
-      padding-bottom: 35mm !important;
+      padding: 0 !important;
       display: block !important;
     }
     #report-root > div {
@@ -222,7 +221,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       const trigger = async () => {
         try {
           await document.fonts.ready;
-        } catch (_) { }
+        } catch (_) {}
         requestAnimationFrame(() => {
           setTimeout(() => {
             window.print();
@@ -496,7 +495,13 @@ export const AWSDReportPrintPage: React.FC = () => {
                   padding: "4px 6px",
                 }}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "8px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: "8px",
+                  }}
+                >
                   <span>
                     Authorized by&nbsp;
                     <span
@@ -628,11 +633,12 @@ export const AWSDReportPrintPage: React.FC = () => {
       >
         <div
           style={{
+            position: "relative",
             width: "210mm",
             minHeight: "297mm",
             background: "#fff",
             margin: "0 auto",
-            padding: "0mm 5mm 35mm 5mm",
+            padding: "0mm 5mm 40mm 5mm",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             boxSizing: "border-box",
           }}
@@ -660,8 +666,8 @@ export const AWSDReportPrintPage: React.FC = () => {
                           National Industrial Inspection and Training
                         </div>
                         <div className="sub">
-                          THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING
-                          | NDT CONSULTANCY
+                          THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT
+                          TRAINING | NDT CONSULTANCY
                           <br />
                           FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
                         </div>
@@ -678,7 +684,7 @@ export const AWSDReportPrintPage: React.FC = () => {
               {(() => {
                 const renderTableContent = (
                   tableChunks: any[][],
-                  isPrint: boolean
+                  isPrint: boolean,
                 ) => (
                   <tbody className={isPrint ? "print-only" : "no-print"}>
                     {tableChunks.map((chunk, chunkIdx) => (
@@ -710,7 +716,9 @@ export const AWSDReportPrintPage: React.FC = () => {
                                       className="form-row"
                                       style={{ flex: 2, marginBottom: 0 }}
                                     >
-                                      <span className="form-label">Project</span>
+                                      <span className="form-label">
+                                        Project
+                                      </span>
                                       <span className="form-val">
                                         {v(report.project)}
                                       </span>
@@ -804,7 +812,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                                         </span>
                                         <span className="form-val">
                                           {v(
-                                            report.evaluation || report.remarks
+                                            report.evaluation || report.remarks,
                                           )}
                                         </span>
                                       </div>
@@ -835,8 +843,8 @@ export const AWSDReportPrintPage: React.FC = () => {
                                     chunkIdx === 0
                                       ? i
                                       : FIRST_PAGE_SIZE +
-                                      (chunkIdx - 1) * SUBSEQUENT_PAGE_SIZE +
-                                      i;
+                                        (chunkIdx - 1) * SUBSEQUENT_PAGE_SIZE +
+                                        i;
                                   return (
                                     <tr key={i} style={{ height: "24px" }}>
                                       <td>{v(o.lineNo || globalIdx + 1)}</td>
@@ -881,7 +889,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                                       {Array.from({ length: 15 }).map(
                                         (__, j) => (
                                           <td key={j}></td>
-                                        )
+                                        ),
                                       )}
                                     </tr>
                                   ))}
@@ -899,7 +907,7 @@ export const AWSDReportPrintPage: React.FC = () => {
                                       <td>
                                         {FIRST_PAGE_SIZE +
                                           (chunkIdx - 1) *
-                                          SUBSEQUENT_PAGE_SIZE +
+                                            SUBSEQUENT_PAGE_SIZE +
                                           chunk.length +
                                           i +
                                           1}
@@ -907,12 +915,13 @@ export const AWSDReportPrintPage: React.FC = () => {
                                       {Array.from({ length: 15 }).map(
                                         (__, j) => (
                                           <td key={j}></td>
-                                        )
+                                        ),
                                       )}
                                     </tr>
                                   ))}
                                 {/* Empty rows logic for Screen */}
-                                {!isPrint && chunk.length < 3 && (
+                                {!isPrint &&
+                                  chunk.length < 3 &&
                                   Array.from({
                                     length: Math.max(0, 3 - chunk.length),
                                   }).map((_, i) => (
@@ -924,11 +933,10 @@ export const AWSDReportPrintPage: React.FC = () => {
                                       {Array.from({ length: 15 }).map(
                                         (__, j) => (
                                           <td key={j}></td>
-                                        )
+                                        ),
                                       )}
                                     </tr>
-                                  ))
-                                )}
+                                  ))}
                               </tbody>
                             </table>
                             <ReportSignatures />
@@ -961,7 +969,15 @@ export const AWSDReportPrintPage: React.FC = () => {
           </div>
 
           {/* Screen-only footer preview (hidden in print) */}
-          <div className={`no-print${bwMode ? " bw" : ""}`} style={{ marginTop: "8px" }}>
+          <div
+            className={`no-print${bwMode ? " bw" : ""}`}
+            style={{
+              position: "absolute",
+              bottom: "5mm",
+              left: "5mm",
+              right: "5mm",
+            }}
+          >
             <ReportFooter />
           </div>
         </div>
