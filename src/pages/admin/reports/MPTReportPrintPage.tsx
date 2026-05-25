@@ -179,7 +179,6 @@ const splitTags = (text?: string | null) =>
     .map((item) => item.trim())
     .filter(Boolean);
 
-
 export const MPTReportPrintPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -307,8 +306,6 @@ export const MPTReportPrintPage = () => {
     };
     return legacy.evaluation || legacy.result || legacy.remark || "";
   };
-
-
 
   const ReportFooter = () => (
     <>
@@ -698,7 +695,7 @@ export const MPTReportPrintPage = () => {
                                       fontSize: "11px",
                                     }}
                                   >
-                                    EXAMINED BY
+                                    EXAMINED BY :
                                   </td>
                                   <td
                                     style={{
@@ -706,7 +703,7 @@ export const MPTReportPrintPage = () => {
                                       fontSize: "11px",
                                     }}
                                   >
-                                    CUSTOMER:
+                                    CUSTOMER :
                                   </td>
                                   <td
                                     style={{
@@ -757,11 +754,13 @@ export const MPTReportPrintPage = () => {
                                   </td>
                                   <td>
                                     Designation:{" "}
-                                    {v((fs.customer as any)?.designation) || "-"}
+                                    {v((fs.customer as any)?.designation) ||
+                                      "-"}
                                   </td>
                                   <td>
                                     Designation:{" "}
-                                    {v((fs.clientOrTPI as any)?.designation) || "-"}
+                                    {v((fs.clientOrTPI as any)?.designation) ||
+                                      "-"}
                                   </td>
                                 </tr>
                                 <tr>

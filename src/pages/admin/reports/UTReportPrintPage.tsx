@@ -282,8 +282,8 @@ export const UTReportPrintPage: React.FC = () => {
         </colgroup>
         <tbody>
           <tr>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY:</td>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER:</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY :</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER :</td>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT :</td>
           </tr>
           <tr>

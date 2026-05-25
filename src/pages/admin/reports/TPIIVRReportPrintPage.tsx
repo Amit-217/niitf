@@ -393,10 +393,10 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         <tbody>
                           <tr>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              FOR VENDOR:
+                              FOR VENDOR :
                             </td>
                             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              FOR NIIT SURVEYOR, BARAMATI:
+                              FOR NIIT SURVEYOR, BARAMATI :
                             </td>
                           </tr>
                           <tr>
@@ -445,7 +445,6 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           <col style={{ width: "32%" }} />
                         </colgroup>
                         <tbody>
-
                           <tr>
                             <td className="lbl">I.R No:</td>
                             <td className="val" style={{ fontWeight: 600 }}>
@@ -542,16 +541,28 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                                   </tr>
                                   <tr>
                                     <td className="lbl">Call Date</td>
-                                    <td className="val">{fmtDate(cd.callDate)}</td>
+                                    <td className="val">
+                                      {fmtDate(cd.callDate)}
+                                    </td>
                                   </tr>
                                   <tr>
-                                    <td className="lbl">Inspection Att. Date</td>
-                                    <td className="val">{fmtDate(cd.inspectionAttDt)}</td>
+                                    <td className="lbl">
+                                      Inspection Att. Date
+                                    </td>
+                                    <td className="val">
+                                      {fmtDate(cd.inspectionAttDt)}
+                                    </td>
                                   </tr>
                                 </tbody>
                               </table>
                             </td>
-                            <td style={{ verticalAlign: "top", padding: 0, borderLeft: "1px solid #444" }}>
+                            <td
+                              style={{
+                                verticalAlign: "top",
+                                padding: 0,
+                                borderLeft: "1px solid #444",
+                              }}
+                            >
                               <table className="nested-table">
                                 <colgroup>
                                   <col style={{ width: "36%" }} />
@@ -582,10 +593,14 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                             <td
                               colSpan={2}
                               className="lbl"
-                              style={{ fontWeight: "normal", whiteSpace: "normal" }}
+                              style={{
+                                fontWeight: "normal",
+                                whiteSpace: "normal",
+                              }}
                             >
                               <strong>Extra Visit / Date:</strong> {v(ev.date)}
-                              &nbsp;&nbsp; <strong>Comment:</strong> {v(ev.comment)}
+                              &nbsp;&nbsp; <strong>Comment:</strong>{" "}
+                              {v(ev.comment)}
                             </td>
                           </tr>
                         </tbody>
@@ -694,12 +709,14 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                               </tr>
                             ))
                           )}
-
                         </tbody>
                       </table>
 
                       {/* ── INSPECTION ACTIVITIES ── */}
-                      <table className="report-table mt-n1" style={{ breakInside: "auto", pageBreakInside: "auto" }}>
+                      <table
+                        className="report-table mt-n1"
+                        style={{ breakInside: "auto", pageBreakInside: "auto" }}
+                      >
                         <thead style={{ display: "table-header-group" }}>
                           <tr>
                             <td className="section-hdr">
@@ -716,9 +733,11 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                         </tbody>
                       </table>
 
-
                       {/* ── REFERENCE DOCUMENTS ── */}
-                      <table className="report-table mt-n1" style={{ breakInside: "auto", pageBreakInside: "auto" }}>
+                      <table
+                        className="report-table mt-n1"
+                        style={{ breakInside: "auto", pageBreakInside: "auto" }}
+                      >
                         <colgroup>
                           <col style={{ width: "30%" }} />
                           <col style={{ width: "50%" }} />
@@ -768,7 +787,10 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* ── CALIBRATION STATUS ── */}
-                      <table className="report-table mt-n1" style={{ breakInside: "auto", pageBreakInside: "auto" }}>
+                      <table
+                        className="report-table mt-n1"
+                        style={{ breakInside: "auto", pageBreakInside: "auto" }}
+                      >
                         <colgroup>
                           <col style={{ width: "28%" }} />
                           <col style={{ width: "18%" }} />
@@ -826,17 +848,24 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                           )}
                         </tbody>
                       </table>
-                      
+
                       {/* ── CONCLUSION ── */}
-                      <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+                      <table
+                        className="report-table mt-n1"
+                        style={{
+                          breakInside: "avoid",
+                          pageBreakInside: "avoid",
+                        }}
+                      >
                         <tbody>
                           <tr>
-                            <td className="section-hdr">
-                              7. CONCLUSION
-                            </td>
+                            <td className="section-hdr">7. CONCLUSION</td>
                           </tr>
                           <tr>
-                            <td className="val" style={{ padding: "8px", minHeight: "40px" }}>
+                            <td
+                              className="val"
+                              style={{ padding: "8px", minHeight: "40px" }}
+                            >
                               {v(report.conclusion) || "-"}
                             </td>
                           </tr>

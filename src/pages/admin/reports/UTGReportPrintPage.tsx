@@ -321,8 +321,6 @@ export const UTGReportPrintPage: React.FC = () => {
     </table>
   );
 
-
-
   const ReportFooter = () => (
     <>
       <div className="footer">
@@ -357,8 +355,8 @@ export const UTGReportPrintPage: React.FC = () => {
         </colgroup>
         <tbody>
           <tr>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY</td>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER:</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>EXAMINED BY :</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER : </td>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT :</td>
           </tr>
           <tr>
@@ -368,7 +366,9 @@ export const UTGReportPrintPage: React.FC = () => {
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
               {v(jd.customer)}
             </td>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.client)}</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              {v(jd.client)}
+            </td>
           </tr>
           <tr>
             <td>Name: {v(inspector.name) || "-"}</td>
@@ -548,7 +548,9 @@ export const UTGReportPrintPage: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="lbl">Reference Std.</td>
-                            <td className="val" colSpan={3}>{v(jd.referenceStd) || "-"}</td>
+                            <td className="val" colSpan={3}>
+                              {v(jd.referenceStd) || "-"}
+                            </td>
                           </tr>
                           <tr>
                             <td className="lbl">Acceptance Criteria</td>
@@ -706,7 +708,10 @@ export const UTGReportPrintPage: React.FC = () => {
                           <>
                             <Signatures />
                             <div className="page-break">
-                              {renderObsTable(obsPage2, "5. OBSERVATIONS (Contd.)")}
+                              {renderObsTable(
+                                obsPage2,
+                                "5. OBSERVATIONS (Contd.)",
+                              )}
                             </div>
                             <Signatures />
                           </>

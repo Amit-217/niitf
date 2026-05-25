@@ -301,7 +301,6 @@ export const PTReportPrintPage: React.FC = () => {
   const standards = splitTags(jd.referenceStandard);
   const acceptance = splitTags(jd.acceptanceCriteria);
 
-
   const ReportFooter = () => (
     <>
       <div className="footer">
@@ -642,7 +641,7 @@ export const PTReportPrintPage: React.FC = () => {
                                       fontSize: "11px",
                                     }}
                                   >
-                                    EXAMINED BY
+                                    EXAMINED BY :
                                   </td>
                                   <td
                                     style={{
@@ -650,7 +649,7 @@ export const PTReportPrintPage: React.FC = () => {
                                       fontSize: "11px",
                                     }}
                                   >
-                                    CUSTOMER:
+                                    CUSTOMER :
                                   </td>
                                   <td
                                     style={{
@@ -690,10 +689,13 @@ export const PTReportPrintPage: React.FC = () => {
                                 <tr>
                                   <td>Name: {v(inspector.name) || "-"}</td>
                                   <td>
-                                    Name: {v((jd as any).customerRepresentative) || "-"}
+                                    Name:{" "}
+                                    {v((jd as any).customerRepresentative) ||
+                                      "-"}
                                   </td>
                                   <td>
-                                    Name: {v((jd as any).clientRepresentative) || "-"}
+                                    Name:{" "}
+                                    {v((jd as any).clientRepresentative) || "-"}
                                   </td>
                                 </tr>
                                 <tr>
