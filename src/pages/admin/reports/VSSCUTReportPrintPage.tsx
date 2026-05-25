@@ -397,60 +397,134 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           <col style={{ width: "36%" }} />
                         </colgroup>
                         <tbody>
-
                           <tr>
                             <td colSpan={3} style={{ padding: 0 }}>
                               <div style={{ display: "flex" }}>
-                                <div style={{ width: "50%", padding: "4px 6px", fontWeight: 700, fontSize: "12px" }}>
+                                <div
+                                  style={{
+                                    width: "50%",
+                                    padding: "4px 6px",
+                                    fontWeight: 700,
+                                    fontSize: "12px",
+                                  }}
+                                >
                                   Report No. {v(report.reportNo)}
                                 </div>
-                                <div style={{ width: "50%", padding: "4px 6px", fontWeight: 700, fontSize: "12px", borderLeft: "1px solid #000" }}>
+                                <div
+                                  style={{
+                                    width: "50%",
+                                    padding: "4px 6px",
+                                    fontWeight: 700,
+                                    fontSize: "12px",
+                                    borderLeft: "1px solid #000",
+                                  }}
+                                >
                                   Job Description: {v(report.jobDescription)}
                                 </div>
                               </div>
                             </td>
                           </tr>
                           <tr>
-                            <td className="val">Report Date: <strong>{fmtDate(report.reportDate)}</strong></td>
-                            <td className="val">Weld Joint No.: <strong>{v(report.weldJointNo)}</strong></td>
-                            <td className="val">Thickness: <strong>{v(report.thicknessOfJob)}</strong></td>
+                            <td className="val">
+                              Report Date:{" "}
+                              <strong>{fmtDate(report.reportDate)}</strong>
+                            </td>
+                            <td className="val">
+                              Weld Joint No.:{" "}
+                              <strong>{v(report.weldJointNo)}</strong>
+                            </td>
+                            <td className="val">
+                              Thickness:{" "}
+                              <strong>{v(report.thicknessOfJob)}</strong>
+                            </td>
                           </tr>
                           <tr>
-                            <td className="val">Surface Condition: <strong>{v(report.surfaceCondition)}</strong></td>
-                            <td className="val">Customer: <strong>{v(report.customer)}</strong></td>
-                            <td className="val">Period: <strong>{v(report.periodOfInspection)}</strong></td>
+                            <td className="val">
+                              Surface Condition:{" "}
+                              <strong>{v(report.surfaceCondition)}</strong>
+                            </td>
+                            <td className="val">
+                              Customer: <strong>{v(report.customer)}</strong>
+                            </td>
+                            <td className="val">
+                              Period:{" "}
+                              <strong>{v(report.periodOfInspection)}</strong>
+                            </td>
                           </tr>
                           <tr>
                             <td className="val" style={{ padding: 0 }}>
-                              <div style={{ padding: "2px 6px", borderBottom: "1px solid #000" }}>Material: <strong>{v(report.material)}</strong></div>
-                              <div style={{ padding: "2px 6px" }}>Equipment: <strong>{v(report.equipmentUsed)}</strong></div>
+                              <div
+                                style={{
+                                  padding: "2px 6px",
+                                  borderBottom: "1px solid #000",
+                                }}
+                              >
+                                Material: <strong>{v(report.material)}</strong>
+                              </div>
+                              <div style={{ padding: "2px 6px" }}>
+                                Equipment:{" "}
+                                <strong>{v(report.equipmentUsed)}</strong>
+                              </div>
                             </td>
-                            <td className="val">Technique: <strong>{v(report.scanningTechnique)}</strong></td>
-                            <td className="val">Stage: <strong>{v(report.stageOfInspection)}</strong></td>
+                            <td className="val">
+                              Technique:{" "}
+                              <strong>{v(report.scanningTechnique)}</strong>
+                            </td>
+                            <td className="val">
+                              Stage:{" "}
+                              <strong>{v(report.stageOfInspection)}</strong>
+                            </td>
                           </tr>
                           <tr>
                             <td className="val" style={{ padding: 0 }}>
-                              <div style={{ padding: "2px 6px", borderBottom: "1px solid #000" }}>Couplant: <strong>{v(report.couplant)}</strong></div>
-                              <div style={{ padding: "2px 6px" }}>Datum: <strong>{v(report.referenceDatum)}</strong></div>
+                              <div
+                                style={{
+                                  padding: "2px 6px",
+                                  borderBottom: "1px solid #000",
+                                }}
+                              >
+                                Couplant: <strong>{v(report.couplant)}</strong>
+                              </div>
+                              <div style={{ padding: "2px 6px" }}>
+                                Datum:{" "}
+                                <strong>{v(report.referenceDatum)}</strong>
+                              </div>
                             </td>
-                            <td className="val">Area Scanned: <strong>{v(report.areaScanned)}</strong></td>
-                            <td className="val">Acceptance Std: <strong>{v(report.acceptanceStandard)}</strong></td>
+                            <td className="val">
+                              Area Scanned:{" "}
+                              <strong>{v(report.areaScanned)}</strong>
+                            </td>
+                            <td className="val">
+                              Acceptance Std:{" "}
+                              <strong>{v(report.acceptanceStandard)}</strong>
+                            </td>
                           </tr>
                           <tr>
                             <td className="val">
                               Test Setup:
                               <br />
-                              Angle Range: <strong>{v(ts.angleRange)}</strong> | Normal: <strong>{v(ts.normalRange)}</strong>
+                              Angle Range: <strong>{v(ts.angleRange)}</strong> |
+                              Normal: <strong>{v(ts.normalRange)}</strong>
                             </td>
                             <td className="val">
                               Standard Cal Block:
                               <br />
-                              Angle: <strong>{v(ts.standardCalBlock?.angle)}</strong> | Normal: <strong>{v(ts.standardCalBlock?.normal)}</strong>
+                              Angle:{" "}
+                              <strong>{v(ts.standardCalBlock?.angle)}</strong> |
+                              Normal:{" "}
+                              <strong>{v(ts.standardCalBlock?.normal)}</strong>
                             </td>
                             <td className="val">
                               Ref Block Idtn:
                               <br />
-                              Angle: <strong>{v(ts.identificationNoOfRefBlock?.angle)}</strong> | Normal: <strong>{v(ts.identificationNoOfRefBlock?.normal)}</strong>
+                              Angle:{" "}
+                              <strong>
+                                {v(ts.identificationNoOfRefBlock?.angle)}
+                              </strong>{" "}
+                              | Normal:{" "}
+                              <strong>
+                                {v(ts.identificationNoOfRefBlock?.normal)}
+                              </strong>
                             </td>
                           </tr>
                         </tbody>
@@ -460,7 +534,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       <table className="report-table mt-n1">
                         <tbody>
                           <tr>
-                            <td className="section-hdr" colSpan={3}>1. ANGLE PROBE CALIBRATION</td>
+                            <td className="section-hdr" colSpan={3}>
+                              1. ANGLE PROBE CALIBRATION
+                            </td>
                           </tr>
                           <tr>
                             <td className="val" style={{ width: "33.3%" }}>
@@ -488,7 +564,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           <tr>
                             <th>Scanning</th>
                             {PROBE_MODES.map((pm) => (
-                              <th key={pm} colSpan={2}>{pm}</th>
+                              <th key={pm} colSpan={2}>
+                                {pm}
+                              </th>
                             ))}
                           </tr>
                           <tr>
@@ -519,13 +597,25 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                           <tr>
                             <td className="lbl">DAC dB</td>
                             {PROBE_MODES.map((pm) => (
-                              <td key={pm + "_dac"} colSpan={2} style={{ fontWeight: 600 }}>{v((ct[pm] as any)?.dacDb)}</td>
+                              <td
+                                key={pm + "_dac"}
+                                colSpan={2}
+                                style={{ fontWeight: 600 }}
+                              >
+                                {v((ct[pm] as any)?.dacDb)}
+                              </td>
                             ))}
                           </tr>
                           <tr>
                             <td className="lbl">Scanning dB</td>
                             {PROBE_MODES.map((pm) => (
-                              <td key={pm + "_scan"} colSpan={2} style={{ fontWeight: 600 }}>{v((ct[pm] as any)?.scanningDb)}</td>
+                              <td
+                                key={pm + "_scan"}
+                                colSpan={2}
+                                style={{ fontWeight: 600 }}
+                              >
+                                {v((ct[pm] as any)?.scanningDb)}
+                              </td>
                             ))}
                           </tr>
                         </tbody>
@@ -535,11 +625,14 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       <table className="report-table mt-n1">
                         <tbody>
                           <tr>
-                            <td className="section-hdr" colSpan={3}>2. NORMAL PROBE CALIBRATION</td>
+                            <td className="section-hdr" colSpan={3}>
+                              2. NORMAL PROBE CALIBRATION
+                            </td>
                           </tr>
                           <tr>
                             <td className="val" style={{ width: "33.3%" }}>
-                              Probe S. No / Type: <strong>{v(npc.probeType)}</strong>
+                              Probe S. No / Type:{" "}
+                              <strong>{v(npc.probeType)}</strong>
                             </td>
                             <td className="val" style={{ width: "33.3%" }}>
                               Frequency: <strong>{v(npc.frequency)}</strong>
@@ -563,7 +656,12 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                       </table>
 
                       {/* --- SIGNATURE --- */}
-                      <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+                      <div
+                        style={{
+                          breakInside: "avoid",
+                          pageBreakInside: "avoid",
+                        }}
+                      >
                         <div className="report-footer-wrap">
                           <table className="sign-table mt-n1">
                             <colgroup>
@@ -573,14 +671,38 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                             </colgroup>
                             <tbody>
                               <tr>
-                                <td style={{ fontWeight: 600, fontSize: "12px" }}>EXAMINED BY</td>
-                                <td style={{ fontWeight: 600, fontSize: "12px" }}>CUSTOMER:</td>
-                                <td style={{ fontWeight: 600, fontSize: "12px" }}>CLIENT :</td>
+                                <td
+                                  style={{ fontWeight: 600, fontSize: "12px" }}
+                                >
+                                  EXAMINED BY
+                                </td>
+                                <td
+                                  style={{ fontWeight: 600, fontSize: "12px" }}
+                                >
+                                  CUSTOMER:
+                                </td>
+                                <td
+                                  style={{ fontWeight: 600, fontSize: "12px" }}
+                                >
+                                  CLIENT :
+                                </td>
                               </tr>
                               <tr>
-                                <td style={{ fontWeight: 600, fontSize: "12px" }}>National Industrial Inspection And Training</td>
-                                <td style={{ fontWeight: 600, fontSize: "12px" }}>{v(report.customer)}</td>
-                                <td style={{ fontWeight: 600, fontSize: "12px" }}>-</td>
+                                <td
+                                  style={{ fontWeight: 600, fontSize: "11px" }}
+                                >
+                                  National Industrial Inspection And Training
+                                </td>
+                                <td
+                                  style={{ fontWeight: 600, fontSize: "12px" }}
+                                >
+                                  {v(report.customer)}
+                                </td>
+                                <td
+                                  style={{ fontWeight: 600, fontSize: "12px" }}
+                                >
+                                  -
+                                </td>
                               </tr>
                               <tr>
                                 <td>Name: {v(inspector.name) || "-"}</td>
@@ -588,9 +710,16 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                                 <td>Name: {v(fs.rqs?.name) || "-"}</td>
                               </tr>
                               <tr>
-                                <td>{v(inspector.qualification) || "UT NDE Level II"}</td>
-                                <td>Designation: {v(fs.qc?.designation) || "-"}</td>
-                                <td>Designation: {v(fs.rqs?.designation) || "-"}</td>
+                                <td>
+                                  {v(inspector.qualification) ||
+                                    "UT NDE Level II"}
+                                </td>
+                                <td>
+                                  Designation: {v(fs.qc?.designation) || "-"}
+                                </td>
+                                <td>
+                                  Designation: {v(fs.rqs?.designation) || "-"}
+                                </td>
                               </tr>
                               <tr>
                                 <td style={{ height: "60px" }}>Signature:</td>
