@@ -40,6 +40,7 @@ const PRINT_STYLES = `
       padding: 0 !important;
     }
     .tfoot-spacer { display: table-footer-group !important; }
+    tr { page-break-inside: avoid; break-inside: avoid; }
   }
   @media screen {
     .print-footer-fixed { display: none !important; }
@@ -48,7 +49,7 @@ const PRINT_STYLES = `
   }
   body { font-family: 'Times New Roman', Times, serif; font-size: 13px; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  table { border-collapse: collapse; width: calc(100% - 1px); }
+  table { border-collapse: collapse; width: 100%; }
   .outer-border { border: none; }
   .cell { border: 1px solid #000; padding: 3px 5px; vertical-align: top; }
   .cell-center { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; text-align: center; }
@@ -70,7 +71,7 @@ const PRINT_STYLES = `
   .summary-label { flex: 1; text-align: right; padding: 2px 6px; font-size: 13px; border-right: 1px solid #000; }
   .summary-value { width: 100px; text-align: right; padding: 2px 6px; font-size: 13px; }
   .amount-words { color: #000; font-weight: bold; font-size: 13px; }
-  .sig-cell { border: 1px solid #000; padding: 5px; height: 60px; vertical-align: top; }
+  .sig-cell { border: 1px solid #000; padding: 5px; height: 60px; vertical-align: top; page-break-inside: avoid; break-inside: avoid; }
   .footer-note { text-align: center; font-size: 11px; color: #555; padding: 3px; border-top: 1px solid #000; }
   .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
   .logo-box { width: 140px; height: 90px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
@@ -328,11 +329,13 @@ export const InvoicePrintPage: React.FC = () => {
                               width: "40%",
                               padding: 0,
                               verticalAlign: "top",
+                              height: "1px",
                             }}
                           >
                             <table
                               style={{
                                 width: "100%",
+                                height: "100%",
                                 borderCollapse: "collapse",
                                 tableLayout: "fixed",
                               }}
@@ -365,7 +368,7 @@ export const InvoicePrintPage: React.FC = () => {
                                     <div
                                       style={{
                                         fontSize: 13,
-                                        lineHeight: 1,
+                                        lineHeight: 1.2,
                                       }}
                                     >
                                       Plot NO-PAP-3/28 Behind BSNL Office
@@ -391,7 +394,9 @@ export const InvoicePrintPage: React.FC = () => {
                                       padding: "0px 5px",
                                       borderRight: "none",
                                       border: "1px solid #444",
+                                      borderBottom: "none",
                                       marginTop: "-2px",
+                                      height: "100%",
                                     }}
                                   >
                                     <span
@@ -421,7 +426,7 @@ export const InvoicePrintPage: React.FC = () => {
                                         className="red"
                                         style={{
                                           fontSize: 13,
-                                          lineHeight: 1,
+                                          lineHeight: 1.2,
                                         }}
                                       >
                                         {customer.address}
@@ -433,7 +438,7 @@ export const InvoicePrintPage: React.FC = () => {
                                         className="red"
                                         style={{
                                           fontSize: 13,
-                                          lineHeight: 1,
+                                          lineHeight: 1.2,
                                         }}
                                       >
                                         City-{customer.city}
@@ -446,7 +451,7 @@ export const InvoicePrintPage: React.FC = () => {
                                         className="red"
                                         style={{
                                           fontSize: 13,
-                                          lineHeight: 1,
+                                          lineHeight: 1.2,
                                         }}
                                       >
                                         {customer?.state &&
@@ -464,7 +469,7 @@ export const InvoicePrintPage: React.FC = () => {
                                       className="red"
                                       style={{
                                         fontSize: 13,
-                                        lineHeight: 1,
+                                        lineHeight: 1.2,
                                       }}
                                     >
                                       GST No: {customer?.gstNo || ""}
@@ -473,7 +478,7 @@ export const InvoicePrintPage: React.FC = () => {
                                       className="red"
                                       style={{
                                         fontSize: 13,
-                                        lineHeight: 1,
+                                        lineHeight: 1.2,
                                       }}
                                     >
                                       Contact Person:{" "}
@@ -483,7 +488,7 @@ export const InvoicePrintPage: React.FC = () => {
                                       className="red"
                                       style={{
                                         fontSize: 13,
-                                        lineHeight: 1,
+                                        lineHeight: 1.2,
                                       }}
                                     >
                                       Contact: {customer?.mobile || ""}
@@ -492,7 +497,7 @@ export const InvoicePrintPage: React.FC = () => {
                                       className="red"
                                       style={{
                                         fontSize: 13,
-                                        lineHeight: 1,
+                                        lineHeight: 1.2,
                                       }}
                                     >
                                       Email: {customer?.email || ""}
@@ -509,11 +514,13 @@ export const InvoicePrintPage: React.FC = () => {
                               width: "60%",
                               padding: 0,
                               verticalAlign: "top",
+                              height: "1px",
                             }}
                           >
                             <table
                               style={{
                                 width: "100%",
+                                height: "100%",
                                 borderCollapse: "collapse",
                                 tableLayout: "fixed",
                               }}
@@ -745,6 +752,7 @@ export const InvoicePrintPage: React.FC = () => {
                                       minHeight: "90px",
                                       verticalAlign: "top",
                                       border: "1px solid #444",
+                                      borderBottom: "none",
                                     }}
                                   >
                                     <span
@@ -770,7 +778,7 @@ export const InvoicePrintPage: React.FC = () => {
                     {/* ── LINE ITEMS TABLE ── */}
                     <table
                       className="outer-border"
-                      style={{ borderTop: "none", marginTop: "-1px" }}
+                      style={{ marginTop: "-1px" }}
                     >
                       <thead>
                         <tr>
@@ -1125,21 +1133,15 @@ export const InvoicePrintPage: React.FC = () => {
                           <td className="items-td-right">
                             {fmtNum(totalTaxable)}
                           </td>
-                          <td className="items-td-center">
-                            {cgstRate > 0 ? `${cgstRate}%` : ""}
-                          </td>
+                          <td className="items-td-center"></td>
                           <td className="items-td-right">
                             {cgstRate > 0 ? fmtNum(cgstAmt) : ""}
                           </td>
-                          <td className="items-td-center">
-                            {sgstRate > 0 ? `${sgstRate}%` : ""}
-                          </td>
+                          <td className="items-td-center"></td>
                           <td className="items-td-right">
                             {sgstRate > 0 ? fmtNum(sgstAmt) : ""}
                           </td>
-                          <td className="items-td-center">
-                            {igstRate > 0 ? `${igstRate}%` : ""}
-                          </td>
+                          <td className="items-td-center"></td>
                           <td className="items-td-right">
                             {igstRate > 0 ? fmtNum(igstAmt) : ""}
                           </td>
