@@ -39,24 +39,93 @@ const PRINT_STYLES = `
   .quotation-page-footer { margin-top: 4px; }
 
   table { border-collapse: collapse; width: 100%; }
-  .title { font-size: 18px; font-weight: bold; text-align: center; letter-spacing: 4px; padding: 0px 0;}
+  .title { font-size: 18px; font-weight: bold; text-align: center; letter-spacing: 3px; padding: 0px 0;}
 
-  .rpt-header { padding: 2px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 160px; height: 100px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0px; transform: translateY(-4px); margin-top: 2px; }
-  .logo-box img { width: 100%; height: 100%; object-fit: contain; }
-  .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 21px; font-weight: 800; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
-  .inv-foot { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 1px solid #185FA5; line-height: 1.4; text-align: center; }
-  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
-  .footer-meta span { color: #fff; font-weight: 700; }
-  .quotation-info { display: flex; justify-content: space-between; margin-top: 6px; margin-bottom: 8px; line-height: 1.35; }
+  /* Unified Header & Footer Styles */
+  .rpt-header { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    padding: 2px 8px; 
+    margin-bottom: 0; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    background: #fff !important;
+  }
+  .logo-box { 
+    width: 160px; 
+    height: 100px; 
+    background: #fff; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    flex-shrink: 0; 
+    overflow: hidden; 
+    transform: translateY(-4px); 
+    margin-top: 2px; 
+  }
+  .logo-box img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: contain; 
+  }
+  .hdr-center { 
+    flex: 1; 
+    text-align: center; 
+    color: #0C447C !important; 
+  }
+  .hdr-center .org { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    font-size: 22px !important; 
+    font-weight: 700 !important; 
+    letter-spacing: 0.2px; 
+    text-transform: uppercase; 
+    color: #0C447C !important;
+  }
+  .hdr-center .sub { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    font-size: 10px !important; 
+    color: #374151 !important; 
+    margin-top: 2px; 
+    line-height: 1.4; 
+  }
+  .hdr-center .iso { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    font-size: 10px !important; 
+    color: #0C447C !important; 
+    font-weight: 700 !important; 
+    margin-top: 2px; 
+  }
+  .inv-foot, .footer { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    background: #f8fafc !important; 
+    padding: 6px 10px !important; 
+    font-size: 10px !important; 
+    color: #4b5563 !important; 
+    margin-top: 8px; 
+    border-top: 3px solid #185FA5 !important; 
+    line-height: 1.4 !important; 
+    text-align: center !important; 
+  }
+  .footer-meta { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    background: #185FA5 !important; 
+    color: #d7e8fb !important; 
+    font-size: 9px !important; 
+    text-align: center !important; 
+    padding: 3px 8px !important; 
+    border: none !important;
+  }
+  .footer-meta span { 
+    color: #fff !important; 
+    font-weight: 700 !important; 
+  }
+  
+  .quotation-info { display: flex; justify-content: space-between; margin-top: 6px; margin-bottom: 8px; line-height: 1.35;font-size: 15.5px; }
   .quotation-info h2 { font-size: 14px; font-weight: bold; margin: 0 0 5px 0; text-decoration: underline; }
   .quotation-info strong { font-weight: 700; }
-  .quotation-body { padding: 0 5mm; font-family: 'Times New Roman', Times, serif; font-size: 12.5px; line-height: 1.35; color: #000; }
+  .quotation-body { padding: 0 5mm; font-family: 'Times New Roman', Times, serif; font-size: 14.5px; line-height: 1.35; color: #000; }
   .quotation-body p { margin-top: 6px; margin-bottom: 7px; }
-  .quotation-table th, .quotation-table td { border: 1px solid #000; padding: 3px 4px; font-size: 12.5px; line-height: 1.25; }
+  .quotation-table th, .quotation-table td { border: 1px solid #000; padding: 3px 4px; font-size: 14.5px; line-height: 1.25; }
   .quotation-table th { font-weight: bold; text-align: center; }
   .quotation-terms { margin-top: 8px; line-height: 1.45; }
   .quotation-signoff { margin-top: 14px; line-height: 1.35; page-break-inside: avoid; break-inside: avoid; }
