@@ -648,7 +648,7 @@ export const MPTReportPrintPage = () => {
     <>
       {fixedSections}
       {renderObsTable(obsPage1, "5. OBSERVATIONS")}
-      {obsPage2.length === 0 && renderSignatures()}
+      {renderSignatures()}
     </>,
   ];
   if (obsPage2.length > 0) {

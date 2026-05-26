@@ -750,7 +750,7 @@ export const AWSDReportPrintPage: React.FC = () => {
           </div>
         )}
         {renderObsTable(chunk, chunkIdx, isLastChunk)}
-        {isLastChunk && <ReportSignatures />}
+        <ReportSignatures />
       </>
     );
   });

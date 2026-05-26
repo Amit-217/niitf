@@ -247,9 +247,7 @@ export const UTReportPrintPage: React.FC = () => {
         <img src="/logo.png" alt="NIIT Logo" />
       </div>
       <div className="hdr-center">
-        <div className="org">
-          National Industrial Inspection and Training
-        </div>
+        <div className="org">National Industrial Inspection and Training</div>
         <div className="sub">
           THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING | NDT
           CONSULTANCY
@@ -392,6 +390,49 @@ export const UTReportPrintPage: React.FC = () => {
         &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
       </div>
     </>
+  );
+
+  // Angle Probe Calibration — rendered on page 2 to prevent page-1 overflow
+  const calibSection = (
+    <table className="calib-table mt-n1">
+      <tbody>
+        <tr>
+          <td colSpan={5} className="section-hdr">
+            5. ANGLE PROBE CALIBRATION DETAIL
+          </td>
+        </tr>
+        <tr>
+          <td className="col-hdr" style={{ whiteSpace: "nowrap" }}>
+            Angle Probe calibration detail
+          </td>
+          {calibAngles.map((a) => (
+            <td key={a.label} className="col-hdr">
+              {a.label}
+            </td>
+          ))}
+        </tr>
+        {(
+          [
+            { key: "range", label: "Range" },
+            { key: "point1", label: "1st Point" },
+            { key: "point2", label: "2nd Point" },
+            { key: "point3", label: "3rd Point" },
+            { key: "refDb", label: "Ref dB" },
+          ] as { key: string; label: string }[]
+        ).map((row) => (
+          <tr key={row.key}>
+            <td className="lbl" style={{ textAlign: "left", paddingLeft: 4 }}>
+              {row.label}
+            </td>
+            {calibAngles.map((a) => (
+              <td key={a.label}>
+                {v((a.data as Record<string, string> | undefined)?.[row.key])}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 
   const fixedSections = (
@@ -594,75 +635,40 @@ export const UTReportPrintPage: React.FC = () => {
           </tr>
         </tbody>
       </table>
-
-      <table className="calib-table mt-n1">
-        <tbody>
-          <tr>
-            <td colSpan={5} className="section-hdr">
-              5. ANGLE PROBE CALIBRATION DETAIL
-            </td>
-          </tr>
-          <tr>
-            <td className="col-hdr" style={{ whiteSpace: "nowrap" }}>
-              Angle Probe calibration detail
-            </td>
-            {calibAngles.map((a) => (
-              <td key={a.label} className="col-hdr">
-                {a.label}
-              </td>
-            ))}
-          </tr>
-          {(
-            [
-              { key: "range", label: "Range" },
-              { key: "point1", label: "1st Point" },
-              { key: "point2", label: "2nd Point" },
-              { key: "point3", label: "3rd Point" },
-              { key: "refDb", label: "Ref dB" },
-            ] as { key: string; label: string }[]
-          ).map((row) => (
-            <tr key={row.key}>
-              <td
-                className="lbl"
-                style={{ textAlign: "left", paddingLeft: 4 }}
-              >
-                {row.label}
-              </td>
-              {calibAngles.map((a) => (
-                <td key={a.label} style={{}}>
-                  {v(
-                    (a.data as Record<string, string> | undefined)?.[row.key],
-                  )}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </>
   );
 
-  // --- Paginate: fixed sections + first 8 observations on page 1; the rest
-  //     (with the signatures) flow onto subsequent pages. Each page is a
-  //     self-contained A4 block with the footer pinned at its bottom. ---
-  const obsPage1 = obs.slice(0, 8);
-  const obsPage2 = obs.slice(8);
+  // --- Paginate:
+  //   Page 1: sections 1-4 (Job, Equipment, Search Units, Technique) +
+  //           up to (7 - unitCount) observations (shared capacity).
+  //   Page 2: section 5 (Angle Probe Calibration) + remaining observations.
+  //   Page 3+: overflow observations (if any).
+  //   Signatures appear on every page. ---
+  const firstPageCapacity = 7;
+  const unitCount = units.length;
+  const obsLimit = Math.max(0, firstPageCapacity - unitCount);
+  const obsPage1 = obs.slice(0, obsLimit);
+  const obsPage2 = obs.slice(obsLimit);
 
   const pages = [
+    // Page 1: sections 1–4 + first obs chunk (shared capacity with search units)
     <>
       {fixedSections}
-      {renderObsTable(obsPage1, "6. OBSERVATIONS")}
-      {obsPage2.length === 0 && renderSignatures()}
+      {(obsPage1.length > 0 || obs.length === 0) &&
+        renderObsTable(obsPage1, "6. OBSERVATIONS")}
+      {renderSignatures()}
+    </>,
+    // Page 2: Angle Probe Calibration + remaining observations
+    <>
+      {calibSection}
+      {obsPage2.length > 0 &&
+        renderObsTable(
+          obsPage2,
+          obsPage1.length > 0 ? "6. OBSERVATIONS (Contd.)" : "6. OBSERVATIONS",
+        )}
+      {renderSignatures()}
     </>,
   ];
-  if (obsPage2.length > 0) {
-    pages.push(
-      <>
-        {renderObsTable(obsPage2, "6. OBSERVATIONS (Contd.)")}
-        {renderSignatures()}
-      </>,
-    );
-  }
 
   return (
     <>

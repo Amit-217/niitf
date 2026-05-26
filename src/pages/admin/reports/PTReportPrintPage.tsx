@@ -617,14 +617,14 @@ export const PTReportPrintPage: React.FC = () => {
   // --- Paginate: fixed sections + first 8 observations on page 1; the rest
   //     (with the signatures) flow onto subsequent pages. Each page is a
   //     self-contained A4 block with the footer pinned at its bottom. ---
-  const obsPage1 = obs.slice(0, 8);
-  const obsPage2 = obs.slice(8);
+  const obsPage1 = obs.slice(0, 7);
+  const obsPage2 = obs.slice(7);
 
   const pages = [
     <>
       {fixedSections}
       {renderObsTable(obsPage1, "5. OBSERVATIONS")}
-      {obsPage2.length === 0 && renderSignatures()}
+      {renderSignatures()}
     </>,
   ];
   if (obsPage2.length > 0) {

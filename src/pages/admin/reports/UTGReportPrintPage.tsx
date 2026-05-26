@@ -241,8 +241,9 @@ export const UTGReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
-  // Pagination Logic: Max 14 rows total for (SUD + Obs) on Page 1
-  const firstPageCapacity = 14;
+  // Pagination Logic: Max 14 visible rows total for (SUD + Obs) on Page 1.
+  // Capacity is 13 because the obs table column-header row counts as 1 visible row.
+  const firstPageCapacity = 13;
   const sudCount = sud.length;
   const obsLimit = Math.max(0, firstPageCapacity - sudCount);
   const obsPage1 = obs.slice(0, obsLimit);
@@ -584,14 +585,18 @@ export const UTGReportPrintPage: React.FC = () => {
   const pages = [
     <>
       {fixedSections}
-      {renderObsTable(obsPage1, "5. OBSERVATIONS")}
-      {obsPage2.length === 0 && <Signatures />}
+      {(obsPage1.length > 0 || obs.length === 0) &&
+        renderObsTable(obsPage1, "5. OBSERVATIONS")}
+      <Signatures />
     </>,
   ];
   if (obsPage2.length > 0) {
     pages.push(
       <>
-        {renderObsTable(obsPage2, "5. OBSERVATIONS (Contd.)")}
+        {renderObsTable(
+          obsPage2,
+          obsPage1.length > 0 ? "5. OBSERVATIONS (Contd.)" : "5. OBSERVATIONS",
+        )}
         <Signatures />
       </>,
     );
