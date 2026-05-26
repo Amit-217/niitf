@@ -254,211 +254,137 @@ export const QuotationsListPage: React.FC = () => {
         })}
       </div>
 
+      {/* ── Filters ── */}
+      <div className="glass-card p-4 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            placeholder="Search by quote number or customer..."
+            className="input-field pl-9 w-full"
+          />
+        </div>
+        {search && (
+          <button
+            onClick={() => { setSearch(""); setPage(1); }}
+            className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors whitespace-nowrap"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
       {/* ── Main Table Area ── */}
-      <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl shadow-gray-200/40 overflow-hidden">
-        {/* Filters Bar */}
-        <div className="px-6 py-5 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50/30">
-          <div className="relative flex-1 group">
-            <Search
-              size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary-600 transition-colors"
-            />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              placeholder="Search by quote number or customer..."
-              className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all placeholder:text-gray-400 font-medium"
+      <div className="glass-card overflow-hidden">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 size={28} className="animate-spin text-primary-600" />
+          </div>
+        ) : paginated.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+            <FileText size={40} className="mb-3 opacity-40" />
+            <p className="font-medium">No quotations found</p>
+            <p className="text-sm mt-1">Try adjusting your search or create a new {activeInfo.label.toLowerCase()} quotation.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Quote No.</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Customer</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Date</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Type</th>
+                  <th className="px-4 py-3 text-right font-semibold text-gray-600">Amount (₹)</th>
+                  <th className="px-4 py-3 text-center font-semibold text-gray-600">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {paginated.map((q) => {
+                  const grandTotal = (() => {
+                    const services = Array.isArray(q.services) ? q.services : [];
+                    let subtotal = services.reduce((sum: number, s: any) => {
+                      const amt = Number(s.amount);
+                      if (!isNaN(amt) && amt > 0) return sum + amt;
+                      return sum + Number(s.quantity || 1) * Number(s.price || 0);
+                    }, 0);
+                    if (q._type === "service" && q.extraCharges) {
+                      subtotal += Number(q.extraCharges.transportation || 0);
+                      subtotal += Number(q.extraCharges.lodging || 0);
+                      subtotal += Number(q.extraCharges.boarding || 0);
+                      subtotal += Number(q.extraCharges.minimumVisit || 0);
+                    }
+                    const gst = (subtotal * Number(q.gstPercentage ?? 18)) / 100;
+                    return subtotal + gst;
+                  })();
+
+                  return (
+                    <tr key={q._id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 font-medium text-primary-700">
+                        <div className="flex items-center gap-2">
+                          <FileText size={14} className="text-primary-400" />
+                          {q.quotationNo || "—"}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">{getCustomerName(q.customerId)}</td>
+                      <td className="px-4 py-3 text-gray-600">{fmt(q.date)}</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          q._type === "training" ? "bg-primary-100 text-primary-700" : "bg-blue-100 text-blue-700"
+                        }`}>
+                          {q._type === "training" ? "Training" : "Service"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right font-semibold text-gray-800">
+                        ₹{grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => navigate(`/admin/quotations/${q._type}/${q._id}/print`)}
+                            className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                            title="View / Print"
+                          >
+                            <Eye size={15} />
+                          </button>
+                          <button
+                            onClick={() => navigate(`/admin/quotations/${q._type}/${q._id}/edit`)}
+                            className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
+                            title="Edit"
+                          >
+                            <Pencil size={15} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(q._id, q._type)}
+                            className="p-1.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {!isLoading && totalPages > 1 && (
+          <div className="px-4 py-3 border-t border-gray-100">
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              limit={limit}
+              onPageChange={setPage}
+              onLimitChange={(l) => { setLimit(l); setPage(1); }}
             />
           </div>
-
-          {search && (
-            <button
-              onClick={() => {
-                setSearch("");
-                setPage(1);
-              }}
-              className="flex items-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-2xl text-sm font-bold hover:bg-red-100 transition-all whitespace-nowrap"
-            >
-              Clear
-            </button>
-          )}
-        </div>
-
-        {/* Table */}
-        <div className="overflow-x-auto min-h-[400px]">
-          <table className="w-full text-xs">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                {[
-                  "Quote No.",
-                  "Date",
-                  "Type",
-                  "Customer",
-                  "Amount (₹)",
-                  "Actions",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={8} className="px-4 py-24 text-center">
-                    <div className="flex flex-col items-center gap-3">
-                      <Loader2
-                        className="animate-spin text-primary-600"
-                        size={32}
-                      />
-                      <p className="text-xs font-bold text-gray-500 animate-pulse">
-                        Fetching latest records...
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              ) : paginated.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="px-4 py-24 text-center">
-                    <div className="flex flex-col items-center gap-4 max-w-xs mx-auto text-center">
-                      <div className="p-5 bg-gray-50 rounded-full text-gray-400">
-                        <Search size={32} />
-                      </div>
-                      <div>
-                        <h4 className="text-base font-bold text-gray-800">
-                          No quotations found
-                        </h4>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Try adjusting your search or create a new{" "}
-                          {activeInfo.label.toLowerCase()} quotation.
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                paginated.map((q) => (
-                  <tr
-                    key={q._id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    {/* Quote No */}
-                    <td className="px-4 py-3 font-mono font-bold text-blue-700">
-                      {q.quotationNo || "—"}
-                    </td>
-
-                    {/* Date */}
-                    <td className="px-4 py-3 text-gray-600">{fmt(q.date)}</td>
-
-                    {/* Type */}
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                          q._type === "training"
-                            ? "bg-primary-100 text-primary-700"
-                            : "bg-blue-100 text-blue-700"
-                        }`}
-                      >
-                        {q._type === "training" ? "Training" : "Service"}
-                      </span>
-                    </td>
-
-                    {/* Customer */}
-                    <td className="px-4 py-3 text-gray-700 font-medium">
-                      {getCustomerName(q.customerId)}
-                    </td>
-
-                    {/* Amount */}
-                    <td className="px-4 py-3 font-semibold text-gray-900">
-                      ₹
-                      {(() => {
-                        const services = Array.isArray(q.services) ? q.services : [];
-                        let subtotal = services.reduce((sum: number, s: any) => {
-                          const amt = Number(s.amount);
-                          if (!isNaN(amt) && amt > 0) return sum + amt;
-                          const qty = Number(s.quantity || 1);
-                          const prc = Number(s.price || 0);
-                          return sum + (qty * prc);
-                        }, 0);
-
-                        if (q._type === "service" && q.extraCharges) {
-                          const extras = q.extraCharges;
-                          subtotal += Number(extras.transportation || 0);
-                          subtotal += Number(extras.lodging || 0);
-                          subtotal += Number(extras.boarding || 0);
-                          subtotal += Number(extras.minimumVisit || 0);
-                        }
-
-                        const gstPercentage = Number(q.gstPercentage ?? 18);
-                        const gstAmount = (subtotal * gstPercentage) / 100;
-                        const grandTotal = subtotal + gstAmount;
-                        return grandTotal;
-                      })().toLocaleString("en-IN", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </td>
-
-                    {/* Actions */}
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() =>
-                            navigate(
-                              `/admin/quotations/${q._type}/${q._id}/print`,
-                            )
-                          }
-                          className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                          title="View"
-                        >
-                          <Eye size={13} />
-                        </button>
-                        <button
-                          onClick={() =>
-                            navigate(
-                              `/admin/quotations/${q._type}/${q._id}/edit`,
-                            )
-                          }
-                          className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <Pencil size={13} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(q._id, q._type)}
-                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <Pagination
-          page={page}
-          totalPages={totalPages}
-          total={total}
-          limit={limit}
-          onPageChange={setPage}
-          onLimitChange={(l) => {
-            setLimit(l);
-            setPage(1);
-          }}
-        />
+        )}
       </div>
     </div>
   );
