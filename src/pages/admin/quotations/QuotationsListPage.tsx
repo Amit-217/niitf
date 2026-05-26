@@ -379,8 +379,31 @@ export const QuotationsListPage: React.FC = () => {
                     {/* Amount */}
                     <td className="px-4 py-3 font-semibold text-gray-900">
                       ₹
-                      {(q.totalAmount || 0).toLocaleString("en-IN", {
+                      {(() => {
+                        const services = Array.isArray(q.services) ? q.services : [];
+                        let subtotal = services.reduce((sum: number, s: any) => {
+                          const amt = Number(s.amount);
+                          if (!isNaN(amt) && amt > 0) return sum + amt;
+                          const qty = Number(s.quantity || 1);
+                          const prc = Number(s.price || 0);
+                          return sum + (qty * prc);
+                        }, 0);
+
+                        if (q._type === "service" && q.extraCharges) {
+                          const extras = q.extraCharges;
+                          subtotal += Number(extras.transportation || 0);
+                          subtotal += Number(extras.lodging || 0);
+                          subtotal += Number(extras.boarding || 0);
+                          subtotal += Number(extras.minimumVisit || 0);
+                        }
+
+                        const gstPercentage = Number(q.gstPercentage ?? 18);
+                        const gstAmount = (subtotal * gstPercentage) / 100;
+                        const grandTotal = subtotal + gstAmount;
+                        return grandTotal;
+                      })().toLocaleString("en-IN", {
                         minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
                       })}
                     </td>
 

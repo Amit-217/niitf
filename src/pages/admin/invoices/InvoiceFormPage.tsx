@@ -36,8 +36,10 @@ const defaultForm = {
   dueDate: "",
   subject: "",
   deliveryNote: "",
+  deliveryNoteDate: "",
   supplierRef: "",
   buyerOrderNo: "",
+  buyerOrderDate: "",
   documentNo: "",
   dispatchedThrough: "",
   destination: "",
@@ -239,6 +241,12 @@ export const InvoiceFormPage: React.FC = () => {
             : defaultForm.date,
           dueDate: inv.dueDate
             ? new Date(inv.dueDate).toISOString().slice(0, 10)
+            : "",
+          buyerOrderDate: inv.buyerOrderDate
+            ? new Date(inv.buyerOrderDate).toISOString().slice(0, 10)
+            : "",
+          deliveryNoteDate: inv.deliveryNoteDate
+            ? new Date(inv.deliveryNoteDate).toISOString().slice(0, 10)
             : "",
           cgst: inv.cgst || { rate: 9, amount: 0 },
           sgst: inv.sgst || { rate: 9, amount: 0 },
@@ -504,7 +512,7 @@ export const InvoiceFormPage: React.FC = () => {
               )}
             </div>
           </div>
-          <div className="md:col-span-2 lg:col-span-3">
+          {/* <div className="md:col-span-2 lg:col-span-3">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Subject
             </label>
@@ -514,7 +522,7 @@ export const InvoiceFormPage: React.FC = () => {
               onChange={(e) => setField("subject", e.target.value)}
               placeholder="Invoice subject"
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -524,10 +532,62 @@ export const InvoiceFormPage: React.FC = () => {
           Reference Information
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Delivery Note
+            </label>
+            <input
+              className="input-field w-full"
+              value={form.deliveryNote}
+              onChange={(e) => setField("deliveryNote", e.target.value)}
+              placeholder="Delivery Note"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Delivery Note Date
+            </label>
+            <input
+              type="date"
+              className="input-field w-full"
+              value={form.deliveryNoteDate}
+              onChange={(e) => setField("deliveryNoteDate", e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Supplier's Ref
+            </label>
+            <input
+              className="input-field w-full"
+              value={form.supplierRef}
+              onChange={(e) => setField("supplierRef", e.target.value)}
+              placeholder="Supplier's Ref"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Buyer's Order No
+            </label>
+            <input
+              className="input-field w-full"
+              value={form.buyerOrderNo}
+              onChange={(e) => setField("buyerOrderNo", e.target.value)}
+              placeholder="Buyer's Order No"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Buyer's Order Date
+            </label>
+            <input
+              type="date"
+              className="input-field w-full"
+              value={form.buyerOrderDate}
+              onChange={(e) => setField("buyerOrderDate", e.target.value)}
+            />
+          </div>
           {[
-            { label: "Delivery Note", key: "deliveryNote" },
-            { label: "Supplier's Ref", key: "supplierRef" },
-            { label: "Buyer's Order No", key: "buyerOrderNo" },
             { label: "Document No", key: "documentNo" },
             { label: "Dispatched Through", key: "dispatchedThrough" },
             { label: "Destination", key: "destination" },

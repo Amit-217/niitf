@@ -4,51 +4,47 @@ import { getInvoiceById } from "../../../api/invoiceApi";
 import { getCustomerById } from "../../../api/customerApi";
 
 const PRINT_STYLES = `
-  @page { size: A4 portrait; margin: 2mm 8mm; }
+  @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
+  
   @media screen { 
     body.autoprint-mode { background: #fff !important; }
-    body.autoprint-mode > #root > *:not(.print-footer-fixed):not(.print-fixed-footer) { opacity: 0 !important; visibility: hidden !important; }
+    body.autoprint-mode > #root > * { opacity: 0 !important; visibility: hidden !important; }
+    .invoice-page { margin: 0 auto 16px auto; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
   }
+  
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; }
     #invoice-root { background: #fff !important; padding: 0 !important; }
-    #invoice-root > div {
-      width: 100% !important; min-height: auto !important;
-      margin: 0 !important; padding: 0 !important;
-      box-sizing: border-box !important; box-shadow: none !important;
+    .invoice-page { 
+      height: 296mm; 
+      margin: 0 !important; 
+      box-shadow: none !important; 
+      break-after: page; 
+      page-break-after: always; 
     }
-    .screen-footer { display: none !important; }
-    .print-footer-fixed {
-      display: block !important;
-      position: fixed !important;
-      bottom: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      margin: 0 !important;
-      right: 0 !important;
-      background: #fff !important;
-      z-index: 999999 !important;
-      contain: layout !important;
-      pointer-events: none !important;
-      transform: translateZ(0);
-      will-change: transform;
-    }
-    .print-footer-fixed-inner {
-      padding: 0 !important;
-    }
-    .tfoot-spacer { display: table-footer-group !important; }
-    tr { page-break-inside: avoid; break-inside: avoid; }
+    .invoice-page:last-child { break-after: auto; page-break-after: auto; }
+    .invoice-page-content { overflow: visible !important; }
   }
-  @media screen {
-    .print-footer-fixed { display: none !important; }
-    .tfoot-spacer { display: none !important; }
-    .screen-footer { display: block; }
-  }
+  
   body { font-family: 'Times New Roman', Times, serif; font-size: 13px; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
+
+  .invoice-page {
+    width: 210mm;
+    height: 297mm;
+    background: #fff;
+    box-sizing: border-box;
+    padding: 0 5mm 5mm 5mm;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .invoice-page-content { flex: 1 1 auto; }
+  .invoice-page-footer { margin-top: auto; }
+
   table { border-collapse: collapse; width: 100%; }
   .outer-border { border: none; }
   .cell { border: 1px solid #000; padding: 3px 5px; vertical-align: top; }
@@ -57,7 +53,7 @@ const PRINT_STYLES = `
   .bold { font-weight: bold; }
   .red { color: #000; }
   .blue { color: #0000cc; }
-  .title { font-size: 18px; font-weight: bold; text-align: center; letter-spacing: 4px; padding: 4px 0; }
+  .title { font-size: 18px; font-weight: bold; text-align: center; letter-spacing: 4px; padding: 0px 0;}
   .company-name { font-weight: bold; font-size: 14px; }
   .field-label { font-size: 13px; color: #555; }
   .field-value { font-size: 14px; }
@@ -71,19 +67,94 @@ const PRINT_STYLES = `
   .summary-label { flex: 1; text-align: right; padding: 2px 6px; font-size: 13px; border-right: 1px solid #000; }
   .summary-value { width: 100px; text-align: right; padding: 2px 6px; font-size: 13px; }
   .amount-words { color: #000; font-weight: bold; font-size: 13px; }
-  .sig-cell { border: 1px solid #000; padding: 5px; height: 60px; vertical-align: top; page-break-inside: avoid; break-inside: avoid; }
+  .sig-cell { border: 1px solid #000; padding: 5px; height: 60px; vertical-align: top; }
   .footer-note { text-align: center; font-size: 11px; color: #555; padding: 3px; border-top: 1px solid #000; }
-  .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 140px; height: 90px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
-  .logo-box img { width: 130px; height: 80px; object-fit: contain; }
-  .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
-  .inv-foot { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 1px solid #185FA5; line-height: 1.4; text-align: center; }
-  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
-  .footer-meta span { color: #fff; font-weight: 700; }
+  
+  /* Unified Header & Footer Styles */
+  .rpt-header { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    padding: 2px 8px; 
+    margin-bottom: 0; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    background: #fff !important;
+  }
+  .logo-box { 
+    width: 160px; 
+    height: 100px; 
+    background: #fff; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    flex-shrink: 0; 
+    overflow: hidden; 
+    transform: translateY(-4px); 
+    margin-top: 2px; 
+  }
+  .logo-box img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: contain; 
+  }
+  .hdr-center { 
+    flex: 1; 
+    text-align: center; 
+    color: #0C447C !important; 
+  }
+  .hdr-center .org { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    font-size: 22px !important; 
+    font-weight: 700 !important; 
+    letter-spacing: 0.2px; 
+    text-transform: uppercase; 
+    color: #0C447C !important;
+  }
+  .hdr-center .sub { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    font-size: 10px !important; 
+    color: #374151 !important; 
+    margin-top: 2px; 
+    line-height: 1.4; 
+  }
+  .hdr-center .iso { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    font-size: 10px !important; 
+    color: #0C447C !important; 
+    font-weight: 700 !important; 
+    margin-top: 2px; 
+  }
+  .inv-foot, .footer { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    background: #f8fafc !important; 
+    padding: 6px 10px !important; 
+    font-size: 10px !important; 
+    color: #4b5563 !important; 
+    margin-top: 8px; 
+    border-top: 3px solid #185FA5 !important; 
+    line-height: 1.4 !important; 
+    text-align: center !important; 
+  }
+  .footer-meta { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    background: #185FA5 !important; 
+    color: #d7e8fb !important; 
+    font-size: 9px !important; 
+    text-align: center !important; 
+    padding: 3px 8px !important; 
+    border: none !important;
+  }
+  .footer-meta span { 
+    color: #fff !important; 
+    font-weight: 700 !important; 
+  }
   .hsn-table.outer-border, .hsn-table.outer-border thead tr:first-child th { border-top: 1px solid #000 !important; }
+
+  /* Prevent bad splits on print */
+  .outer-border, .hsn-table, .sig-cell, .gst-inner-table, .footer-note, .inv-foot, .footer-meta, tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 `;
 
 function fmtDate(d?: string | null) {
@@ -98,6 +169,23 @@ function fmtNum(n?: number | null) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+}
+
+type InvoiceItem = {
+  description?: string;
+  hsnSac?: string;
+  quantity?: number | string;
+  unit?: string;
+  unitPrice?: number | null;
+  amount?: number | null;
+};
+
+// Height estimation utilities in millimeters
+function estimateItemRowHeight(item: InvoiceItem): number {
+  const baseHeight = 8; // mm for single-line row
+  const desc = item.description || "";
+  const lines = Math.max(1, Math.ceil(desc.length / 40));
+  return baseHeight + (lines - 1) * 4.5;
 }
 
 export const InvoicePrintPage: React.FC = () => {
@@ -143,13 +231,11 @@ export const InvoicePrintPage: React.FC = () => {
     if (!isLoading && data && isAutoPrint) {
       document.body.classList.add("autoprint-mode");
       const t = setTimeout(() => {
-        // Trigger multiple reflows to "wake up" the rendering engine
         window.scrollTo(0, 10);
         window.scrollTo(0, document.body.scrollHeight);
         window.scrollTo(0, 1);
         window.scrollTo(0, 0);
 
-        // Force a tiny delay after scrolling before printing
         requestAnimationFrame(() => {
           window.print();
           document.body.classList.remove("autoprint-mode");
@@ -165,11 +251,10 @@ export const InvoicePrintPage: React.FC = () => {
     );
   }
 
-  const items: any[] = Array.isArray(data.items) ? data.items : [];
+  const items: InvoiceItem[] = Array.isArray(data.items) ? data.items : [];
 
-  // Build HSN/SAC tax summary rows (group by hsnSac)
   const hsnMap: Record<string, { taxable: number }> = {};
-  items.forEach((it: any) => {
+  items.forEach((it) => {
     const code = it.hsnSac || "—";
     if (!hsnMap[code]) hsnMap[code] = { taxable: 0 };
     hsnMap[code].taxable += it.amount || 0;
@@ -196,7 +281,7 @@ export const InvoicePrintPage: React.FC = () => {
   const InvoiceHeader = () => (
     <div className="rpt-header">
       <div className="logo-box">
-        <img src="/logo.png" alt="NIIT Logo" />
+        <img src="/logo.jpeg" alt="NIIT Logo" />
       </div>
       <div className="hdr-center">
         <div className="org">National Industrial Inspection and Training</div>
@@ -228,6 +313,465 @@ export const InvoicePrintPage: React.FC = () => {
       </div>
     </>
   );
+
+  const renderInvoiceDetails = () => (
+    <>
+      <div className="title" style={{ marginBottom: 0 }}>INVOICE</div>
+      <table className="outer-border" style={{ tableLayout: "fixed", width: "100%", borderCollapse: "collapse" }}>
+        <tbody>
+          <tr>
+            <td style={{ width: "40%", padding: 0, verticalAlign: "top", height: "1px" }}>
+              <table style={{ width: "100%", height: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                <tbody>
+                  <tr>
+                    <td className="cell" style={{ padding: "6px 5px", verticalAlign: "top", borderRight: "none", border: "1px solid #444" }}>
+                      <div className="company-name" style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.35, marginBottom: 2 }}>
+                        National Industrial Inspection And Training
+                      </div>
+                      <div style={{ fontSize: 13, lineHeight: 1.2 }}>
+                        Plot NO-PAP-3/28 Behind BSNL Office<br />
+                        MIDC, Baramati Pin -413133<br />
+                        GST No.: 27ABJPK8603R1ZY<br />
+                        State: Maharashtra Code: 27<br />
+                        CONTACT: 8600508524, 9421606761<br />
+                        E-Mail: niit004@gmail.com
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="cell" style={{ padding: "0px 5px", borderRight: "none", border: "1px solid #444", borderBottom: "none", marginTop: "-2px", height: "100%" }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, textDecoration: "underline", marginBottom: 1 }}>Buyer:</span>
+                      <span> </span>
+                      <span className="bold red" style={{ fontSize: 14, marginBottom: 1 }}> {customer?.companyName || "—"}</span>
+                      {customer?.address && <div className="red" style={{ fontSize: 13, lineHeight: 1.2 }}>{customer.address}</div>}
+                      {customer?.city && <div className="red" style={{ fontSize: 13, lineHeight: 1.2 }}>City-{customer.city}</div>}
+                      {(customer?.state || customer?.stateCode) && (
+                        <div className="red" style={{ fontSize: 13, lineHeight: 1.2 }}>
+                          {customer?.state && `State: ${customer.state}`} | {customer?.stateCode && `Code: ${customer.stateCode}`}
+                        </div>
+                      )}
+                      <div className="red" style={{ fontSize: 13, lineHeight: 1.2 }}>GST No: {customer?.gstNo || ""}</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td style={{ width: "60%", padding: 0, verticalAlign: "top", height: "1px" }}>
+              <table style={{ width: "100%", height: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                <tbody>
+                  <tr>
+                    <td className="cell" style={{ width: "50%", padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
+                      <span className="field-label">Invoice No:</span> <span className="bold">{data.invoiceNo}</span>
+                    </td>
+                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
+                      <span className="field-label">Dated:</span> <span className="bold red">{fmtDate(data.date)}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
+                      <span className="field-label">Delivery Note:</span> {data.deliveryNote || ""}
+                    </td>
+                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
+                      <span className="field-label">Terms Of Delivery:</span> {data.termsOfDelivery || ""}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
+                      <span className="field-label">Supplier's Ref:</span> {data.supplierRef || ""}
+                    </td>
+                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
+                      <span className="field-label">Other Reference(s):</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
+                      <span className="field-label">Buyer's Order No:</span> {data.buyerOrderNo || ""}
+                    </td>
+                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
+                      <span className="field-label">Dated:</span> {data.buyerOrderDate ? fmtDate(data.buyerOrderDate) : ""}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
+                      <span className="field-label">Document No:</span> {data.documentNo || ""}
+                    </td>
+                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
+                      <span className="field-label">Delivery Note Date:</span> {data.deliveryNoteDate ? fmtDate(data.deliveryNoteDate) : ""}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
+                      <span className="field-label">Dispatched Through:</span> {data.dispatchedThrough || ""}
+                    </td>
+                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
+                      <span className="field-label">Destination:</span> <span className="bold red">{data.destination || ""}</span>
+                    </td>
+                  </tr>
+                  <tr style={{ height: "100%" }}>
+                    <td className="cell" colSpan={2} style={{ padding: "8px 10px", fontSize: 13, height: "100%", minHeight: "90px", verticalAlign: "top", border: "1px solid #444", borderBottom: "none" }}>
+                      <span className="field-label" style={{ color: "#555", fontWeight: 500 }}>Mode/Terms of Payment:</span> <span className="bold">{paymentTermsLabel}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </>
+  );
+
+  const renderItemsTable = (pageItems: InvoiceItem[], startIndex: number, showTotal: boolean) => (
+    <table className="outer-border" style={{ marginTop: "-1px" }}>
+      <thead>
+        <tr>
+          <th className="items-th" style={{ width: "6%" }}>SR</th>
+          <th className="items-th" style={{ width: "42%" }}>Description of work</th>
+          <th className="items-th" style={{ width: "12%" }}>HSN/SAC</th>
+          <th className="items-th" style={{ width: "10%" }}>Quantity</th>
+          <th className="items-th" style={{ width: "15%" }}>Rate</th>
+          <th className="items-th" style={{ width: "15%" }}>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {pageItems.map((it, idx: number) => (
+          <tr key={`${startIndex}-${idx}`}>
+            <td className="items-td-center">{startIndex + idx + 1}</td>
+            <td className="items-td red">{it.description}</td>
+            <td className="items-td-center">{it.hsnSac || "—"}</td>
+            <td className="items-td-center">{it.quantity} {it.unit || "Nos"}.</td>
+            <td className="items-td-right">{fmtNum(it.unitPrice)}</td>
+            <td className="items-td-right">{fmtNum(it.amount)}</td>
+          </tr>
+        ))}
+        {pageItems.length === 0 && showTotal && Array.from({ length: 4 }).map((_, i) => (
+          <tr key={`blank-${i}`} style={{ height: 26 }}>
+            <td className="items-td-center"></td><td className="items-td"></td><td className="items-td-center"></td><td className="items-td-center"></td><td className="items-td-right"></td><td className="items-td-right"></td>
+          </tr>
+        ))}
+        {showTotal && (
+          <tr>
+            <td className="items-td-right bold" colSpan={5} style={{ textAlign: "right" }}>Total</td>
+            <td className="items-td-right bold">&#8377; {fmtNum(data.subtotal)}</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  );
+
+  const renderTaxSection = () => (
+    <table className="outer-border" style={{ marginTop: "-1px" }}>
+      <tbody>
+        <tr>
+          <td style={{ width: "55%", verticalAlign: "top", borderLeft: "1px solid #000", borderBottom: "1px solid #000" }}></td>
+          <td style={{ width: "45%", padding: 0, verticalAlign: "top", borderBottom: "1px solid #000" }}>
+            <table className="gst-inner-table" style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+              <tbody>
+                {cgstRate > 0 && (
+                  <tr>
+                    <td className="gst-label" style={{ borderRight: "1px solid #000" }}>SALES SGST {sgstRate}%</td>
+                    <td className="gst-value" style={{ width: "140px" }}>{sgstAmt > 0 ? fmtNum(sgstAmt) : "XXXXX"}</td>
+                  </tr>
+                )}
+                {sgstRate > 0 && (
+                  <tr>
+                    <td className="gst-label" style={{ borderRight: "1px solid #000" }}>SALES CGST {cgstRate}%</td>
+                    <td className="gst-value" style={{ width: "140px" }}>{cgstAmt > 0 ? fmtNum(cgstAmt) : "XXXXX"}</td>
+                  </tr>
+                )}
+                {igstRate > 0 && (
+                  <tr>
+                    <td className="gst-label" style={{ borderRight: "1px solid #000" }}>SALES IGST {igstRate}%</td>
+                    <td className="gst-value" style={{ width: "140px" }}>{igstAmt > 0 ? fmtNum(igstAmt) : "XXXXX"}</td>
+                  </tr>
+                )}
+                {data.showTotalAmounts !== false && (
+                  <tr>
+                    <td className="gst-label bold" style={{ borderTop: "1px solid #000", borderRight: "1px solid #000" }}>Total Amounts</td>
+                    <td className="gst-value bold red" style={{ borderTop: "1px solid #000", width: "140px" }}>{fmtNum(data.subtotal ?? data.totalAmount)}</td>
+                  </tr>
+                )}
+                {data.transportationCharges > 0 && (
+                  <tr>
+                    <td className="gst-label" style={{ borderTop: "1px solid #000", borderRight: "1px solid #000" }}>Transportation Charges</td>
+                    <td className="gst-value red" style={{ borderTop: "1px solid #000", width: "140px" }}>{fmtNum(data.transportationCharges)}</td>
+                  </tr>
+                )}
+                <tr>
+                  <td className="gst-label bold" style={{ borderTop: "1px solid #000", borderRight: "1px solid #000" }}>Grand Total</td>
+                  <td className="gst-value bold red" style={{ borderTop: "1px solid #000", width: "140px" }}>&#8377; {fmtNum(data.grandTotal)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+
+  const renderAmountWords = () => (
+    <table className="outer-border" style={{ marginTop: "-1px" }}>
+      <tbody>
+        <tr>
+          <td className="cell" style={{ fontSize: 13 }}>
+            <span style={{ fontStyle: "italic" }}>Total Amounts Chargeable (In word) – </span>
+            <span className="amount-words">{data.amountInWords || "—"}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+
+  const renderHsnTable = (
+    pageHsnRows: Array<[string, { taxable: number }]>,
+    showHsnTotal: boolean
+  ) => (
+    <table className="outer-border hsn-table" style={{ marginTop: "-1px" }}>
+      <thead>
+        <tr>
+          <th className="items-th" rowSpan={2}>HSN /SAC</th>
+          <th className="items-th" rowSpan={2}>Taxable<br />Value</th>
+          <th className="items-th" colSpan={2}>CGST</th>
+          <th className="items-th" colSpan={2}>SGST</th>
+          <th className="items-th" colSpan={2}>IGST</th>
+          <th className="items-th" rowSpan={2}>Total<br />Tax Amount</th>
+        </tr>
+        <tr>
+          <th className="items-th">Rate</th><th className="items-th">Amount</th>
+          <th className="items-th">Rate</th><th className="items-th">Amount</th>
+          <th className="items-th">Rate</th><th className="items-th">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {pageHsnRows.map(([code, { taxable }]) => {
+          const cAmt = Number(((taxable * cgstRate) / 100).toFixed(2));
+          const sAmt = Number(((taxable * sgstRate) / 100).toFixed(2));
+          const iAmt = Number(((taxable * igstRate) / 100).toFixed(2));
+          return (
+            <tr key={code}>
+              <td className="items-td-center">{code}</td>
+              <td className="items-td-right">{fmtNum(taxable)}</td>
+              <td className="items-td-center">{cgstRate > 0 ? `${cgstRate}%` : ""}</td>
+              <td className="items-td-right">{cgstRate > 0 ? fmtNum(cAmt) : ""}</td>
+              <td className="items-td-center">{sgstRate > 0 ? `${sgstRate}%` : ""}</td>
+              <td className="items-td-right">{sgstRate > 0 ? fmtNum(sAmt) : ""}</td>
+              <td className="items-td-center">{igstRate > 0 ? `${igstRate}%` : ""}</td>
+              <td className="items-td-right">{igstRate > 0 ? fmtNum(iAmt) : ""}</td>
+              <td className="items-td-right">{fmtNum(cAmt + sAmt + iAmt)}</td>
+            </tr>
+          );
+        })}
+        {showHsnTotal && (
+          <tr className="bold">
+            <td className="items-td-center">Total</td>
+            <td className="items-td-right">{fmtNum(totalTaxable)}</td>
+            <td className="items-td-center"></td>
+            <td className="items-td-right">{cgstRate > 0 ? fmtNum(cgstAmt) : ""}</td>
+            <td className="items-td-center"></td>
+            <td className="items-td-right">{sgstRate > 0 ? fmtNum(sgstAmt) : ""}</td>
+            <td className="items-td-center"></td>
+            <td className="items-td-right">{igstRate > 0 ? fmtNum(igstAmt) : ""}</td>
+            <td className="items-td-right">{fmtNum(totalTaxAmt)}</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  );
+
+  const renderHsnTaxWords = () => (
+    <table className="outer-border" style={{ marginTop: "-1px" }}>
+      <tbody>
+        <tr>
+          <td className="cell" style={{ fontSize: 13 }}>
+            <span style={{ fontStyle: "italic" }}>Tax Amount (In Words): </span>
+            <span className="bold red">{data.taxAmountInWords || "Indian Rupees"}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+
+  const renderDeclarationSection = () => (
+    <table className="outer-border" style={{ marginTop: "-1px" }}>
+      <tbody>
+        <tr>
+          <td className="cell" style={{ width: "50%", fontSize: 13, verticalAlign: "top" }}>
+            <div className="bold" style={{ marginBottom: 3 }}>Declaration</div>
+            <div>{data.notes || "We declare that this invoice shows the actual price of the testing work described and that all particulars are true and correct"}</div>
+          </td>
+          <td className="cell" style={{ width: "50%", fontSize: 13, verticalAlign: "top" }}>
+            <div className="bold" style={{ marginBottom: 3 }}>Company Bank Details</div>
+            <div>
+              <span>Bank : {data.bankDetails?.bankName || "State Bank of India"}</span>
+              <span style={{ marginLeft: "20px" }}>A/c No.: {data.bankDetails?.accountNumber || "35005963456"}</span>
+            </div>
+            <div>
+              <span>Branch: {data.bankDetails?.branch || "Baramati MIDC"}</span>
+              <span style={{ marginLeft: "20px" }}>IFSC: {data.bankDetails?.ifscCode || "SBIN0014727"}</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+
+  const renderSignatureSection = () => (
+    <>
+      <table className="outer-border" style={{ marginTop: "-1px" }}>
+        <tbody>
+          <tr>
+            <td className="sig-cell" style={{ fontSize: 13, verticalAlign: "bottom", width: "50%" }}>Customer's Seal And Signature</td>
+            <td className="sig-cell" style={{ fontSize: 13, verticalAlign: "top", textAlign: "center", width: "50%" }}>
+              <div>National Industrial Inspection And Training</div>
+              <div style={{ marginTop: 28, fontSize: 13 }}>Authorized Signatory</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div className="footer-note">This is a Computer generated invoice.</div>
+    </>
+  );
+
+  // Dynamic pagination block layout engine
+  const PAGE_HEIGHT_LIMIT = 288; // mm
+  const HEADER_HEIGHT = 28; // mm
+  const FOOTER_HEIGHT = 22; // mm
+  const DETAILS_HEIGHT = 60; // mm
+  const TABLE_HEADER_HEIGHT = 8; // mm
+  const HSN_HEADER_HEIGHT = 10; // mm
+
+  type ContentBlock =
+    | { type: "item"; item: InvoiceItem; height: number }
+    | { type: "table-total"; height: number }
+    | { type: "tax"; height: number }
+    | { type: "amount-words"; height: number }
+    | { type: "hsn-row"; code: string; taxable: number; height: number }
+    | { type: "hsn-total"; height: number }
+    | { type: "final-section"; height: number };
+
+  const blocks: ContentBlock[] = [];
+
+  // 1. Pack items
+  items.forEach((item) => {
+    blocks.push({
+      type: "item",
+      item,
+      height: estimateItemRowHeight(item),
+    });
+  });
+
+  // 2. Pack items table total
+  blocks.push({
+    type: "table-total",
+    height: 8,
+  });
+
+  // 3. Pack Tax / GST summary
+  let gstRows = 0;
+  if (sgstRate > 0) gstRows++;
+  if (cgstRate > 0) gstRows++;
+  if (igstRate > 0) gstRows++;
+  if (data.showTotalAmounts !== false) gstRows++;
+  if ((data.transportationCharges || 0) > 0) gstRows++;
+  gstRows++; // Grand Total row
+  const taxHeight = 8 + gstRows * 5.2;
+  blocks.push({
+    type: "tax",
+    height: taxHeight,
+  });
+
+  // 4. Pack Amount Words
+  blocks.push({
+    type: "amount-words",
+    height: 8,
+  });
+
+  // 5. Pack HSN rows individually
+  hsnRows.forEach(([code, { taxable }]) => {
+    blocks.push({
+      type: "hsn-row",
+      code,
+      taxable,
+      height: 6,
+    });
+  });
+
+  // 5b. Pack HSN total row + HSN tax words block
+  blocks.push({
+    type: "hsn-total",
+    height: 14,
+  });
+
+  // 6. Pack Declaration
+blocks.push({
+  type: "final-section",
+  height: 50,
+});
+
+  type PageDescriptor = {
+    isFirstPage: boolean;
+    pageBlocks: ContentBlock[];
+  };
+
+  const pages: PageDescriptor[] = [];
+  let currentBlockIndex = 0;
+
+  while (currentBlockIndex < blocks.length) {
+    const isFirstPage = pages.length === 0;
+    
+    // Available height budget for this page
+    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT;
+    if (isFirstPage) {
+      availableHeight -= DETAILS_HEIGHT;
+    }
+    
+    const pageBlocks: ContentBlock[] = [];
+    let accumulatedHeight = 0;
+    let hasItemsTable = false;
+    let hasHsnTable = false;
+    
+    while (currentBlockIndex < blocks.length) {
+      const block = blocks[currentBlockIndex];
+      let blockHeight = block.height;
+      
+      // Account for the table header height if starting a new items table on this page
+      if ((block.type === "item" || block.type === "table-total") && !hasItemsTable) {
+        blockHeight += TABLE_HEADER_HEIGHT;
+      }
+
+      // Account for HSN header height if starting HSN table on this page
+      if ((block.type === "hsn-row" || block.type === "hsn-total") && !hasHsnTable) {
+        blockHeight += HSN_HEADER_HEIGHT;
+      }
+      
+      if (accumulatedHeight + blockHeight <= availableHeight) {
+        pageBlocks.push(block);
+        accumulatedHeight += blockHeight;
+        if (block.type === "item" || block.type === "table-total") {
+          hasItemsTable = true;
+        }
+        if (block.type === "hsn-row" || block.type === "hsn-total") {
+          hasHsnTable = true;
+        }
+        currentBlockIndex++;
+      } else {
+        break;
+      }
+    }
+    
+    // Fallback: If not even a single block fits, force push the first block to avoid infinite loop
+    if (pageBlocks.length === 0 && currentBlockIndex < blocks.length) {
+      const block = blocks[currentBlockIndex];
+      pageBlocks.push(block);
+      currentBlockIndex++;
+    }
+    
+    pages.push({
+      isFirstPage,
+      pageBlocks,
+    });
+  }
 
   return (
     <>
@@ -266,1043 +810,50 @@ export const InvoicePrintPage: React.FC = () => {
         id="invoice-root"
         style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
       >
-        <div
-          style={{
-            position: "relative",
-            width: "210mm",
-            minHeight: "297mm",
-            margin: "0 auto",
-            background: "#fff",
-            boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-            padding: "0 5mm 35mm 5mm",
-            fontFamily: "'Times New Roman', Times, serif",
-            fontSize: 12,
-            color: "#000",
-            boxSizing: "border-box",
-          }}
-        >
-          {/* Outer table: thead repeats header on every print page */}
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              borderSpacing: 0,
-              margin: 0,
-              padding: 0,
-            }}
-          >
-            <thead style={{ display: "table-header-group" }}>
-              <tr>
-                <td style={{ padding: "0" }}>
-                  <InvoiceHeader />
-                </td>
-              </tr>
-            </thead>
-            <tbody style={{ display: "table-row-group" }}>
-              <tr>
-                <td style={{ padding: 0, verticalAlign: "top" }}>
-                  <div style={{ padding: "0 1mm" }}>
-                    {/* INVOICE TITLE */}
-                    <div
-                      className="title"
-                      style={{
-                        marginBottom: 0,
-                      }}
-                    >
-                      INVOICE
-                    </div>
+        {pages.map(({ isFirstPage, pageBlocks }, i) => {
+          const pageItems = pageBlocks.filter((b): b is Extract<ContentBlock, { type: "item" }> => b.type === "item").map((b) => b.item);
+          const showTotal = pageBlocks.some((b) => b.type === "table-total");
+          const hasTable = pageItems.length > 0 || showTotal;
+          const firstItem = pageItems[0];
+          const startIndex = firstItem ? items.indexOf(firstItem) : 0;
 
-                    {/* ── HEADER SECTION: Left=Company+Buyer stacked, Right=All fields ── */}
-                    <table
-                      className="outer-border"
-                      style={{
-                        tableLayout: "fixed",
-                        width: "100%",
-                        borderCollapse: "collapse",
-                      }}
-                    >
-                      <tbody>
-                        <tr>
-                          {/* LEFT COLUMN */}
-                          <td
-                            style={{
-                              width: "40%",
-                              padding: 0,
-                              verticalAlign: "top",
-                              height: "1px",
-                            }}
-                          >
-                            <table
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                borderCollapse: "collapse",
-                                tableLayout: "fixed",
-                              }}
-                            >
-                              <tbody>
-                                {/* COMPANY INFO */}
-                                <tr>
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      padding: "6px 5px",
-                                      verticalAlign: "top",
-                                      borderRight: "none",
-                                      border: "1px solid #444",
-                                    }}
-                                  >
-                                    <div
-                                      className="company-name"
-                                      style={{
-                                        fontSize: 14,
-                                        fontWeight: 700,
-                                        lineHeight: 1.35,
-                                        marginBottom: 2,
-                                      }}
-                                    >
-                                      National Industrial Inspection And
-                                      Training
-                                    </div>
+          const pageHsnRows = pageBlocks.filter((b): b is Extract<ContentBlock, { type: "hsn-row" }> => b.type === "hsn-row").map((b) => [b.code, { taxable: b.taxable }] as [string, { taxable: number }]);
+          const showHsnTotal = pageBlocks.some((b) => b.type === "hsn-total");
+          const hasHsnTable = pageHsnRows.length > 0 || showHsnTotal;
 
-                                    <div
-                                      style={{
-                                        fontSize: 13,
-                                        lineHeight: 1.2,
-                                      }}
-                                    >
-                                      Plot NO-PAP-3/28 Behind BSNL Office
-                                      <br />
-                                      MIDC, Baramati Pin -413133
-                                      <br />
-                                      GST No.: 27ABJPK8603R1ZY
-                                      <br />
-                                      State: Maharashtra Code: 27
-                                      <br />
-                                      CONTACT: 8600508524, 9421606761
-                                      <br />
-                                      E-Mail: niit004@gmail.com
-                                    </div>
-                                  </td>
-                                </tr>
+          return (
+            <div className="invoice-page" key={i}>
+              <div className="invoice-page-content">
+                <InvoiceHeader />
+                <div style={{ padding: "0 1mm" }}>
+                  {isFirstPage && renderInvoiceDetails()}
+                  {hasTable && renderItemsTable(pageItems, startIndex, showTotal)}
+                  {pageBlocks.map((block, idx) => {
+                    if (block.type === "tax") return <React.Fragment key={idx}>{renderTaxSection()}</React.Fragment>;
+                    if (block.type === "amount-words") return <React.Fragment key={idx}>{renderAmountWords()}</React.Fragment>;
+                    return null;
+                  })}
+                  {hasHsnTable && renderHsnTable(pageHsnRows, showHsnTotal)}
+                  {showHsnTotal && renderHsnTaxWords()}
+                 {pageBlocks.map((block, idx) => {
+                  if (block.type === "final-section")
+                    return (
+                      <React.Fragment key={idx}>
+                        {renderDeclarationSection()}
+                        {renderSignatureSection()}
+                      </React.Fragment>
+                    );
 
-                                {/* BUYER INFO */}
-                                <tr>
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      padding: "0px 5px",
-                                      borderRight: "none",
-                                      border: "1px solid #444",
-                                      borderBottom: "none",
-                                      marginTop: "-2px",
-                                      height: "100%",
-                                    }}
-                                  >
-                                    <span
-                                      style={{
-                                        fontSize: 13,
-                                        fontWeight: 700,
-                                        textDecoration: "underline",
-                                        marginBottom: 1,
-                                      }}
-                                    >
-                                      Buyer:
-                                    </span>
-                                    <span> </span>
-                                    <span
-                                      className="bold red"
-                                      style={{
-                                        fontSize: 14,
-                                        marginBottom: 1,
-                                      }}
-                                    >
-                                      {" "}
-                                      {customer?.companyName || "—"}
-                                    </span>
-
-                                    {customer?.address && (
-                                      <div
-                                        className="red"
-                                        style={{
-                                          fontSize: 13,
-                                          lineHeight: 1.2,
-                                        }}
-                                      >
-                                        {customer.address}
-                                      </div>
-                                    )}
-
-                                    {customer?.city && (
-                                      <div
-                                        className="red"
-                                        style={{
-                                          fontSize: 13,
-                                          lineHeight: 1.2,
-                                        }}
-                                      >
-                                        City-{customer.city}
-                                      </div>
-                                    )}
-
-                                    {(customer?.state ||
-                                      customer?.stateCode) && (
-                                      <div
-                                        className="red"
-                                        style={{
-                                          fontSize: 13,
-                                          lineHeight: 1.2,
-                                        }}
-                                      >
-                                        {customer?.state &&
-                                          `State: ${customer.state}`}{" "}
-                                        |
-                                        {customer?.state &&
-                                          customer?.stateCode &&
-                                          " "}{" "}
-                                        {customer?.stateCode &&
-                                          `Code: ${customer.stateCode}`}
-                                      </div>
-                                    )}
-
-                                    <div
-                                      className="red"
-                                      style={{
-                                        fontSize: 13,
-                                        lineHeight: 1.2,
-                                      }}
-                                    >
-                                      GST No: {customer?.gstNo || ""}
-                                    </div>
-                                    <div
-                                      className="red"
-                                      style={{
-                                        fontSize: 13,
-                                        lineHeight: 1.2,
-                                      }}
-                                    >
-                                      Contact Person:{" "}
-                                      {customer?.contactPerson || ""}
-                                    </div>
-                                    <div
-                                      className="red"
-                                      style={{
-                                        fontSize: 13,
-                                        lineHeight: 1.2,
-                                      }}
-                                    >
-                                      Contact: {customer?.mobile || ""}
-                                    </div>
-                                    <div
-                                      className="red"
-                                      style={{
-                                        fontSize: 13,
-                                        lineHeight: 1.2,
-                                      }}
-                                    >
-                                      Email: {customer?.email || ""}
-                                    </div>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </td>
-
-                          {/* RIGHT COLUMN */}
-                          <td
-                            style={{
-                              width: "60%",
-                              padding: 0,
-                              verticalAlign: "top",
-                              height: "1px",
-                            }}
-                          >
-                            <table
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                borderCollapse: "collapse",
-                                tableLayout: "fixed",
-                              }}
-                            >
-                              <tbody>
-                                {/* ROW 1 */}
-                                <tr>
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      width: "50%",
-                                      padding: "5px 7px",
-                                      fontSize: 13,
-                                      height: "34px",
-                                      border: "1px solid #444",
-                                    }}
-                                  >
-                                    <span
-                                      className="field-label"
-                                      style={{ color: "#555" }}
-                                    >
-                                      Invoice No:
-                                    </span>{" "}
-                                    <span className="bold">
-                                      {data.invoiceNo}
-                                    </span>
-                                  </td>
-
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      padding: "5px 7px",
-                                      fontSize: 13,
-                                      height: "34px",
-                                      border: "1px solid #444",
-                                    }}
-                                  >
-                                    <span
-                                      className="field-label"
-                                      style={{ color: "#555" }}
-                                    >
-                                      Dated:
-                                    </span>{" "}
-                                    <span className="bold red">
-                                      {fmtDate(data.date)}
-                                    </span>
-                                  </td>
-                                </tr>
-
-                                {/* ROW 2 */}
-                                <tr>
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      padding: "5px 7px",
-                                      fontSize: 13,
-                                      height: "34px",
-                                      border: "1px solid #444",
-                                    }}
-                                  >
-                                    <span
-                                      className="field-label"
-                                      style={{ color: "#555" }}
-                                    >
-                                      Delivery Note:
-                                    </span>{" "}
-                                    {data.deliveryNote || ""}
-                                  </td>
-
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      padding: "5px 7px",
-                                      fontSize: 13,
-                                      height: "34px",
-                                      border: "1px solid #444",
-                                    }}
-                                  >
-                                    <span
-                                      className="field-label"
-                                      style={{ color: "#555" }}
-                                    >
-                                      Terms Of Delivery:
-                                    </span>{" "}
-                                    {data.termsOfDelivery || ""}
-                                  </td>
-                                </tr>
-
-                                {/* ROW 3 */}
-                                <tr>
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      padding: "5px 7px",
-                                      fontSize: 13,
-                                      height: "34px",
-                                      border: "1px solid #444",
-                                    }}
-                                  >
-                                    <span className="field-label">
-                                      Supplier's Ref:
-                                    </span>{" "}
-                                    {data.supplierRef || ""}
-                                  </td>
-
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      padding: "5px 7px",
-                                      fontSize: 13,
-                                      height: "34px",
-                                      border: "1px solid #444",
-                                    }}
-                                  >
-                                    <span className="field-label">
-                                      Other Reference(s):
-                                    </span>
-                                  </td>
-                                </tr>
-
-                                {/* ROW 4 */}
-                                <tr>
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      padding: "5px 7px",
-                                      fontSize: 13,
-                                      height: "34px",
-                                      border: "1px solid #444",
-                                    }}
-                                  >
-                                    <span className="field-label">
-                                      Buyer's Order No:
-                                    </span>{" "}
-                                    {data.buyerOrderNo || ""}
-                                  </td>
-
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      padding: "5px 7px",
-                                      fontSize: 13,
-                                      height: "34px",
-                                      border: "1px solid #444",
-                                    }}
-                                  >
-                                    <span className="field-label">Dated:</span>{" "}
-                                    {data.dueDate ? fmtDate(data.dueDate) : ""}
-                                  </td>
-                                </tr>
-
-                                {/* ROW 5 */}
-                                <tr>
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      padding: "5px 7px",
-                                      fontSize: 13,
-                                      height: "34px",
-                                      border: "1px solid #444",
-                                    }}
-                                  >
-                                    <span className="field-label">
-                                      Document No:
-                                    </span>{" "}
-                                    {data.documentNo || ""}
-                                  </td>
-
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      padding: "5px 7px",
-                                      fontSize: 13,
-                                      height: "34px",
-                                      border: "1px solid #444",
-                                    }}
-                                  >
-                                    <span className="field-label">
-                                      Delivery Note Date:
-                                    </span>
-                                  </td>
-                                </tr>
-
-                                {/* ROW 6 */}
-                                <tr>
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      padding: "5px 7px",
-                                      fontSize: 13,
-                                      height: "34px",
-                                      border: "1px solid #444",
-                                    }}
-                                  >
-                                    <span className="field-label">
-                                      Dispatched Through:
-                                    </span>{" "}
-                                    {data.dispatchedThrough || ""}
-                                  </td>
-
-                                  <td
-                                    className="cell"
-                                    style={{
-                                      padding: "5px 7px",
-                                      fontSize: 13,
-                                      height: "34px",
-                                      border: "1px solid #444",
-                                    }}
-                                  >
-                                    <span className="field-label">
-                                      Destination:
-                                    </span>{" "}
-                                    <span className="bold red">
-                                      {data.destination || ""}
-                                    </span>
-                                  </td>
-                                </tr>
-
-                                {/* ROW 7 */}
-                                {/* ROW 7 */}
-                                <tr style={{ height: "100%" }}>
-                                  <td
-                                    className="cell"
-                                    colSpan={2}
-                                    style={{
-                                      padding: "8px 10px",
-                                      fontSize: 13,
-                                      height: "100%",
-                                      minHeight: "90px",
-                                      verticalAlign: "top",
-                                      border: "1px solid #444",
-                                      borderBottom: "none",
-                                    }}
-                                  >
-                                    <span
-                                      className="field-label"
-                                      style={{
-                                        color: "#555",
-                                        fontWeight: 500,
-                                      }}
-                                    >
-                                      Mode/Terms of Payment:
-                                    </span>{" "}
-                                    <span className="bold">
-                                      {paymentTermsLabel}
-                                    </span>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    {/* ── LINE ITEMS TABLE ── */}
-                    <table
-                      className="outer-border"
-                      style={{ marginTop: "-1px" }}
-                    >
-                      <thead>
-                        <tr>
-                          <th className="items-th" style={{ width: "6%" }}>
-                            SR
-                          </th>
-                          <th className="items-th" style={{ width: "42%" }}>
-                            Description of work
-                          </th>
-                          <th className="items-th" style={{ width: "12%" }}>
-                            HSN/SAC
-                          </th>
-                          <th className="items-th" style={{ width: "10%" }}>
-                            Quantity
-                          </th>
-                          <th className="items-th" style={{ width: "15%" }}>
-                            Rate
-                          </th>
-                          <th className="items-th" style={{ width: "15%" }}>
-                            Amount
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {items.map((it: any, idx: number) => (
-                          <tr key={idx}>
-                            <td className="items-td-center">{idx + 1}</td>
-                            <td className="items-td red">{it.description}</td>
-                            <td className="items-td-center">
-                              {it.hsnSac || "—"}
-                            </td>
-                            <td className="items-td-center">
-                              {it.quantity} {it.unit || "Nos"}.
-                            </td>
-                            <td className="items-td-right">
-                              {fmtNum(it.unitPrice)}
-                            </td>
-                            <td className="items-td-right">
-                              {fmtNum(it.amount)}
-                            </td>
-                          </tr>
-                        ))}
-                        {/* Blank rows — only when there are no items */}
-                        {items.length === 0 &&
-                          Array.from({ length: 4 }).map((_, i) => (
-                            <tr key={`blank-${i}`} style={{ height: 26 }}>
-                              <td className="items-td-center"></td>
-                              <td className="items-td"></td>
-                              <td className="items-td-center"></td>
-                              <td className="items-td-center"></td>
-                              <td className="items-td-right"></td>
-                              <td className="items-td-right"></td>
-                            </tr>
-                          ))}
-                        {/* Total row */}
-                        <tr>
-                          <td
-                            className="items-td-right bold"
-                            colSpan={5}
-                            style={{ textAlign: "right" }}
-                          >
-                            Total
-                          </td>
-                          <td className="items-td-right bold">
-                            ₹ {fmtNum(data.subtotal)}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-
-                    {/* ── GST SUMMARY + TOTALS ── */}
-                    <table
-                      className="outer-border"
-                      style={{ marginTop: "-1px" }}
-                    >
-                      <tbody>
-                        <tr>
-                          {/* Left blank section */}
-                          <td
-                            style={{
-                              width: "55%",
-                              verticalAlign: "top",
-                              borderLeft: "1px solid #000",
-                              borderBottom: "1px solid #000",
-                            }}
-                          ></td>
-
-                          {/* Right GST section */}
-                          <td
-                            style={{
-                              width: "45%",
-                              padding: 0,
-                              verticalAlign: "top",
-                              borderBottom: "1px solid #000",
-                            }}
-                          >
-                            <table
-                              className="gst-inner-table"
-                              style={{
-                                width: "100%",
-                                borderCollapse: "collapse",
-                                tableLayout: "fixed",
-                              }}
-                            >
-                              <tbody>
-                                {cgstRate > 0 && (
-                                  <tr>
-                                    <td
-                                      className="gst-label"
-                                      style={{
-                                        borderRight: "1px solid #000",
-                                      }}
-                                    >
-                                      SALES SGST {sgstRate}%
-                                    </td>
-
-                                    <td
-                                      className="gst-value"
-                                      style={{
-                                        width: "140px",
-                                      }}
-                                    >
-                                      {sgstAmt > 0 ? fmtNum(sgstAmt) : "XXXXX"}
-                                    </td>
-                                  </tr>
-                                )}
-
-                                {sgstRate > 0 && (
-                                  <tr>
-                                    <td
-                                      className="gst-label"
-                                      style={{
-                                        borderRight: "1px solid #000",
-                                      }}
-                                    >
-                                      SALES CGST {cgstRate}%
-                                    </td>
-
-                                    <td
-                                      className="gst-value"
-                                      style={{
-                                        width: "140px",
-                                      }}
-                                    >
-                                      {cgstAmt > 0 ? fmtNum(cgstAmt) : "XXXXX"}
-                                    </td>
-                                  </tr>
-                                )}
-
-                                {igstRate > 0 && (
-                                  <tr>
-                                    <td
-                                      className="gst-label"
-                                      style={{
-                                        borderRight: "1px solid #000",
-                                      }}
-                                    >
-                                      SALES IGST {igstRate}%
-                                    </td>
-
-                                    <td
-                                      className="gst-value"
-                                      style={{
-                                        width: "140px",
-                                      }}
-                                    >
-                                      {igstAmt > 0 ? fmtNum(igstAmt) : "XXXXX"}
-                                    </td>
-                                  </tr>
-                                )}
-
-                                {data.showTotalAmounts !== false && (
-                                  <tr>
-                                    <td
-                                      className="gst-label bold"
-                                      style={{
-                                        borderTop: "1px solid #000",
-                                        borderRight: "1px solid #000",
-                                      }}
-                                    >
-                                      Total Amounts
-                                    </td>
-
-                                    <td
-                                      className="gst-value bold red"
-                                      style={{
-                                        borderTop: "1px solid #000",
-                                        width: "140px",
-                                      }}
-                                    >
-                                      {fmtNum(
-                                        data.subtotal ?? data.totalAmount,
-                                      )}
-                                    </td>
-                                  </tr>
-                                )}
-
-                                {data.transportationCharges > 0 && (
-                                  <tr>
-                                    <td
-                                      className="gst-label"
-                                      style={{
-                                        borderTop: "1px solid #000",
-                                        borderRight: "1px solid #000",
-                                      }}
-                                    >
-                                      Transportation Charges
-                                    </td>
-
-                                    <td
-                                      className="gst-value red"
-                                      style={{
-                                        borderTop: "1px solid #000",
-                                        width: "140px",
-                                      }}
-                                    >
-                                      {fmtNum(data.transportationCharges)}
-                                    </td>
-                                  </tr>
-                                )}
-
-                                <tr>
-                                  <td
-                                    className="gst-label bold"
-                                    style={{
-                                      borderTop: "1px solid #000",
-                                      borderRight: "1px solid #000",
-                                    }}
-                                  >
-                                    Grand Total
-                                  </td>
-
-                                  <td
-                                    className="gst-value bold red"
-                                    style={{
-                                      borderTop: "1px solid #000",
-                                      width: "140px",
-                                    }}
-                                  >
-                                    ₹ {fmtNum(data.grandTotal)}
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-
-                    {/* ── AMOUNT IN WORDS ── */}
-                    <table
-                      className="outer-border"
-                      style={{ marginTop: "-1px" }}
-                    >
-                      <tbody>
-                        <tr>
-                          <td className="cell" style={{ fontSize: 13 }}>
-                            <span style={{ fontStyle: "italic" }}>
-                              Total Amounts Chargeable (In word) –{" "}
-                            </span>
-                            <span className="amount-words">
-                              {data.amountInWords || "—"}
-                            </span>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-
-                    {/* ── HSN/SAC TAX TABLE ── */}
-                    <table
-                      className="outer-border hsn-table"
-                      style={{ marginTop: "-1px" }}
-                    >
-                      <thead>
-                        <tr>
-                          <th className="items-th" rowSpan={2}>
-                            HSN /SAC
-                          </th>
-                          <th className="items-th" rowSpan={2}>
-                            Taxable
-                            <br />
-                            Value
-                          </th>
-                          <th className="items-th" colSpan={2}>
-                            CGST
-                          </th>
-                          <th className="items-th" colSpan={2}>
-                            SGST
-                          </th>
-                          <th className="items-th" colSpan={2}>
-                            IGST
-                          </th>
-                          <th className="items-th" rowSpan={2}>
-                            Total
-                            <br />
-                            Tax Amount
-                          </th>
-                        </tr>
-                        <tr>
-                          <th className="items-th">Rate</th>
-                          <th className="items-th">Amount</th>
-                          <th className="items-th">Rate</th>
-                          <th className="items-th">Amount</th>
-                          <th className="items-th">Rate</th>
-                          <th className="items-th">Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {hsnRows.map(([code, { taxable }]) => {
-                          const cAmt = Number(
-                            ((taxable * cgstRate) / 100).toFixed(2),
-                          );
-                          const sAmt = Number(
-                            ((taxable * sgstRate) / 100).toFixed(2),
-                          );
-                          const iAmt = Number(
-                            ((taxable * igstRate) / 100).toFixed(2),
-                          );
-                          return (
-                            <tr key={code}>
-                              <td className="items-td-center">{code}</td>
-                              <td className="items-td-right">
-                                {fmtNum(taxable)}
-                              </td>
-                              <td className="items-td-center">
-                                {cgstRate > 0 ? `${cgstRate}%` : ""}
-                              </td>
-                              <td className="items-td-right">
-                                {cgstRate > 0 ? fmtNum(cAmt) : ""}
-                              </td>
-                              <td className="items-td-center">
-                                {sgstRate > 0 ? `${sgstRate}%` : ""}
-                              </td>
-                              <td className="items-td-right">
-                                {sgstRate > 0 ? fmtNum(sAmt) : ""}
-                              </td>
-                              <td className="items-td-center">
-                                {igstRate > 0 ? `${igstRate}%` : ""}
-                              </td>
-                              <td className="items-td-right">
-                                {igstRate > 0 ? fmtNum(iAmt) : ""}
-                              </td>
-                              <td className="items-td-right">
-                                {fmtNum(cAmt + sAmt + iAmt)}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                        {/* Totals row */}
-                        <tr className="bold">
-                          <td className="items-td-center">Total</td>
-                          <td className="items-td-right">
-                            {fmtNum(totalTaxable)}
-                          </td>
-                          <td className="items-td-center"></td>
-                          <td className="items-td-right">
-                            {cgstRate > 0 ? fmtNum(cgstAmt) : ""}
-                          </td>
-                          <td className="items-td-center"></td>
-                          <td className="items-td-right">
-                            {sgstRate > 0 ? fmtNum(sgstAmt) : ""}
-                          </td>
-                          <td className="items-td-center"></td>
-                          <td className="items-td-right">
-                            {igstRate > 0 ? fmtNum(igstAmt) : ""}
-                          </td>
-                          <td className="items-td-right">
-                            {fmtNum(totalTaxAmt)}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-
-                    {/* Tax Amount in Words */}
-                    <table
-                      className="outer-border"
-                      style={{ marginTop: "-1px" }}
-                    >
-                      <tbody>
-                        <tr>
-                          <td className="cell" style={{ fontSize: 13 }}>
-                            <span style={{ fontStyle: "italic" }}>
-                              Tax Amount (In Words):{" "}
-                            </span>
-                            <span className="bold red">
-                              {data.taxAmountInWords || "Indian Rupees"}
-                            </span>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-
-                    {/* ── DECLARATION + BANK DETAILS + SIGNATURES ── */}
-                    <table
-                      className="outer-border"
-                      style={{ marginTop: "-1px" }}
-                    >
-                      <tbody>
-                        <tr>
-                          {/* Declaration */}
-                          <td
-                            className="cell"
-                            style={{
-                              width: "50%",
-                              fontSize: 13,
-                              verticalAlign: "top",
-                            }}
-                          >
-                            <div className="bold" style={{ marginBottom: 3 }}>
-                              Declaration
-                            </div>
-                            <div>
-                              {data.notes ||
-                                "We declare that this invoice shows the actual price of the testing work described and that all particulars are true and correct"}
-                            </div>
-                          </td>
-                          {/* Bank Details */}
-                          <td
-                            className="cell"
-                            style={{
-                              width: "50%",
-                              fontSize: 13,
-                              verticalAlign: "top",
-                            }}
-                          >
-                            <div className="bold" style={{ marginBottom: 3 }}>
-                              Company Bank Details
-                            </div>
-                            <div>
-                              <span>
-                                Bank :{" "}
-                                {data.bankDetails?.bankName ||
-                                  "State Bank of India"}
-                              </span>
-
-                              <span style={{ marginLeft: "20px" }}>
-                                A/c No.:{" "}
-                                {data.bankDetails?.accountNumber ||
-                                  "35005963456"}
-                              </span>
-                            </div>
-
-                            <div>
-                              <span>
-                                Branch:{" "}
-                                {data.bankDetails?.branch || "Baramati MIDC"}
-                              </span>
-
-                              <span style={{ marginLeft: "20px" }}>
-                                IFSC:{" "}
-                                {data.bankDetails?.ifscCode || "SBIN0014727"}
-                              </span>
-                            </div>
-                          </td>
-                        </tr>
-                        {/* Signatures */}
-                        <tr>
-                          <td
-                            className="sig-cell"
-                            style={{ fontSize: 13, verticalAlign: "bottom" }}
-                          >
-                            Customer's Seal And Signature
-                          </td>
-                          <td
-                            className="sig-cell"
-                            style={{
-                              fontSize: 13,
-                              verticalAlign: "top",
-                              textAlign: "center",
-                            }}
-                          >
-                            <div>
-                              National Industrial Inspection And Training
-                            </div>
-                            <div style={{ marginTop: 28, fontSize: 13 }}>
-                              Authorized Signatory
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-
-                    {/* Footer note */}
-                    <div className="footer-note">
-                      This is a Computer generated invoice.
-                    </div>
-                  </div>
-                  {/* end padding div */}
-                </td>
-              </tr>
-            </tbody>
-
-            {/* tfoot spacer — prevents content overlapping fixed footer on print */}
-            <tfoot className="tfoot-spacer">
-              <tr>
-                <td style={{ padding: 0 }}>
-                  <div style={{ height: "35mm", visibility: "hidden" }}>
-                    spacer
-                  </div>
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-
-          {/* Screen-only footer — absolute at bottom of page card */}
-          <div
-            className="screen-footer"
-            style={{
-              position: "absolute",
-              bottom: "5mm",
-              left: "5mm",
-              right: "5mm",
-            }}
-          >
-            <InvoiceFooter />
-          </div>
-        </div>
-      </div>
-
-      {/* Print-only fixed footer — pins to physical bottom of every page */}
-      <div className="print-footer-fixed">
-        <div className="print-footer-fixed-inner">
-          <InvoiceFooter />
-        </div>
+                  return null;
+                })}
+                </div>
+              </div>
+              <div className="invoice-page-footer">
+                <InvoiceFooter />
+              </div>
+            </div>
+          );
+        })}
       </div>
     </>
   );
