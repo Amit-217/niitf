@@ -668,7 +668,7 @@ export const InvoicePrintPage: React.FC = () => {
                                     }}
                                   >
                                     <span className="field-label">Dated:</span>{" "}
-                                    {data.dueDate ? fmtDate(data.dueDate) : ""}
+                                    {data.buyerOrderDate ? fmtDate(data.buyerOrderDate) : ""}
                                   </td>
                                 </tr>
 
@@ -700,7 +700,8 @@ export const InvoicePrintPage: React.FC = () => {
                                   >
                                     <span className="field-label">
                                       Delivery Note Date:
-                                    </span>
+                                    </span>{" "}
+                                    {data.deliveryNoteDate ? fmtDate(data.deliveryNoteDate) : ""}
                                   </td>
                                 </tr>
 
