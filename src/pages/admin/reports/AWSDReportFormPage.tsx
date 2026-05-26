@@ -117,6 +117,7 @@ export const AWSDReportFormPage: React.FC = () => {
   const state = location.state as {
     customerId?: string;
     customerName?: string;
+    from?: string;
   } | null;
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
   const [customerName, setCustomerName] = useState(state?.customerName ?? "");
@@ -313,9 +314,13 @@ export const AWSDReportFormPage: React.FC = () => {
         await createAWSDReport(payload);
       }
       toast.success(`AWS D1.1 UT Report saved as ${status}.`);
-      navigate(`/admin/customers/${customerId}`, {
-        state: { activeTab: "reports", reportSubType: "awsd" },
-      });
+      if (state?.from === "reports-list") {
+        navigate("/admin/reports");
+      } else {
+        navigate(`/admin/customers/${customerId}`, {
+          state: { activeTab: "reports", reportSubType: "awsd" },
+        });
+      }
     } catch {
       toast.error("Failed to save report. Please try again.");
     } finally {

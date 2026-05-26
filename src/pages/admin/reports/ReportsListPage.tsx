@@ -460,7 +460,7 @@ export const ReportsListPage = () => {
                           <Eye size={15} />
                         </button>
                         <button
-                          onClick={() => navigate(`/admin/reports/${activeTab}/${r._id}/edit`)}
+                          onClick={() => navigate(`/admin/reports/${activeTab}/${r._id}/edit`, { state: { from: "reports-list" } })}
                           className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
                           title="Edit"
                         >

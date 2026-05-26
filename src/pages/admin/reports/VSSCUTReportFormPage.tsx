@@ -117,6 +117,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
   const state = location.state as {
     customerId?: string;
     customerName?: string;
+    from?: string;
   } | null;
   const [saving, setSaving] = useState(false);
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
@@ -482,9 +483,13 @@ export const VSSCUTReportFormPage: React.FC = () => {
         await createVSSCUTReport(payload);
       }
       toast.success(`VSSC-UT Report saved as ${status}.`);
-      navigate(`/admin/customers/${customerId}`, {
-        state: { activeTab: "reports", reportSubType: "vssc-ut" },
-      });
+      if (state?.from === "reports-list") {
+        navigate("/admin/reports");
+      } else {
+        navigate(`/admin/customers/${customerId}`, {
+          state: { activeTab: "reports", reportSubType: "vssc-ut" },
+        });
+      }
     } catch {
       toast.error("Failed to save report. Please try again.");
     } finally {

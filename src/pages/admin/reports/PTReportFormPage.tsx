@@ -97,6 +97,7 @@ export const PTReportFormPage: React.FC = () => {
   const state = location.state as {
     customerId?: string;
     customerName?: string;
+    from?: string;
   } | null;
   const [saving, setSaving] = useState(false);
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
@@ -455,9 +456,13 @@ export const PTReportFormPage: React.FC = () => {
       }
 
       toast.success(`PT Report saved as ${status}.`);
-      navigate(`/admin/customers/${customerId}`, {
-        state: { activeTab: "reports", reportSubType: "pt" },
-      });
+      if (state?.from === "reports-list") {
+        navigate("/admin/reports");
+      } else {
+        navigate(`/admin/customers/${customerId}`, {
+          state: { activeTab: "reports", reportSubType: "pt" },
+        });
+      }
     } catch (error) {
       toast.error(
         getApiErrorMessage(error, "Failed to save report. Please try again."),

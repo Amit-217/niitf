@@ -350,7 +350,7 @@ export const QuotationsListPage: React.FC = () => {
                             <Eye size={15} />
                           </button>
                           <button
-                            onClick={() => navigate(`/admin/quotations/${q._type}/${q._id}/edit`)}
+                            onClick={() => navigate(`/admin/quotations/${q._type}/${q._id}/edit`, { state: { from: 'quotations-list' } })}
                             className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
                             title="Edit"
                           >
