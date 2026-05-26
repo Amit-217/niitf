@@ -40,6 +40,7 @@ const PRINT_STYLES = `
       padding: 0 !important;
     }
     .tfoot-spacer { display: table-footer-group !important; }
+    tr { page-break-inside: avoid; break-inside: avoid; }
   }
   @media screen {
     .print-footer-fixed { display: none !important; }
@@ -48,7 +49,7 @@ const PRINT_STYLES = `
   }
   body { font-family: 'Times New Roman', Times, serif; font-size: 13px; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  table { border-collapse: collapse; width: calc(100% - 1px); }
+  table { border-collapse: collapse; width: 100%; }
   .outer-border { border: none; }
   .cell { border: 1px solid #000; padding: 3px 5px; vertical-align: top; }
   .cell-center { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; text-align: center; }
@@ -70,13 +71,13 @@ const PRINT_STYLES = `
   .summary-label { flex: 1; text-align: right; padding: 2px 6px; font-size: 13px; border-right: 1px solid #000; }
   .summary-value { width: 100px; text-align: right; padding: 2px 6px; font-size: 13px; }
   .amount-words { color: #000; font-weight: bold; font-size: 13px; }
-  .sig-cell { border: 1px solid #000; padding: 5px; height: 60px; vertical-align: top; }
+  .sig-cell { border: 1px solid #000; padding: 5px; height: 60px; vertical-align: top; page-break-inside: avoid; break-inside: avoid; }
   .footer-note { text-align: center; font-size: 11px; color: #555; padding: 3px; border-top: 1px solid #000; }
   .rpt-header { padding: 6px 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
   .logo-box { width: 140px; height: 90px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; }
   .logo-box img { width: 130px; height: 80px; object-fit: contain; }
   .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 20px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
+  .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
   .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
   .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
   .inv-foot { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 1px solid #185FA5; line-height: 1.4; text-align: center; }
@@ -312,460 +313,472 @@ export const InvoicePrintPage: React.FC = () => {
                     </div>
 
                     {/* ── HEADER SECTION: Left=Company+Buyer stacked, Right=All fields ── */}
-<table
-  className="outer-border"
-  style={{
-    tableLayout: "fixed",
-    width: "100%",
-    borderCollapse: "collapse",
-  }}
->
-  <tbody>
-    <tr>
-      {/* LEFT COLUMN */}
-      <td
-        style={{
-          width: "40%",
-          padding: 0,
-          verticalAlign: "top",
-        }}
-      >
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            tableLayout: "fixed",
-          }}
-        >
-          <tbody>
-            {/* COMPANY INFO */}
-            <tr>
-              <td
-                className="cell"
-                style={{
-                  padding: "6px 5px",
-                  verticalAlign: "top",
-                  borderRight: "none",
-                  border: "1px solid #444",
-                }}
-              >
-                <div
-                  className="company-name"
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 700,
-                    lineHeight: 1.35,
-                    marginBottom: 2,
-                  }}
-                >
-                  National Industrial Inspection And Training
-                </div>
+                    <table
+                      className="outer-border"
+                      style={{
+                        tableLayout: "fixed",
+                        width: "100%",
+                        borderCollapse: "collapse",
+                      }}
+                    >
+                      <tbody>
+                        <tr>
+                          {/* LEFT COLUMN */}
+                          <td
+                            style={{
+                              width: "40%",
+                              padding: 0,
+                              verticalAlign: "top",
+                              height: "1px",
+                            }}
+                          >
+                            <table
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                borderCollapse: "collapse",
+                                tableLayout: "fixed",
+                              }}
+                            >
+                              <tbody>
+                                {/* COMPANY INFO */}
+                                <tr>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      padding: "6px 5px",
+                                      verticalAlign: "top",
+                                      borderRight: "none",
+                                      border: "1px solid #444",
+                                    }}
+                                  >
+                                    <div
+                                      className="company-name"
+                                      style={{
+                                        fontSize: 14,
+                                        fontWeight: 700,
+                                        lineHeight: 1.35,
+                                        marginBottom: 2,
+                                      }}
+                                    >
+                                      National Industrial Inspection And
+                                      Training
+                                    </div>
 
-                <div
-                  style={{
-                    fontSize: 13,
-                    lineHeight: 1,
-                  }}
-                >
-                  Plot NO-PAP-3/28 Behind BSNL Office
-                  <br />
-                  MIDC, Baramati Pin -413133
-                  <br />
-                  GST No.: 27ABJPK8603R1ZY
-                  <br />
-                  State: Maharashtra Code: 27
-                  <br />
-                  CONTACT: 8600508524, 9421606761
-                  <br />
-                  E-Mail: niit004@gmail.com
-                </div>
-              </td>
-            </tr>
+                                    <div
+                                      style={{
+                                        fontSize: 13,
+                                        lineHeight: 1.2,
+                                      }}
+                                    >
+                                      Plot NO-PAP-3/28 Behind BSNL Office
+                                      <br />
+                                      MIDC, Baramati Pin -413133
+                                      <br />
+                                      GST No.: 27ABJPK8603R1ZY
+                                      <br />
+                                      State: Maharashtra Code: 27
+                                      <br />
+                                      CONTACT: 8600508524, 9421606761
+                                      <br />
+                                      E-Mail: niit004@gmail.com
+                                    </div>
+                                  </td>
+                                </tr>
 
-            {/* BUYER INFO */}
-            <tr>
-              <td
-                className="cell"
-                style={{
-                  padding: "0px 5px",
-                  borderRight: "none",
-                  border: "1px solid #444",
-                  marginTop:"-2px"
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 700,
-                    textDecoration: "underline",
-                    marginBottom: 1,
-                  }}
-                >
-                  Buyer:
-                  </span>
-                  <span>{" "}</span>
-                  <span
-                  className="bold red"
-                  style={{
-                    fontSize: 14,
-                    marginBottom: 1,
-                  }}
-                >
-                  {" "}{customer?.companyName || "—"}
-                </span>
-                
+                                {/* BUYER INFO */}
+                                <tr>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      padding: "0px 5px",
+                                      borderRight: "none",
+                                      border: "1px solid #444",
+                                      borderBottom: "none",
+                                      marginTop: "-2px",
+                                      height: "100%",
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        fontSize: 13,
+                                        fontWeight: 700,
+                                        textDecoration: "underline",
+                                        marginBottom: 1,
+                                      }}
+                                    >
+                                      Buyer:
+                                    </span>
+                                    <span> </span>
+                                    <span
+                                      className="bold red"
+                                      style={{
+                                        fontSize: 14,
+                                        marginBottom: 1,
+                                      }}
+                                    >
+                                      {" "}
+                                      {customer?.companyName || "—"}
+                                    </span>
 
-                
+                                    {customer?.address && (
+                                      <div
+                                        className="red"
+                                        style={{
+                                          fontSize: 13,
+                                          lineHeight: 1.2,
+                                        }}
+                                      >
+                                        {customer.address}
+                                      </div>
+                                    )}
 
-                {customer?.address && (
-                  <div
-                    className="red"
-                    style={{
-                      fontSize: 13,
-                      lineHeight: 1,
-                     
-                    }}
-                  >
-                    {customer.address}
-                  </div>
-                )}
+                                    {customer?.city && (
+                                      <div
+                                        className="red"
+                                        style={{
+                                          fontSize: 13,
+                                          lineHeight: 1.2,
+                                        }}
+                                      >
+                                        City-{customer.city}
+                                      </div>
+                                    )}
 
-                {customer?.city && (
-                  <div
-                    className="red"
-                    style={{
-                      fontSize: 13,
-                      lineHeight: 1,
-                    }}
-                  >
-                    City-{customer.city}
-                  </div>
-                )}
+                                    {(customer?.state ||
+                                      customer?.stateCode) && (
+                                      <div
+                                        className="red"
+                                        style={{
+                                          fontSize: 13,
+                                          lineHeight: 1.2,
+                                        }}
+                                      >
+                                        {customer?.state &&
+                                          `State: ${customer.state}`}{" "}
+                                        |
+                                        {customer?.state &&
+                                          customer?.stateCode &&
+                                          " "}{" "}
+                                        {customer?.stateCode &&
+                                          `Code: ${customer.stateCode}`}
+                                      </div>
+                                    )}
 
-                <div
-                  className="red"
-                  style={{
-                    fontSize: 13,
-                    lineHeight: 1,
-                  }}
-                >
-                  State: Maharashtra Code: 27
-                </div>
+                                    <div
+                                      className="red"
+                                      style={{
+                                        fontSize: 13,
+                                        lineHeight: 1.2,
+                                      }}
+                                    >
+                                      GST No: {customer?.gstNo || ""}
+                                    </div>
+                                    <div
+                                      className="red"
+                                      style={{
+                                        fontSize: 13,
+                                        lineHeight: 1.2,
+                                      }}
+                                    >
+                                      Contact Person:{" "}
+                                      {customer?.contactPerson || ""}
+                                    </div>
+                                    <div
+                                      className="red"
+                                      style={{
+                                        fontSize: 13,
+                                        lineHeight: 1.2,
+                                      }}
+                                    >
+                                      Contact: {customer?.mobile || ""}
+                                    </div>
+                                    <div
+                                      className="red"
+                                      style={{
+                                        fontSize: 13,
+                                        lineHeight: 1.2,
+                                      }}
+                                    >
+                                      Email: {customer?.email || ""}
+                                    </div>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
 
-                <div
-                  className="red"
-                  style={{
-                    fontSize: 13,
-                    lineHeight: 1,
-                  }}
-                >
-                  GST No: {customer?.gstNo || ""}
-                </div>
-                <div
-                  className="red"
-                  style={{
-                    fontSize: 13,
-                    lineHeight: 1,
-                  }}
-                >
-                  Contact Person: {customer?.contactPerson || ""}
-                </div>
-                <div
-                  className="red"
-                  style={{
-                    fontSize: 13,
-                    lineHeight: 1,
-                  }}
-                >
-                  Contact: {customer?.mobile || ""}
-                </div>
-                <div
-                  className="red"
-                  style={{
-                    fontSize: 13,
-                    lineHeight: 1,
-                  }}
-                >
-                  Email: {customer?.email || ""}
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
+                          {/* RIGHT COLUMN */}
+                          <td
+                            style={{
+                              width: "60%",
+                              padding: 0,
+                              verticalAlign: "top",
+                              height: "1px",
+                            }}
+                          >
+                            <table
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                borderCollapse: "collapse",
+                                tableLayout: "fixed",
+                              }}
+                            >
+                              <tbody>
+                                {/* ROW 1 */}
+                                <tr>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      width: "50%",
+                                      padding: "5px 7px",
+                                      fontSize: 13,
+                                      height: "34px",
+                                      border: "1px solid #444",
+                                    }}
+                                  >
+                                    <span
+                                      className="field-label"
+                                      style={{ color: "#555" }}
+                                    >
+                                      Invoice No:
+                                    </span>{" "}
+                                    <span className="bold">
+                                      {data.invoiceNo}
+                                    </span>
+                                  </td>
 
-      {/* RIGHT COLUMN */}
-      <td
-        style={{
-          width: "60%",
-          padding: 0,
-          verticalAlign: "top",
-        }}
-      >
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            tableLayout: "fixed",
-          }}
-        >
-          <tbody>
-            {/* ROW 1 */}
-            <tr>
-              <td
-                className="cell"
-                style={{
-                  width: "50%",
-                  padding: "5px 7px",
-                  fontSize: 13,
-                  height: "34px",
-                  border: "1px solid #444",
-                }}
-              >
-                <span
-                  className="field-label"
-                  style={{ color: "#555" }}
-                >
-                  Invoice No:
-                </span>{" "}
-                <span className="bold">{data.invoiceNo}</span>
-              </td>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      padding: "5px 7px",
+                                      fontSize: 13,
+                                      height: "34px",
+                                      border: "1px solid #444",
+                                    }}
+                                  >
+                                    <span
+                                      className="field-label"
+                                      style={{ color: "#555" }}
+                                    >
+                                      Dated:
+                                    </span>{" "}
+                                    <span className="bold red">
+                                      {fmtDate(data.date)}
+                                    </span>
+                                  </td>
+                                </tr>
 
-              <td
-                className="cell"
-                style={{
-                  padding: "5px 7px",
-                  fontSize: 13,
-                  height: "34px",
-                  border: "1px solid #444",
-                }}
-              >
-                <span
-                  className="field-label"
-                  style={{ color: "#555" }}
-                >
-                  Dated:
-                </span>{" "}
-                <span className="bold red">
-                  {fmtDate(data.date)}
-                </span>
-              </td>
-            </tr>
+                                {/* ROW 2 */}
+                                <tr>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      padding: "5px 7px",
+                                      fontSize: 13,
+                                      height: "34px",
+                                      border: "1px solid #444",
+                                    }}
+                                  >
+                                    <span
+                                      className="field-label"
+                                      style={{ color: "#555" }}
+                                    >
+                                      Delivery Note:
+                                    </span>{" "}
+                                    {data.deliveryNote || ""}
+                                  </td>
 
-            {/* ROW 2 */}
-            <tr>
-              <td
-                className="cell"
-                style={{
-                  padding: "5px 7px",
-                  fontSize: 13,
-                  height: "34px",
-                  border: "1px solid #444",
-                }}
-              >
-                <span
-                  className="field-label"
-                  style={{ color: "#555" }}
-                >
-                  Delivery Note:
-                </span>{" "}
-                {data.deliveryNote || ""}
-              </td>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      padding: "5px 7px",
+                                      fontSize: 13,
+                                      height: "34px",
+                                      border: "1px solid #444",
+                                    }}
+                                  >
+                                    <span
+                                      className="field-label"
+                                      style={{ color: "#555" }}
+                                    >
+                                      Terms Of Delivery:
+                                    </span>{" "}
+                                    {data.termsOfDelivery || ""}
+                                  </td>
+                                </tr>
 
-              <td
-                className="cell"
-                style={{
-                  padding: "5px 7px",
-                  fontSize: 13,
-                  height: "34px",
-                  border: "1px solid #444",
-                }}
-              >
-                <span
-                  className="field-label"
-                  style={{ color: "#555" }}
-                >
-                  Terms Of Delivery:
-                </span>{" "}
-                {data.termsOfDelivery || ""}
-              </td>
-            </tr>
+                                {/* ROW 3 */}
+                                <tr>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      padding: "5px 7px",
+                                      fontSize: 13,
+                                      height: "34px",
+                                      border: "1px solid #444",
+                                    }}
+                                  >
+                                    <span className="field-label">
+                                      Supplier's Ref:
+                                    </span>{" "}
+                                    {data.supplierRef || ""}
+                                  </td>
 
-            {/* ROW 3 */}
-            <tr>
-              <td
-                className="cell"
-                style={{
-                  padding: "5px 7px",
-                  fontSize: 13,
-                  height: "34px",
-                  border: "1px solid #444",
-                }}
-              >
-                <span className="field-label">
-                  Supplier's Ref:
-                </span>{" "}
-                {data.supplierRef || ""}
-              </td>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      padding: "5px 7px",
+                                      fontSize: 13,
+                                      height: "34px",
+                                      border: "1px solid #444",
+                                    }}
+                                  >
+                                    <span className="field-label">
+                                      Other Reference(s):
+                                    </span>
+                                  </td>
+                                </tr>
 
-              <td
-                className="cell"
-                style={{
-                  padding: "5px 7px",
-                  fontSize: 13,
-                  height: "34px",
-                  border: "1px solid #444",
-                }}
-              >
-                <span className="field-label">
-                  Other Reference(s):
-                </span>
-              </td>
-            </tr>
+                                {/* ROW 4 */}
+                                <tr>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      padding: "5px 7px",
+                                      fontSize: 13,
+                                      height: "34px",
+                                      border: "1px solid #444",
+                                    }}
+                                  >
+                                    <span className="field-label">
+                                      Buyer's Order No:
+                                    </span>{" "}
+                                    {data.buyerOrderNo || ""}
+                                  </td>
 
-            {/* ROW 4 */}
-            <tr>
-              <td
-                className="cell"
-                style={{
-                  padding: "5px 7px",
-                  fontSize: 13,
-                  height: "34px",
-                  border: "1px solid #444",
-                }}
-              >
-                <span className="field-label">
-                  Buyer's Order No:
-                </span>{" "}
-                {data.buyerOrderNo || ""}
-              </td>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      padding: "5px 7px",
+                                      fontSize: 13,
+                                      height: "34px",
+                                      border: "1px solid #444",
+                                    }}
+                                  >
+                                    <span className="field-label">Dated:</span>{" "}
+                                    {data.dueDate ? fmtDate(data.dueDate) : ""}
+                                  </td>
+                                </tr>
 
-              <td
-                className="cell"
-                style={{
-                  padding: "5px 7px",
-                  fontSize: 13,
-                  height: "34px",
-                  border: "1px solid #444",
-                }}
-              >
-                <span className="field-label">
-                  Dated:
-                </span>{" "}
-                {data.dueDate
-                  ? fmtDate(data.dueDate)
-                  : ""}
-              </td>
-            </tr>
+                                {/* ROW 5 */}
+                                <tr>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      padding: "5px 7px",
+                                      fontSize: 13,
+                                      height: "34px",
+                                      border: "1px solid #444",
+                                    }}
+                                  >
+                                    <span className="field-label">
+                                      Document No:
+                                    </span>{" "}
+                                    {data.documentNo || ""}
+                                  </td>
 
-            {/* ROW 5 */}
-            <tr>
-              <td
-                className="cell"
-                style={{
-                  padding: "5px 7px",
-                  fontSize: 13,
-                  height: "34px",
-                  border: "1px solid #444",
-                }}
-              >
-                <span className="field-label">
-                  Document No:
-                </span>{" "}
-                {data.documentNo || ""}
-              </td>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      padding: "5px 7px",
+                                      fontSize: 13,
+                                      height: "34px",
+                                      border: "1px solid #444",
+                                    }}
+                                  >
+                                    <span className="field-label">
+                                      Delivery Note Date:
+                                    </span>
+                                  </td>
+                                </tr>
 
-              <td
-                className="cell"
-                style={{
-                  padding: "5px 7px",
-                  fontSize: 13,
-                  height: "34px",
-                  border: "1px solid #444",
-                }}
-              >
-                <span className="field-label">
-                  Delivery Note Date:
-                </span>
-              </td>
-            </tr>
+                                {/* ROW 6 */}
+                                <tr>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      padding: "5px 7px",
+                                      fontSize: 13,
+                                      height: "34px",
+                                      border: "1px solid #444",
+                                    }}
+                                  >
+                                    <span className="field-label">
+                                      Dispatched Through:
+                                    </span>{" "}
+                                    {data.dispatchedThrough || ""}
+                                  </td>
 
-            {/* ROW 6 */}
-            <tr>
-              <td
-                className="cell"
-                style={{
-                  padding: "5px 7px",
-                  fontSize: 13,
-                  height: "34px",
-                  border: "1px solid #444",
-                }}
-              >
-                <span className="field-label">
-                  Dispatched Through:
-                </span>{" "}
-                {data.dispatchedThrough || ""}
-              </td>
+                                  <td
+                                    className="cell"
+                                    style={{
+                                      padding: "5px 7px",
+                                      fontSize: 13,
+                                      height: "34px",
+                                      border: "1px solid #444",
+                                    }}
+                                  >
+                                    <span className="field-label">
+                                      Destination:
+                                    </span>{" "}
+                                    <span className="bold red">
+                                      {data.destination || ""}
+                                    </span>
+                                  </td>
+                                </tr>
 
-              <td
-                className="cell"
-                style={{
-                  padding: "5px 7px",
-                  fontSize: 13,
-                  height: "34px",
-                  border: "1px solid #444",
-                }}
-              >
-                <span className="field-label">
-                  Destination:
-                </span>{" "}
-                <span className="bold red">
-                  {data.destination || ""}
-                </span>
-              </td>
-            </tr>
-
-        
-         {/* ROW 7 */}
-{/* ROW 7 */}
-<tr style={{ height: "100%" }}>
-  <td
-    className="cell"
-    colSpan={2}
-    style={{
-      padding: "8px 10px",
-      fontSize: 13,
-      height: "100%",
-      minHeight: "90px",
-      verticalAlign: "top",
-      border: "1px solid #444",
-    }}
-  >
-    <span
-      className="field-label"
-      style={{
-        color: "#555",
-        fontWeight: 500,
-      }}
-    >
-      Mode/Terms of Payment:
-    </span>{" "}
-
-    <span className="bold">
-      {paymentTermsLabel}
-    </span>
-  </td>
-</tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-  </tbody>
-</table>
+                                {/* ROW 7 */}
+                                {/* ROW 7 */}
+                                <tr style={{ height: "100%" }}>
+                                  <td
+                                    className="cell"
+                                    colSpan={2}
+                                    style={{
+                                      padding: "8px 10px",
+                                      fontSize: 13,
+                                      height: "100%",
+                                      minHeight: "90px",
+                                      verticalAlign: "top",
+                                      border: "1px solid #444",
+                                      borderBottom: "none",
+                                    }}
+                                  >
+                                    <span
+                                      className="field-label"
+                                      style={{
+                                        color: "#555",
+                                        fontWeight: 500,
+                                      }}
+                                    >
+                                      Mode/Terms of Payment:
+                                    </span>{" "}
+                                    <span className="bold">
+                                      {paymentTermsLabel}
+                                    </span>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                     {/* ── LINE ITEMS TABLE ── */}
                     <table
                       className="outer-border"
-                      style={{ borderTop: "none", marginTop: "-1px" }}
+                      style={{ marginTop: "-1px" }}
                     >
                       <thead>
                         <tr>
@@ -838,180 +851,182 @@ export const InvoicePrintPage: React.FC = () => {
 
                     {/* ── GST SUMMARY + TOTALS ── */}
                     <table
-  className="outer-border"
-  style={{ marginTop: "-1px" }}
->
-  <tbody>
-    <tr>
-      {/* Left blank section */}
-      <td
-        style={{
-          width: "55%",
-          verticalAlign: "top",
-          borderLeft: "1px solid #000",
-          borderBottom: "1px solid #000",
-        }}
-      ></td>
+                      className="outer-border"
+                      style={{ marginTop: "-1px" }}
+                    >
+                      <tbody>
+                        <tr>
+                          {/* Left blank section */}
+                          <td
+                            style={{
+                              width: "55%",
+                              verticalAlign: "top",
+                              borderLeft: "1px solid #000",
+                              borderBottom: "1px solid #000",
+                            }}
+                          ></td>
 
-      {/* Right GST section */}
-      <td
-        style={{
-          width: "45%",
-          padding: 0,
-          verticalAlign: "top",
-          borderBottom: "1px solid #000",
-        }}
-      >
-        <table
-          className="gst-inner-table"
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            tableLayout: "fixed",
-          }}
-        >
-          <tbody>
-            {cgstRate > 0 && (
-              <tr>
-                <td
-                  className="gst-label"
-                  style={{
-                    borderRight: "1px solid #000",
-                  }}
-                >
-                  SALES SGST {sgstRate}%
-                </td>
+                          {/* Right GST section */}
+                          <td
+                            style={{
+                              width: "45%",
+                              padding: 0,
+                              verticalAlign: "top",
+                              borderBottom: "1px solid #000",
+                            }}
+                          >
+                            <table
+                              className="gst-inner-table"
+                              style={{
+                                width: "100%",
+                                borderCollapse: "collapse",
+                                tableLayout: "fixed",
+                              }}
+                            >
+                              <tbody>
+                                {cgstRate > 0 && (
+                                  <tr>
+                                    <td
+                                      className="gst-label"
+                                      style={{
+                                        borderRight: "1px solid #000",
+                                      }}
+                                    >
+                                      SALES SGST {sgstRate}%
+                                    </td>
 
-                <td
-                  className="gst-value"
-                  style={{
-                    width: "140px",
-                  }}
-                >
-                  {sgstAmt > 0 ? fmtNum(sgstAmt) : "XXXXX"}
-                </td>
-              </tr>
-            )}
+                                    <td
+                                      className="gst-value"
+                                      style={{
+                                        width: "140px",
+                                      }}
+                                    >
+                                      {sgstAmt > 0 ? fmtNum(sgstAmt) : "XXXXX"}
+                                    </td>
+                                  </tr>
+                                )}
 
-            {sgstRate > 0 && (
-              <tr>
-                <td
-                  className="gst-label"
-                  style={{
-                    borderRight: "1px solid #000",
-                  }}
-                >
-                  SALES CGST {cgstRate}%
-                </td>
+                                {sgstRate > 0 && (
+                                  <tr>
+                                    <td
+                                      className="gst-label"
+                                      style={{
+                                        borderRight: "1px solid #000",
+                                      }}
+                                    >
+                                      SALES CGST {cgstRate}%
+                                    </td>
 
-                <td
-                  className="gst-value"
-                  style={{
-                    width: "140px",
-                  }}
-                >
-                  {cgstAmt > 0 ? fmtNum(cgstAmt) : "XXXXX"}
-                </td>
-              </tr>
-            )}
+                                    <td
+                                      className="gst-value"
+                                      style={{
+                                        width: "140px",
+                                      }}
+                                    >
+                                      {cgstAmt > 0 ? fmtNum(cgstAmt) : "XXXXX"}
+                                    </td>
+                                  </tr>
+                                )}
 
-            {igstRate > 0 && (
-              <tr>
-                <td
-                  className="gst-label"
-                  style={{
-                    borderRight: "1px solid #000",
-                  }}
-                >
-                  SALES IGST {igstRate}%
-                </td>
+                                {igstRate > 0 && (
+                                  <tr>
+                                    <td
+                                      className="gst-label"
+                                      style={{
+                                        borderRight: "1px solid #000",
+                                      }}
+                                    >
+                                      SALES IGST {igstRate}%
+                                    </td>
 
-                <td
-                  className="gst-value"
-                  style={{
-                    width: "140px",
-                  }}
-                >
-                  {igstAmt > 0 ? fmtNum(igstAmt) : "XXXXX"}
-                </td>
-              </tr>
-            )}
+                                    <td
+                                      className="gst-value"
+                                      style={{
+                                        width: "140px",
+                                      }}
+                                    >
+                                      {igstAmt > 0 ? fmtNum(igstAmt) : "XXXXX"}
+                                    </td>
+                                  </tr>
+                                )}
 
-            {data.showTotalAmounts !== false && (
-              <tr>
-                <td
-                  className="gst-label bold"
-                  style={{
-                    borderTop: "1px solid #000",
-                    borderRight: "1px solid #000",
-                  }}
-                >
-                  Total Amounts
-                </td>
+                                {data.showTotalAmounts !== false && (
+                                  <tr>
+                                    <td
+                                      className="gst-label bold"
+                                      style={{
+                                        borderTop: "1px solid #000",
+                                        borderRight: "1px solid #000",
+                                      }}
+                                    >
+                                      Total Amounts
+                                    </td>
 
-                <td
-                  className="gst-value bold red"
-                  style={{
-                    borderTop: "1px solid #000",
-                    width: "140px",
-                  }}
-                >
-                  {fmtNum(data.subtotal ?? data.totalAmount)}
-                </td>
-              </tr>
-            )}
+                                    <td
+                                      className="gst-value bold red"
+                                      style={{
+                                        borderTop: "1px solid #000",
+                                        width: "140px",
+                                      }}
+                                    >
+                                      {fmtNum(
+                                        data.subtotal ?? data.totalAmount,
+                                      )}
+                                    </td>
+                                  </tr>
+                                )}
 
-            {data.transportationCharges > 0 && (
-              <tr>
-                <td
-                  className="gst-label"
-                  style={{
-                    borderTop: "1px solid #000",
-                    borderRight: "1px solid #000",
-                  }}
-                >
-                  Transportation Charges
-                </td>
+                                {data.transportationCharges > 0 && (
+                                  <tr>
+                                    <td
+                                      className="gst-label"
+                                      style={{
+                                        borderTop: "1px solid #000",
+                                        borderRight: "1px solid #000",
+                                      }}
+                                    >
+                                      Transportation Charges
+                                    </td>
 
-                <td
-                  className="gst-value red"
-                  style={{
-                    borderTop: "1px solid #000",
-                    width: "140px",
-                  }}
-                >
-                  {fmtNum(data.transportationCharges)}
-                </td>
-              </tr>
-            )}
+                                    <td
+                                      className="gst-value red"
+                                      style={{
+                                        borderTop: "1px solid #000",
+                                        width: "140px",
+                                      }}
+                                    >
+                                      {fmtNum(data.transportationCharges)}
+                                    </td>
+                                  </tr>
+                                )}
 
-            <tr>
-              <td
-                className="gst-label bold"
-                style={{
-                  borderTop: "1px solid #000",
-                  borderRight: "1px solid #000",
-                }}
-              >
-                Grand Total
-              </td>
+                                <tr>
+                                  <td
+                                    className="gst-label bold"
+                                    style={{
+                                      borderTop: "1px solid #000",
+                                      borderRight: "1px solid #000",
+                                    }}
+                                  >
+                                    Grand Total
+                                  </td>
 
-              <td
-                className="gst-value bold red"
-                style={{
-                  borderTop: "1px solid #000",
-                  width: "140px",
-                }}
-              >
-                ₹ {fmtNum(data.grandTotal)}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-  </tbody>
-</table>
+                                  <td
+                                    className="gst-value bold red"
+                                    style={{
+                                      borderTop: "1px solid #000",
+                                      width: "140px",
+                                    }}
+                                  >
+                                    ₹ {fmtNum(data.grandTotal)}
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
 
                     {/* ── AMOUNT IN WORDS ── */}
                     <table
@@ -1118,21 +1133,15 @@ export const InvoicePrintPage: React.FC = () => {
                           <td className="items-td-right">
                             {fmtNum(totalTaxable)}
                           </td>
-                          <td className="items-td-center">
-                            {cgstRate > 0 ? `${cgstRate}%` : ""}
-                          </td>
+                          <td className="items-td-center"></td>
                           <td className="items-td-right">
                             {cgstRate > 0 ? fmtNum(cgstAmt) : ""}
                           </td>
-                          <td className="items-td-center">
-                            {sgstRate > 0 ? `${sgstRate}%` : ""}
-                          </td>
+                          <td className="items-td-center"></td>
                           <td className="items-td-right">
                             {sgstRate > 0 ? fmtNum(sgstAmt) : ""}
                           </td>
-                          <td className="items-td-center">
-                            {igstRate > 0 ? `${igstRate}%` : ""}
-                          </td>
+                          <td className="items-td-center"></td>
                           <td className="items-td-right">
                             {igstRate > 0 ? fmtNum(igstAmt) : ""}
                           </td>
@@ -1199,28 +1208,30 @@ export const InvoicePrintPage: React.FC = () => {
                               Company Bank Details
                             </div>
                             <div>
-  <span>
-    Bank :{" "}
-    {data.bankDetails?.bankName || "State Bank of India"}
-  </span>
+                              <span>
+                                Bank :{" "}
+                                {data.bankDetails?.bankName ||
+                                  "State Bank of India"}
+                              </span>
 
-  <span style={{ marginLeft: "20px" }}>
-    A/c No.:{" "}
-    {data.bankDetails?.accountNumber || "35005963456"}
-  </span>
-</div>
+                              <span style={{ marginLeft: "20px" }}>
+                                A/c No.:{" "}
+                                {data.bankDetails?.accountNumber ||
+                                  "35005963456"}
+                              </span>
+                            </div>
 
-<div>
-  <span>
-    Branch:{" "}
-    {data.bankDetails?.branch || "Baramati MIDC"}
-  </span>
+                            <div>
+                              <span>
+                                Branch:{" "}
+                                {data.bankDetails?.branch || "Baramati MIDC"}
+                              </span>
 
-  <span style={{ marginLeft: "20px" }}>
-    IFSC:{" "}
-    {data.bankDetails?.ifscCode || "SBIN0014727"}
-  </span>
-</div>
+                              <span style={{ marginLeft: "20px" }}>
+                                IFSC:{" "}
+                                {data.bankDetails?.ifscCode || "SBIN0014727"}
+                              </span>
+                            </div>
                           </td>
                         </tr>
                         {/* Signatures */}
