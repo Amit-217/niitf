@@ -16,8 +16,6 @@ import {
   GitBranch,
   Plus,
   Loader2,
-  Calendar,
-  User,
 } from "lucide-react";
 import {
   getMPTReports,
@@ -369,223 +367,133 @@ export const ReportsListPage = () => {
         })}
       </div>
 
-      {/* Main Content Area */}
-      <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl shadow-gray-200/40 overflow-hidden">
-        {/* Dynamic Filters Bar */}
-        <div className="px-6 py-5 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50/30">
-          <div className="relative flex-1 group">
-            <Search
-              size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary-600 transition-colors"
-            />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              placeholder={`Search reports by customer or report number...`}
-              className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all placeholder:text-gray-400 font-medium"
-            />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <select
-              value={status}
-              onChange={(e) => {
-                setStatus(e.target.value);
-                setPage(1);
-              }}
-              className="px-4 py-3 bg-white border-2 border-gray-100 text-gray-600 rounded-2xl text-sm font-bold focus:outline-none focus:border-primary-500 transition-all cursor-pointer shadow-sm"
-            >
-              <option value="">All Status</option>
-              <option value="draft">Draft Only</option>
-              <option value="final">Final Only</option>
-            </select>
-
-            {(search || status) && (
-              <button
-                onClick={clearFilters}
-                className="flex items-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-2xl text-sm font-bold hover:bg-red-100 transition-all whitespace-nowrap"
-              >
-                Clear
-              </button>
-            )}
-          </div>
+      {/* ── Filters ── */}
+      <div className="glass-card p-4 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            placeholder="Search reports by customer or report number..."
+            className="input-field pl-9 w-full"
+          />
         </div>
+        <select
+          value={status}
+          onChange={(e) => { setStatus(e.target.value); setPage(1); }}
+          className="input-field w-full sm:w-40"
+        >
+          <option value="">All Status</option>
+          <option value="draft">Draft</option>
+          <option value="final">Final</option>
+        </select>
+        {(search || status) && (
+          <button
+            onClick={clearFilters}
+            className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors whitespace-nowrap"
+          >
+            Clear
+          </button>
+        )}
+      </div>
 
-        {/* Table Container */}
-        <div className="overflow-x-auto min-h-[400px]">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-white border-b border-gray-50">
-                {[
-                  "Report No",
-                  "Customer",
-                  "Date",
-                  "Inspection Stage",
-                  "Status",
-                  "Actions",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className={`px-6 py-4 text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] ${
-                      h === "Actions" ? "text-center" : "text-left"
-                    }`}
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50/50">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-24 text-center">
-                    <div className="flex flex-col items-center gap-3">
-                      <Loader2
-                        className="animate-spin text-primary-600"
-                        size={32}
-                      />
-                      <p className="text-sm font-bold text-gray-500 animate-pulse">
-                        Fetching latest records...
-                      </p>
-                    </div>
-                  </td>
+      {/* ── Main Table Area ── */}
+      <div className="glass-card overflow-hidden">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 size={28} className="animate-spin text-primary-600" />
+          </div>
+        ) : reports.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+            <FileBarChart2 size={40} className="mb-3 opacity-40" />
+            <p className="font-medium">No reports found</p>
+            <p className="text-sm mt-1">Try adjusting your search or create a new {activeInfo.label} report.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Report No</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Customer</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Date</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Inspection Stage</th>
+                  <th className="px-4 py-3 text-center font-semibold text-gray-600">Status</th>
+                  <th className="px-4 py-3 text-center font-semibold text-gray-600">Actions</th>
                 </tr>
-              ) : reports.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-24 text-center">
-                    <div className="flex flex-col items-center gap-4 max-w-xs mx-auto text-center">
-                      <div className="p-5 bg-gray-50 rounded-full text-gray-400">
-                        <Search size={32} />
-                      </div>
-                      <div>
-                        <h4 className="text-lg font-bold text-gray-800">
-                          No matching reports
-                        </h4>
-                        <p className="hidden sm:block text-sm text-gray-500 mt-1">
-                          Try adjusting your keywords or adding a new report for{" "}
-                          {activeInfo.fullLabel}.
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                reports.map((r) => (
-                  <tr
-                    key={r._id}
-                    className="group hover:bg-gray-50/80 transition-all duration-300"
-                  >
-                    <td className="px-6 py-5">
-                      <div className="flex flex-col">
-                        <span className="font-black text-gray-900 tracking-tight group-hover:text-primary-700 transition-colors uppercase">
-                          {r.reportNo || r.irNo}
-                        </span>
-                        <span className="text-[10px] font-bold text-gray-400 mt-0.5">
-                          {fmt(r.createdAt)}
-                        </span>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {reports.map((r) => (
+                  <tr key={r._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3 font-medium text-primary-700">
+                      <div className="flex items-center gap-2">
+                        <FileBarChart2 size={14} className="text-primary-400" />
+                        {r.reportNo || r.irNo || "—"}
                       </div>
                     </td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
-                          <User size={14} />
-                        </div>
-                        <span className="font-bold text-gray-700">
-                          {r.jobDetails?.customer ||
-                            r.jobDetails?.client ||
-                            r.client ||
-                            r.customer ||
-                            "Unspecified"}
-                        </span>
-                      </div>
+                    <td className="px-4 py-3 text-gray-700">
+                      {r.jobDetails?.customer || r.jobDetails?.client || r.client || r.customer || "—"}
                     </td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-2 text-gray-600 font-medium">
-                        <Calendar size={14} className="text-gray-400" />
-                        {fmt(
-                          r.jobDetails?.reportDate ||
-                            r.dtOfInspection ||
-                            r.reportDate,
-                        )}
-                      </div>
+                    <td className="px-4 py-3 text-gray-600">
+                      {fmt(r.jobDetails?.reportDate || r.dtOfInspection || r.reportDate)}
                     </td>
-                    <td className="px-6 py-5">
-                      <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-lg">
-                        {r.jobDetails?.stageOfInspection ||
-                          r.inspectionStage ||
-                          r.stageOfInspection ||
-                          "Standard"}
+                    <td className="px-4 py-3 text-gray-600">
+                      {r.jobDetails?.stageOfInspection || r.inspectionStage || r.stageOfInspection || "—"}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        r.status === "final"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}>
+                        {r.status === "final" ? "Final" : "Draft"}
                       </span>
                     </td>
-                    <td className="px-6 py-5">
-                      <span
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                          r.status === "final"
-                            ? "bg-green-50 text-green-700 border border-green-100"
-                            : "bg-amber-50 text-amber-700 border border-amber-100"
-                        }`}
-                      >
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full ${r.status === "final" ? "bg-green-600" : "bg-amber-600"}`}
-                        />
-                        {r.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center justify-center gap-1">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-center gap-2">
                         <button
-                          onClick={() =>
-                            navigate(
-                              `/admin/reports/${activeTab}/${r._id}/print`,
-                            )
-                          }
-                          className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                          title="View"
+                          onClick={() => navigate(`/admin/reports/${activeTab}/${r._id}/print`)}
+                          className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                          title="View / Print"
                         >
-                          <Eye size={14} />
+                          <Eye size={15} />
                         </button>
                         <button
-                          onClick={() =>
-                            navigate(
-                              `/admin/reports/${activeTab}/${r._id}/edit`,
-                            )
-                          }
-                          className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                          onClick={() => navigate(`/admin/reports/${activeTab}/${r._id}/edit`)}
+                          className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
                           title="Edit"
                         >
-                          <Pencil size={14} />
+                          <Pencil size={15} />
                         </button>
                         <button
                           onClick={() => handleDeleteReport(r._id)}
-                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-1.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
                           title="Delete"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={15} />
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-        <Pagination
-          page={page}
-          totalPages={totalPages}
-          total={total}
-          limit={limit}
-          onPageChange={setPage}
-          onLimitChange={(l) => {
-            setLimit(l);
-            setPage(1);
-          }}
-        />
+        {!isLoading && totalPages > 1 && (
+          <div className="px-4 py-3 border-t border-gray-100">
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              limit={limit}
+              onPageChange={setPage}
+              onLimitChange={(l) => { setLimit(l); setPage(1); }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

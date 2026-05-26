@@ -768,7 +768,7 @@ export const CustomerDetailPage = () => {
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50 border-b border-gray-100">
+                      <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
                           {[
                             "Report No",
@@ -781,14 +781,14 @@ export const CustomerDetailPage = () => {
                           ].map((h) => (
                             <th
                               key={h}
-                              className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                              className="px-4 py-3 text-left font-semibold text-gray-600"
                             >
                               {h}
                             </th>
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-50">
+                      <tbody className="divide-y divide-gray-100">
                         {reportDataLoading ? (
                           <tr>
                             <td
@@ -856,7 +856,7 @@ export const CustomerDetailPage = () => {
                                   {r.reportType || reportSubType?.toUpperCase()}
                                 </span>
                               </td>
-                              <td className=" py-3 text-center">
+                              <td className="px-4 py-3 text-center">
                                 <div className="flex items-center gap-1">
                                   <button
                                     onClick={() =>
@@ -870,9 +870,9 @@ export const CustomerDetailPage = () => {
                                         },
                                       )
                                     }
-                                    className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                                    className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                                   >
-                                    <Eye size={14} />
+                                    <Eye size={15} />
                                   </button>
                                   <button
                                     onClick={() =>
@@ -887,15 +887,15 @@ export const CustomerDetailPage = () => {
                                         },
                                       )
                                     }
-                                    className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                                    className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
                                   >
-                                    <Pencil size={14} />
+                                    <Pencil size={15} />
                                   </button>
                                   <button
                                     onClick={() => handleDeleteReport(r._id)}
-                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    className="p-1.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
                                   >
-                                    <Trash2 size={14} />
+                                    <Trash2 size={15} />
                                   </button>
                                 </div>
                               </td>
@@ -940,7 +940,7 @@ export const CustomerDetailPage = () => {
             <div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b border-gray-100">
+                  <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
                       {[
                         "Quotation No",
@@ -953,14 +953,14 @@ export const CustomerDetailPage = () => {
                       ].map((h) => (
                         <th
                           key={h}
-                          className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                          className="px-4 py-3 text-left font-semibold text-gray-600"
                         >
                           {h}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-gray-100">
                     {quotationsLoading ? (
                       <tr>
                         <td
@@ -1026,9 +1026,9 @@ export const CustomerDetailPage = () => {
                                     { state: { customerId: id } },
                                   )
                                 }
-                                className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                               >
-                                <Eye size={13} />
+                                <Eye size={15} />
                               </button>
                               <button
                                 onClick={() =>
@@ -1036,15 +1036,15 @@ export const CustomerDetailPage = () => {
                                     `/admin/quotations/${((q as any)._type as string) || "service"}/${q._id}/edit`,
                                   )
                                 }
-                                className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
                               >
-                                <Pencil size={13} />
+                                <Pencil size={15} />
                               </button>
                               <button
                                 onClick={() => handleDelete(q)}
-                                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
                               >
-                                <Trash2 size={13} />
+                                <Trash2 size={15} />
                               </button>
                             </div>
                           </td>
@@ -1075,7 +1075,7 @@ export const CustomerDetailPage = () => {
             <div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b border-gray-100">
+                  <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
                       {[
                         "Invoice No",
@@ -1087,14 +1087,14 @@ export const CustomerDetailPage = () => {
                       ].map((h) => (
                         <th
                           key={h}
-                          className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                          className="px-4 py-3 text-left font-semibold text-gray-600"
                         >
                           {h}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-gray-100">
                     {invoicesLoading ? (
                       <tr>
                         <td
@@ -1148,23 +1148,23 @@ export const CustomerDetailPage = () => {
                                 onClick={() =>
                                   navigate(`/admin/invoices/${inv._id}/print`)
                                 }
-                                className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                               >
-                                <Eye size={13} />
+                                <Eye size={15} />
                               </button>
                               <button
                                 onClick={() =>
                                   navigate(`/admin/invoices/${inv._id}/edit`)
                                 }
-                                className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
                               >
-                                <Pencil size={13} />
+                                <Pencil size={15} />
                               </button>
                               <button
                                 onClick={() => handleDelete(inv)}
-                                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
                               >
-                                <Trash2 size={13} />
+                                <Trash2 size={15} />
                               </button>
                             </div>
                           </td>
