@@ -49,7 +49,7 @@ const PRINT_STYLES = `
   .quotation-page-footer { margin-top: auto; }
 
   table { border-collapse: collapse; width: 100%; }
-  .title { font-size: 18px; font-weight: bold; text-align: center; letter-spacing: 3px; padding: 0px 0;}
+  .title { font-size: 18px; font-weight: bold; text-align: center; letter-spacing: 2px; padding: 0px 0;}
 
   /* Unified Header & Footer Styles */
   .rpt-header { 
@@ -145,6 +145,15 @@ const PRINT_STYLES = `
     break-inside: avoid;
     page-break-inside: avoid;
   }
+  .quotation-terms {
+  margin-top: 6px;
+  line-height: 1.25;
+}
+
+.quotation-signoff {
+  margin-top: 8px;
+  line-height: 1.2;
+}
 `;
 
 const toNumber = (value: unknown) => {
@@ -254,7 +263,7 @@ export const QuotationPrintPage: React.FC = () => {
         description: "Transportation Charges",
         sacCode: "NA",
         quantity: 1,
-        unit: "Lump Sum",
+        unit: "L/S",
         price: toNumber(data.extraCharges.transportation),
         amount: toNumber(data.extraCharges.transportation),
       });
@@ -264,7 +273,7 @@ export const QuotationPrintPage: React.FC = () => {
         description: "Lodging Charges",
         sacCode: "NA",
         quantity: 1,
-        unit: "Lump Sum",
+        unit: "L/S",
         price: toNumber(data.extraCharges.lodging),
         amount: toNumber(data.extraCharges.lodging),
       });
@@ -274,7 +283,7 @@ export const QuotationPrintPage: React.FC = () => {
         description: "Boarding Charges",
         sacCode: "NA",
         quantity: 1,
-        unit: "Lump Sum",
+        unit: "L/S",
         price: toNumber(data.extraCharges.boarding),
         amount: toNumber(data.extraCharges.boarding),
       });
@@ -315,7 +324,7 @@ export const QuotationPrintPage: React.FC = () => {
   const PAGE_H = 297;
   const HDR_H = 28;
   const FTR_H = 22;
-  const AVAIL_H = PAGE_H - HDR_H - FTR_H; // ~247mm
+  const AVAIL_H = 258; // ~247mm
 
   type Block =
     | { type: "intro"; height: number }
@@ -335,8 +344,8 @@ export const QuotationPrintPage: React.FC = () => {
       height: 8 + Math.max(0, Math.ceil(row.description.length / 45) - 1) * 4,
     })),
     { type: "table-totals", height: 20 },
-    ...termLines.map((text) => ({ type: "term" as const, text, height: 7 })),
-    { type: "signoff", height: 55 },
+    ...termLines.map((text) => ({ type: "term" as const, text, height: 5 })),
+    { type: "signoff", height: 38 },
   ];
 
   const pageList: Block[][] = [];
