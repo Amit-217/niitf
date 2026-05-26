@@ -476,10 +476,12 @@ export const CustomersPage = () => {
                     <div className="col-span-2 sm:col-span-1">
                       <label className={labelClass}>State Code</label>
                       <input
-                        readOnly
                         value={form.stateCode || ""}
-                        className={`${inputClass} bg-gray-50 cursor-not-allowed`}
-                        placeholder="Auto-filled"
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, stateCode: e.target.value }))
+                        }
+                        className={inputClass}
+                        placeholder="Auto-filled or enter manually"
                       />
                     </div>
                     <div className="col-span-2">
