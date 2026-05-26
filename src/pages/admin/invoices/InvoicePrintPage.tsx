@@ -634,10 +634,10 @@ export const InvoicePrintPage: React.FC = () => {
   );
 
   // Dynamic pagination block layout engine
-  const PAGE_HEIGHT_LIMIT = 282; // mm
+  const PAGE_HEIGHT_LIMIT = 288; // mm
   const HEADER_HEIGHT = 28; // mm
   const FOOTER_HEIGHT = 22; // mm
-  const DETAILS_HEIGHT = 80; // mm
+  const DETAILS_HEIGHT = 60; // mm
   const TABLE_HEADER_HEIGHT = 8; // mm
   const HSN_HEADER_HEIGHT = 10; // mm
 
@@ -648,8 +648,7 @@ export const InvoicePrintPage: React.FC = () => {
     | { type: "amount-words"; height: number }
     | { type: "hsn-row"; code: string; taxable: number; height: number }
     | { type: "hsn-total"; height: number }
-    | { type: "declaration"; height: number }
-    | { type: "signature"; height: number };
+    | { type: "final-section"; height: number };
 
   const blocks: ContentBlock[] = [];
 
@@ -705,16 +704,10 @@ export const InvoicePrintPage: React.FC = () => {
   });
 
   // 6. Pack Declaration
-  blocks.push({
-    type: "declaration",
-    height: 18,
-  });
-
-  // 7. Pack Signature Section
-  blocks.push({
-    type: "signature",
-    height: 37,
-  });
+blocks.push({
+  type: "final-section",
+  height: 50,
+});
 
   type PageDescriptor = {
     isFirstPage: boolean;
@@ -842,11 +835,17 @@ export const InvoicePrintPage: React.FC = () => {
                   })}
                   {hasHsnTable && renderHsnTable(pageHsnRows, showHsnTotal)}
                   {showHsnTotal && renderHsnTaxWords()}
-                  {pageBlocks.map((block, idx) => {
-                    if (block.type === "declaration") return <React.Fragment key={idx}>{renderDeclarationSection()}</React.Fragment>;
-                    if (block.type === "signature") return <React.Fragment key={idx}>{renderSignatureSection()}</React.Fragment>;
-                    return null;
-                  })}
+                 {pageBlocks.map((block, idx) => {
+                  if (block.type === "final-section")
+                    return (
+                      <React.Fragment key={idx}>
+                        {renderDeclarationSection()}
+                        {renderSignatureSection()}
+                      </React.Fragment>
+                    );
+
+                  return null;
+                })}
                 </div>
               </div>
               <div className="invoice-page-footer">
