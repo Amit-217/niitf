@@ -512,7 +512,7 @@ export const InvoiceFormPage: React.FC = () => {
               )}
             </div>
           </div>
-          <div className="md:col-span-2 lg:col-span-3">
+          {/* <div className="md:col-span-2 lg:col-span-3">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Subject
             </label>
@@ -522,7 +522,7 @@ export const InvoiceFormPage: React.FC = () => {
               onChange={(e) => setField("subject", e.target.value)}
               placeholder="Invoice subject"
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
