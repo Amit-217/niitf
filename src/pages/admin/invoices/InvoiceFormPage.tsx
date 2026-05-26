@@ -591,6 +591,7 @@ export const InvoiceFormPage: React.FC = () => {
             { label: "Document No", key: "documentNo" },
             { label: "Dispatched Through", key: "dispatchedThrough" },
             { label: "Destination", key: "destination" },
+            { label: "Terms of Delivery", key: "termsOfDelivery" },
           ].map(({ label, key }) => (
             <div key={key}>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -604,7 +605,7 @@ export const InvoiceFormPage: React.FC = () => {
               />
             </div>
           ))}
-          <div className="md:col-span-2">
+          {/* <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Terms of Delivery
             </label>
@@ -614,7 +615,7 @@ export const InvoiceFormPage: React.FC = () => {
               onChange={(e) => setField("termsOfDelivery", e.target.value)}
               placeholder="Terms of delivery"
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -636,7 +637,7 @@ export const InvoiceFormPage: React.FC = () => {
                 <th className="px-3 py-2 text-left text-gray-600 font-semibold w-28">
                   HSN/SAC
                 </th>
-                <th className="px-3 py-2 text-left text-gray-600 font-semibold w-20">
+                <th className="px-3 py-2 text-left text-gray-600 font-semibold w-28">
                   Qty
                 </th>
                 <th className="px-3 py-2 text-left text-gray-600 font-semibold w-24">
@@ -667,7 +668,7 @@ export const InvoiceFormPage: React.FC = () => {
                       placeholder="Description of work"
                     />
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-1 py-2">
                     <input
                       className="input-field w-full"
                       value={it.hsnSac}
@@ -677,7 +678,7 @@ export const InvoiceFormPage: React.FC = () => {
                       placeholder="HSN/SAC"
                     />
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-1 py-2 w-28">
                     <input
                       type="number"
                       min="1"
@@ -688,7 +689,7 @@ export const InvoiceFormPage: React.FC = () => {
                       }
                     />
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-1 py-2">
                     <select
                       className="input-field w-full"
                       value={it.unit}
@@ -701,7 +702,7 @@ export const InvoiceFormPage: React.FC = () => {
                       ))}
                     </select>
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-1 py-2">
                     <input
                       type="number"
                       min="0"
@@ -733,12 +734,14 @@ export const InvoiceFormPage: React.FC = () => {
             </tbody>
           </table>
         </div>
-        <button
-          onClick={addItem}
-          className="inline-flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"
-        >
-          <Plus size={15} /> Add Line Item
-        </button>
+        <div className="flex justify-end pr-5">
+          <button
+            onClick={addItem}
+            className="inline-flex items-end gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"
+          >
+            <Plus size={15} /> Add Item
+          </button>
+        </div>
       </div>
 
       {/* GST & Totals */}
