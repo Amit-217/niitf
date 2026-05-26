@@ -16,43 +16,34 @@ import {
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
-  @media screen { 
+
+  @media screen {
     body.autoprint-mode { background: #fff !important; }
-    body.autoprint-mode > #root > *:not(.print-fixed-footer):not(.print-footer-fixed) { opacity: 0 !important; visibility: hidden !important; }
+    body.autoprint-mode > #root > * { opacity: 0 !important; visibility: hidden !important; }
+    .print-page { margin: 0 auto 16px auto; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
   }
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
-    body { margin: 0; background: #fff; min-height: 297mm !important; }
-    #report-root { background: #fff !important; padding: 0 !important; display: block !important; }
-    #report-root > div {
-      width: 210mm !important; 
-      margin: 0 !important; padding: 0mm 5mm 35mm 5mm !important;
-      box-sizing: border-box !important; position: relative !important;
-      page-break-after: auto !important;
-      box-shadow: none !important;
-    }
-    .report {
-      margin: 0 !important; box-shadow: none !important;
-      width: 100% !important;
-    }
-    .screen-sign-table { display: none !important; }
-    .print-fixed-footer {
-      position: fixed !important;
-      bottom: 5mm !important;
-      left: 5mm !important;
-      right: 5mm !important;
-      background: #fff !important;
-      z-index: 999999 !important;
-      contain: layout !important;
-      pointer-events: none !important;
-      transform: translateZ(0);
-      will-change: transform;
-    }
+    body { margin: 0; background: #fff; }
+    #report-root { background: #fff !important; padding: 0 !important; }
+    .print-page { min-height: 296mm; margin: 0 !important; box-shadow: none !important; break-after: page; page-break-after: always; }
+    .print-page:last-child { break-after: auto; page-break-after: auto; }
+    .report-body { overflow: visible !important; }
   }
+
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: none; border-radius: 0; overflow: hidden; }
+
+  /* Each page is a self-contained A4 block: header at the top, content in a
+     flex region (flex:1), and the footer in NORMAL document flow at the bottom.
+     No position:fixed, so the footer can never be dropped by the print
+     compositor and always sits at the bottom of every page, including the
+     last one. The same blocks are used on screen and in print. */
+  .print-page { width: 210mm; min-height: 297mm; background: #fff; box-sizing: border-box; padding: 0 5mm 5mm 5mm; display: flex; flex-direction: column; }
+  .print-page-content { flex: 1 1 auto; }
+  .print-page-foot { margin-top: 4px; }
+
   .rpt-header { padding: 2px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
   .logo-box { width: 160px; height: 110px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-12px); }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
@@ -128,12 +119,6 @@ const PRINT_STYLES = `
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-
-  @media screen {
-    .print-blank-row { display: none; }
-    .print-fixed-footer { display: none; }
-    .print-sign-table { display: none; }
-  }
 `;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -282,6 +267,481 @@ export const TPIIVRReportPrintPage: React.FC = () => {
     </>
   );
 
+  const renderHeader = () => (
+    <div className="rpt-header">
+      <div className="logo-box">
+        <img src="/logo.png" alt="NIIT Logo" />
+      </div>
+      <div className="hdr-center">
+        <div className="org">
+          National Industrial Inspection and Training
+        </div>
+        <div className="sub">
+          THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING | NDT
+          CONSULTANCY
+          <br />
+          FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT{" "}
+        </div>
+        <div className="iso">(AN ISO 9001:2015 CERTIFIED ORGANIZATION)</div>
+      </div>
+    </div>
+  );
+
+  const renderSignatures = () => (
+    <div className="report-footer-wrap">
+      <table className="sign-table mt-n1">
+        <colgroup>
+          <col style={{ width: "50%" }} />
+          <col style={{ width: "50%" }} />
+        </colgroup>
+        <tbody>
+          <tr>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>FOR VENDOR :</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              FOR NIIT SURVEYOR, BARAMATI :
+            </td>
+          </tr>
+          <tr>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              {v(vd.vendor) || "-"}
+            </td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              National Industrial Inspection And Training
+            </td>
+          </tr>
+          <tr>
+            <td>Name: {v(sigs.vendor?.name) || "-"}</td>
+            <td>Name: {v(sigs.niit?.name) || "-"}</td>
+          </tr>
+          <tr>
+            <td style={{ height: "60px" }}>Signature:</td>
+            <td style={{ height: "60px" }}>Signature:</td>
+          </tr>
+          <tr>
+            <td>Date: {fmtDate(sigs.vendor?.date) || "-"}</td>
+            <td>Date: {fmtDate(sigs.niit?.date) || "-"}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+
+  const fixedSections = (
+    <>
+      <div className="rpt-title">Inspection Visit Report</div>
+
+      {/* ── JOB DETAILS ── */}
+      <table className="report-table mt-n1">
+        <colgroup>
+          <col style={{ width: "15%" }} />
+          <col style={{ width: "23%" }} />
+          <col style={{ width: "12%" }} />
+          <col style={{ width: "18%" }} />
+          <col style={{ width: "32%" }} />
+        </colgroup>
+        <tbody>
+          <tr>
+            <td className="lbl">I.R No:</td>
+            <td className="val" style={{ fontWeight: 600 }}>
+              {v(report.irNo)}
+            </td>
+            <td
+              className="val"
+              style={{ fontWeight: 600, textAlign: "center" }}
+            >
+              <span style={{ fontSize: "10px", fontWeight: 600 }}>
+                IR Rev.:{" "}
+              </span>
+              {v(report.irRev)}
+            </td>
+            <td className="lbl">Dt. of Inspection</td>
+            <td className="val" style={{ fontWeight: 600 }}>
+              {fmtDate(report.dtOfInspection)}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table className="report-table mt-n1">
+        <colgroup>
+          <col style={{ width: "15%" }} />
+          <col style={{ width: "35%" }} />
+          <col style={{ width: "18%" }} />
+          <col style={{ width: "32%" }} />
+        </colgroup>
+        <tbody>
+          <tr>
+            <td className="lbl">Client:-</td>
+            <td className="val">{v(report.client)}</td>
+            <td className="lbl">Inspection location</td>
+            <td className="val">{v(report.inspectionLocation)}</td>
+          </tr>
+          <tr>
+            <td className="lbl">Project</td>
+            <td className="val">{v(report.project)}</td>
+            <td className="lbl">Appd. QAP No</td>
+            <td className="val">{v(report.appdQapNo)}</td>
+          </tr>
+          <tr>
+            <td className="lbl">Client PO No</td>
+            <td className="val">{v(report.clientPoNo)}</td>
+            <td className="lbl">Appd. QAP Dt.</td>
+            <td className="val">{fmtDate(report.appdQapDt)}</td>
+          </tr>
+          <tr>
+            <td className="lbl">PO Amed. No</td>
+            <td className="val">{v(report.poAmedNo)}</td>
+            <td className="lbl">Part Name</td>
+            <td className="val">{v(report.partName)}</td>
+          </tr>
+          <tr>
+            <td className="lbl">PO Date</td>
+            <td className="val">{fmtDate(report.poDate)}</td>
+            <td className="lbl">Inspection Stage</td>
+            <td className="val">{v(report.inspectionStage)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* ── CLIENT & VENDOR DETAILS ── */}
+      <table className="report-table mt-n1">
+        <colgroup>
+          <col style={{ width: "50%" }} />
+          <col style={{ width: "50%" }} />
+        </colgroup>
+        <tbody>
+          <tr>
+            <td className="section-hdr">1. CLIENT DETAILS</td>
+            <td className="section-hdr">2. VENDOR DETAILS</td>
+          </tr>
+          <tr>
+            <td style={{ verticalAlign: "top", padding: 0 }}>
+              <table className="nested-table">
+                <colgroup>
+                  <col style={{ width: "30%" }} />
+                  <col style={{ width: "70%" }} />
+                </colgroup>
+                <tbody>
+                  <tr>
+                    <td className="lbl">Ref</td>
+                    <td className="val">{v(cd.ref)}</td>
+                  </tr>
+                  <tr>
+                    <td className="lbl">Contact</td>
+                    <td className="val">{v(cd.contact)}</td>
+                  </tr>
+                  <tr>
+                    <td className="lbl">Call Date</td>
+                    <td className="val">{fmtDate(cd.callDate)}</td>
+                  </tr>
+                  <tr>
+                    <td className="lbl">Inspection Att. Date</td>
+                    <td className="val">{fmtDate(cd.inspectionAttDt)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td
+              style={{
+                verticalAlign: "top",
+                padding: 0,
+                borderLeft: "1px solid #444",
+              }}
+            >
+              <table className="nested-table">
+                <colgroup>
+                  <col style={{ width: "36%" }} />
+                  <col style={{ width: "64%" }} />
+                </colgroup>
+                <tbody>
+                  <tr>
+                    <td className="lbl">Vendor</td>
+                    <td className="val">{v(vd.vendor)}</td>
+                  </tr>
+                  <tr>
+                    <td className="lbl">Sub Vendor</td>
+                    <td className="val">{v(vd.subVendor)}</td>
+                  </tr>
+                  <tr>
+                    <td className="lbl">Contact</td>
+                    <td className="val">{v(vd.contact)}</td>
+                  </tr>
+                  <tr>
+                    <td className="lbl">Phone</td>
+                    <td className="val">{v(vd.phone)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td
+              colSpan={2}
+              className="lbl"
+              style={{
+                fontWeight: "normal",
+                whiteSpace: "normal",
+              }}
+            >
+              <strong>Extra Visit / Date:</strong> {v(ev.date)}
+              &nbsp;&nbsp; <strong>Comment:</strong> {v(ev.comment)}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* ── INSPECTION ITEMS ── */}
+      <table className="items-table mt-n1">
+        <thead>
+          <tr>
+            <td colSpan={9} className="section-hdr">
+              3. INSPECTION ITEMS
+            </td>
+          </tr>
+          <tr>
+            <td className="col-hdr" style={{ width: "8%" }} rowSpan={2}>
+              PO Line No.
+            </td>
+            <td
+              className="col-hdr"
+              style={{ width: "24%", textAlign: "left" }}
+              rowSpan={2}
+            >
+              Description
+            </td>
+            <td
+              className="col-hdr"
+              style={{ width: "16%", textAlign: "left" }}
+              rowSpan={2}
+            >
+              Drg No. / Heat No.
+            </td>
+            <td
+              className="col-hdr"
+              colSpan={5}
+              style={{ textAlign: "center" }}
+            >
+              Quantity in Nos.
+            </td>
+            <td className="col-hdr" style={{ width: "14%" }} rowSpan={2}>
+              Insp. Type
+            </td>
+          </tr>
+          <tr>
+            <td className="col-hdr" style={{ width: "8%" }}>
+              Offered
+            </td>
+            <td className="col-hdr" style={{ width: "8%" }}>
+              Inspected
+            </td>
+            <td className="col-hdr" style={{ width: "8%" }}>
+              Accepted
+            </td>
+            <td className="col-hdr" style={{ width: "7%" }}>
+              Hold
+            </td>
+            <td className="col-hdr" style={{ width: "7%" }}>
+              Reject
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          {items.length === 0 ? (
+            <tr>
+              <td
+                colSpan={9}
+                style={{
+                  textAlign: "center",
+                  padding: "5px",
+                  color: "#999",
+                  fontSize: "11px",
+                }}
+              >
+                No items recorded.
+              </td>
+            </tr>
+          ) : (
+            items.map((item: any, i: number) => (
+              <tr key={i}>
+                <td>{v(item.poLineNo)}</td>
+                <td className="text-left" style={{ textAlign: "left" }}>
+                  {v(item.description)}
+                </td>
+                <td className="text-left" style={{ textAlign: "left" }}>
+                  {v(item.drgOrHeatNo)}
+                </td>
+                <td>{v(item.qtyOffered)}</td>
+                <td>{v(item.qtyInspected)}</td>
+                <td>{v(item.qtyAccepted)}</td>
+                <td>{v(item.qtyHold)}</td>
+                <td>{v(item.qtyReject)}</td>
+                <td>{v(item.inspectionType)}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+
+      {/* ── INSPECTION ACTIVITIES ── */}
+      <table
+        className="report-table mt-n1"
+        style={{ breakInside: "auto", pageBreakInside: "auto" }}
+      >
+        <thead>
+          <tr>
+            <td className="section-hdr">4. INSPECTION ACTIVITIES</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className="activities-box">
+              {v(report.inspectionActivities) || " "}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* ── REFERENCE DOCUMENTS ── */}
+      <table
+        className="report-table mt-n1"
+        style={{ breakInside: "auto", pageBreakInside: "auto" }}
+      >
+        <colgroup>
+          <col style={{ width: "30%" }} />
+          <col style={{ width: "50%" }} />
+          <col style={{ width: "20%" }} />
+        </colgroup>
+        <thead>
+          <tr>
+            <td colSpan={3} className="section-hdr">
+              5. REFERENCE DOCUMENTS FOR INSPECTION
+            </td>
+          </tr>
+          <tr>
+            <td className="col-hdr">Document</td>
+            <td className="col-hdr">Reference Number</td>
+            <td className="col-hdr">Rev. No.</td>
+          </tr>
+        </thead>
+        <tbody>
+          {refs.length === 0 ? (
+            <tr>
+              <td
+                colSpan={3}
+                style={{
+                  textAlign: "center",
+                  padding: "4px",
+                  color: "#999",
+                  fontSize: "11px",
+                }}
+              >
+                No reference documents recorded.
+              </td>
+            </tr>
+          ) : (
+            refs.map((doc: any, i: number) => (
+              <tr key={i}>
+                <td className="lbl" style={{ fontWeight: 500 }}>
+                  {v(doc.document)}
+                </td>
+                <td className="val">{v(doc.referenceNumber)}</td>
+                <td className="val">{v(doc.revNo)}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+
+      {/* ── CALIBRATION STATUS ── */}
+      <table
+        className="report-table mt-n1"
+        style={{ breakInside: "auto", pageBreakInside: "auto" }}
+      >
+        <colgroup>
+          <col style={{ width: "28%" }} />
+          <col style={{ width: "18%" }} />
+          <col style={{ width: "18%" }} />
+          <col style={{ width: "18%" }} />
+          <col style={{ width: "18%" }} />
+        </colgroup>
+        <thead>
+          <tr>
+            <td colSpan={5} className="section-hdr">
+              6. CALIBRATION STATUS OF INSTRUMENTS
+            </td>
+          </tr>
+          <tr>
+            <td className="col-hdr">Equipment / Instrument</td>
+            <td className="col-hdr">I.D. Number</td>
+            <td className="col-hdr">Calibration Date</td>
+            <td className="col-hdr">Due Date</td>
+            <td className="col-hdr">NABL Certified</td>
+          </tr>
+        </thead>
+        <tbody>
+          {calib.length === 0 ? (
+            <tr>
+              <td
+                colSpan={5}
+                style={{
+                  textAlign: "center",
+                  padding: "4px",
+                  color: "#999",
+                  fontSize: "11px",
+                }}
+              >
+                No calibration records.
+              </td>
+            </tr>
+          ) : (
+            calib.map((c: any, i: number) => (
+              <tr key={i}>
+                <td className="val">{v(c.equipment)}</td>
+                <td style={{ fontSize: "11px" }}>{v(c.idNumber)}</td>
+                <td style={{ fontSize: "11px" }}>
+                  {fmtDate(c.calibrationDate)}
+                </td>
+                <td style={{ fontSize: "11px" }}>{fmtDate(c.dueDate)}</td>
+                <td style={{ fontSize: "11px" }}>{v(c.nablCertified)}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+
+      {/* ── CONCLUSION ── */}
+      <table
+        className="report-table mt-n1"
+        style={{
+          breakInside: "avoid",
+          pageBreakInside: "avoid",
+        }}
+      >
+        <tbody>
+          <tr>
+            <td className="section-hdr">7. CONCLUSION</td>
+          </tr>
+          <tr>
+            <td className="val" style={{ padding: "8px", minHeight: "40px" }}>
+              {v(report.conclusion) || "-"}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </>
+  );
+
+  // --- All content fits on a single self-contained A4 block. The signature
+  //     block appears once, at the end of the last (only) page's content. Each
+  //     page renders the header at the top and the ReportFooter in normal flow
+  //     at the bottom. ---
+  const pages = [
+    <>
+      {fixedSections}
+      {renderSignatures()}
+    </>,
+  ];
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
@@ -334,567 +794,17 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         id="report-root"
         style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
       >
-        <div
-          style={{
-            position: "relative",
-            width: "210mm",
-            minHeight: "297mm",
-            margin: "0 auto",
-            padding: "0mm 5mm 35mm 5mm",
-            background: "#fff",
-            boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-            boxSizing: "border-box",
-          }}
-        >
-          <div className={`report${bwMode ? " bw" : ""}`}>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                borderSpacing: 0,
-                margin: 0,
-                padding: 0,
-              }}
-            >
-              <thead style={{ display: "table-header-group" }}>
-                <tr>
-                  <td style={{ padding: "0" }}>
-                    <div className="rpt-header">
-                      <div className="logo-box">
-                        <img src="/logo.png" alt="NIIT Logo" />
-                      </div>
-                      <div className="hdr-center">
-                        <div className="org">
-                          National Industrial Inspection and Training
-                        </div>
-                        <div className="sub">
-                          THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT
-                          TRAINING | NDT CONSULTANCY
-                          <br />
-                          FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT{" "}
-                        </div>
-                        <div className="iso">
-                          (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </thead>
-              <tfoot style={{ display: "table-footer-group" }}>
-                <tr>
-                  <td style={{ padding: 0 }}>
-                    <div className="report-footer-wrap">
-                      <table className="sign-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "50%" }} />
-                          <col style={{ width: "50%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              FOR VENDOR :
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              FOR NIIT SURVEYOR, BARAMATI :
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              {v(vd.vendor) || "-"}
-                            </td>
-                            <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                              National Industrial Inspection And Training
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Name: {v(sigs.vendor?.name) || "-"}</td>
-                            <td>Name: {v(sigs.niit?.name) || "-"}</td>
-                          </tr>
-                          <tr>
-                            <td style={{ height: "60px" }}>Signature:</td>
-                            <td style={{ height: "60px" }}>Signature:</td>
-                          </tr>
-                          <tr>
-                            <td>Date: {fmtDate(sigs.vendor?.date) || "-"}</td>
-                            <td>Date: {fmtDate(sigs.niit?.date) || "-"}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <div
-                      className="tfoot-spacer"
-                      style={{ height: "28mm" }}
-                    ></div>
-                  </td>
-                </tr>
-              </tfoot>
-              <tbody style={{ display: "table-row-group" }}>
-                <tr>
-                  <td style={{ padding: 0, verticalAlign: "top" }}>
-                    <div className="report-body">
-                      <div className="rpt-title">Inspection Visit Report</div>
-
-                      {/* ── JOB DETAILS ── */}
-                      <table className="report-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "15%" }} />
-                          <col style={{ width: "23%" }} />
-                          <col style={{ width: "12%" }} />
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "32%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td className="lbl">I.R No:</td>
-                            <td className="val" style={{ fontWeight: 600 }}>
-                              {v(report.irNo)}
-                            </td>
-                            <td
-                              className="val"
-                              style={{ fontWeight: 600, textAlign: "center" }}
-                            >
-                              <span
-                                style={{ fontSize: "10px", fontWeight: 600 }}
-                              >
-                                IR Rev.:{" "}
-                              </span>
-                              {v(report.irRev)}
-                            </td>
-                            <td className="lbl">Dt. of Inspection</td>
-                            <td className="val" style={{ fontWeight: 600 }}>
-                              {fmtDate(report.dtOfInspection)}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-
-                      <table className="report-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "15%" }} />
-                          <col style={{ width: "35%" }} />
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "32%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td className="lbl">Client:-</td>
-                            <td className="val">{v(report.client)}</td>
-                            <td className="lbl">Inspection location</td>
-                            <td className="val">
-                              {v(report.inspectionLocation)}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Project</td>
-                            <td className="val">{v(report.project)}</td>
-                            <td className="lbl">Appd. QAP No</td>
-                            <td className="val">{v(report.appdQapNo)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">Client PO No</td>
-                            <td className="val">{v(report.clientPoNo)}</td>
-                            <td className="lbl">Appd. QAP Dt.</td>
-                            <td className="val">{fmtDate(report.appdQapDt)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">PO Amed. No</td>
-                            <td className="val">{v(report.poAmedNo)}</td>
-                            <td className="lbl">Part Name</td>
-                            <td className="val">{v(report.partName)}</td>
-                          </tr>
-                          <tr>
-                            <td className="lbl">PO Date</td>
-                            <td className="val">{fmtDate(report.poDate)}</td>
-                            <td className="lbl">Inspection Stage</td>
-                            <td className="val">{v(report.inspectionStage)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-
-                      {/* ── CLIENT & VENDOR DETAILS ── */}
-                      <table className="report-table mt-n1">
-                        <colgroup>
-                          <col style={{ width: "50%" }} />
-                          <col style={{ width: "50%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td className="section-hdr">1. CLIENT DETAILS</td>
-                            <td className="section-hdr">2. VENDOR DETAILS</td>
-                          </tr>
-                          <tr>
-                            <td style={{ verticalAlign: "top", padding: 0 }}>
-                              <table className="nested-table">
-                                <colgroup>
-                                  <col style={{ width: "30%" }} />
-                                  <col style={{ width: "70%" }} />
-                                </colgroup>
-                                <tbody>
-                                  <tr>
-                                    <td className="lbl">Ref</td>
-                                    <td className="val">{v(cd.ref)}</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="lbl">Contact</td>
-                                    <td className="val">{v(cd.contact)}</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="lbl">Call Date</td>
-                                    <td className="val">
-                                      {fmtDate(cd.callDate)}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="lbl">
-                                      Inspection Att. Date
-                                    </td>
-                                    <td className="val">
-                                      {fmtDate(cd.inspectionAttDt)}
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </td>
-                            <td
-                              style={{
-                                verticalAlign: "top",
-                                padding: 0,
-                                borderLeft: "1px solid #444",
-                              }}
-                            >
-                              <table className="nested-table">
-                                <colgroup>
-                                  <col style={{ width: "36%" }} />
-                                  <col style={{ width: "64%" }} />
-                                </colgroup>
-                                <tbody>
-                                  <tr>
-                                    <td className="lbl">Vendor</td>
-                                    <td className="val">{v(vd.vendor)}</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="lbl">Sub Vendor</td>
-                                    <td className="val">{v(vd.subVendor)}</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="lbl">Contact</td>
-                                    <td className="val">{v(vd.contact)}</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="lbl">Phone</td>
-                                    <td className="val">{v(vd.phone)}</td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td
-                              colSpan={2}
-                              className="lbl"
-                              style={{
-                                fontWeight: "normal",
-                                whiteSpace: "normal",
-                              }}
-                            >
-                              <strong>Extra Visit / Date:</strong> {v(ev.date)}
-                              &nbsp;&nbsp; <strong>Comment:</strong>{" "}
-                              {v(ev.comment)}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-
-                      {/* ── INSPECTION ITEMS ── */}
-                      <table className="items-table mt-n1">
-                        <thead style={{ display: "table-header-group" }}>
-                          <tr>
-                            <td colSpan={9} className="section-hdr">
-                              3. INSPECTION ITEMS
-                            </td>
-                          </tr>
-                          <tr>
-                            <td
-                              className="col-hdr"
-                              style={{ width: "8%" }}
-                              rowSpan={2}
-                            >
-                              PO Line No.
-                            </td>
-                            <td
-                              className="col-hdr"
-                              style={{ width: "24%", textAlign: "left" }}
-                              rowSpan={2}
-                            >
-                              Description
-                            </td>
-                            <td
-                              className="col-hdr"
-                              style={{ width: "16%", textAlign: "left" }}
-                              rowSpan={2}
-                            >
-                              Drg No. / Heat No.
-                            </td>
-                            <td
-                              className="col-hdr"
-                              colSpan={5}
-                              style={{ textAlign: "center" }}
-                            >
-                              Quantity in Nos.
-                            </td>
-                            <td
-                              className="col-hdr"
-                              style={{ width: "14%" }}
-                              rowSpan={2}
-                            >
-                              Insp. Type
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="col-hdr" style={{ width: "8%" }}>
-                              Offered
-                            </td>
-                            <td className="col-hdr" style={{ width: "8%" }}>
-                              Inspected
-                            </td>
-                            <td className="col-hdr" style={{ width: "8%" }}>
-                              Accepted
-                            </td>
-                            <td className="col-hdr" style={{ width: "7%" }}>
-                              Hold
-                            </td>
-                            <td className="col-hdr" style={{ width: "7%" }}>
-                              Reject
-                            </td>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {items.length === 0 ? (
-                            <tr>
-                              <td
-                                colSpan={9}
-                                style={{
-                                  textAlign: "center",
-                                  padding: "5px",
-                                  color: "#999",
-                                  fontSize: "11px",
-                                }}
-                              >
-                                No items recorded.
-                              </td>
-                            </tr>
-                          ) : (
-                            items.map((item: any, i: number) => (
-                              <tr key={i}>
-                                <td>{v(item.poLineNo)}</td>
-                                <td
-                                  className="text-left"
-                                  style={{ textAlign: "left" }}
-                                >
-                                  {v(item.description)}
-                                </td>
-                                <td
-                                  className="text-left"
-                                  style={{ textAlign: "left" }}
-                                >
-                                  {v(item.drgOrHeatNo)}
-                                </td>
-                                <td>{v(item.qtyOffered)}</td>
-                                <td>{v(item.qtyInspected)}</td>
-                                <td>{v(item.qtyAccepted)}</td>
-                                <td>{v(item.qtyHold)}</td>
-                                <td>{v(item.qtyReject)}</td>
-                                <td>{v(item.inspectionType)}</td>
-                              </tr>
-                            ))
-                          )}
-                        </tbody>
-                      </table>
-
-                      {/* ── INSPECTION ACTIVITIES ── */}
-                      <table
-                        className="report-table mt-n1"
-                        style={{ breakInside: "auto", pageBreakInside: "auto" }}
-                      >
-                        <thead style={{ display: "table-header-group" }}>
-                          <tr>
-                            <td className="section-hdr">
-                              4. INSPECTION ACTIVITIES
-                            </td>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td className="activities-box">
-                              {v(report.inspectionActivities) || " "}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-
-                      {/* ── REFERENCE DOCUMENTS ── */}
-                      <table
-                        className="report-table mt-n1"
-                        style={{ breakInside: "auto", pageBreakInside: "auto" }}
-                      >
-                        <colgroup>
-                          <col style={{ width: "30%" }} />
-                          <col style={{ width: "50%" }} />
-                          <col style={{ width: "20%" }} />
-                        </colgroup>
-                        <thead style={{ display: "table-header-group" }}>
-                          <tr>
-                            <td colSpan={3} className="section-hdr">
-                              5. REFERENCE DOCUMENTS FOR INSPECTION
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="col-hdr">Document</td>
-                            <td className="col-hdr">Reference Number</td>
-                            <td className="col-hdr">Rev. No.</td>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {refs.length === 0 ? (
-                            <tr>
-                              <td
-                                colSpan={3}
-                                style={{
-                                  textAlign: "center",
-                                  padding: "4px",
-                                  color: "#999",
-                                  fontSize: "11px",
-                                }}
-                              >
-                                No reference documents recorded.
-                              </td>
-                            </tr>
-                          ) : (
-                            refs.map((doc: any, i: number) => (
-                              <tr key={i}>
-                                <td className="lbl" style={{ fontWeight: 500 }}>
-                                  {v(doc.document)}
-                                </td>
-                                <td className="val">
-                                  {v(doc.referenceNumber)}
-                                </td>
-                                <td className="val">{v(doc.revNo)}</td>
-                              </tr>
-                            ))
-                          )}
-                        </tbody>
-                      </table>
-
-                      {/* ── CALIBRATION STATUS ── */}
-                      <table
-                        className="report-table mt-n1"
-                        style={{ breakInside: "auto", pageBreakInside: "auto" }}
-                      >
-                        <colgroup>
-                          <col style={{ width: "28%" }} />
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "18%" }} />
-                          <col style={{ width: "18%" }} />
-                        </colgroup>
-                        <thead style={{ display: "table-header-group" }}>
-                          <tr>
-                            <td colSpan={5} className="section-hdr">
-                              6. CALIBRATION STATUS OF INSTRUMENTS
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="col-hdr">Equipment / Instrument</td>
-                            <td className="col-hdr">I.D. Number</td>
-                            <td className="col-hdr">Calibration Date</td>
-                            <td className="col-hdr">Due Date</td>
-                            <td className="col-hdr">NABL Certified</td>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {calib.length === 0 ? (
-                            <tr>
-                              <td
-                                colSpan={5}
-                                style={{
-                                  textAlign: "center",
-                                  padding: "4px",
-                                  color: "#999",
-                                  fontSize: "11px",
-                                }}
-                              >
-                                No calibration records.
-                              </td>
-                            </tr>
-                          ) : (
-                            calib.map((c: any, i: number) => (
-                              <tr key={i}>
-                                <td className="val">{v(c.equipment)}</td>
-                                <td style={{ fontSize: "11px" }}>
-                                  {v(c.idNumber)}
-                                </td>
-                                <td style={{ fontSize: "11px" }}>
-                                  {fmtDate(c.calibrationDate)}
-                                </td>
-                                <td style={{ fontSize: "11px" }}>
-                                  {fmtDate(c.dueDate)}
-                                </td>
-                                <td style={{ fontSize: "11px" }}>
-                                  {v(c.nablCertified)}
-                                </td>
-                              </tr>
-                            ))
-                          )}
-                        </tbody>
-                      </table>
-
-                      {/* ── CONCLUSION ── */}
-                      <table
-                        className="report-table mt-n1"
-                        style={{
-                          breakInside: "avoid",
-                          pageBreakInside: "avoid",
-                        }}
-                      >
-                        <tbody>
-                          <tr>
-                            <td className="section-hdr">7. CONCLUSION</td>
-                          </tr>
-                          <tr>
-                            <td
-                              className="val"
-                              style={{ padding: "8px", minHeight: "40px" }}
-                            >
-                              {v(report.conclusion) || "-"}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    {/* ── end report-body ── */}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        {pages.map((content, i) => (
+          <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
+            <div className="print-page-content">
+              {renderHeader()}
+              <div className="report-body">{content}</div>
+            </div>
+            <div className="print-page-foot">
+              <ReportFooter />
+            </div>
           </div>
-
-          <div
-            className={`no-print ${bwMode ? "bw" : ""}`}
-            style={{
-              position: "absolute",
-              bottom: "5mm",
-              left: "5mm",
-              right: "5mm",
-            }}
-          >
-            <ReportFooter />
-          </div>
-        </div>
-      </div>
-
-      <div className={`print-fixed-footer${bwMode ? " bw" : ""}`}>
-        <ReportFooter />
+        ))}
       </div>
     </>
   );
