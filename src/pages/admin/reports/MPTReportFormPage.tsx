@@ -106,6 +106,7 @@ export const MPTReportFormPage: React.FC = () => {
   const state = location.state as {
     customerId?: string;
     customerName?: string;
+    from?: string;
   } | null;
 
   const [saving, setSaving] = useState(false);
@@ -522,9 +523,13 @@ export const MPTReportFormPage: React.FC = () => {
       }
 
       toast.success(`MPT Report ${id ? "updated" : "saved"} as ${status}.`);
-      navigate(`/admin/customers/${customerId}`, {
-        state: { activeTab: "reports", reportSubType: "mpt" },
-      });
+      if (state?.from === "reports-list") {
+        navigate("/admin/reports");
+      } else {
+        navigate(`/admin/customers/${customerId}`, {
+          state: { activeTab: "reports", reportSubType: "mpt" },
+        });
+      }
     } catch (error) {
       toast.error(
         getApiErrorMessage(error, "Failed to save report. Please try again."),

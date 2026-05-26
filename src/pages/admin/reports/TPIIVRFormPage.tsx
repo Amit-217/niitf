@@ -130,6 +130,7 @@ export const TPIIVRFormPage: React.FC = () => {
   const state = location.state as {
     customerId?: string;
     customerName?: string;
+    from?: string;
   } | null;
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
   const [customerName, setCustomerName] = useState(state?.customerName ?? "");
@@ -423,9 +424,13 @@ export const TPIIVRFormPage: React.FC = () => {
         await createTPIIVRReport(payload);
       }
       toast.success(`IVR saved as ${status}.`);
-      navigate(`/admin/customers/${customerId}`, {
-        state: { activeTab: "reports", reportSubType: "tpi-ivr" },
-      });
+      if (state?.from === "reports-list") {
+        navigate("/admin/reports");
+      } else {
+        navigate(`/admin/customers/${customerId}`, {
+          state: { activeTab: "reports", reportSubType: "tpi-ivr" },
+        });
+      }
     } catch {
       toast.error("Failed to save report. Please try again.");
     } finally {

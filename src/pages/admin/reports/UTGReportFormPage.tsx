@@ -116,6 +116,7 @@ export const UTGReportFormPage: React.FC = () => {
   const state = location.state as {
     customerId?: string;
     customerName?: string;
+    from?: string;
   } | null;
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
   const [customerName, setCustomerName] = useState(state?.customerName ?? "");
@@ -512,9 +513,13 @@ export const UTGReportFormPage: React.FC = () => {
         await createUTGReport(payload);
       }
       toast.success(`UTG Report saved as ${status}.`);
-      navigate(`/admin/customers/${customerId}`, {
-        state: { activeTab: "reports", reportSubType: "utg" },
-      });
+      if (state?.from === "reports-list") {
+        navigate("/admin/reports");
+      } else {
+        navigate(`/admin/customers/${customerId}`, {
+          state: { activeTab: "reports", reportSubType: "utg" },
+        });
+      }
     } catch {
       toast.error("Failed to save report. Please try again.");
     } finally {

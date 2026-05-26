@@ -12,7 +12,7 @@ export const QuotationFormPage: React.FC = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const locationState = location.state as { customerId?: string } | null;
+  const locationState = location.state as { customerId?: string; from?: string } | null;
   const isEditing = Boolean(id);
   const qType = type === 'training' ? 'Training' : 'Service';
 
@@ -84,6 +84,10 @@ export const QuotationFormPage: React.FC = () => {
         const data = res.data?.data || res.data;
         if (data) {
           if (data.date) data.date = new Date(data.date).toISOString().split('T')[0];
+          // Normalize customerId: API may return a populated object instead of a plain ID string
+          if (data.customerId && typeof data.customerId === 'object') {
+            data.customerId = data.customerId._id || '';
+          }
           setFormData({ ...formData, ...data });
         }
       } else {
@@ -185,12 +189,16 @@ export const QuotationFormPage: React.FC = () => {
         toast.success(`${qType} Quotation created successfully`);
       }
 
-      // Navigate back to customer page if customerId is known, else global list
-      const customerId = formData.customerId || locationState?.customerId;
-      if (customerId) {
-        navigate(`/admin/customers/${customerId}`, { state: { activeTab: 'quotations' } });
-      } else {
+      // Navigate back to where the user came from
+      if (locationState?.from === 'quotations-list') {
         navigate('/admin/quotations');
+      } else {
+        const customerId = formData.customerId || locationState?.customerId;
+        if (customerId) {
+          navigate(`/admin/customers/${customerId}`, { state: { activeTab: 'quotations' } });
+        } else {
+          navigate('/admin/quotations');
+        }
       }
     } catch (err) {
       toast.error('Failed to save quotation');
