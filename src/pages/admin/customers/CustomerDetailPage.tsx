@@ -956,7 +956,7 @@ export const CustomerDetailPage = () => {
                         "Quotation No",
                         "Date",
                         "Type",
-                        "Subject",
+                        // "Subject",
                         "Amount",
                         "Status",
                         "Actions",
@@ -1020,15 +1020,45 @@ export const CustomerDetailPage = () => {
                                 : "Service"}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-gray-700 truncate max-w-[200px]">
+                          {/* <td className="px-4 py-3 text-gray-700 truncate max-w-[200px]">
                             {q.subject || "—"}
-                          </td>
+                          </td> */}
                           <td className="px-4 py-3 font-semibold text-gray-900">
-                            ₹{(q.totalAmount || 0).toLocaleString("en-IN")}
+                            {(() => {
+                              const quot = q as Record<string, unknown>;
+                              const services = Array.isArray(quot.services)
+                                ? (quot.services as Record<string, unknown>[])
+                                : [];
+                              let sub = services.reduce(
+                                (s: number, sv: Record<string, unknown>) => {
+                                  const amt = Number(sv.amount);
+                                  if (!isNaN(amt) && amt > 0) return s + amt;
+                                  return (
+                                    s +
+                                    Number(sv.quantity || 1) *
+                                      Number(sv.price || 0)
+                                  );
+                                },
+                                0,
+                              );
+                              const extras = quot.extraCharges as
+                                | Record<string, unknown>
+                                | undefined;
+                              if (quot._type === "service" && extras) {
+                                sub += Number(extras.transportation || 0);
+                                sub += Number(extras.lodging || 0);
+                                sub += Number(extras.boarding || 0);
+                                sub += Number(extras.minimumVisit || 0);
+                              }
+                              const total =
+                                sub +
+                                (sub * Number(quot.gstPercentage ?? 18)) / 100;
+                              return `₹${total.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                            })()}
                           </td>
                           <td className="px-4 py-3">
                             <span
-                              className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[q.status] || "bg-gray-100 text-gray-600"}`}
+                              className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[q.status] || "bg-gray-300 text-gray-600"}`}
                             >
                               {q.status}
                             </span>
