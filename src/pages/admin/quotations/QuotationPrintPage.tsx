@@ -9,34 +9,44 @@ import { getCustomerById } from "../../../api/customerApi";
 const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
-  @media screen { 
+
+  @media screen {
     body.autoprint-mode { background: #fff !important; }
     body.autoprint-mode > #root > * { opacity: 0 !important; visibility: hidden !important; }
     .quotation-page { margin: 0 auto 16px auto; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
   }
+
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; }
     #quotation-root { background: #fff !important; padding: 0 !important; }
-    .quotation-page { min-height: 296mm; margin: 0 !important; box-shadow: none !important; break-after: page; page-break-after: always; }
+    .quotation-page {
+      height: 296mm;
+      margin: 0 !important;
+      box-shadow: none !important;
+      break-after: page;
+      page-break-after: always;
+    }
     .quotation-page:last-child { break-after: auto; page-break-after: auto; }
-    tr { page-break-inside: avoid; break-inside: avoid; }
+    .quotation-page-content { overflow: visible !important; }
   }
+
   body { font-family: 'Times New Roman', Times, serif; font-size: 12.5px; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
 
   .quotation-page {
     width: 210mm;
-    min-height: 297mm;
+    height: 297mm;
     background: #fff;
     box-sizing: border-box;
     padding: 0 5mm 5mm 5mm;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
   .quotation-page-content { flex: 1 1 auto; }
-  .quotation-page-footer { margin-top: 4px; }
+  .quotation-page-footer { margin-top: auto; }
 
   table { border-collapse: collapse; width: 100%; }
   .title { font-size: 18px; font-weight: bold; text-align: center; letter-spacing: 3px; padding: 0px 0;}
@@ -129,6 +139,12 @@ const PRINT_STYLES = `
   .quotation-table th { font-weight: bold; text-align: center; }
   .quotation-terms { margin-top: 8px; line-height: 1.45; }
   .quotation-signoff { margin-top: 14px; line-height: 1.35; page-break-inside: avoid; break-inside: avoid; }
+
+  /* Prevent bad splits on print */
+  .quotation-table, .quotation-terms, .quotation-signoff, .inv-foot, .footer-meta, tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 `;
 
 const toNumber = (value: unknown) => {
@@ -273,13 +289,76 @@ export const QuotationPrintPage: React.FC = () => {
   const computedGstAmount = (computedSubtotal * gstPercentage) / 100;
   const computedTotalAmount = computedSubtotal + computedGstAmount;
 
-  let termsCounter = rows.length + 1;
-  const getNum = () => {
-    const s = termsCounter.toString().padStart(2, "0");
-    termsCounter++;
-    return s;
-  };
+  // --- Build term lines as strings for pagination ---
+  let tc = rows.length + 1;
+  const pad2 = (n: number) => String(n).padStart(2, "0");
+  const termLines: string[] = [];
 
+  if (type === "training") {
+    termLines.push(`${pad2(tc++)}. Minimum Candidates required for campus training: ${data.trainingDetails?.minCandidates || 5}`);
+    termLines.push(`${pad2(tc++)}. ${data.trainingDetails?.trainingMode || "Training will be conducted as per yours written practice."}`);
+    termLines.push(`${pad2(tc++)}. In addition to the course fee, as stated above ${data.gstPercentage}% GST will be applicable.`);
+    termLines.push(`${pad2(tc++)}. Course fee includes study material, exam fee, certificate fee.`);
+    termLines.push(`${pad2(tc++)}. Payment terms: ${data.termsAndConditions?.paymentTerms}`);
+  } else {
+    if (data.extraCharges?.minimumVisit > 0)
+      termLines.push(`${pad2(tc++)}. Minimum Visit Charges: ${data.extraCharges.minimumVisit}`);
+    termLines.push(`${pad2(tc++)}. GST: ${data.gstPercentage}% on total charge.`);
+    termLines.push(`${pad2(tc++)}. Payment terms: ${data.termsAndConditions?.paymentTerms}`);
+    termLines.push(`${pad2(tc++)}. Material handling ${data.termsAndConditions?.materialHandling}`);
+    termLines.push(`${pad2(tc++)}. NDE Level II personnel ${data.termsAndConditions?.personnel}`);
+    termLines.push(`${pad2(tc++)}. Machines ${data.termsAndConditions?.machines}`);
+    termLines.push(`${pad2(tc++)}. Consumables ${data.termsAndConditions?.consumables}`);
+  }
+
+  // --- Pagination block engine ---
+  const PAGE_H = 297;
+  const HDR_H = 28;
+  const FTR_H = 22;
+  const AVAIL_H = PAGE_H - HDR_H - FTR_H; // ~247mm
+
+  type Block =
+    | { type: "intro"; height: number }
+    | { type: "table-header"; height: number }
+    | { type: "service-row"; row: QuotationRow; idx: number; height: number }
+    | { type: "table-totals"; height: number }
+    | { type: "term"; text: string; height: number }
+    | { type: "signoff"; height: number };
+
+  const allBlocks: Block[] = [
+    { type: "intro", height: 62 },
+    { type: "table-header", height: 10 },
+    ...rows.map((row, idx) => ({
+      type: "service-row" as const,
+      row,
+      idx,
+      height: 8 + Math.max(0, Math.ceil(row.description.length / 45) - 1) * 4,
+    })),
+    { type: "table-totals", height: 20 },
+    ...termLines.map((text) => ({ type: "term" as const, text, height: 7 })),
+    { type: "signoff", height: 55 },
+  ];
+
+  const pageList: Block[][] = [];
+  let bi = 0;
+  while (bi < allBlocks.length) {
+    const pb: Block[] = [];
+    let used = 0;
+    while (bi < allBlocks.length) {
+      const h = allBlocks[bi].height;
+      if (used + h <= AVAIL_H) {
+        pb.push(allBlocks[bi]);
+        used += h;
+        bi++;
+      } else {
+        break;
+      }
+    }
+    if (pb.length === 0) { pb.push(allBlocks[bi]); bi++; }
+    pageList.push(pb);
+  }
+
+  // --- Render helpers ---
   const QuotationHeader = () => (
     <div className="rpt-header">
       <div className="logo-box">
@@ -321,36 +400,20 @@ export const QuotationPrintPage: React.FC = () => {
     </>
   );
 
-  const pages = [
-    <div className="quotation-body">
-      <div className="title" style={{ marginBottom: 0 }}>
-        QUOTATION
-      </div>
-
-      {/* Customer + Quotation info */}
+  const renderIntro = () => (
+    <>
+      <div className="title" style={{ marginBottom: 0 }}>QUOTATION</div>
       <div className="quotation-info">
         <div style={{ width: "50%" }}>
           <h2>QUOTATION TO:</h2>
-          <div>
-            <strong>Customer:</strong> {customer?.companyName || "-"}
-          </div>
-          <div>
-            <strong>Address:</strong> {customer?.address || "-"}
-          </div>
-          <div>
-            <strong>GST No:</strong> {customer?.gstNo || "-"}
-          </div>
-          <div>
-            <strong>Contact Name:</strong> {customer?.contactPerson || "-"}
-          </div>
-          <div>
-            <strong>Contact No.:</strong> {customer?.mobile || "-"}
-          </div>
+          <div><strong>Customer:</strong> {customer?.companyName || "-"}</div>
+          <div><strong>Address:</strong> {customer?.address || "-"}</div>
+          <div><strong>GST No:</strong> {customer?.gstNo || "-"}</div>
+          <div><strong>Contact Name:</strong> {customer?.contactPerson || "-"}</div>
+          <div><strong>Contact No.:</strong> {customer?.mobile || "-"}</div>
         </div>
         <div style={{ width: "45%" }}>
-          <div>
-            <strong>Quotation No.:</strong> {data.quotationNo}
-          </div>
+          <div><strong>Quotation No.:</strong> {data.quotationNo}</div>
           <div>
             <strong>Date:</strong>{" "}
             {data.date ? new Date(data.date).toLocaleDateString("en-GB") : "-"}
@@ -358,176 +421,101 @@ export const QuotationPrintPage: React.FC = () => {
           <div style={{ marginTop: "8px" }}>
             <strong>Enquiry Reference:</strong> {data.enquiryReference || "By Call"}
           </div>
-          <div>
-            <strong>Prepared By:</strong>{" "}
-            {data.preparedBy?.name || "Mr. Bajirao T. Kadam"}
-          </div>
-          <div>
-            <strong>Mail ID:</strong> niit004@gmail.com
-          </div>
-          <div>
-            <strong>Contact Number:</strong> +91 9860186056 / 7875154431
-          </div>
+          <div><strong>Prepared By:</strong> {data.preparedBy?.name || "Mr. Bajirao T. Kadam"}</div>
+          <div><strong>Mail ID:</strong> niit004@gmail.com</div>
+          <div><strong>Contact Number:</strong> +91 9860186056 / 7875154431</div>
         </div>
       </div>
-
       <p style={{ marginTop: "8px", marginBottom: "8px" }}>
         <strong>Dear Sir,</strong>
         <br />
         This is reference to discussion with you; we are pleased to quote our
         best competitive Price for Inspection.
       </p>
+    </>
+  );
 
-      {/* Services table */}
+  const renderTableSection = (pageBlocks: Block[]) => {
+    const hasTableHeader = pageBlocks.some((b) => b.type === "table-header");
+    const svcRows = pageBlocks.filter(
+      (b): b is Extract<Block, { type: "service-row" }> => b.type === "service-row"
+    );
+    const hasTotals = pageBlocks.some((b) => b.type === "table-totals");
+    if (!hasTableHeader && !svcRows.length && !hasTotals) return null;
+    const colSpan = type === "training" ? 7 : 6;
+    return (
       <table
         className="quotation-table"
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          marginBottom: "10px",
-        }}
+        style={{ width: "100%", borderCollapse: "collapse", marginBottom: "10px" }}
       >
-        <thead>
-          <tr>
-            <th style={{ width: "8%" }}>Sr. No.</th>
-            <th style={{ width: "35%" }}>Description of Services</th>
-            {type === "training" && <th style={{ width: "10%" }}>Level</th>}
-            <th style={{ width: "12%" }}>SAC Code</th>
-            <th style={{ width: "7%" }}>Qty</th>
-            <th style={{ width: "8%" }}>Unit</th>
-            <th style={{ width: "10%" }}>Price</th>
-            <th style={{ width: "10%" }}>Amount</th>
-          </tr>
-        </thead>
+        {hasTableHeader && (
+          <thead>
+            <tr>
+              <th style={{ width: "8%" }}>Sr. No.</th>
+              <th style={{ width: type === "training" ? "27%" : "35%" }}>Description of Services</th>
+              {type === "training" && <th style={{ width: "10%" }}>Level</th>}
+              <th style={{ width: "12%" }}>SAC Code</th>
+              <th style={{ width: "7%" }}>Qty</th>
+              <th style={{ width: "8%" }}>Unit</th>
+              <th style={{ width: "10%" }}>Price</th>
+              <th style={{ width: "10%" }}>Amount</th>
+            </tr>
+          </thead>
+        )}
         <tbody>
-          {rows.map((r, i) => (
-            <tr key={i}>
-              <td style={{ textAlign: "center" }}>
-                {(i + 1).toString().padStart(2, "0")}
-              </td>
-              <td>{r.description}</td>
-              {type === "training" && (
-                <td style={{ textAlign: "center" }}>{r.level || "NA"}</td>
-              )}
-              <td style={{ textAlign: "center" }}>{r.sacCode || "NA"}</td>
-              <td style={{ textAlign: "center" }}>{r.quantity || 1}</td>
-              <td style={{ textAlign: "center" }}>{r.unit || "Nos"}</td>
-              <td style={{ textAlign: "right" }}>{fmtAmount(r.price)}</td>
-              <td style={{ textAlign: "right" }}>{fmtAmount(r.amount)}</td>
+          {svcRows.map((b) => (
+            <tr key={b.idx}>
+              <td style={{ textAlign: "center" }}>{(b.idx + 1).toString().padStart(2, "0")}</td>
+              <td>{b.row.description}</td>
+              {type === "training" && <td style={{ textAlign: "center" }}>{b.row.level || "NA"}</td>}
+              <td style={{ textAlign: "center" }}>{b.row.sacCode || "NA"}</td>
+              <td style={{ textAlign: "center" }}>{b.row.quantity || 1}</td>
+              <td style={{ textAlign: "center" }}>{b.row.unit || "Nos"}</td>
+              <td style={{ textAlign: "right" }}>{fmtAmount(b.row.price)}</td>
+              <td style={{ textAlign: "right" }}>{fmtAmount(b.row.amount)}</td>
             </tr>
           ))}
-          <tr>
-            <td
-              colSpan={type === "training" ? 7 : 6}
-              style={{ textAlign: "right", fontWeight: "bold" }}
-            >
-              Subtotal
-            </td>
-            <td style={{ textAlign: "right", fontWeight: "bold" }}>
-              {fmtAmount(computedSubtotal)}
-            </td>
-          </tr>
-          <tr>
-            <td
-              colSpan={type === "training" ? 7 : 6}
-              style={{ textAlign: "right", fontWeight: "bold" }}
-            >
-              GST ({data.gstPercentage}%)
-            </td>
-            <td style={{ textAlign: "right", fontWeight: "bold" }}>
-              {fmtAmount(computedGstAmount)}
-            </td>
-          </tr>
-          <tr>
-            <td
-              colSpan={type === "training" ? 7 : 6}
-              style={{ textAlign: "right", fontWeight: "bold" }}
-            >
-              Total Amount
-            </td>
-            <td style={{ textAlign: "right", fontWeight: "bold" }}>
-              {fmtAmount(computedTotalAmount)}
-            </td>
-          </tr>
+          {hasTotals && (
+            <>
+              <tr>
+                <td colSpan={colSpan} style={{ textAlign: "right", fontWeight: "bold" }}>Subtotal</td>
+                <td style={{ textAlign: "right", fontWeight: "bold" }}>{fmtAmount(computedSubtotal)}</td>
+              </tr>
+              <tr>
+                <td colSpan={colSpan} style={{ textAlign: "right", fontWeight: "bold" }}>GST ({data.gstPercentage}%)</td>
+                <td style={{ textAlign: "right", fontWeight: "bold" }}>{fmtAmount(computedGstAmount)}</td>
+              </tr>
+              <tr>
+                <td colSpan={colSpan} style={{ textAlign: "right", fontWeight: "bold" }}>Total Amount</td>
+                <td style={{ textAlign: "right", fontWeight: "bold" }}>{fmtAmount(computedTotalAmount)}</td>
+              </tr>
+            </>
+          )}
         </tbody>
       </table>
+    );
+  };
 
-      {/* Terms and Conditions */}
-      <div className="quotation-terms">
-        {type === "training" ? (
-          <>
-            <div>
-              {getNum()}. Minimum Candidates required for campus training :{" "}
-              {data.trainingDetails?.minCandidates || 5}{" "}
-            </div>
-            <div>
-              {getNum()}.{" "}
-              {data.trainingDetails?.trainingMode ||
-                "Training will be conducted as per yours written practice."}
-            </div>
-            <div>
-              {getNum()}. In addition to the course fee, as stated above{" "}
-              {data.gstPercentage}% GST will be applicable.
-            </div>
-            <div>
-              {getNum()}. Course fee includes study material, exam fee,
-              certificate fee.
-            </div>
-            <div>
-              {getNum()}. Payment terms: {data.termsAndConditions?.paymentTerms}
-            </div>
-          </>
-        ) : (
-          <>
-            {data.extraCharges?.minimumVisit > 0 && (
-              <div>
-                {getNum()}. Minimum Visit Charges: {data.extraCharges.minimumVisit}
-              </div>
-            )}
-            <div>
-              {getNum()}. GST: {data.gstPercentage}% on total charge.
-            </div>
-            <div>
-              {getNum()}. Payment terms: {data.termsAndConditions?.paymentTerms}
-            </div>
-            <div>
-              {getNum()}. Material handling {data.termsAndConditions?.materialHandling}
-            </div>
-            <div>
-              {getNum()}. NDE Level II personnel {data.termsAndConditions?.personnel}
-            </div>
-            <div>
-              {getNum()}. Machines {data.termsAndConditions?.machines}
-            </div>
-            <div>
-              {getNum()}. Consumables {data.termsAndConditions?.consumables}
-            </div>
-          </>
-        )}
+  const renderSignoff = () => (
+    <div className="quotation-signoff">
+      <p style={{ marginBottom: "6px" }}>
+        We trust the above notice is quite competitive acceptable to you Looking
+        forward to favorable reply &amp; confirmed order on us.
+      </p>
+      <div>Your faithfully,</div>
+      <div style={{ marginTop: "28px", fontWeight: "bold" }}>
+        {data.preparedBy?.name || "Mr. Bajirao T. Kadam"}
       </div>
-
-      {/* Sign off */}
-      <div className="quotation-signoff">
-        <p style={{ marginBottom: "6px" }}>
-          We trust the above notice is quite competitive acceptable to you Looking
-          forward to favorable reply &amp; confirmed order on us.
-        </p>
-        <div>Your faithfully,</div>
-        <div style={{ marginTop: "28px", fontWeight: "bold" }}>
-          {data.preparedBy?.name || "Mr. Bajirao T. Kadam"}
-        </div>
-        <div>
-          {data.preparedBy?.designation ||
-            "ASNT Level III (RT, UT, MT, PT, VT, ET, MFL)"}
-        </div>
-        <div>Competent Person under Factory Act 1948</div>
-        <div style={{ fontWeight: "bold" }}>
-          National Industrial Inspection &amp; Training Baramati
-        </div>
-        <div>+91 7875154431, 9860186056</div>
+      <div>
+        {data.preparedBy?.designation || "ASNT Level III (RT, UT, MT, PT, VT, ET, MFL)"}
       </div>
-    </div>,
-  ];
+      <div>Competent Person under Factory Act 1948</div>
+      <div style={{ fontWeight: "bold" }}>
+        National Industrial Inspection &amp; Training Baramati
+      </div>
+      <div>+91 7875154431, 9860186056</div>
+    </div>
+  );
 
   return (
     <>
@@ -536,14 +524,7 @@ export const QuotationPrintPage: React.FC = () => {
       {/* Screen toolbar */}
       <div
         className="no-print"
-        style={{
-          position: "fixed",
-          top: 12,
-          right: 16,
-          zIndex: 100,
-          display: "flex",
-          gap: 8,
-        }}
+        style={{ position: "fixed", top: 12, right: 16, zIndex: 100, display: "flex", gap: 8 }}
       >
         <button
           onClick={() => window.print()}
@@ -566,39 +547,36 @@ export const QuotationPrintPage: React.FC = () => {
         id="quotation-root"
         style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
       >
-        {pages.map((content, i) => (
-          <div className="quotation-page" key={i}>
-            <div className="quotation-page-content">
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  borderSpacing: 0,
-                  margin: 0,
-                  padding: 0,
-                }}
-              >
-                <thead style={{ display: "table-header-group" }}>
-                  <tr>
-                    <td style={{ padding: "0" }}>
-                      <QuotationHeader />
-                    </td>
-                  </tr>
-                </thead>
-                <tbody style={{ display: "table-row-group" }}>
-                  <tr>
-                    <td style={{ padding: 0, verticalAlign: "top" }}>
-                      {content}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+        {pageList.map((pageBlocks, i) => {
+          const hasIntro = pageBlocks.some((b) => b.type === "intro");
+          const termBlocks = pageBlocks.filter(
+            (b): b is Extract<Block, { type: "term" }> => b.type === "term"
+          );
+          const hasSignoff = pageBlocks.some((b) => b.type === "signoff");
+
+          return (
+            <div className="quotation-page" key={i}>
+              <div className="quotation-page-content">
+                <QuotationHeader />
+                <div className="quotation-body">
+                  {hasIntro && renderIntro()}
+                  {renderTableSection(pageBlocks)}
+                  {termBlocks.length > 0 && (
+                    <div className="quotation-terms">
+                      {termBlocks.map((b, idx) => (
+                        <div key={idx}>{b.text}</div>
+                      ))}
+                    </div>
+                  )}
+                  {hasSignoff && renderSignoff()}
+                </div>
+              </div>
+              <div className="quotation-page-footer">
+                <QuotationFooter />
+              </div>
             </div>
-            <div className="quotation-page-footer">
-              <QuotationFooter />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );
