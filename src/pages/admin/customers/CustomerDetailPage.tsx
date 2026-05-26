@@ -739,15 +739,15 @@ export const CustomerDetailPage = () => {
               </div>
 
               {reportSubType ? (
-                <div>
-                  <div className="flex items-center justify-between px-5 py-3 bg-gray-50/50">
-                    <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="mx-5 mb-5 mt-2 rounded-xl border border-gray-200 overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
+                    <p className="text-sm font-semibold text-gray-700">
                       {
                         REPORT_TYPES.find((r) => r.key === reportSubType)
                           ?.fullLabel
                       }{" "}
                       Reports
-                      <span className="ml-2 text-gray-400 font-normal normal-case">
+                      <span className="ml-2 text-gray-400 font-normal text-xs">
                         ({countsLoaded ? reportCountByType[reportSubType] : "-"}{" "}
                         records)
                       </span>
@@ -768,13 +768,15 @@ export const CustomerDetailPage = () => {
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50 border-b border-gray-200">
-                        <tr>
+                      <thead>
+                        <tr className="bg-gray-50 border-b border-gray-200">
                           {[
                             "Report No",
                             "Customer",
                             "Date",
-                            ...(reportSubType !== "awsd" ? ["Inspection Stage"] : []),
+                            ...(reportSubType !== "awsd"
+                              ? ["Inspection Stage"]
+                              : []),
                             "Status",
                             "Type",
                             "Actions",
@@ -823,8 +825,14 @@ export const CustomerDetailPage = () => {
                               key={r._id}
                               className="hover:bg-gray-50 transition-colors"
                             >
-                              <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700">
-                                {r.reportNo || r.irNo}
+                              <td className="px-4 py-3 font-medium text-primary-700">
+                                <div className="flex items-center gap-2">
+                                  <FileText
+                                    size={14}
+                                    className="text-primary-400"
+                                  />
+                                  {r.reportNo || r.irNo}
+                                </div>
                               </td>
                               <td className="px-4 py-3 text-gray-700 truncate max-w-[150px]">
                                 {r.jobDetails?.customer || r.customer || "—"}
@@ -838,7 +846,7 @@ export const CustomerDetailPage = () => {
                               </td>
 
                               {reportSubType !== "awsd" && (
-                                <td className="px-4 py-3 text-gray-500 text-xs">
+                                <td className="px-4 py-3 text-gray-600">
                                   {r.jobDetails?.stageOfInspection ||
                                     r.inspectionStage ||
                                     "—"}
@@ -856,8 +864,8 @@ export const CustomerDetailPage = () => {
                                   {r.reportType || reportSubType?.toUpperCase()}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 text-center">
-                                <div className="flex items-center gap-1">
+                              <td className="px-1 py-3 text-center">
+                                <div className="flex items-center justify-start gap-2">
                                   <button
                                     onClick={() =>
                                       navigate(
@@ -905,20 +913,22 @@ export const CustomerDetailPage = () => {
                       </tbody>
                     </table>
                   </div>
-                  <Pagination
-                    page={reportPage}
-                    totalPages={Math.max(
-                      1,
-                      Math.ceil(reportDataTotal / reportLimit),
-                    )}
-                    total={reportDataTotal}
-                    limit={reportLimit}
-                    onPageChange={setReportPage}
-                    onLimitChange={(l) => {
-                      setReportLimit(l);
-                      setReportPage(1);
-                    }}
-                  />
+                  <div className="px-4 py-3 border-t border-gray-100">
+                    <Pagination
+                      page={reportPage}
+                      totalPages={Math.max(
+                        1,
+                        Math.ceil(reportDataTotal / reportLimit),
+                      )}
+                      total={reportDataTotal}
+                      limit={reportLimit}
+                      onPageChange={setReportPage}
+                      onLimitChange={(l) => {
+                        setReportLimit(l);
+                        setReportPage(1);
+                      }}
+                    />
+                  </div>
                 </div>
               ) : (
                 <div className="px-5 py-16 text-center text-gray-400">
@@ -937,11 +947,11 @@ export const CustomerDetailPage = () => {
           )}
 
           {activeTab === "quotations" && (
-            <div>
+            <div className="mx-5 mb-5 mt-2 rounded-xl border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
+                  <thead>
+                    <tr className="bg-gray-50 border-b border-gray-200">
                       {[
                         "Quotation No",
                         "Date",
@@ -989,8 +999,14 @@ export const CustomerDetailPage = () => {
                           key={q._id}
                           className="hover:bg-gray-50 transition-colors"
                         >
-                          <td className="px-4 py-3 font-mono text-xs font-bold text-violet-700">
-                            {q.quotationNo}
+                          <td className="px-4 py-3 font-medium text-primary-700">
+                            <div className="flex items-center gap-2">
+                              <FileText
+                                size={14}
+                                className="text-primary-400"
+                              />
+                              {q.quotationNo}
+                            </div>
                           </td>
                           <td className="px-4 py-3 text-gray-600">
                             {fmt(q.date)}
@@ -1017,8 +1033,8 @@ export const CustomerDetailPage = () => {
                               {q.status}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-right">
-                            <div className="flex items-center gap-2 justify-end">
+                          <td className="px-1 py-3 text-right">
+                            <div className="flex items-center gap-2 justify-start">
                               <button
                                 onClick={() =>
                                   navigate(
@@ -1054,33 +1070,35 @@ export const CustomerDetailPage = () => {
                   </tbody>
                 </table>
               </div>
-              <Pagination
-                page={quotationPage}
-                totalPages={Math.max(
-                  1,
-                  Math.ceil(filteredQuotations.length / quotationLimit),
-                )}
-                total={filteredQuotations.length}
-                limit={quotationLimit}
-                onPageChange={setQuotationPage}
-                onLimitChange={(l) => {
-                  setQuotationLimit(l);
-                  setQuotationPage(1);
-                }}
-              />
+              <div className="px-4 py-3 border-t border-gray-100">
+                <Pagination
+                  page={quotationPage}
+                  totalPages={Math.max(
+                    1,
+                    Math.ceil(filteredQuotations.length / quotationLimit),
+                  )}
+                  total={filteredQuotations.length}
+                  limit={quotationLimit}
+                  onPageChange={setQuotationPage}
+                  onLimitChange={(l) => {
+                    setQuotationLimit(l);
+                    setQuotationPage(1);
+                  }}
+                />
+              </div>
             </div>
           )}
 
           {activeTab === "invoices" && (
-            <div>
+            <div className="mx-5 mb-5 mt-2 rounded-xl border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
+                  <thead>
+                    <tr className="bg-gray-50 border-b border-gray-200">
                       {[
                         "Invoice No",
                         "Date",
-                        "Due Date",
+                        // "Due Date",
                         "Grand Total",
                         "Status",
                         "Actions",
@@ -1123,15 +1141,21 @@ export const CustomerDetailPage = () => {
                           key={inv._id}
                           className="hover:bg-gray-50 transition-colors"
                         >
-                          <td className="px-4 py-3 font-mono text-xs font-bold text-emerald-700">
-                            {inv.invoiceNo}
+                          <td className="px-4 py-3 font-medium text-primary-700">
+                            <div className="flex items-center gap-2">
+                              <FileText
+                                size={14}
+                                className="text-primary-400"
+                              />
+                              {inv.invoiceNo}
+                            </div>
                           </td>
                           <td className="px-4 py-3 text-gray-600">
                             {fmt(inv.date)}
                           </td>
-                          <td className="px-4 py-3 text-gray-500">
+                          {/* <td className="px-4 py-3 text-gray-500">
                             {fmt(inv.dueDate)}
-                          </td>
+                          </td> */}
                           <td className="px-4 py-3 font-semibold text-gray-900">
                             ₹{(inv.totalAmount || 0).toLocaleString("en-IN")}
                           </td>
@@ -1142,8 +1166,8 @@ export const CustomerDetailPage = () => {
                               {inv.status}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-right">
-                            <div className="flex items-center gap-2 justify-end">
+                          <td className="px-1 py-3 text-left">
+                            <div className="flex items-center gap-2 justify-start">
                               <button
                                 onClick={() =>
                                   navigate(`/admin/invoices/${inv._id}/print`)
@@ -1174,20 +1198,22 @@ export const CustomerDetailPage = () => {
                   </tbody>
                 </table>
               </div>
-              <Pagination
-                page={invoicePage}
-                totalPages={Math.max(
-                  1,
-                  Math.ceil(invoicesPageTotal / invoiceLimit),
-                )}
-                total={invoicesPageTotal}
-                limit={invoiceLimit}
-                onPageChange={setInvoicePage}
-                onLimitChange={(l) => {
-                  setInvoiceLimit(l);
-                  setInvoicePage(1);
-                }}
-              />
+              <div className="px-4 py-3 border-t border-gray-100">
+                <Pagination
+                  page={invoicePage}
+                  totalPages={Math.max(
+                    1,
+                    Math.ceil(invoicesPageTotal / invoiceLimit),
+                  )}
+                  total={invoicesPageTotal}
+                  limit={invoiceLimit}
+                  onPageChange={setInvoicePage}
+                  onLimitChange={(l) => {
+                    setInvoiceLimit(l);
+                    setInvoicePage(1);
+                  }}
+                />
+              </div>
             </div>
           )}
         </div>
