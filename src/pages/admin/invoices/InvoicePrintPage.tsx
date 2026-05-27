@@ -316,100 +316,343 @@ export const InvoicePrintPage: React.FC = () => {
 
   const renderInvoiceDetails = () => (
     <>
-      <div className="title" style={{ marginBottom: 0 }}>INVOICE</div>
-      <table className="outer-border" style={{ tableLayout: "fixed", width: "100%", borderCollapse: "collapse" }}>
+      <div className="title" style={{ marginBottom: 0 }}>
+        INVOICE
+      </div>
+      <table
+        className="outer-border"
+        style={{
+          tableLayout: "fixed",
+          width: "100%",
+          borderCollapse: "collapse",
+        }}
+      >
         <tbody>
           <tr>
-            <td style={{ width: "40%", padding: 0, verticalAlign: "top", height: "1px" }}>
-              <table style={{ width: "100%", height: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+            <td
+              style={{
+                width: "40%",
+                padding: 0,
+                verticalAlign: "top",
+                height: "1px",
+              }}
+            >
+              <table
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderCollapse: "collapse",
+                  tableLayout: "fixed",
+                }}
+              >
                 <tbody>
                   <tr>
-                    <td className="cell" style={{ padding: "6px 5px", verticalAlign: "top", borderRight: "none", border: "1px solid #444" }}>
-                      <div className="company-name" style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.35, marginBottom: 2 }}>
+                    <td
+                      className="cell"
+                      style={{
+                        padding: "6px 5px",
+                        verticalAlign: "top",
+                        borderRight: "none",
+                        border: "1px solid #444",
+                      }}
+                    >
+                      <div
+                        className="company-name"
+                        style={{
+                          fontSize: 14,
+                          fontWeight: 700,
+                          lineHeight: 1.35,
+                          marginBottom: 2,
+                        }}
+                      >
                         National Industrial Inspection And Training
                       </div>
                       <div style={{ fontSize: 13, lineHeight: 1.2 }}>
-                        Plot NO-PAP-3/28 Behind BSNL Office<br />
-                        MIDC, Baramati Pin -413133<br />
-                        GST No.: 27ABJPK8603R1ZY<br />
-                        State: Maharashtra Code: 27<br />
-                        CONTACT: 8600508524, 9421606761<br />
+                        Plot NO-PAP-3/28 Behind BSNL Office
+                        <br />
+                        MIDC, Baramati Pin -413133
+                        <br />
+                        GST No.: 27ABJPK8603R1ZY
+                        <br />
+                        State: Maharashtra Code: 27
+                        <br />
+                        CONTACT: 8600508524, 7875154431
+                        <br />
                         E-Mail: niit004@gmail.com
                       </div>
                     </td>
                   </tr>
                   <tr>
-                    <td className="cell" style={{ padding: "0px 5px", borderRight: "none", border: "1px solid #444", borderBottom: "none", marginTop: "-2px", height: "100%" }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, textDecoration: "underline", marginBottom: 1 }}>Buyer:</span>
+                    <td
+                      className="cell"
+                      style={{
+                        padding: "0px 5px",
+                        borderRight: "none",
+                        border: "1px solid #444",
+                        borderBottom: "none",
+                        marginTop: "-2px",
+                        height: "100%",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 700,
+                          textDecoration: "underline",
+                          marginBottom: 1,
+                        }}
+                      >
+                        Buyer:
+                      </span>
                       <span> </span>
-                      <span className="bold red" style={{ fontSize: 14, marginBottom: 1 }}> {customer?.companyName || "—"}</span>
-                      {customer?.address && <div className="red" style={{ fontSize: 13, lineHeight: 1.2 }}>{customer.address}</div>}
-                      {customer?.city && <div className="red" style={{ fontSize: 13, lineHeight: 1.2 }}>City-{customer.city}</div>}
-                      {(customer?.state || customer?.stateCode) && (
-                        <div className="red" style={{ fontSize: 13, lineHeight: 1.2 }}>
-                          {customer?.state && `State: ${customer.state}`} | {customer?.stateCode && `Code: ${customer.stateCode}`}
+                      <span
+                        className="bold red"
+                        style={{ fontSize: 14, marginBottom: 1 }}
+                      >
+                        {" "}
+                        {customer?.companyName || "—"}
+                      </span>
+                      {customer?.address && (
+                        <div
+                          className="red"
+                          style={{ fontSize: 13, lineHeight: 1.2 }}
+                        >
+                          {customer.address}
                         </div>
                       )}
-                      <div className="red" style={{ fontSize: 13, lineHeight: 1.2 }}>GST No: {customer?.gstNo || ""}</div>
+                      {customer?.city && (
+                        <div
+                          className="red"
+                          style={{ fontSize: 13, lineHeight: 1.2 }}
+                        >
+                          City-{customer.city}
+                        </div>
+                      )}
+                      {(customer?.state || customer?.stateCode) && (
+                        <div
+                          className="red"
+                          style={{ fontSize: 13, lineHeight: 1.2 }}
+                        >
+                          {customer?.state && `State: ${customer.state}`} |{" "}
+                          {customer?.stateCode && `Code: ${customer.stateCode}`}
+                        </div>
+                      )}
+                      <div
+                        className="red"
+                        style={{ fontSize: 13, lineHeight: 1.2 }}
+                      >
+                        GST No: {customer?.gstNo || ""}
+                      </div>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </td>
-            <td style={{ width: "60%", padding: 0, verticalAlign: "top", height: "1px" }}>
-              <table style={{ width: "100%", height: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+            <td
+              style={{
+                width: "60%",
+                padding: 0,
+                verticalAlign: "top",
+                height: "1px",
+              }}
+            >
+              <table
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderCollapse: "collapse",
+                  tableLayout: "fixed",
+                }}
+              >
                 <tbody>
                   <tr>
-                    <td className="cell" style={{ width: "50%", padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
-                      <span className="field-label">Invoice No:</span> <span className="bold">{data.invoiceNo}</span>
+                    <td
+                      className="cell"
+                      style={{
+                        width: "50%",
+                        padding: "5px 7px",
+                        fontSize: 13,
+                        height: "34px",
+                        border: "1px solid #444",
+                      }}
+                    >
+                      <span className="field-label">Invoice No:</span>{" "}
+                      <span className="bold">{data.invoiceNo}</span>
                     </td>
-                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
-                      <span className="field-label">Dated:</span> <span className="bold red">{fmtDate(data.date)}</span>
+                    <td
+                      className="cell"
+                      style={{
+                        padding: "5px 7px",
+                        fontSize: 13,
+                        height: "34px",
+                        border: "1px solid #444",
+                      }}
+                    >
+                      <span className="field-label">Dated:</span>{" "}
+                      <span className="bold red">{fmtDate(data.date)}</span>
                     </td>
                   </tr>
                   <tr>
-                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
-                      <span className="field-label">Delivery Note:</span> {data.deliveryNote || ""}
+                    <td
+                      className="cell"
+                      style={{
+                        padding: "5px 7px",
+                        fontSize: 13,
+                        height: "34px",
+                        border: "1px solid #444",
+                      }}
+                    >
+                      <span className="field-label">Delivery Note:</span>{" "}
+                      <span className="bold">{data.deliveryNote || ""}</span>
                     </td>
-                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
-                      <span className="field-label">Terms Of Delivery:</span> {data.termsOfDelivery || ""}
+                    <td
+                      className="cell"
+                      style={{
+                        padding: "5px 7px",
+                        fontSize: 13,
+                        height: "34px",
+                        border: "1px solid #444",
+                      }}
+                    >
+                      <span className="field-label">Terms Of Delivery:</span>{" "}
+                      <span className="bold">{data.termsOfDelivery || ""}</span>
                     </td>
                   </tr>
                   <tr>
-                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
-                      <span className="field-label">Supplier's Ref:</span> {data.supplierRef || ""}
+                    <td
+                      className="cell"
+                      style={{
+                        padding: "5px 7px",
+                        fontSize: 13,
+                        height: "34px",
+                        border: "1px solid #444",
+                      }}
+                    >
+                      <span className="field-label">Supplier's Ref:</span>{" "}
+                      <span className="bold">{data.supplierRef || ""}</span>
                     </td>
-                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
+                    <td
+                      className="cell"
+                      style={{
+                        padding: "5px 7px",
+                        fontSize: 13,
+                        height: "34px",
+                        border: "1px solid #444",
+                      }}
+                    >
                       <span className="field-label">Other Reference(s):</span>
+                      <span className="bold">{data.otherReferences || ""}</span>
                     </td>
                   </tr>
                   <tr>
-                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
-                      <span className="field-label">Buyer's Order No:</span> {data.buyerOrderNo || ""}
+                    <td
+                      className="cell"
+                      style={{
+                        padding: "5px 7px",
+                        fontSize: 13,
+                        height: "34px",
+                        border: "1px solid #444",
+                      }}
+                    >
+                      <span className="field-label">Buyer's Order No:</span>{" "}
+                      <span className="bold">{data.buyerOrderNo || ""}</span>
                     </td>
-                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
-                      <span className="field-label">Dated:</span> {data.buyerOrderDate ? fmtDate(data.buyerOrderDate) : ""}
+                    <td
+                      className="cell"
+                      style={{
+                        padding: "5px 7px",
+                        fontSize: 13,
+                        height: "34px",
+                        border: "1px solid #444",
+                      }}
+                    >
+                      <span className="field-label">Dated:</span>{" "}
+                      <span className="bold">
+                        {data.buyerOrderDate
+                          ? fmtDate(data.buyerOrderDate)
+                          : ""}
+                      </span>
                     </td>
                   </tr>
                   <tr>
-                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
-                      <span className="field-label">Document No:</span> {data.documentNo || ""}
+                    <td
+                      className="cell"
+                      style={{
+                        padding: "5px 7px",
+                        fontSize: 13,
+                        height: "34px",
+                        border: "1px solid #444",
+                      }}
+                    >
+                      <span className="field-label">Document No:</span>{" "}
+                      <span className="bold">{data.documentNo || ""}</span>
                     </td>
-                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
-                      <span className="field-label">Delivery Note Date:</span> {data.deliveryNoteDate ? fmtDate(data.deliveryNoteDate) : ""}
+                    <td
+                      className="cell"
+                      style={{
+                        padding: "5px 7px",
+                        fontSize: 13,
+                        height: "34px",
+                        border: "1px solid #444",
+                      }}
+                    >
+                      <span className="field-label">Delivery Note Date:</span>{" "}
+                      <span className="bold">
+                        {data.deliveryNoteDate
+                          ? fmtDate(data.deliveryNoteDate)
+                          : ""}
+                      </span>
                     </td>
                   </tr>
                   <tr>
-                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
-                      <span className="field-label">Dispatched Through:</span> {data.dispatchedThrough || ""}
+                    <td
+                      className="cell"
+                      style={{
+                        padding: "5px 7px",
+                        fontSize: 13,
+                        height: "34px",
+                        border: "1px solid #444",
+                      }}
+                    >
+                      <span className="field-label">Dispatched Through:</span>{" "}
+                      <span className="bold">
+                        {data.dispatchedThrough || ""}
+                      </span>
                     </td>
-                    <td className="cell" style={{ padding: "5px 7px", fontSize: 13, height: "34px", border: "1px solid #444" }}>
-                      <span className="field-label">Destination:</span> <span className="bold red">{data.destination || ""}</span>
+                    <td
+                      className="cell"
+                      style={{
+                        padding: "5px 7px",
+                        fontSize: 13,
+                        height: "34px",
+                        border: "1px solid #444",
+                      }}
+                    >
+                      <span className="field-label">Destination:</span>{" "}
+                      <span className="bold red">{data.destination || ""}</span>
                     </td>
                   </tr>
                   <tr style={{ height: "100%" }}>
-                    <td className="cell" colSpan={2} style={{ padding: "8px 10px", fontSize: 13, height: "100%", minHeight: "90px", verticalAlign: "top", border: "1px solid #444", borderBottom: "none" }}>
-                      <span className="field-label" style={{ color: "#555", fontWeight: 500 }}>Mode/Terms of Payment:</span> <span className="bold">{paymentTermsLabel}</span>
+                    <td
+                      className="cell"
+                      colSpan={2}
+                      style={{
+                        padding: "8px 10px",
+                        fontSize: 13,
+                        height: "100%",
+                        minHeight: "90px",
+                        verticalAlign: "top",
+                        border: "1px solid #444",
+                        borderBottom: "none",
+                      }}
+                    >
+                      <span
+                        className="field-label"
+                        style={{ color: "#555", fontWeight: 500 }}
+                      >
+                        Mode/Terms of Payment:
+                      </span>{" "}
+                      <span className="bold">{paymentTermsLabel}</span>
                     </td>
                   </tr>
                 </tbody>
@@ -421,16 +664,32 @@ export const InvoicePrintPage: React.FC = () => {
     </>
   );
 
-  const renderItemsTable = (pageItems: InvoiceItem[], startIndex: number, showTotal: boolean) => (
+  const renderItemsTable = (
+    pageItems: InvoiceItem[],
+    startIndex: number,
+    showTotal: boolean,
+  ) => (
     <table className="outer-border" style={{ marginTop: "-1px" }}>
       <thead>
         <tr>
-          <th className="items-th" style={{ width: "6%" }}>SR</th>
-          <th className="items-th" style={{ width: "42%" }}>Description of work</th>
-          <th className="items-th" style={{ width: "12%" }}>HSN/SAC</th>
-          <th className="items-th" style={{ width: "10%" }}>Quantity</th>
-          <th className="items-th" style={{ width: "15%" }}>Rate</th>
-          <th className="items-th" style={{ width: "15%" }}>Amount</th>
+          <th className="items-th" style={{ width: "6%" }}>
+            SR
+          </th>
+          <th className="items-th" style={{ width: "42%" }}>
+            Description of work
+          </th>
+          <th className="items-th" style={{ width: "12%" }}>
+            HSN/SAC
+          </th>
+          <th className="items-th" style={{ width: "10%" }}>
+            Quantity
+          </th>
+          <th className="items-th" style={{ width: "15%" }}>
+            Rate
+          </th>
+          <th className="items-th" style={{ width: "15%" }}>
+            Amount
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -439,20 +698,37 @@ export const InvoicePrintPage: React.FC = () => {
             <td className="items-td-center">{startIndex + idx + 1}</td>
             <td className="items-td red">{it.description}</td>
             <td className="items-td-center">{it.hsnSac || "—"}</td>
-            <td className="items-td-center">{it.quantity} {it.unit || "Nos"}.</td>
+            <td className="items-td-center">
+              {it.quantity} {it.unit || "Nos"}.
+            </td>
             <td className="items-td-right">{fmtNum(it.unitPrice)}</td>
             <td className="items-td-right">{fmtNum(it.amount)}</td>
           </tr>
         ))}
-        {pageItems.length === 0 && showTotal && Array.from({ length: 4 }).map((_, i) => (
-          <tr key={`blank-${i}`} style={{ height: 26 }}>
-            <td className="items-td-center"></td><td className="items-td"></td><td className="items-td-center"></td><td className="items-td-center"></td><td className="items-td-right"></td><td className="items-td-right"></td>
-          </tr>
-        ))}
+        {pageItems.length === 0 &&
+          showTotal &&
+          Array.from({ length: 4 }).map((_, i) => (
+            <tr key={`blank-${i}`} style={{ height: 26 }}>
+              <td className="items-td-center"></td>
+              <td className="items-td"></td>
+              <td className="items-td-center"></td>
+              <td className="items-td-center"></td>
+              <td className="items-td-right"></td>
+              <td className="items-td-right"></td>
+            </tr>
+          ))}
         {showTotal && (
           <tr>
-            <td className="items-td-right bold" colSpan={5} style={{ textAlign: "right" }}>Total</td>
-            <td className="items-td-right bold">&#8377; {fmtNum(data.subtotal)}</td>
+            <td
+              className="items-td-right bold"
+              colSpan={5}
+              style={{ textAlign: "right" }}
+            >
+              Total
+            </td>
+            <td className="items-td-right bold">
+              &#8377; {fmtNum(data.subtotal)}
+            </td>
           </tr>
         )}
       </tbody>
@@ -463,43 +739,124 @@ export const InvoicePrintPage: React.FC = () => {
     <table className="outer-border" style={{ marginTop: "-1px" }}>
       <tbody>
         <tr>
-          <td style={{ width: "55%", verticalAlign: "top", borderLeft: "1px solid #000", borderBottom: "1px solid #000" }}></td>
-          <td style={{ width: "45%", padding: 0, verticalAlign: "top", borderBottom: "1px solid #000" }}>
-            <table className="gst-inner-table" style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+          <td
+            style={{
+              width: "60%",
+              verticalAlign: "top",
+              borderLeft: "1px solid #000",
+              borderBottom: "1px solid #000",
+            }}
+          ></td>
+          <td
+            style={{
+              width: "40%",
+              padding: 0,
+              verticalAlign: "top",
+              borderBottom: "1px solid #000",
+            }}
+          >
+            <table
+              className="gst-inner-table"
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                tableLayout: "fixed",
+              }}
+            >
               <tbody>
                 {cgstRate > 0 && (
                   <tr>
-                    <td className="gst-label" style={{ borderRight: "1px solid #000" }}>SALES SGST {sgstRate}%</td>
-                    <td className="gst-value" style={{ width: "140px" }}>{sgstAmt > 0 ? fmtNum(sgstAmt) : "XXXXX"}</td>
+                    <td
+                      className="gst-label"
+                      style={{ borderRight: "1px solid #000" }}
+                    >
+                      SALES SGST {sgstRate}%
+                    </td>
+                    <td className="gst-value" style={{ width: "112px" }}>
+                      {sgstAmt > 0 ? fmtNum(sgstAmt) : "XXXXX"}
+                    </td>
                   </tr>
                 )}
                 {sgstRate > 0 && (
                   <tr>
-                    <td className="gst-label" style={{ borderRight: "1px solid #000" }}>SALES CGST {cgstRate}%</td>
-                    <td className="gst-value" style={{ width: "140px" }}>{cgstAmt > 0 ? fmtNum(cgstAmt) : "XXXXX"}</td>
+                    <td
+                      className="gst-label"
+                      style={{ borderRight: "1px solid #000" }}
+                    >
+                      SALES CGST {cgstRate}%
+                    </td>
+                    <td className="gst-value" style={{ width: "112px" }}>
+                      {cgstAmt > 0 ? fmtNum(cgstAmt) : "XXXXX"}
+                    </td>
                   </tr>
                 )}
                 {igstRate > 0 && (
                   <tr>
-                    <td className="gst-label" style={{ borderRight: "1px solid #000" }}>SALES IGST {igstRate}%</td>
-                    <td className="gst-value" style={{ width: "140px" }}>{igstAmt > 0 ? fmtNum(igstAmt) : "XXXXX"}</td>
+                    <td
+                      className="gst-label"
+                      style={{ borderRight: "1px solid #000" }}
+                    >
+                      SALES IGST {igstRate}%
+                    </td>
+                    <td className="gst-value" style={{ width: "112px" }}>
+                      {igstAmt > 0 ? fmtNum(igstAmt) : "XXXXX"}
+                    </td>
                   </tr>
                 )}
                 {data.showTotalAmounts !== false && (
                   <tr>
-                    <td className="gst-label bold" style={{ borderTop: "1px solid #000", borderRight: "1px solid #000" }}>Total Amounts</td>
-                    <td className="gst-value bold red" style={{ borderTop: "1px solid #000", width: "140px" }}>{fmtNum(data.subtotal ?? data.totalAmount)}</td>
+                    <td
+                      className="gst-label bold"
+                      style={{
+                        borderTop: "1px solid #000",
+                        borderRight: "1px solid #000",
+                      }}
+                    >
+                      Total Amount
+                    </td>
+                    <td
+                      className="gst-value bold red"
+                      style={{ borderTop: "1px solid #000", width: "112px" }}
+                    >
+                      {fmtNum(data.subtotal ?? data.totalAmount)}
+                    </td>
                   </tr>
                 )}
                 {data.transportationCharges > 0 && (
                   <tr>
-                    <td className="gst-label" style={{ borderTop: "1px solid #000", borderRight: "1px solid #000" }}>Transportation Charges</td>
-                    <td className="gst-value red" style={{ borderTop: "1px solid #000", width: "140px" }}>{fmtNum(data.transportationCharges)}</td>
+                    <td
+                      className="gst-label"
+                      style={{
+                        borderTop: "1px solid #000",
+                        borderRight: "1px solid #000",
+                      }}
+                    >
+                      Transportation Charges
+                    </td>
+                    <td
+                      className="gst-value red"
+                      style={{ borderTop: "1px solid #000", width: "112px" }}
+                    >
+                      {fmtNum(data.transportationCharges)}
+                    </td>
                   </tr>
                 )}
                 <tr>
-                  <td className="gst-label bold" style={{ borderTop: "1px solid #000", borderRight: "1px solid #000" }}>Grand Total</td>
-                  <td className="gst-value bold red" style={{ borderTop: "1px solid #000", width: "140px" }}>&#8377; {fmtNum(data.grandTotal)}</td>
+                  <td
+                    className="gst-label bold"
+                    style={{
+                      borderTop: "1px solid #000",
+                      borderRight: "1px solid #000",
+                    }}
+                  >
+                    Grand Total
+                  </td>
+                  <td
+                    className="gst-value bold red"
+                    style={{ borderTop: "1px solid #000", width: "112px" }}
+                  >
+                    &#8377; {fmtNum(data.grandTotal)}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -514,7 +871,9 @@ export const InvoicePrintPage: React.FC = () => {
       <tbody>
         <tr>
           <td className="cell" style={{ fontSize: 13 }}>
-            <span style={{ fontStyle: "italic" }}>Total Amounts Chargeable (In word) – </span>
+            <span style={{ fontStyle: "italic" }}>
+              Total Amounts Chargeable (In word) –{" "}
+            </span>
             <span className="amount-words">{data.amountInWords || "—"}</span>
           </td>
         </tr>
@@ -524,22 +883,41 @@ export const InvoicePrintPage: React.FC = () => {
 
   const renderHsnTable = (
     pageHsnRows: Array<[string, { taxable: number }]>,
-    showHsnTotal: boolean
+    showHsnTotal: boolean,
   ) => (
     <table className="outer-border hsn-table" style={{ marginTop: "-1px" }}>
       <thead>
         <tr>
-          <th className="items-th" rowSpan={2}>HSN /SAC</th>
-          <th className="items-th" rowSpan={2}>Taxable<br />Value</th>
-          <th className="items-th" colSpan={2}>CGST</th>
-          <th className="items-th" colSpan={2}>SGST</th>
-          <th className="items-th" colSpan={2}>IGST</th>
-          <th className="items-th" rowSpan={2}>Total<br />Tax Amount</th>
+          <th className="items-th" rowSpan={2}>
+            HSN /SAC
+          </th>
+          <th className="items-th" rowSpan={2}>
+            Taxable
+            <br />
+            Value
+          </th>
+          <th className="items-th" colSpan={2}>
+            CGST
+          </th>
+          <th className="items-th" colSpan={2}>
+            SGST
+          </th>
+          <th className="items-th" colSpan={2}>
+            IGST
+          </th>
+          <th className="items-th" rowSpan={2}>
+            Total
+            <br />
+            Tax Amount
+          </th>
         </tr>
         <tr>
-          <th className="items-th">Rate</th><th className="items-th">Amount</th>
-          <th className="items-th">Rate</th><th className="items-th">Amount</th>
-          <th className="items-th">Rate</th><th className="items-th">Amount</th>
+          <th className="items-th">Rate</th>
+          <th className="items-th">Amount</th>
+          <th className="items-th">Rate</th>
+          <th className="items-th">Amount</th>
+          <th className="items-th">Rate</th>
+          <th className="items-th">Amount</th>
         </tr>
       </thead>
       <tbody>
@@ -551,12 +929,24 @@ export const InvoicePrintPage: React.FC = () => {
             <tr key={code}>
               <td className="items-td-center">{code}</td>
               <td className="items-td-right">{fmtNum(taxable)}</td>
-              <td className="items-td-center">{cgstRate > 0 ? `${cgstRate}%` : ""}</td>
-              <td className="items-td-right">{cgstRate > 0 ? fmtNum(cAmt) : ""}</td>
-              <td className="items-td-center">{sgstRate > 0 ? `${sgstRate}%` : ""}</td>
-              <td className="items-td-right">{sgstRate > 0 ? fmtNum(sAmt) : ""}</td>
-              <td className="items-td-center">{igstRate > 0 ? `${igstRate}%` : ""}</td>
-              <td className="items-td-right">{igstRate > 0 ? fmtNum(iAmt) : ""}</td>
+              <td className="items-td-center">
+                {cgstRate > 0 ? `${cgstRate}%` : ""}
+              </td>
+              <td className="items-td-right">
+                {cgstRate > 0 ? fmtNum(cAmt) : ""}
+              </td>
+              <td className="items-td-center">
+                {sgstRate > 0 ? `${sgstRate}%` : ""}
+              </td>
+              <td className="items-td-right">
+                {sgstRate > 0 ? fmtNum(sAmt) : ""}
+              </td>
+              <td className="items-td-center">
+                {igstRate > 0 ? `${igstRate}%` : ""}
+              </td>
+              <td className="items-td-right">
+                {igstRate > 0 ? fmtNum(iAmt) : ""}
+              </td>
               <td className="items-td-right">{fmtNum(cAmt + sAmt + iAmt)}</td>
             </tr>
           );
@@ -566,11 +956,17 @@ export const InvoicePrintPage: React.FC = () => {
             <td className="items-td-center">Total</td>
             <td className="items-td-right">{fmtNum(totalTaxable)}</td>
             <td className="items-td-center"></td>
-            <td className="items-td-right">{cgstRate > 0 ? fmtNum(cgstAmt) : ""}</td>
+            <td className="items-td-right">
+              {cgstRate > 0 ? fmtNum(cgstAmt) : ""}
+            </td>
             <td className="items-td-center"></td>
-            <td className="items-td-right">{sgstRate > 0 ? fmtNum(sgstAmt) : ""}</td>
+            <td className="items-td-right">
+              {sgstRate > 0 ? fmtNum(sgstAmt) : ""}
+            </td>
             <td className="items-td-center"></td>
-            <td className="items-td-right">{igstRate > 0 ? fmtNum(igstAmt) : ""}</td>
+            <td className="items-td-right">
+              {igstRate > 0 ? fmtNum(igstAmt) : ""}
+            </td>
             <td className="items-td-right">{fmtNum(totalTaxAmt)}</td>
           </tr>
         )}
@@ -584,7 +980,9 @@ export const InvoicePrintPage: React.FC = () => {
         <tr>
           <td className="cell" style={{ fontSize: 13 }}>
             <span style={{ fontStyle: "italic" }}>Tax Amount (In Words): </span>
-            <span className="bold red">{data.taxAmountInWords || "Indian Rupees"}</span>
+            <span className="bold red">
+              {data.taxAmountInWords || "Indian Rupees"}
+            </span>
           </td>
         </tr>
       </tbody>
@@ -595,19 +993,38 @@ export const InvoicePrintPage: React.FC = () => {
     <table className="outer-border" style={{ marginTop: "-1px" }}>
       <tbody>
         <tr>
-          <td className="cell" style={{ width: "50%", fontSize: 13, verticalAlign: "top" }}>
-            <div className="bold" style={{ marginBottom: 3 }}>Declaration</div>
-            <div>{data.notes || "We declare that this invoice shows the actual price of the testing work described and that all particulars are true and correct"}</div>
-          </td>
-          <td className="cell" style={{ width: "50%", fontSize: 13, verticalAlign: "top" }}>
-            <div className="bold" style={{ marginBottom: 3 }}>Company Bank Details</div>
+          <td
+            className="cell"
+            style={{ width: "50%", fontSize: 13, verticalAlign: "top" }}
+          >
+            <div className="bold" style={{ marginBottom: 3 }}>
+              Declaration
+            </div>
             <div>
-              <span>Bank : {data.bankDetails?.bankName || "State Bank of India"}</span>
-              <span style={{ marginLeft: "20px" }}>A/c No.: {data.bankDetails?.accountNumber || "35005963456"}</span>
+              {data.notes ||
+                "We declare that this invoice shows the actual price of the testing work described and that all particulars are true and correct"}
+            </div>
+          </td>
+          <td
+            className="cell"
+            style={{ width: "50%", fontSize: 13, verticalAlign: "top" }}
+          >
+            <div className="bold" style={{ marginBottom: 3 }}>
+              Company Bank Details
+            </div>
+            <div>
+              <span>
+                Bank : {data.bankDetails?.bankName || "State Bank of India"}
+              </span>
+              <span style={{ marginLeft: "20px" }}>
+                A/c No.: {data.bankDetails?.accountNumber || "35005963456"}
+              </span>
             </div>
             <div>
               <span>Branch: {data.bankDetails?.branch || "Baramati MIDC"}</span>
-              <span style={{ marginLeft: "20px" }}>IFSC: {data.bankDetails?.ifscCode || "SBIN0014727"}</span>
+              <span style={{ marginLeft: "20px" }}>
+                IFSC: {data.bankDetails?.ifscCode || "SBIN0014727"}
+              </span>
             </div>
           </td>
         </tr>
@@ -620,10 +1037,25 @@ export const InvoicePrintPage: React.FC = () => {
       <table className="outer-border" style={{ marginTop: "-1px" }}>
         <tbody>
           <tr>
-            <td className="sig-cell" style={{ fontSize: 13, verticalAlign: "bottom", width: "50%" }}>Customer's Seal And Signature</td>
-            <td className="sig-cell" style={{ fontSize: 13, verticalAlign: "top", textAlign: "center", width: "50%" }}>
+            <td
+              className="sig-cell"
+              style={{ fontSize: 13, verticalAlign: "bottom", width: "50%" }}
+            >
+              Customer's Seal And Signature
+            </td>
+            <td
+              className="sig-cell"
+              style={{
+                fontSize: 13,
+                verticalAlign: "top",
+                textAlign: "center",
+                width: "50%",
+              }}
+            >
               <div>National Industrial Inspection And Training</div>
-              <div style={{ marginTop: 28, fontSize: 13 }}>Authorized Signatory</div>
+              <div style={{ marginTop: 28, fontSize: 13 }}>
+                Authorized Signatory
+              </div>
             </td>
           </tr>
         </tbody>
@@ -704,10 +1136,10 @@ export const InvoicePrintPage: React.FC = () => {
   });
 
   // 6. Pack Declaration
-blocks.push({
-  type: "final-section",
-  height: 50,
-});
+  blocks.push({
+    type: "final-section",
+    height: 50,
+  });
 
   type PageDescriptor = {
     isFirstPage: boolean;
@@ -719,32 +1151,38 @@ blocks.push({
 
   while (currentBlockIndex < blocks.length) {
     const isFirstPage = pages.length === 0;
-    
+
     // Available height budget for this page
     let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT;
     if (isFirstPage) {
       availableHeight -= DETAILS_HEIGHT;
     }
-    
+
     const pageBlocks: ContentBlock[] = [];
     let accumulatedHeight = 0;
     let hasItemsTable = false;
     let hasHsnTable = false;
-    
+
     while (currentBlockIndex < blocks.length) {
       const block = blocks[currentBlockIndex];
       let blockHeight = block.height;
-      
+
       // Account for the table header height if starting a new items table on this page
-      if ((block.type === "item" || block.type === "table-total") && !hasItemsTable) {
+      if (
+        (block.type === "item" || block.type === "table-total") &&
+        !hasItemsTable
+      ) {
         blockHeight += TABLE_HEADER_HEIGHT;
       }
 
       // Account for HSN header height if starting HSN table on this page
-      if ((block.type === "hsn-row" || block.type === "hsn-total") && !hasHsnTable) {
+      if (
+        (block.type === "hsn-row" || block.type === "hsn-total") &&
+        !hasHsnTable
+      ) {
         blockHeight += HSN_HEADER_HEIGHT;
       }
-      
+
       if (accumulatedHeight + blockHeight <= availableHeight) {
         pageBlocks.push(block);
         accumulatedHeight += blockHeight;
@@ -759,14 +1197,14 @@ blocks.push({
         break;
       }
     }
-    
+
     // Fallback: If not even a single block fits, force push the first block to avoid infinite loop
     if (pageBlocks.length === 0 && currentBlockIndex < blocks.length) {
       const block = blocks[currentBlockIndex];
       pageBlocks.push(block);
       currentBlockIndex++;
     }
-    
+
     pages.push({
       isFirstPage,
       pageBlocks,
@@ -811,13 +1249,29 @@ blocks.push({
         style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
       >
         {pages.map(({ isFirstPage, pageBlocks }, i) => {
-          const pageItems = pageBlocks.filter((b): b is Extract<ContentBlock, { type: "item" }> => b.type === "item").map((b) => b.item);
+          const pageItems = pageBlocks
+            .filter(
+              (b): b is Extract<ContentBlock, { type: "item" }> =>
+                b.type === "item",
+            )
+            .map((b) => b.item);
           const showTotal = pageBlocks.some((b) => b.type === "table-total");
           const hasTable = pageItems.length > 0 || showTotal;
           const firstItem = pageItems[0];
           const startIndex = firstItem ? items.indexOf(firstItem) : 0;
 
-          const pageHsnRows = pageBlocks.filter((b): b is Extract<ContentBlock, { type: "hsn-row" }> => b.type === "hsn-row").map((b) => [b.code, { taxable: b.taxable }] as [string, { taxable: number }]);
+          const pageHsnRows = pageBlocks
+            .filter(
+              (b): b is Extract<ContentBlock, { type: "hsn-row" }> =>
+                b.type === "hsn-row",
+            )
+            .map(
+              (b) =>
+                [b.code, { taxable: b.taxable }] as [
+                  string,
+                  { taxable: number },
+                ],
+            );
           const showHsnTotal = pageBlocks.some((b) => b.type === "hsn-total");
           const hasHsnTable = pageHsnRows.length > 0 || showHsnTotal;
 
@@ -827,25 +1281,36 @@ blocks.push({
                 <InvoiceHeader />
                 <div style={{ padding: "0 1mm" }}>
                   {isFirstPage && renderInvoiceDetails()}
-                  {hasTable && renderItemsTable(pageItems, startIndex, showTotal)}
+                  {hasTable &&
+                    renderItemsTable(pageItems, startIndex, showTotal)}
                   {pageBlocks.map((block, idx) => {
-                    if (block.type === "tax") return <React.Fragment key={idx}>{renderTaxSection()}</React.Fragment>;
-                    if (block.type === "amount-words") return <React.Fragment key={idx}>{renderAmountWords()}</React.Fragment>;
+                    if (block.type === "tax")
+                      return (
+                        <React.Fragment key={idx}>
+                          {renderTaxSection()}
+                        </React.Fragment>
+                      );
+                    if (block.type === "amount-words")
+                      return (
+                        <React.Fragment key={idx}>
+                          {renderAmountWords()}
+                        </React.Fragment>
+                      );
                     return null;
                   })}
                   {hasHsnTable && renderHsnTable(pageHsnRows, showHsnTotal)}
                   {showHsnTotal && renderHsnTaxWords()}
-                 {pageBlocks.map((block, idx) => {
-                  if (block.type === "final-section")
-                    return (
-                      <React.Fragment key={idx}>
-                        {renderDeclarationSection()}
-                        {renderSignatureSection()}
-                      </React.Fragment>
-                    );
+                  {pageBlocks.map((block, idx) => {
+                    if (block.type === "final-section")
+                      return (
+                        <React.Fragment key={idx}>
+                          {renderDeclarationSection()}
+                          {renderSignatureSection()}
+                        </React.Fragment>
+                      );
 
-                  return null;
-                })}
+                    return null;
+                  })}
                 </div>
               </div>
               <div className="invoice-page-footer">

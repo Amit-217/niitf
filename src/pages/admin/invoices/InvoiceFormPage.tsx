@@ -63,10 +63,11 @@ const defaultForm = {
   bankDetails: {
     bankName: "State Bank of India",
     accountNumber: "35005963456",
-    ifscCode: "SBIN0001234",
+    ifscCode: "SBIN0014727",
     branch: "Baramati MIDC",
   },
-  notes: "",
+  notes:
+    "We declare that this invoice shows the actual price of the testing work described and that all particulars are true and correct.",
   showTotalAmounts: true,
   taxMode: "cgst_sgst" as "cgst_sgst" | "igst",
 };
@@ -591,6 +592,7 @@ export const InvoiceFormPage: React.FC = () => {
             { label: "Document No", key: "documentNo" },
             { label: "Dispatched Through", key: "dispatchedThrough" },
             { label: "Destination", key: "destination" },
+            { label: "Other References", key: "otherReferences" },
             { label: "Terms of Delivery", key: "termsOfDelivery" },
           ].map(({ label, key }) => (
             <div key={key}>
@@ -930,7 +932,7 @@ export const InvoiceFormPage: React.FC = () => {
                   className="w-4 h-4 accent-primary-600 cursor-pointer"
                 />
                 <span className="text-xs font-medium text-gray-600">
-                  Show "Total Amounts" row on printed invoice
+                  Show "Total Amount" row on printed invoice
                 </span>
               </label>
             </div>
@@ -968,7 +970,7 @@ export const InvoiceFormPage: React.FC = () => {
       {/* Notes */}
       <div className="glass-card p-6 space-y-4">
         <h2 className="font-semibold text-gray-800 text-base border-b pb-2">
-          Notes
+          Declaration
         </h2>
         <textarea
           className="input-field w-full h-24 resize-none"
