@@ -26,7 +26,18 @@ export const QuotationFormPage: React.FC = () => {
     enquiryReference: 'By Call',
     date: new Date().toISOString().split('T')[0],
     contactPersons: [{ name: '', mobile: '' }],
-    services: [],
+    services: [
+  {
+    srNo: 1,
+    description: '',
+    level: 'NA',
+    sacCode: '988393',
+    quantity: 1,
+    unit: 'Per',
+    price: 0,
+    amount: 0
+  }
+],
     // Service Specific
     extraCharges: { transportation: 0, lodging: 0, boarding: 0, minimumVisit: 0 },
     // Training Specific
@@ -293,8 +304,8 @@ export const QuotationFormPage: React.FC = () => {
               <table className="w-full min-w-[800px]">
                  <thead className="bg-gray-50 border-b">
                     <tr>
-                       <th className="px-3 py-2 text-left text-xs font-bold text-gray-500">Sr.</th>
-                       <th className="px-3 py-2 text-left text-xs font-bold text-gray-500 w-1/3">Description</th>
+                       <th className="w-16 px-2 py-3 text-left text-sm font-semibold text-gray-500">Sr.</th>
+                       <th className="px-2 py-3 text-left text-xs font-bold text-gray-500 w-1/3">Description</th>
                        {type === 'training' && <th className="px-3 py-2 text-left text-xs font-bold text-gray-500">Level</th>}
                        <th className="px-3 py-2 text-left text-xs font-bold text-gray-500 w-24">SAC Code</th>
                        <th className="px-3 py-2 text-left text-xs font-bold text-gray-500 w-20">Qty</th>
@@ -307,18 +318,18 @@ export const QuotationFormPage: React.FC = () => {
                  <tbody className="divide-y divide-gray-100">
                     {formData.services.map((row: any, i: number) => (
                        <tr key={i}>
-                          <td className="px-2 py-2"><input type="number" value={row.srNo} onChange={e => handleServiceChange(i, 'srNo', e.target.value)} className="w-full px-2 py-1 border rounded text-xs" /></td>
-                          <td className="px-2 py-2"><input type="text" value={row.description} onChange={e => handleServiceChange(i, 'description', e.target.value)} className="w-full px-2 py-1 border rounded text-xs" placeholder="Description of service..." /></td>
+                          <td className="px-2 py-2"><input type="number" value={row.srNo} onChange={e => handleServiceChange(i, 'srNo', e.target.value)} className="w-14 px-2 py-2 border border-gray-300 rounded-lg text-sm text-center" /></td>
+                          <td className="px-2 py-2"><input type="text" value={row.description} onChange={e => handleServiceChange(i, 'description', e.target.value)} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Description of service..." /></td>
                           {type === 'training' && <td className="px-2 py-2">
-                             <select value={row.level} onChange={e => handleServiceChange(i, 'level', e.target.value)} className="w-full px-2 py-1 border rounded text-xs">
+                             <select value={row.level} onChange={e => handleServiceChange(i, 'level', e.target.value)} className="w-full px-3 py-2 border rounded-lg text-sm">
                                <option value="I">I</option><option value="II">II</option><option value="III">III</option><option value="NA">NA</option><option value="CUSTOM">CUSTOM</option>
                              </select>
                           </td>}
-                          <td className="px-2 py-2"><input type="text" value={row.sacCode} onChange={e => handleServiceChange(i, 'sacCode', e.target.value)} className="w-full px-2 py-1 border rounded text-xs" /></td>
-                          <td className="px-2 py-2"><input type="number" value={row.quantity} onChange={e => handleServiceChange(i, 'quantity', e.target.value)} className="w-full px-2 py-1 border rounded text-xs" /></td>
-                          <td className="px-2 py-2"><input type="text" value={row.unit} onChange={e => handleServiceChange(i, 'unit', e.target.value)} className="w-full px-2 py-1 border rounded text-xs" /></td>
-                          <td className="px-2 py-2"><input type="number" value={row.price} onChange={e => handleServiceChange(i, 'price', e.target.value)} className="w-full px-2 py-1 border rounded text-xs" /></td>
-                          <td className="px-2 py-2"><input readOnly type="number" value={row.amount} className="w-full px-2 py-1 border rounded text-xs bg-gray-50 font-bold" /></td>
+                          <td className="px-2 py-2"><input type="text" value={row.sacCode} onChange={e => handleServiceChange(i, 'sacCode', e.target.value)} className="w-full px-3 py-2 border rounded-lg text-sm" /></td>
+                          <td className="px-2 py-2"><input type="number" value={row.quantity} onChange={e => handleServiceChange(i, 'quantity', e.target.value)} className="w-full px-3 py-2 border rounded-lg text-sm" /></td>
+                          <td className="px-2 py-2"><input type="text" value={row.unit} onChange={e => handleServiceChange(i, 'unit', e.target.value)} className="w-full px-3 py-2 border rounded-lg text-sm" /></td>
+                          <td className="px-2 py-2"><input type="number" value={row.price} onChange={e => handleServiceChange(i, 'price', e.target.value)} className="w-full px-3 py-2 border rounded-lg text-sm"/></td>
+                          <td className="px-2 py-2"><input readOnly type="number" value={row.amount} className="w-full px-3 py-2 border rounded-lg text-sm bg-gray-50 font-bold" /></td>
                           <td className="px-2 py-2 text-center">
                              <button type="button" onClick={() => removeServiceRow(i)} className="text-red-400 hover:text-red-600"><Trash2 size={16}/></button>
                           </td>
