@@ -35,18 +35,22 @@ const PRINT_STYLES = `
   body { font-family: 'Times New Roman', Times, serif; font-size: 12.5px; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
 
-  .quotation-page {
-    width: 210mm;
-    height: 297mm;
-    background: #fff;
-    box-sizing: border-box;
-    padding: 0 5mm 5mm 5mm;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+.quotation-page {
+  width: 210mm;
+  min-height: 297mm;
+  background: #fff;
+  box-sizing: border-box;
+  padding: 0 5mm 38mm 5mm;
+  overflow: hidden;
+  position: relative;
+}
+  .quotation-page-footer{
+  position: absolute;
+  left: 5mm;
+  right: 5mm;
+  bottom: 5mm;
+}
   .quotation-page-content { flex: 1 1 auto; }
-  .quotation-page-footer { margin-top: auto; }
 
   table { border-collapse: collapse; width: 100%; }
   .title { font-size: 18px; font-weight: bold; text-align: center; letter-spacing: 2px; padding: 0px 0;}
@@ -169,6 +173,12 @@ const PRINT_STYLES = `
   border: 1px solid #000;
   padding: 8px 10px;
   margin-top: -10px;
+}
+  .final-section,
+.quotation-terms,
+.quotation-signoff {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
 }
 `;
 
@@ -643,12 +653,12 @@ const renderIntro = () => (
 
   const renderSignoff = () => (
     <div className="quotation-signoff">
-      <p style={{ marginBottom: "6px" }}>
+      <p style={{ marginBottom: "6px",fontSize:"16px" ,marginTop:"10px"}}>
         We trust the above notice is quite competitive acceptable to you Looking
         forward to favorable reply &amp; confirmed order on us.
       </p>
-      <div>Your faithfully,</div>
-      <div style={{ marginTop: "28px", fontWeight: "bold" }}>
+      <div style={{ marginTop: "28px", fontWeight: "bold" }}>Your faithfully,</div>
+      <div style={{ marginTop: "8px", fontWeight: "bold" }}>
         {data.preparedBy?.name || "Mr. Bajirao T. Kadam"}
       </div>
       <div>
@@ -706,14 +716,17 @@ const renderIntro = () => (
                 <div className="quotation-body">
                   {hasIntro && renderIntro()}
                   {renderTableSection(pageBlocks)}
-                  {termBlocks.length > 0 && (
-                    <div className="quotation-terms terms-box">
-                      {termBlocks.map((b, idx) => (
-                        <div key={idx}>{b.text}</div>
-                      ))}
-                    </div>
-                  )}
-                  {hasSignoff && renderSignoff()}
+                <div className="final-section">
+  {termBlocks.length > 0 && (
+    <div className="quotation-terms terms-box">
+      {termBlocks.map((b, idx) => (
+        <div key={idx}>{b.text}</div>
+      ))}
+    </div>
+  )}
+
+  {hasSignoff && renderSignoff()}
+</div>
                 </div>
               </div>
               <div className="quotation-page-footer">
