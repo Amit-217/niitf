@@ -154,6 +154,22 @@ const PRINT_STYLES = `
   margin-top: 8px;
   line-height: 1.2;
 }
+  .info-label {
+  border: 1px solid #000;
+  padding: 6px;
+  font-weight: bold;
+  width: 42%;
+}
+
+.info-value {
+  border: 1px solid #000;
+  padding: 6px;
+}
+  .terms-box {
+  border: 1px solid #000;
+  padding: 8px 10px;
+  margin-top: -10px;
+}
 `;
 
 const toNumber = (value: unknown) => {
@@ -409,40 +425,160 @@ export const QuotationPrintPage: React.FC = () => {
     </>
   );
 
-  const renderIntro = () => (
-    <>
-      <div className="title" style={{ marginBottom: 0 }}>QUOTATION</div>
-      <div className="quotation-info">
-        <div style={{ width: "50%" }}>
-          <h2>QUOTATION TO:</h2>
-          <div><strong>Customer:</strong> {customer?.companyName || "-"}</div>
-          <div><strong>Address:</strong> {customer?.address || "-"}</div>
-          <div><strong>GST No:</strong> {customer?.gstNo || "-"}</div>
-          <div><strong>Contact Name:</strong> {customer?.contactPerson || "-"}</div>
-          <div><strong>Contact No.:</strong> {customer?.mobile || "-"}</div>
-        </div>
-        <div style={{ width: "45%" }}>
-          <div><strong>Quotation No.:</strong> {data.quotationNo}</div>
-          <div>
-            <strong>Date:</strong>{" "}
-            {data.date ? new Date(data.date).toLocaleDateString("en-GB") : "-"}
-          </div>
-          <div style={{ marginTop: "8px" }}>
-            <strong>Enquiry Reference:</strong> {data.enquiryReference || "By Call"}
-          </div>
-          <div><strong>Prepared By:</strong> {data.preparedBy?.name || "Mr. Bajirao T. Kadam"}</div>
-          <div><strong>Mail ID:</strong> niit004@gmail.com</div>
-          <div><strong>Contact Number:</strong> +91 9860186056 / 7875154431</div>
-        </div>
-      </div>
-      <p style={{ marginTop: "8px", marginBottom: "8px" }}>
-        <strong>Dear Sir,</strong>
-        <br />
-        This is reference to discussion with you; we are pleased to quote our
-        best competitive Price for Inspection.
-      </p>
-    </>
-  );
+const renderIntro = () => (
+  <>
+    <div className="title" style={{ marginBottom: "8px" }}>
+      QUOTATION
+    </div>
+
+    <table
+      style={{
+        width: "100%",
+        borderCollapse: "collapse",
+        
+        fontSize: "14px",
+        borderBottom:"0px"
+      }}
+    >
+      <tbody>
+        <tr>
+          {/* LEFT SIDE */}
+          <td
+            style={{
+              width: "50%",
+              border: "1px solid #000",
+              verticalAlign: "top",
+              padding: "8px",
+              lineHeight: "1.5",
+              borderRight:"0px",
+            }}
+          >
+            <div><strong>TO,</strong></div>
+
+            <div>
+              <strong>Customer:</strong>{" "}
+              {customer?.companyName || "-"}
+            </div>
+
+            <div>
+              <strong>Address:</strong>{" "}
+              {customer?.address || "-"}
+            </div>
+
+          
+            <div>
+              <strong>GST No:</strong>{" "}
+              {customer?.gstNo || "-"}
+            </div>
+
+            <div>
+              <strong>Contact Name:</strong>{" "}
+              {customer?.contactPerson || "-"}
+            </div>
+
+            <div>
+              <strong>Contact No.:</strong>{" "}
+              {customer?.mobile || "-"}
+            </div>
+          </td>
+
+          {/* RIGHT SIDE */}
+          <td
+            style={{
+              width: "50%",
+              border: "0px solid #000",
+              padding: 0,
+              verticalAlign: "top",
+              borderLeft:"0px",
+            }}
+          >
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+              }}
+            >
+              <tbody
+              >
+                <tr>
+                  <td className="info-label">Quotation No.:</td>
+                  <td className="info-value">
+                    {data.quotationNo}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className="info-label">Date:</td>
+                  <td className="info-value">
+                    {data.date
+                      ? new Date(data.date).toLocaleDateString("en-GB")
+                      : "-"}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className="info-label">
+                    Enquiry Reference:
+                  </td>
+                  <td className="info-value">
+                    {data.enquiryReference || "By Call"}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className="info-label">
+                    Contact Person:
+                  </td>
+                  <td className="info-value">
+                    {data.preparedBy?.name ||
+                      "Mr. B. T. Kadam"}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className="info-label">Mail ID:</td>
+                  <td className="info-value">
+                    niit004@gmail.com
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className="info-label"
+                  style={{borderBottom:"0px"}}>
+                    Contact Numbers:
+                  </td>
+                  <td className="info-value"
+                   style={{borderBottom:"0px"}}>
+                    +91 9860186056 / 7875154431
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+
+        {/* DEAR SIR ROW */}
+        <tr>
+          <td
+            colSpan={2}
+            style={{
+              border: "1px solid #000",
+              padding: "8px",
+              lineHeight: "1.5",
+              borderBottom:"0px",
+            }}
+          >
+            <strong>Dear Sir,</strong>
+            <br />
+            This is reference to discussion with you; we are
+            pleased to quote our best competitive Price for
+            Inspection.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </>
+);
 
   const renderTableSection = (pageBlocks: Block[]) => {
     const hasTableHeader = pageBlocks.some((b) => b.type === "table-header");
@@ -455,7 +591,7 @@ export const QuotationPrintPage: React.FC = () => {
     return (
       <table
         className="quotation-table"
-        style={{ width: "100%", borderCollapse: "collapse", marginBottom: "10px" }}
+        style={{ width: "100%", borderCollapse: "collapse", marginBottom: "10px", marginTop:"-10px"}}
       >
         {hasTableHeader && (
           <thead>
@@ -571,7 +707,7 @@ export const QuotationPrintPage: React.FC = () => {
                   {hasIntro && renderIntro()}
                   {renderTableSection(pageBlocks)}
                   {termBlocks.length > 0 && (
-                    <div className="quotation-terms">
+                    <div className="quotation-terms terms-box">
                       {termBlocks.map((b, idx) => (
                         <div key={idx}>{b.text}</div>
                       ))}
