@@ -31,6 +31,22 @@ export const QuotationFormPage: React.FC = () => {
     "NDE Consultancy Charges",
   ];
 
+  const TRAINING_DESCRIPTIONS = [
+    "PT NDE",
+    "MT NDE",
+    "UT NDE",
+    "RTFI NDE",
+    "VT NDE",
+    "ET NDE",
+    "MFL NDE",
+  ];
+
+  const FIXED_CHARGE_DESCS = [
+    "Transportation Charges",
+    "Lodging Charges",
+    "Boarding Charges",
+  ];
+
   const [isLoading, setIsLoading] = useState(false);
   const [customers, setCustomers] = useState<any[]>([]);
 
@@ -42,23 +58,17 @@ export const QuotationFormPage: React.FC = () => {
     date: new Date().toISOString().split("T")[0],
     contactPersons: [{ name: "", mobile: "" }],
     services: [
-      {
-        srNo: 1,
-        description: "",
-        level: "NA",
-        sacCode: "",
-        quantity: 0,
-        unit: "",
-        price: 0,
-        amount: 0,
-      },
+      { srNo: 1, description: "", level: "NA", sacCode: "", quantity: 0, unit: "", price: 0, amount: 0 },
+      { srNo: 2, description: "Transportation Charges", _isFixed: true, level: "NA", sacCode: "NA", quantity: 1, unit: "Per", price: 0, amount: 0 },
+      { srNo: 3, description: "Lodging Charges", _isFixed: true, level: "NA", sacCode: "NA", quantity: 1, unit: "Per", price: 0, amount: 0 },
+      { srNo: 4, description: "Boarding Charges", _isFixed: true, level: "NA", sacCode: "NA", quantity: 1, unit: "Per", price: 0, amount: 0 },
     ],
     // Service Specific
     extraCharges: {
       transportation: 0,
       lodging: 0,
       boarding: 0,
-      minimumVisit: 0,
+      minimumVisit: "",
     },
     // Training Specific
     trainingDetails: {
@@ -76,7 +86,7 @@ export const QuotationFormPage: React.FC = () => {
       trainingNote: "",
       materialHandling: "is in yours scope.",
       personnel: "is in ours scope.",
-      machines: "is in our scope.",
+      machines: "",
       consumables: "is in our scope.",
     },
     preparedBy: {
@@ -103,9 +113,6 @@ export const QuotationFormPage: React.FC = () => {
     );
     if (type === "service") {
       const extras = formData.extraCharges || {};
-      subtotal += parseFloat(extras.transportation) || 0;
-      subtotal += parseFloat(extras.lodging) || 0;
-      subtotal += parseFloat(extras.boarding) || 0;
       subtotal += parseFloat(extras.minimumVisit) || 0;
     }
     const gstAmount =
@@ -138,27 +145,46 @@ export const QuotationFormPage: React.FC = () => {
           if (data.customerId && typeof data.customerId === "object") {
             data.customerId = data.customerId._id || "";
           }
-          // Derive _isCustom for each service row
+          // Derive _isFixed and _isCustom for each service row
           if (data.services) {
+            const descList = type === "training" ? TRAINING_DESCRIPTIONS : SERVICE_DESCRIPTIONS;
             data.services = data.services.map(
               (s: { description?: string; [key: string]: unknown }) => ({
                 ...s,
+                _isFixed: FIXED_CHARGE_DESCS.includes(s.description || ""),
                 _isCustom: Boolean(
                   s.description &&
-                  !SERVICE_DESCRIPTIONS.includes(s.description),
+                  !FIXED_CHARGE_DESCS.includes(s.description || "") &&
+                  !descList.includes(s.description),
                 ),
               }),
             );
+            // Add missing fixed rows for both service and training (backward compatibility)
+            FIXED_CHARGE_DESCS.forEach((desc) => {
+              if (!data.services.find((s: { description?: string }) => s.description === desc)) {
+                data.services.push({ description: desc, _isFixed: true, level: "NA", sacCode: "NA", quantity: 1, unit: "Per", price: 0, amount: 0 });
+              }
+            });
           }
           setFormData({ ...formData, ...data });
         }
       } else {
-        // Auto gen quotation number roughly if required, but backend usually requires unique string
+        // Pre-fill customer + contact person if navigated from customer page
+        const custList = custRes.data?.data || custRes.data || [];
+        const presetCustId = locationState?.customerId;
+        const presetCust = presetCustId
+          ? custList.find((c: { _id: string }) => c._id === presetCustId)
+          : null;
         setFormData((prev: any) => ({
           ...prev,
-          quotationNo: "", // Backend will generate formal number if empty
-          ...(locationState?.customerId
-            ? { customerId: locationState.customerId }
+          quotationNo: "",
+          ...(presetCustId ? { customerId: presetCustId } : {}),
+          ...(presetCust
+            ? {
+                contactPersons: [
+                  { ...prev.contactPersons[0], name: presetCust.contactPerson || "" },
+                ],
+              }
             : {}),
         }));
       }
@@ -192,8 +218,13 @@ export const QuotationFormPage: React.FC = () => {
   };
 
   const addServiceRow = () => {
+    // Insert before fixed rows
+    const fixedIndex = formData.services.findIndex(
+      (s: { _isFixed?: boolean }) => s._isFixed,
+    );
+    const insertAt = fixedIndex === -1 ? formData.services.length : fixedIndex;
     const row = {
-      srNo: formData.services.length + 1,
+      srNo: insertAt + 1,
       description: "",
       _isCustom: false,
       level: "NA",
@@ -203,13 +234,20 @@ export const QuotationFormPage: React.FC = () => {
       price: 0,
       amount: 0,
     };
-    setFormData({ ...formData, services: [...formData.services, row] });
+    const updated = [...formData.services];
+    updated.splice(insertAt, 0, row);
+    // Renumber all rows sequentially
+    const renumbered = updated.map((s, idx) => ({ ...s, srNo: idx + 1 }));
+    setFormData({ ...formData, services: renumbered });
   };
 
   const removeServiceRow = (index: number) => {
+    if (formData.services[index]?._isFixed) return;
     const updated = [...formData.services];
     updated.splice(index, 1);
-    setFormData({ ...formData, services: updated });
+    // Renumber all rows sequentially
+    const renumbered = updated.map((s, idx) => ({ ...s, srNo: idx + 1 }));
+    setFormData({ ...formData, services: renumbered });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -231,9 +269,6 @@ export const QuotationFormPage: React.FC = () => {
       );
       if (type === "service") {
         const extras = formData.extraCharges || {};
-        subtotal += parseFloat(extras.transportation) || 0;
-        subtotal += parseFloat(extras.lodging) || 0;
-        subtotal += parseFloat(extras.boarding) || 0;
         subtotal += parseFloat(extras.minimumVisit) || 0;
       }
 
@@ -245,6 +280,7 @@ export const QuotationFormPage: React.FC = () => {
         services: formData.services.map((s: Record<string, unknown>) => {
           const copy = { ...s };
           delete copy["_isCustom"];
+          delete copy["_isFixed"];
           return copy;
         }),
         subtotal,
@@ -467,7 +503,7 @@ export const QuotationFormPage: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {formData.services.map((row: any, i: number) => (
-                  <tr key={i}>
+                  <tr key={i} className={row._isFixed ? "bg-amber-50" : ""}>
                     <td className="px-2 py-2">
                       <input
                         type="number"
@@ -479,7 +515,11 @@ export const QuotationFormPage: React.FC = () => {
                       />
                     </td>
                     <td className="px-2 py-2">
-                      {type === "service" ? (
+                      {row._isFixed ? (
+                        <div className="px-3 py-2 text-sm font-semibold text-gray-700 bg-amber-50 rounded-lg border border-amber-200">
+                          {row.description}
+                        </div>
+                      ) : type === "service" ? (
                         <div className="flex flex-col gap-1">
                           <select
                             value={
@@ -511,7 +551,7 @@ export const QuotationFormPage: React.FC = () => {
                                 {d}
                               </option>
                             ))}
-                            <option value="__custom__">Custom</option>
+                            <option value="__custom__">Other</option>
                           </select>
                           {row._isCustom && (
                             <input
@@ -531,39 +571,78 @@ export const QuotationFormPage: React.FC = () => {
                           )}
                         </div>
                       ) : (
-                        <input
-                          type="text"
-                          value={row.description}
-                          onChange={(e) =>
-                            handleServiceChange(
-                              i,
-                              "description",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full px-3 py-2 border rounded-lg text-sm"
-                          placeholder="Description of service..."
-                        />
+                        <div className="flex flex-col gap-1">
+                          {/* increase the width of the select dropdown wich is display in the table value */}
+                          <select
+                            value={
+                              row._isCustom ? "__custom__" : row.description
+                            }
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const updated = [...formData.services];
+                              if (val === "__custom__") {
+                                updated[i] = {
+                                  ...updated[i],
+                                  _isCustom: true,
+                                  description: "",
+                                };
+                              } else {
+                                updated[i] = {
+                                  ...updated[i],
+                                  _isCustom: false,
+                                  description: val,
+                                };
+                              }
+                              setFormData({ ...formData, services: updated });
+                            }}
+                            className="w-full px-1 py-2 border rounded-lg text-sm"
+                          >
+                            <option value="">Select description...</option>
+                            {TRAINING_DESCRIPTIONS.map((d) => (
+                              <option key={d} value={d}>
+                                {d}
+                              </option>
+                            ))}
+                            <option value="__custom__">Custom</option>
+                          </select>
+                          {row._isCustom && (
+                            <input
+                              type="text"
+                              value={row.description}
+                              onChange={(e) =>
+                                handleServiceChange(
+                                  i,
+                                  "description",
+                                  e.target.value,
+                                )
+                              }
+                              className="w-full px-3 py-2 border rounded-lg text-sm"
+                              placeholder="Enter custom description..."
+                              autoFocus
+                            />
+                          )}
+                        </div>
                       )}
                     </td>
                     {type === "training" && (
                       <td className="px-2 py-2">
-                        <select
-                          value={row.level}
-                          onChange={(e) =>
-                            handleServiceChange(i, "level", e.target.value)
-                          }
-                          className="w-full px-3 py-2 border rounded-lg text-sm"
-                        >
-                          <option value="I">I</option>
-                          <option value="II">II</option>
-                          <option value="III">III</option>
-                          <option value="NA">NA</option>
-                          <option value="CUSTOM">CUSTOM</option>
-                        </select>
+                        {row._isFixed ? (
+                          <span className="px-2 py-1 text-sm text-gray-500">NA</span>
+                        ) : (
+                          <select
+                            value={row.level}
+                            onChange={(e) =>
+                              handleServiceChange(i, "level", e.target.value)
+                            }
+                            className="w-16 px-3 py-2 border rounded-lg text-sm"
+                          >
+                            <option value="I">I</option>
+                            <option value="II">II</option>
+                          </select>
+                        )}
                       </td>
                     )}
-                    <td className="px-2 py-2">
+                    <td className="px-1 py-2">
                       <input
                         type="text"
                         value={row.sacCode}
@@ -574,7 +653,7 @@ export const QuotationFormPage: React.FC = () => {
                         className="w-full px-1 py-2 border rounded-lg text-sm"
                       />
                     </td>
-                    <td className="px-2 py-2">
+                    <td className="px-1 w-28 py-2">
                       <input
                         type="number"
                         value={row.quantity}
@@ -614,13 +693,15 @@ export const QuotationFormPage: React.FC = () => {
                       />
                     </td>
                     <td className="px-2 py-2 text-center">
-                      <button
-                        type="button"
-                        onClick={() => removeServiceRow(i)}
-                        className="text-red-400 hover:text-red-600"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      {!row._isFixed && (
+                        <button
+                          type="button"
+                          onClick={() => removeServiceRow(i)}
+                          className="text-red-400 hover:text-red-600"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -638,72 +719,15 @@ export const QuotationFormPage: React.FC = () => {
         {type === "service" && (
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
             <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">
-              Extra Charges (Flat Amounts)
+              Extra Charges
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Transportation
-                </label>
-                <input
-                  type="number"
-                  value={formData.extraCharges.transportation}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      extraCharges: {
-                        ...formData.extraCharges,
-                        transportation: e.target.value,
-                      },
-                    })
-                  }
-                  className="w-full px-3 py-2 border rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Lodging
-                </label>
-                <input
-                  type="number"
-                  value={formData.extraCharges.lodging}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      extraCharges: {
-                        ...formData.extraCharges,
-                        lodging: e.target.value,
-                      },
-                    })
-                  }
-                  className="w-full px-3 py-2 border rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Boarding
-                </label>
-                <input
-                  type="number"
-                  value={formData.extraCharges.boarding}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      extraCharges: {
-                        ...formData.extraCharges,
-                        boarding: e.target.value,
-                      },
-                    })
-                  }
-                  className="w-full px-3 py-2 border rounded-lg"
-                />
-              </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
                   Minimum Visit
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   value={formData.extraCharges.minimumVisit}
                   onChange={(e) =>
                     setFormData({
@@ -850,7 +874,24 @@ export const QuotationFormPage: React.FC = () => {
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
                   Machines
                 </label>
-                <input
+                <select
+                  value={formData.termsAndConditions.machines}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      termsAndConditions: {
+                        ...formData.termsAndConditions,
+                        machines: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="">Select...</option>
+                  <option value="is in our scope.">is in our scope.</option>
+                  <option value="is in yours scope.">is in yours scope.</option>
+                </select>
+                {/* <input
                   type="text"
                   value={formData.termsAndConditions.machines}
                   onChange={(e) =>
@@ -863,13 +904,30 @@ export const QuotationFormPage: React.FC = () => {
                     })
                   }
                   className="w-full px-3 py-2 border rounded-lg"
-                />
+                /> */}
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
                   Consumables
                 </label>
-                <input
+                <select
+                  value={formData.termsAndConditions.consumables}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      termsAndConditions: {
+                        ...formData.termsAndConditions,
+                        consumables: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="">Select...</option>
+                  <option value="is in our scope.">is in our scope.</option>
+                  <option value="is in yours scope.">is in yours scope.</option>
+                </select>
+                {/* <input
                   type="text"
                   value={formData.termsAndConditions.consumables}
                   onChange={(e) =>
@@ -882,7 +940,7 @@ export const QuotationFormPage: React.FC = () => {
                     })
                   }
                   className="w-full px-3 py-2 border rounded-lg"
-                />
+                /> */}
               </div>
             </div>
           )}
