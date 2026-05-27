@@ -281,39 +281,6 @@ export const QuotationPrintPage: React.FC = () => {
   const rows: QuotationRow[] = [
     ...(Array.isArray(data.services) ? data.services : []),
   ];
-  if (type === "service" && data.extraCharges) {
-    const pCount = rows.length;
-    if (data.extraCharges.transportation)
-      rows.push({
-        srNo: pCount + 1,
-        description: "Transportation Charges",
-        sacCode: "NA",
-        quantity: 1,
-        unit: "L/S",
-        price: toNumber(data.extraCharges.transportation),
-        amount: toNumber(data.extraCharges.transportation),
-      });
-    if (data.extraCharges.lodging)
-      rows.push({
-        srNo: rows.length + 1,
-        description: "Lodging Charges",
-        sacCode: "NA",
-        quantity: 1,
-        unit: "L/S",
-        price: toNumber(data.extraCharges.lodging),
-        amount: toNumber(data.extraCharges.lodging),
-      });
-    if (data.extraCharges.boarding)
-      rows.push({
-        srNo: rows.length + 1,
-        description: "Boarding Charges",
-        sacCode: "NA",
-        quantity: 1,
-        unit: "L/S",
-        price: toNumber(data.extraCharges.boarding),
-        amount: toNumber(data.extraCharges.boarding),
-      });
-  }
 
   const computedSubtotal = rows.reduce((sum, row) => {
     const amount = toNumber(row.amount);

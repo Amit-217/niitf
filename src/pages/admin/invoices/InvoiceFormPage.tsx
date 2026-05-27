@@ -48,7 +48,7 @@ const defaultForm = {
   paymentModeCustom: "",
   items: [emptyItem()],
   subtotal: 0,
-  discount: 0,
+  // discount: 0,
   cgst: { rate: 9, amount: 0 },
   sgst: { rate: 9, amount: 0 },
   igst: { rate: 0, amount: 0 },
@@ -63,10 +63,11 @@ const defaultForm = {
   bankDetails: {
     bankName: "State Bank of India",
     accountNumber: "35005963456",
-    ifscCode: "SBIN0001234",
+    ifscCode: "SBIN0014727",
     branch: "Baramati MIDC",
   },
-  notes: "",
+  notes:
+    "We declare that this invoice shows the actual price of the testing work described and that all particulars are true and correct.",
   showTotalAmounts: true,
   taxMode: "cgst_sgst" as "cgst_sgst" | "igst",
 };
@@ -77,22 +78,12 @@ function calcTotals(form: typeof defaultForm) {
     amount: Number((it.quantity * it.unitPrice).toFixed(2)),
   }));
   const subtotal = items.reduce((s, it) => s + it.amount, 0);
-  const afterDiscount = subtotal - (form.discount || 0);
-  const cgstAmt = Number(
-    ((afterDiscount * (form.cgst.rate || 0)) / 100).toFixed(2),
-  );
-  const sgstAmt = Number(
-    ((afterDiscount * (form.sgst.rate || 0)) / 100).toFixed(2),
-  );
-  const igstAmt = Number(
-    ((afterDiscount * (form.igst.rate || 0)) / 100).toFixed(2),
-  );
+  // const afterDiscount = subtotal - (form.discount || 0);
+  const cgstAmt = Number(((subtotal * (form.cgst.rate || 0)) / 100).toFixed(2));
+  const sgstAmt = Number(((subtotal * (form.sgst.rate || 0)) / 100).toFixed(2));
+  const igstAmt = Number(((subtotal * (form.igst.rate || 0)) / 100).toFixed(2));
   const totalBeforeRound =
-    afterDiscount +
-    cgstAmt +
-    sgstAmt +
-    igstAmt +
-    (form.transportationCharges || 0);
+    subtotal + cgstAmt + sgstAmt + igstAmt + (form.transportationCharges || 0);
   const grandTotal = Math.round(totalBeforeRound);
   const roundedOff = Number((grandTotal - totalBeforeRound).toFixed(2));
   return {
@@ -101,7 +92,7 @@ function calcTotals(form: typeof defaultForm) {
     cgst: { rate: form.cgst.rate, amount: cgstAmt },
     sgst: { rate: form.sgst.rate, amount: sgstAmt },
     igst: { rate: form.igst.rate, amount: igstAmt },
-    totalAmount: Number(afterDiscount.toFixed(2)),
+    totalAmount: Number(subtotal.toFixed(2)),
     roundedOff,
     grandTotal,
   };
@@ -591,6 +582,7 @@ export const InvoiceFormPage: React.FC = () => {
             { label: "Document No", key: "documentNo" },
             { label: "Dispatched Through", key: "dispatchedThrough" },
             { label: "Destination", key: "destination" },
+            { label: "Other References", key: "otherReferences" },
             { label: "Terms of Delivery", key: "termsOfDelivery" },
           ].map(({ label, key }) => (
             <div key={key}>
@@ -837,7 +829,7 @@ export const InvoiceFormPage: React.FC = () => {
                 ₹ {form.igst.amount.toFixed(2)}
               </span>
             </div>
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               <label className="w-36 text-sm font-medium text-gray-700">
                 Discount (₹)
               </label>
@@ -849,7 +841,7 @@ export const InvoiceFormPage: React.FC = () => {
                 value={form.discount}
                 onChange={(e) => setField("discount", Number(e.target.value))}
               />
-            </div>
+            </div> */}
             <div className="flex items-center gap-3">
               <label className="w-36 text-sm font-medium text-gray-700">
                 Transport Charges
@@ -871,14 +863,14 @@ export const InvoiceFormPage: React.FC = () => {
               <span className="text-gray-600">Subtotal</span>
               <span className="font-medium">₹ {form.subtotal.toFixed(2)}</span>
             </div>
-            {form.discount > 0 && (
+            {/* {form.discount > 0 && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Discount</span>
                 <span className="font-medium text-red-600">
                   - ₹ {form.discount.toFixed(2)}
                 </span>
               </div>
-            )}
+            )} */}
             {form.cgst.rate > 0 && (
               <div className="flex justify-between">
                 <span className="text-gray-600">CGST ({form.cgst.rate}%)</span>
@@ -930,7 +922,7 @@ export const InvoiceFormPage: React.FC = () => {
                   className="w-4 h-4 accent-primary-600 cursor-pointer"
                 />
                 <span className="text-xs font-medium text-gray-600">
-                  Show "Total Amounts" row on printed invoice
+                  Show "Total Amount" row on printed invoice
                 </span>
               </label>
             </div>
@@ -968,7 +960,7 @@ export const InvoiceFormPage: React.FC = () => {
       {/* Notes */}
       <div className="glass-card p-6 space-y-4">
         <h2 className="font-semibold text-gray-800 text-base border-b pb-2">
-          Notes
+          Declaration
         </h2>
         <textarea
           className="input-field w-full h-24 resize-none"
