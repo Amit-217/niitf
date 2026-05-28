@@ -117,7 +117,7 @@ interface InspRow {
 
 const emptyInspector = (): InspRow => ({
   name: "",
-  qualification: "UTG NDE Level II",
+  qualification: "UT NDE Level II",
   designation: "",
   signature: "",
   idNo: "",
@@ -422,7 +422,7 @@ export const UTGReportFormPage: React.FC = () => {
           fs.inspector?.length
             ? fs.inspector.map((i: any) => ({
                 name: i.name ?? "",
-                qualification: i.qualification || "UTG NDE Level II",
+                qualification: i.qualification || "UT NDE Level II",
                 designation: i.designation ?? "",
                 signature: i.signature ?? "",
                 idNo: i.idNo ?? "",
@@ -888,9 +888,7 @@ export const UTGReportFormPage: React.FC = () => {
                       <option value="">Select...</option>
                       <option>T/R</option>
                       <option>Normal (0°)</option>
-                      <option>45°</option>
-                      <option>60°</option>
-                      <option>70°</option>
+                      
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -911,7 +909,7 @@ export const UTGReportFormPage: React.FC = () => {
                       onOtherChange={(v) =>
                         updateSearchUnit(idx, "crystalSizeOther", v)
                       }
-                      options={["Ø5mm", "Ø10mm", "8x9 mm", "20x22 mm", "Other"]}
+                      options={["Ø5mm", "Ø10mm", "Other"]}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -924,7 +922,6 @@ export const UTGReportFormPage: React.FC = () => {
                     >
                       <option value="">Select...</option>
                       <option>Longitudinal</option>
-                      <option>Shear</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1 min-w-[130px]">
@@ -1128,7 +1125,7 @@ export const UTGReportFormPage: React.FC = () => {
                         value={insp.qualification}
                         onChange={(e) => updateInsp(idx, "qualification", e.target.value)}
                         className={inputClass}
-                        placeholder="e.g. UTG NDE Level II"
+                        placeholder="e.g. UT NDE Level II"
                       />
                     </div>
                     <div>
