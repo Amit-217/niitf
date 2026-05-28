@@ -200,12 +200,15 @@ export const VSSCUTReportFormPage: React.FC = () => {
   // ── Final Section ──
   const [inspectorName, setInspectorName] = useState("");
   const [inspectorIdNo, setInspectorIdNo] = useState("");
+  const [inspectorSignature, setInspectorSignature] = useState("");
   const [inspectorDate, setInspectorDate] = useState("");
   const [qcName, setQcName] = useState("");
   const [qcIdNo, setQcIdNo] = useState("");
+  const [qcSignature, setQcSignature] = useState("");
   const [qcDate, setQcDate] = useState("");
   const [rqsName, setRqsName] = useState("");
   const [rqsIdNo, setRqsIdNo] = useState("");
+  const [rqsSignature, setRqsSignature] = useState("");
   const [rqsDate, setRqsDate] = useState("");
 
   // ── Load in edit mode ──
@@ -359,14 +362,17 @@ export const VSSCUTReportFormPage: React.FC = () => {
         const insp = fs.inspector?.[0] ?? {};
         setInspectorName(insp.name ?? "");
         setInspectorIdNo(insp.idNo ?? "");
+        setInspectorSignature(insp.signature ?? "");
         setInspectorDate(toDate(insp.date));
         const qc = fs.qc ?? {};
         setQcName(qc.name ?? "");
         setQcIdNo(qc.idNo ?? "");
+        setQcSignature(qc.signature ?? "");
         setQcDate(toDate(qc.date));
         const rqs = fs.rqs ?? {};
         setRqsName(rqs.name ?? "");
         setRqsIdNo(rqs.idNo ?? "");
+        setRqsSignature(rqs.signature ?? "");
         setRqsDate(toDate(rqs.date));
       })
       .catch(() => toast.error("Failed to load report."));
@@ -472,11 +478,12 @@ export const VSSCUTReportFormPage: React.FC = () => {
             {
               name: inspectorName,
               idNo: inspectorIdNo,
+              signature: inspectorSignature,
               date: inspectorDate || undefined,
             },
           ],
-          qc: { name: qcName, idNo: qcIdNo, date: qcDate || undefined },
-          rqs: { name: rqsName, idNo: rqsIdNo, date: rqsDate || undefined },
+          qc: { name: qcName, idNo: qcIdNo, signature: qcSignature, date: qcDate || undefined },
+          rqs: { name: rqsName, idNo: rqsIdNo, signature: rqsSignature, date: rqsDate || undefined },
         },
       };
       if (id) {
@@ -1134,11 +1141,8 @@ export const VSSCUTReportFormPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* Inspector */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
-              Examined By
-            </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              National Ind. Insp. & Training
+              National Ind. Insp. &amp; Training
             </p>
             <div className="space-y-2">
               <div>
@@ -1157,6 +1161,15 @@ export const VSSCUTReportFormPage: React.FC = () => {
                 </select>
               </div>
               <div>
+                <label className={labelClass}>Signature</label>
+                <input
+                  type="text"
+                  value={inspectorSignature}
+                  onChange={(e) => setInspectorSignature(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
                 <label className={labelClass}>Date</label>
                 <input
                   type="date"
@@ -1169,9 +1182,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
           </div>
           {/* QC */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
-              Customer
-            </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               QC / WIL
             </p>
@@ -1182,6 +1192,15 @@ export const VSSCUTReportFormPage: React.FC = () => {
                   type="text"
                   value={qcName}
                   onChange={(e) => setQcName(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Signature</label>
+                <input
+                  type="text"
+                  value={qcSignature}
+                  onChange={(e) => setQcSignature(e.target.value)}
                   className={inputClass}
                 />
               </div>
@@ -1198,9 +1217,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
           </div>
           {/* RQS */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
-              Client
-            </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               RQS / VSSC
             </p>
@@ -1211,6 +1227,15 @@ export const VSSCUTReportFormPage: React.FC = () => {
                   type="text"
                   value={rqsName}
                   onChange={(e) => setRqsName(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Signature</label>
+                <input
+                  type="text"
+                  value={rqsSignature}
+                  onChange={(e) => setRqsSignature(e.target.value)}
                   className={inputClass}
                 />
               </div>

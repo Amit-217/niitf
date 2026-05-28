@@ -285,19 +285,10 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           <tbody>
             <tr>
               <td style={{ fontWeight: 600, fontSize: "11px" }}>
-                EXAMINED BY :
-              </td>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>CUSTOMER :</td>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>CLIENT :</td>
-            </tr>
-            <tr>
-              <td style={{ fontWeight: 600, fontSize: "11px" }}>
                 National Industrial Inspection And Training
               </td>
-              <td style={{ fontWeight: 600, fontSize: "12px" }}>
-                {v(report.customer)}
-              </td>
-              <td style={{ fontWeight: 600, fontSize: "12px" }}>-</td>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>QC / WIL</td>
+              <td style={{ fontWeight: 600, fontSize: "11px" }}>RQS / VSSC</td>
             </tr>
             <tr>
               <td>Name: {v(inspector.name) || "-"}</td>
@@ -305,14 +296,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               <td>Name: {v(fs.rqs?.name) || "-"}</td>
             </tr>
             <tr>
-              <td>{v(inspector.qualification) || "UT NDE Level II"}</td>
-              <td>Designation: {v(fs.qc?.designation) || "-"}</td>
-              <td>Designation: {v(fs.rqs?.designation) || "-"}</td>
-            </tr>
-            <tr>
-              <td style={{ height: "60px" }}>Signature:</td>
-              <td style={{ height: "60px" }}>Signature:</td>
-              <td style={{ height: "60px" }}>Signature:</td>
+              <td style={{ height: "60px" }}>Signature: {v(inspector.signature)}</td>
+              <td style={{ height: "60px" }}>Signature: {v(fs.qc?.signature)}</td>
+              <td style={{ height: "60px" }}>Signature: {v(fs.rqs?.signature)}</td>
             </tr>
             <tr>
               <td>Date: {fmtDate(inspector.date) || "-"}</td>
