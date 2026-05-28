@@ -165,11 +165,11 @@ const PRINT_STYLES = `
   .bw .report-footer-wrap {
     border: 1.2px solid #000 !important;
     border-top: none !important;
-    border-radius: 0 0 6px 6px !important;
+    border-radius: 0  !important;
     overflow: hidden !important;
   }
 
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 5px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1.2px solid #000; border-top: none; border-radius: 6px 6px 0 0; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 5px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1.2px solid #000; border-top: none; border-radius: 0; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 3px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1.2px solid #000; }
   .report-table td, .report-table th { border: 1.2px solid #000; padding: 2px 5px; vertical-align: middle; word-break: break-word; font-size: 11.5px; }
@@ -191,11 +191,11 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border-top: 1.2px solid #000; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .report-body { border-top: 1.2px solid #000; border-left: none; border-right: none; border-bottom: none; border-radius: 0; overflow: hidden; }
   .report-footer-wrap {
     border: 1.2px solid #000;
     border-top: none;
-    border-radius: 0 0 6px 6px;
+    border-radius: 0;
     overflow: hidden;
     margin-top: -1px;
     margin-bottom: 0;
@@ -460,8 +460,8 @@ export const MPTReportPrintPage = () => {
         <col style={{ width: "35px" }} />
         <col style={{ width: "22%" }} />
         <col style={{ width: "16%" }} />
-        <col style={{ width: "13%" }} />
-        <col style={{ width: "8%" }} />
+        <col style={{ width: "12%" }} />
+        <col style={{ width: "10%" }} />
         <col style={{ width: "25%" }} />
         <col style={{ width: "11%" }} />
       </colgroup>
@@ -476,7 +476,7 @@ export const MPTReportPrintPage = () => {
           <td className="col-hdr">Job Description</td>
           <td className="col-hdr">Drg No. / Joint No.</td>
           <td className="col-hdr">Size</td>
-          <td className="col-hdr">Qty</td>
+          <td className="col-hdr">Qty(Nos)</td>
           <td className="col-hdr">Interpretation</td>
           <td className="col-hdr">Evaluation</td>
         </tr>
@@ -597,7 +597,7 @@ export const MPTReportPrintPage = () => {
             </td>
           </tr>
           <tr>
-            <td className="lbl">Equip. Type</td>
+            <td className="lbl">Equipment Type</td>
             <td className="val">{v(eq.equipmentType) || "-"}</td>
             <td className="lbl">Sr. no.</td>
             <td className="val">{v(eq.srNo) || "-"}</td>
@@ -609,7 +609,7 @@ export const MPTReportPrintPage = () => {
             <td className="val">{fmtDate(eq.calibrationDue) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Yoke Spacing</td>
+            <td className="lbl">Spacing</td>
             <td className="val">{v(eq.yokeSpacing) || "-"}</td>
             <td className="lbl">Pie Gauge Calibration</td>
             <td className="val">{v(eq.pieGaugeCalibration) || "-"}</td>

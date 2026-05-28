@@ -87,7 +87,7 @@ export const QuotationFormPage: React.FC = () => {
       materialHandling: "is in yours scope.",
       personnel: "is in ours scope.",
       machines: "",
-      consumables: "is in our scope.",
+      consumables: "",
     },
     preparedBy: {
       name: "Mr. Bajirao T. Kadam",
@@ -723,7 +723,7 @@ export const QuotationFormPage: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
                   Minimum Visit
                 </label>
                 <input
@@ -833,7 +833,7 @@ export const QuotationFormPage: React.FC = () => {
           {type === "service" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
                   Material Handling
                 </label>
                 <input
@@ -852,7 +852,7 @@ export const QuotationFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
                   NDE Level II personnel
                 </label>
                 <input
@@ -871,7 +871,7 @@ export const QuotationFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
                   Machines
                 </label>
                 <select
@@ -907,7 +907,7 @@ export const QuotationFormPage: React.FC = () => {
                 /> */}
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
                   Consumables
                 </label>
                 <select

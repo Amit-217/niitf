@@ -282,7 +282,6 @@ export const InvoiceFormPage: React.FC = () => {
     form.cgst.rate,
     form.sgst.rate,
     form.igst.rate,
-    form.discount,
     form.transportationCharges,
   ]);
 
@@ -912,7 +911,7 @@ export const InvoiceFormPage: React.FC = () => {
             </p>
             {/* Print option — placed here so it's next to what it controls */}
             <div className="border-t pt-3 mt-1">
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-2 cursor-pointer ">
                 <input
                   type="checkbox"
                   checked={form.showTotalAmounts}
@@ -921,7 +920,7 @@ export const InvoiceFormPage: React.FC = () => {
                   }
                   className="w-4 h-4 accent-primary-600 cursor-pointer"
                 />
-                <span className="text-xs font-medium text-gray-600">
+                <span className="text-sm font-medium text-gray-600">
                   Show "Total Amount" row on printed invoice
                 </span>
               </label>

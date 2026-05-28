@@ -765,7 +765,7 @@ export const MPTReportFormPage: React.FC = () => {
               <option>Butt</option>
               <option>Corner</option>
               <option>T Joint</option>
-              <option>NA</option>
+              <option>N/A</option>
             </select>
           </div>
           <div>
@@ -798,6 +798,7 @@ export const MPTReportFormPage: React.FC = () => {
               <option>SAW</option>
               <option>GTAW</option>
               <option>MAG</option>
+              <option>N/A</option>
             </select>
           </div>
         </div>
@@ -819,6 +820,9 @@ export const MPTReportFormPage: React.FC = () => {
             >
               <option value="">Select...</option>
               <option>Yoke</option>
+              <option>Headshot</option>
+              <option>Coilshot</option>
+              <option>Prod</option>
             </select>
           </div>
           <div>
@@ -861,7 +865,7 @@ export const MPTReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass} htmlFor="eqYoke">
-              Yoke Spacing
+              Spacing
             </label>
             <input
               id="eqYoke"
@@ -1042,6 +1046,7 @@ export const MPTReportFormPage: React.FC = () => {
             >
               <option value="">Select...</option>
               <option>Bulb</option>
+              <option>N/A</option>
             </select>
           </div>
           <div>
@@ -1101,6 +1106,7 @@ export const MPTReportFormPage: React.FC = () => {
             >
               <option value="">Select...</option>
               <option>Pie Gauge</option>
+              <option>Shims</option>
             </select>
           </div>
           <div>
@@ -1190,7 +1196,7 @@ export const MPTReportFormPage: React.FC = () => {
                   Size
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-center">
-                  Qty
+                  Qty(Nos)
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
                   Interpretation
