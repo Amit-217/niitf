@@ -430,22 +430,22 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           </tr>
           <tr>
             <td className="val">
-              Test Setup:
+              <span style={{ fontWeight: "bold" }}>Test Setup:</span>
               <br />
-              Angle Range: <strong>{v(ts.angleRange)}</strong> | Normal:{" "}
+              Angle Range: <strong>{v(ts.angleRange)}</strong> <br/> Normal:{" "}
               <strong>{v(ts.normalRange)}</strong>
             </td>
             <td className="val">
-              Standard Cal Block:
+              <span style={{ fontWeight: "bold" }}>Standard Cal Block:</span>
               <br />
-              Angle: <strong>{v(ts.standardCalBlock?.angle)}</strong> | Normal:{" "}
+              Angle: <strong>{v(ts.standardCalBlock?.angle)}</strong> <br/> Normal:{" "}
               <strong>{v(ts.standardCalBlock?.normal)}</strong>
             </td>
             <td className="val">
-              Ref Block Idtn:
+              <span style={{ fontWeight: "bold" }}>Ref Block Idtn:</span>
               <br />
               Angle:{" "}
-              <strong>{v(ts.identificationNoOfRefBlock?.angle)}</strong> |
+              <strong>{v(ts.identificationNoOfRefBlock?.angle)}</strong> <br/>
               Normal:{" "}
               <strong>{v(ts.identificationNoOfRefBlock?.normal)}</strong>
             </td>
@@ -579,10 +579,22 @@ export const VSSCUTReportPrintPage: React.FC = () => {
     Scanning dB = <strong>{v(npc.scanningDb)}</strong>
   </td>
 </tr>
+<tr>
+  <td className="val" colSpan={3}>
+    Disposition: <strong>{v(report.disposition)}</strong>
+  </td>
+</tr>
+
+<tr>
+  <td className="val" colSpan={3}>
+    Remarks (If any): <strong>{v(report.evaluation)}</strong>
+  </td>
+</tr>
         </tbody>
       </table>
     </>
   );
+
 
   // --- VSSC-UT is a single-content report (no observations split): all fixed
   //     calibration sections plus the signatures live on one self-contained A4
