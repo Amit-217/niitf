@@ -448,8 +448,8 @@ export const PTReportPrintPage: React.FC = () => {
         <col style={{ width: "35px" }} />
         <col style={{ width: "22%" }} />
         <col style={{ width: "16%" }} />
-        <col style={{ width: "13%" }} />
-        <col style={{ width: "8%" }} />
+        <col style={{ width: "12%" }} />
+        <col style={{ width: "9%" }} />
         <col style={{ width: "25%" }} />
         <col style={{ width: "11%" }} />
       </colgroup>
@@ -460,44 +460,75 @@ export const PTReportPrintPage: React.FC = () => {
           </td>
         </tr>
         <tr>
-          <td className="col-hdr">Sr.</td>
-          <td className="col-hdr">Job Description</td>
-          <td className="col-hdr">Drg No. / Joint No.</td>
-          <td className="col-hdr">Size</td>
-          <td className="col-hdr">Qty</td>
-          <td className="col-hdr">Interpretation</td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Sr.
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Job Description</td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Drg No. / Joint No.
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Size
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Qty(Nos)
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Interpretation
+          </td>
           <td className="col-hdr">Evaluation</td>
         </tr>
       </thead>
       <tbody>
-        {data.length === 0 ? (
-          <tr>
-            <td
-              colSpan={7}
-              style={{
-                textAlign: "center",
-                padding: "6px",
-                fontSize: "11px",
-                color: "#999",
-              }}
-            >
-              No observations recorded.
-            </td>
-          </tr>
-        ) : (
-          data.map((o, i) => (
-            <tr key={i}>
-              <td>{o.srNo}</td>
-              <td>{v(o.jobDescription)}</td>
-              <td>{v(o.drawingOrJointNo)}</td>
-              <td>{v(o.size)}</td>
-              <td>{o.quantity ?? ""}</td>
-              <td>{v(o.interpretation)}</td>
-              <td>{v(o.evaluation)}</td>
-            </tr>
-          ))
-        )}
-      </tbody>
+  {data.length === 0 ? (
+    <tr>
+      <td
+        colSpan={7}
+        style={{
+          textAlign: "center",
+          padding: "6px",
+          fontSize: "11px",
+          color: "#999",
+        }}
+      >
+        No observations recorded.
+      </td>
+    </tr>
+  ) : (
+    data.map((o, i) => (
+      <tr key={i}>
+        <td style={{ textAlign: "center" }}>
+          {o.srNo}
+        </td>
+
+        <td>
+          {v(o.jobDescription)}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {v(o.drawingOrJointNo)}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {v(o.size)}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {o.quantity ?? ""}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {v(o.interpretation)}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {v(o.evaluation)}
+        </td>
+      </tr>
+    ))
+  )}
+</tbody>
     </table>
   );
 

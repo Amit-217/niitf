@@ -323,20 +323,20 @@ export const UTReportFormPage: React.FC = () => {
         setJobInspectionTime(jd.inspectionTime ?? "");
         const [refStd, refStdC] = fromOther(jd.referenceStd, [
           "ASME Sec V Article 4",
-          "ASTM SA 609",
-          "ASTM SA 435",
-          "ASTM SA 578",
-          "ASTM SA 388",
+          "ASTM A 609",
+          "ASTM A 435",
+          "ASTM A 578",
+          "ASTM A 388",
           "Other",
         ]);
         setJobRefStd(refStd);
         setJobRefStdCustom(refStdC);
         const [acc, accC] = fromOther(jd.acceptanceCriteria, [
           "ASME SEC VIII Div. 1 Appendix 12",
-          "ASTM SA 609",
-          "ASTM SA 435",
-          "ASTM SA 578",
-          "ASTM SA 388",
+          "ASTM A 609",
+          "ASTM A 435",
+          "ASTM A 578",
+          "ASTM A 388",
           "Other",
         ]);
         setJobAcceptance(acc);
@@ -728,10 +728,10 @@ const getWaveMode = (angle: string) => {
               onCustomChange={setJobRefStdCustom}
               options={[
                 "ASME Sec V Article 4",
-                "ASTM SA 609",
-                "ASTM SA 435",
-                "ASTM SA 578",
-                "ASTM SA 388",
+                "ASTM A 609",
+                "ASTM A 435",
+                "ASTM A 578",
+                "ASTM A 388",
                 "Other",
               ]}
             />
@@ -745,10 +745,10 @@ const getWaveMode = (angle: string) => {
               onCustomChange={setJobAcceptanceCustom}
               options={[
                 "ASME SEC VIII Div. 1 Appendix 12",
-                "ASTM SA 609",
-                "ASTM SA 435",
-                "ASTM SA 578",
-                "ASTM SA 388",
+                "ASTM A 609",
+                "ASTM A 435",
+                "ASTM A 578",
+                "ASTM A 388",
                 "Other",
               ]}
             />
@@ -1228,22 +1228,22 @@ const getWaveMode = (angle: string) => {
                 <th className="border border-gray-200 px-2 py-2 text-center w-10">
                   Sr.
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
+                <th className="border border-gray-200 px-2 py-2 text-center">
                   Job Description
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
+                <th className="border border-gray-200 px-2 py-2 text-center">
                   Drg No. / Joint No.
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
+                <th className="border border-gray-200 px-2 py-2 text-center">
                   Size
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-center w-16">
-                  Qty
+                  Qty(Nos)
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
+                <th className="border border-gray-200 px-2 py-2 text-center">
                   Interpretation
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
+                <th className="border border-gray-200 px-2 py-2 text-center">
                   Evaluation
                 </th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>

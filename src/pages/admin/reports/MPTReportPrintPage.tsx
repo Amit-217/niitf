@@ -473,44 +473,60 @@ export const MPTReportPrintPage = () => {
           </td>
         </tr>
         <tr>
-          <td className="col-hdr">Sr.</td>
-          <td className="col-hdr">Job Description</td>
-          <td className="col-hdr">Drg No. / Joint No.</td>
-          <td className="col-hdr">Size</td>
-          <td className="col-hdr">Qty(Nos)</td>
-          <td className="col-hdr">Interpretation</td>
-          <td className="col-hdr">Evaluation</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Sr.</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Job Description</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Drg No. / Joint No.</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Size</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Qty(Nos)</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Interpretation</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Evaluation</td>
         </tr>
       </thead>
       <tbody>
-        {data.length === 0 ? (
-          <tr>
-            <td
-              colSpan={7}
-              style={{
-                textAlign: "center",
-                padding: "6px",
-                fontSize: "11px",
-                color: "#999",
-              }}
-            >
-              No observations recorded.
-            </td>
-          </tr>
-        ) : (
-          data.map((o, i) => (
-            <tr key={i}>
-              <td>{o.srNo}</td>
-              <td>{v(o.jobDescription)}</td>
-              <td>{v(o.drawingOrJointNo)}</td>
-              <td>{v(o.size)}</td>
-              <td>{o.quantity ?? ""}</td>
-              <td>{v(o.interpretation)}</td>
-              <td>{v(getEvaluation(o))}</td>
-            </tr>
-          ))
-        )}
-      </tbody>
+  {data.length === 0 ? (
+    <tr>
+      <td
+        colSpan={7}
+        style={{
+          textAlign: "center",
+          padding: "6px",
+          fontSize: "11px",
+          color: "#999",
+        }}
+      >
+        No observations recorded.
+      </td>
+    </tr>
+  ) : (
+    data.map((o, i) => (
+      <tr key={i}>
+        <td style={{ textAlign: "center" }}>{o.srNo}</td>
+
+        <td>{v(o.jobDescription)}</td>
+
+        <td style={{ textAlign: "center" }}>
+          {v(o.drawingOrJointNo)}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {v(o.size)}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {o.quantity ?? ""}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {v(o.interpretation)}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {v(getEvaluation(o))}
+        </td>
+      </tr>
+    ))
+  )}
+</tbody>
     </table>
   );
 

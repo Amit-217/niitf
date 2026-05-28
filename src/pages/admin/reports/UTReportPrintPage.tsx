@@ -235,10 +235,10 @@ export const UTReportPrintPage: React.FC = () => {
   const inspector = fs.inspector?.[0] ?? {};
 
   const calibAngles = [
-    { label: "0Â°", data: apc.deg0 },
-    { label: "45Â°", data: apc.deg45 },
-    { label: "60Â°", data: apc.deg60 },
-    { label: "70Â°", data: apc.deg70 },
+    { label: "0°", data: apc.deg0 },
+    { label: "45°", data: apc.deg45 },
+    { label: "60°", data: apc.deg60 },
+    { label: "70°", data: apc.deg70 },
   ];
 
   const renderHeader = () => (
@@ -315,8 +315,8 @@ export const UTReportPrintPage: React.FC = () => {
         <col style={{ width: "35px" }} />
         <col style={{ width: "22%" }} />
         <col style={{ width: "16%" }} />
-        <col style={{ width: "13%" }} />
-        <col style={{ width: "8%" }} />
+        <col style={{ width: "12%" }} />
+        <col style={{ width: "9%" }} />
         <col style={{ width: "26%" }} />
         <col style={{ width: "10%" }} />
       </colgroup>
@@ -327,44 +327,64 @@ export const UTReportPrintPage: React.FC = () => {
           </td>
         </tr>
         <tr>
-          <td className="col-hdr">Sr.</td>
-          <td className="col-hdr">Job Description</td>
-          <td className="col-hdr">Drg No. / Joint No.</td>
-          <td className="col-hdr">Size</td>
-          <td className="col-hdr">Qty</td>
-          <td className="col-hdr">Interpretation</td>
-          <td className="col-hdr">Evaluation</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Sr.</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Job Description</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Drg No. / Joint No.</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Size</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Qty(Nos)</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Interpretation</td>
+          <td className="col-hdr"style={{ textAlign: "center" }}>Evaluation</td>
         </tr>
       </thead>
-      <tbody>
-        {data.length === 0 ? (
-          <tr>
-            <td
-              colSpan={7}
-              style={{
-                textAlign: "center",
-                padding: "6px",
-                fontSize: "11px",
-                color: "#999",
-              }}
-            >
-              No observations recorded.
-            </td>
-          </tr>
-        ) : (
-          data.map((o, i) => (
-            <tr key={i}>
-              <td>{o.srNo}</td>
-              <td>{v(o.jobDescription)}</td>
-              <td>{v(o.drawingOrJointNo)}</td>
-              <td>{v(o.size)}</td>
-              <td>{o.quantity ?? ""}</td>
-              <td>{v(o.interpretation)}</td>
-              <td>{v(o.evaluation || o.remark || o.result)}</td>
-            </tr>
-          ))
-        )}
-      </tbody>
+     <tbody>
+  {data.length === 0 ? (
+    <tr>
+      <td
+        colSpan={7}
+        style={{
+          textAlign: "center",
+          padding: "6px",
+          fontSize: "11px",
+          color: "#999",
+        }}
+      >
+        No observations recorded.
+      </td>
+    </tr>
+  ) : (
+    data.map((o, i) => (
+      <tr key={i}>
+        <td style={{ textAlign: "center" }}>
+          {o.srNo}
+        </td>
+
+        <td>
+          {v(o.jobDescription)}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {v(o.drawingOrJointNo)}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {v(o.size)}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {o.quantity ?? ""}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {v(o.interpretation)}
+        </td>
+
+        <td style={{ textAlign: "center" }}>
+          {v(o.evaluation || o.remark || o.result)}
+        </td>
+      </tr>
+    ))
+  )}
+</tbody>
     </table>
   );
 
@@ -402,11 +422,11 @@ export const UTReportPrintPage: React.FC = () => {
           </td>
         </tr>
         <tr>
-          <td className="col-hdr" style={{ whiteSpace: "nowrap" }}>
-            Angle Probe calibration detail
+          <td className="col-hdr" style={{ whiteSpace: "nowrap", textAlign: "center" }}>
+            Angle Probe Calibration Detail
           </td>
           {calibAngles.map((a) => (
-            <td key={a.label} className="col-hdr">
+            <td key={a.label} className="col-hdr" style={{ textAlign: "center" }}>
               {a.label}
             </td>
           ))}
@@ -421,11 +441,11 @@ export const UTReportPrintPage: React.FC = () => {
           ] as { key: string; label: string }[]
         ).map((row) => (
           <tr key={row.key}>
-            <td className="lbl" style={{ textAlign: "left", paddingLeft: 4 }}>
+            <td className="lbl" style={{ textAlign: "left", paddingLeft: 16 }}>
               {row.label}
             </td>
             {calibAngles.map((a) => (
-              <td key={a.label}>
+              <td key={a.label} style={{ textAlign: "center" }}>
                 {v((a.data as Record<string, string> | undefined)?.[row.key])}
               </td>
             ))}
@@ -557,28 +577,28 @@ const renderSearchTable = (rows: any[], title: string) => (
         </td>
       </tr>
       <tr>
-        <td className="col-hdr" style={{ width: "20%" }}>
+        <td className="col-hdr" style={{ width: "20%",textAlign: "center" }}>
           Search Unit / Model
         </td>
-        <td className="col-hdr" style={{ width: "12%" }}>
+        <td className="col-hdr" style={{ width: "12%",textAlign: "center" }}>
           Angle
         </td>
-        <td className="col-hdr" style={{ width: "18%" }}>
+        <td className="col-hdr" style={{ width: "18%",textAlign: "center" }}>
           Sr. No.
         </td>
-        <td className="col-hdr" style={{ width: "20%" }}>
+        <td className="col-hdr" style={{ width: "20%",textAlign: "center" }}>
           Crystal Size
         </td>
-        <td className="col-hdr" style={{ width: "16%" }}>
+        <td className="col-hdr" style={{ width: "16%",textAlign: "center" }}>
           Wave Mode
         </td>
-        <td className="col-hdr" style={{ width: "14%" }}>
+        <td className="col-hdr" style={{ width: "14%",textAlign: "center"}}>
           Frequency
         </td>
       </tr>
       {(rows.length > 0 ? rows : [{}]).map((u: any, i: any) => (
-        <tr key={i} style={{ height: "20px" }}>
-          <td>{v(u.model)}</td>
+        <tr key={i} style={{ height: "20px", textAlign: "center" }}>
+          <td >{v(u.model)}</td>
           <td>{v(u.angle)}</td>
           <td>{v(u.srNo)}</td>
           <td>{v(u.crystalSize)}</td>

@@ -999,7 +999,7 @@ export const PTReportFormPage: React.FC = () => {
                   Size
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-center w-16">
-                  Qty
+                  Qty(Nos)
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
                   Interpretation
