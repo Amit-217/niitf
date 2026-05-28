@@ -593,16 +593,7 @@ export const PTReportFormPage: React.FC = () => {
               className={inputClass}
             />
           </div>
-          <div>
-            <label className={labelClass}>Report Date</label>
-            <input
-              type="date"
-              value={jobReportDate}
-              onChange={(e) => setJobReportDate(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
+           <div>
             <label className={labelClass}>Project</label>
             <input
               type="text"
@@ -612,6 +603,16 @@ export const PTReportFormPage: React.FC = () => {
               placeholder="e.g. OIL COOLER FOR GEAR BOX"
             />
           </div>
+          <div>
+            <label className={labelClass}>Report Date</label>
+            <input
+              type="date"
+              value={jobReportDate}
+              onChange={(e) => setJobReportDate(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+         
           <div>
             <label className={labelClass}>Inspection Start Date</label>
             <input
@@ -649,7 +650,7 @@ export const PTReportFormPage: React.FC = () => {
               onCustomChange={setJobAcceptanceCustom}
               options={[
                 "ASME Sec. VIII Div. 1, Appendix 7",
-                "Appendix 8",
+                "ASME Sec. VIII Div. 1, Appendix 8",
                 "Other",
               ]}
             />
