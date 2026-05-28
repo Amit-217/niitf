@@ -561,9 +561,9 @@ export const MPTReportPrintPage = () => {
             <td className="val">{v(jd.material) || "-"}</td>
           </tr>
           <tr>
-             <td className="lbl">Reference Std.</td>
+             <td className="lbl">Acceptance Criteria</td>
             <td className="val">
-              {standards.length > 0 ? standards.join(", ") : "Not specified"}
+              {acceptance.length > 0 ? acceptance.join(", ") : "Not specified"}
             </td>
             
             <td className="lbl">Thickness</td>
@@ -577,8 +577,8 @@ export const MPTReportPrintPage = () => {
             <td className="val">{v(jd.surfaceCondition) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Stage of Inspection</td>
-            <td className="val">{v(jd.stageOfInspection) || "-"}</td>
+            <td className="lbl">Extent of Examination</td>
+            <td className="val">{v(jd.extentOfExamination) || "-"}</td>
             
             <td className="lbl">Welding Process</td>
             <td className="val">{v(jd.weldingProcess) || "-"}</td>
@@ -786,7 +786,7 @@ export const MPTReportPrintPage = () => {
 
       <div
         id="report-root"
-        style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
+        style={{ background: "#62676e", minHeight: "100vh", padding: "16px" }}
       >
         {pages.map((content, i) => (
           <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>

@@ -729,6 +729,30 @@ export const MPTReportFormPage: React.FC = () => {
               className={fc("jobReportDate")}
             />
           </div>
+                    <div>
+            <label className={labelClass} htmlFor="jobInspectionDate">
+              Inspection Start Date
+            </label>
+            <input
+              id="jobInspectionDate"
+              type="date"
+              value={jobInspectionDate}
+              onChange={(e) => setJobInspectionDate(e.target.value)}
+              className={fc("jobInspectionDate")}
+            />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="jobInspectionEndDate">
+              Inspection End Date
+            </label>
+            <input
+              id="jobInspectionEndDate"
+              type="date"
+              value={jobInspectionEndDate}
+              onChange={(e) => setJobInspectionEndDate(e.target.value)}
+              className={fc("jobInspectionEndDate")}
+            />
+          </div>
           <div>
             <label className={labelClass} htmlFor="jobReferenceStd">
               Reference Std.
@@ -764,30 +788,7 @@ export const MPTReportFormPage: React.FC = () => {
               error={!!errors.jobAcceptanceCriteria}
             />
           </div>
-          <div>
-            <label className={labelClass} htmlFor="jobInspectionDate">
-              Inspection Start Date
-            </label>
-            <input
-              id="jobInspectionDate"
-              type="date"
-              value={jobInspectionDate}
-              onChange={(e) => setJobInspectionDate(e.target.value)}
-              className={fc("jobInspectionDate")}
-            />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="jobInspectionEndDate">
-              Inspection End Date
-            </label>
-            <input
-              id="jobInspectionEndDate"
-              type="date"
-              value={jobInspectionEndDate}
-              onChange={(e) => setJobInspectionEndDate(e.target.value)}
-              className={fc("jobInspectionEndDate")}
-            />
-          </div>
+
           <div>
             <label className={labelClass} htmlFor="jobStage">
               Stage of Inspection
@@ -799,9 +800,10 @@ export const MPTReportFormPage: React.FC = () => {
               className={fc("jobStageOfInspection")}
             >
               <option value="">Select...</option>
-              <option>After welding</option>
-              <option>As Casting</option>
+              <option>After Welding</option>
+              <option>After Casting</option>
               <option>After Machining</option>
+              <option>After Forging</option>
             </select>
           </div>
           <div>

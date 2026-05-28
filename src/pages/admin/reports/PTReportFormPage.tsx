@@ -655,6 +655,20 @@ export const PTReportFormPage: React.FC = () => {
               ]}
             />
           </div>
+           <div>
+            <label className={labelClass}>Stage of Inspection</label>
+            <select
+              value={jobStage}
+              onChange={(e) => setJobStage(e.target.value)}
+              className={inputClass}
+            >
+               <option value="">Select...</option>
+              <option>After Welding</option>
+              <option>After Casting</option>
+              <option>After Machining</option>
+              <option>After Forging</option>
+            </select>
+          </div>
           <div>
             <label className={labelClass}>Material</label>
             <input
@@ -665,30 +679,7 @@ export const PTReportFormPage: React.FC = () => {
               placeholder="e.g. IS 2062 E250 BR"
             />
           </div>
-          <div>
-            <label className={labelClass}>Stage of Inspection</label>
-            <select
-              value={jobStage}
-              onChange={(e) => setJobStage(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>After welding</option>
-              <option>As Casting</option>
-              <option>After Machining</option>
-            </select>
-          </div>
-          <div>
-            <label className={labelClass}>Thickness</label>
-            <input
-              type="text"
-              value={jobThickness}
-              onChange={(e) => setJobThickness(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 6, 12 & 16 MM"
-            />
-          </div>
-          <div>
+                   <div>
             <label className={labelClass}>Extent of Examination</label>
             <SelectWithCustom
               value={jobExtent}
@@ -704,19 +695,16 @@ export const PTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Surface Condition</label>
-            <select
-              value={jobSurface}
-              onChange={(e) => setJobSurface(e.target.value)}
+            <label className={labelClass}>Thickness</label>
+            <input
+              type="text"
+              value={jobThickness}
+              onChange={(e) => setJobThickness(e.target.value)}
               className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>Smooth</option>
-              <option>Rough</option>
-              <option>Ground and polished</option>
-            </select>
+              placeholder="e.g. 6, 12 & 16 MM"
+            />
           </div>
-          <div>
+                    <div>
             <label className={labelClass}>Type of Joint</label>
             <select
               value={jobJointType}
@@ -731,18 +719,19 @@ export const PTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Surface Temperature</label>
+            <label className={labelClass}>Surface Condition</label>
             <select
-              value={jobSurfaceTemp}
-              onChange={(e) => setJobSurfaceTemp(e.target.value)}
+              value={jobSurface}
+              onChange={(e) => setJobSurface(e.target.value)}
               className={inputClass}
             >
               <option value="">Select...</option>
-              <option>Room Temperature</option>
-              <option>Other</option>
+              <option>Smooth</option>
+              <option>Rough</option>
+              <option>Ground and polished</option>
             </select>
           </div>
-          <div>
+           <div>
             <label className={labelClass}>Welding Process</label>
             <select
               value={jobWeldingProcess}
@@ -756,8 +745,22 @@ export const PTReportFormPage: React.FC = () => {
               <option>SAW</option>
               <option>GTAW</option>
               <option>MAG</option>
+              <option>N/A</option>
             </select>
           </div>
+          <div>
+            <label className={labelClass}>Surface Temperature</label>
+            <select
+              value={jobSurfaceTemp}
+              onChange={(e) => setJobSurfaceTemp(e.target.value)}
+              className={inputClass}
+            >
+              <option value="">Select...</option>
+              <option>Room Temperature</option>
+              <option>Other</option>
+            </select>
+          </div>
+         
         </div>
       </div>
 

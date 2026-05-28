@@ -356,6 +356,7 @@ export interface UTSearchUnit {
   crystalSize: string;
   waveMode: string;
   frequency: string;
+  frequencyCustom?: string;
 }
 
 export interface UTCalibrationPoint {

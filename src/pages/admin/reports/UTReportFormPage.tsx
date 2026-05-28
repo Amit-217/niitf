@@ -97,6 +97,7 @@ const emptySearchUnit = (): UTSearchUnit => ({
   crystalSize: "",
   waveMode: "",
   frequency: "",
+  frequencyCustom: "",
 });
 
 interface CalibRow {
@@ -186,6 +187,7 @@ export const UTReportFormPage: React.FC = () => {
   ]);
 
   // Ã¢â€â‚¬Ã¢â€â‚¬ Technique Details Ã¢â€â‚¬Ã¢â€â‚¬
+  const [utMethodCustom, setUtMethodCustom] = useState("");
   const [utMethod, setUtMethod] = useState("");
   const [refCalibBlock, setRefCalibBlock] = useState("");
   const [refCalibBlockCustom, setRefCalibBlockCustom] = useState("");
@@ -234,9 +236,23 @@ export const UTReportFormPage: React.FC = () => {
     val === "Other" && custom.trim() ? custom.trim() : val;
 
   const updateUnit = (idx: number, key: keyof UTSearchUnit, val: string) =>
-    setSearchUnits((prev) =>
-      prev.map((row, i) => (i === idx ? { ...row, [key]: val } : row)),
-    );
+  setSearchUnits((prev) =>
+    prev.map((row, i) => {
+      if (i !== idx) return row;
+
+      let updatedRow = { ...row, [key]: val };
+
+      // Angle change hone pe auto update
+      if (key === "angle") {
+        const crystalOptions = getCrystalSizeOptions(val);
+
+        updatedRow.crystalSize = crystalOptions[0];
+        updatedRow.waveMode = getWaveMode(val);
+      }
+
+      return updatedRow;
+    }),
+  );
 
   const addUnit = () => setSearchUnits((prev) => [...prev, emptySearchUnit()]);
   const removeUnit = (idx: number) =>
@@ -309,7 +325,7 @@ export const UTReportFormPage: React.FC = () => {
           "ASME Sec V Article 4",
           "ASTM SA 609",
           "ASTM SA 435",
-          "ASTM 578",
+          "ASTM SA 578",
           "ASTM SA 388",
           "Other",
         ]);
@@ -319,7 +335,7 @@ export const UTReportFormPage: React.FC = () => {
           "ASME SEC VIII Div. 1 Appendix 12",
           "ASTM SA 609",
           "ASTM SA 435",
-          "ASTM 578",
+          "ASTM SA 578",
           "ASTM SA 388",
           "Other",
         ]);
@@ -484,9 +500,15 @@ export const UTReportFormPage: React.FC = () => {
           couplant: eqCouplant,
           basicCalibrationBlock: eqBasicCalib,
         },
-        searchUnitDetails: searchUnits,
+        searchUnitDetails: searchUnits.map((u) => ({
+  ...u,
+  frequency:
+    u.frequency === "Other"
+      ? u.frequencyCustom || ""
+      : u.frequency,
+})),
         techniqueDetails: {
-          utMethod: utMethod || undefined,
+          utMethod: resolve(utMethod, utMethodCustom),
           referenceCalibrationBlock: resolve(
             refCalibBlock,
             refCalibBlockCustom,
@@ -556,7 +578,24 @@ export const UTReportFormPage: React.FC = () => {
       setSaving(false);
     }
   };
+ const angleProbeOptions = ["45°", "60°", "70°"];
+const normalProbeOptions = ["Normal", "TR"];
 
+const getCrystalSizeOptions = (angle: string) => {
+  if (angleProbeOptions.includes(angle)) {
+    return ["8x9 mm", "20x22 mm"];
+  }
+
+  return ["Ø10 mm", "Ø24 mm"];
+};
+
+const getWaveMode = (angle: string) => {
+  if (angleProbeOptions.includes(angle)) {
+    return "Shear";
+  }
+
+  return "Longitudinal";
+};
   const calibAngles = [
     { label: "0°", state: calib0, setter: setCalib0 },
     { label: "45°", state: calib45, setter: setCalib45 },
@@ -691,7 +730,7 @@ export const UTReportFormPage: React.FC = () => {
                 "ASME Sec V Article 4",
                 "ASTM SA 609",
                 "ASTM SA 435",
-                "ASTM 578",
+                "ASTM SA 578",
                 "ASTM SA 388",
                 "Other",
               ]}
@@ -708,11 +747,25 @@ export const UTReportFormPage: React.FC = () => {
                 "ASME SEC VIII Div. 1 Appendix 12",
                 "ASTM SA 609",
                 "ASTM SA 435",
-                "ASTM 578",
+                "ASTM SA 578",
                 "ASTM SA 388",
                 "Other",
               ]}
             />
+          </div>
+          <div>
+            <label className={labelClass}>Stage of Inspection</label>
+            <select
+              value={jobStage}
+              onChange={(e) => setJobStage(e.target.value)}
+              className={inputClass}
+            >
+             <option value="">Select...</option>
+              <option>After Welding</option>
+              <option>After Casting</option>
+              <option>After Machining</option>
+              <option>After Forging</option>
+            </select>
           </div>
           <div>
             <label className={labelClass}>Material</label>
@@ -724,31 +777,7 @@ export const UTReportFormPage: React.FC = () => {
               placeholder="e.g. IS 2062 E-250 BR"
             />
           </div>
-          <div>
-            <label className={labelClass}>Stage of Inspection</label>
-            <select
-              value={jobStage}
-              onChange={(e) => setJobStage(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>After welding</option>
-              <option>As Casting</option>
-              <option>As Rolled</option>
-              <option>As Forged</option>
-            </select>
-          </div>
-          <div>
-            <label className={labelClass}>Thickness</label>
-            <input
-              type="text"
-              value={jobThickness}
-              onChange={(e) => setJobThickness(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 6,12 & 16 MM"
-            />
-          </div>
-          <div>
+            <div>
             <label className={labelClass}>Extent of Examination</label>
             <SelectWithCustom
               value={jobExtent}
@@ -764,17 +793,14 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Surface Condition</label>
-            <select
-              value={jobSurface}
-              onChange={(e) => setJobSurface(e.target.value)}
+            <label className={labelClass}>Thickness</label>
+            <input
+              type="text"
+              value={jobThickness}
+              onChange={(e) => setJobThickness(e.target.value)}
               className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>Smooth</option>
-              <option>Rough</option>
-              <option>Ground and polished</option>
-            </select>
+              placeholder="e.g. 6,12 & 16 MM"
+            />
           </div>
           <div>
             <label className={labelClass}>Type of Joint</label>
@@ -790,6 +816,20 @@ export const UTReportFormPage: React.FC = () => {
               <option>NA</option>
             </select>
           </div>
+          <div>
+            <label className={labelClass}>Surface Condition</label>
+            <select
+              value={jobSurface}
+              onChange={(e) => setJobSurface(e.target.value)}
+              className={inputClass}
+            >
+              <option value="">Select...</option>
+              <option>Smooth</option>
+              <option>Rough</option>
+              <option>Ground and polished</option>
+            </select>
+          </div>
+          
           <div>
             <label className={labelClass}>Surface Temperature</label>
             <select
@@ -864,6 +904,8 @@ export const UTReportFormPage: React.FC = () => {
             >
               <option value="">Select...</option>
               <option>Water</option>
+              <option>Oil</option>
+              <option>Grease</option>
               <option>Oil+ Grease</option>
               <option>Starch</option>
             </select>
@@ -945,6 +987,7 @@ export const UTReportFormPage: React.FC = () => {
                       onChange={(e) => updateUnit(idx, "angle", e.target.value)}
                       className={inputClass}
                     >
+                      <option value="">Select...</option>
                       <option>45°</option>
                       <option>60°</option>
                       <option>70°</option>
@@ -961,20 +1004,21 @@ export const UTReportFormPage: React.FC = () => {
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={unit.crystalSize}
-                      onChange={(e) =>
-                        updateUnit(idx, "crystalSize", e.target.value)
-                      }
-                      className={inputClass}
-                    >
-                      <option>8x9 mm / 20x22mm</option>
-                      <option>Ø10 mm / Ø24 mm</option>
-                      <option>8x9 mm</option>
-                      <option>20x22mm</option>
-                      <option>Ø10 mm/ Ø24 mm</option>
-                      <option>Ø24 mm</option>
-                    </select>
+                   <select
+                    value={unit.crystalSize}
+                    onChange={(e) =>
+                      updateUnit(idx, "crystalSize", e.target.value)
+                    }
+                    className={inputClass}
+                  >
+                    <option value="">Select...</option>
+
+                    {getCrystalSizeOptions(unit.angle).map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
                     <select
@@ -984,23 +1028,37 @@ export const UTReportFormPage: React.FC = () => {
                       }
                       className={inputClass}
                     >
-                      <option>Shear</option>
-                      <option>Longitudinal</option>
+                      <option value={getWaveMode(unit.angle)}>
+                        {getWaveMode(unit.angle)}
+                      </option>
                     </select>
                   </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={unit.frequency}
-                      onChange={(e) =>
-                        updateUnit(idx, "frequency", e.target.value)
-                      }
-                      className={inputClass}
-                    >
-                      <option>2 / 4 MHz</option>
-                      <option>2 MHz</option>
-                      <option>4 MHz</option>
-                    </select>
-                  </td>
+                  <td className="border border-gray-200 px-1 py-1 w-[140px]">
+  <td className="border border-gray-200 px-1 py-1 w-[150px]">
+  <SelectWithCustom
+    value={unit.frequency}
+    onChange={(val) =>
+      updateUnit(idx, "frequency", val)
+    }
+    customValue={unit.frequencyCustom || ""}
+    onCustomChange={(val) =>
+      setSearchUnits((prev) =>
+        prev.map((row, i) =>
+          i === idx
+            ? { ...row, frequencyCustom: val }
+            : row
+        )
+      )
+    }
+    options={[
+      "1 MHz",
+      "2 MHz",
+      "4 MHz",
+      "Other",
+    ]}
+  />
+</td>
+</td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
                     {searchUnits.length > 1 && (
                       <button
@@ -1023,19 +1081,20 @@ export const UTReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Technique Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>UT Method</label>
-            <select
-              value={utMethod}
-              onChange={(e) => setUtMethod(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>Pulse Echo</option>
-              <option>Through Transmission</option>
-              <option>TOFD</option>
-            </select>
-          </div>
+        <div>
+  <label className={labelClass}>UT Method</label>
+
+  <SelectWithCustom
+    value={utMethod}
+    onChange={setUtMethod}
+    customValue={utMethodCustom}
+    onCustomChange={setUtMethodCustom}
+    options={[
+      "Pulse Echo",
+      "Other",
+    ]}
+  />
+</div>
           <div>
             <label className={labelClass}>Reference Calibration Block</label>
             <SelectWithCustom
@@ -1079,7 +1138,7 @@ export const UTReportFormPage: React.FC = () => {
               options={[
                 "Ø 2.5 mm SDH",
                 "Ø 3mm SDH",
-                '1" BWE set @ 80% of FSH on Job',
+                '1ˢᵗ BWE set @ 80% of FSH on Job',
                 "Other",
               ]}
             />

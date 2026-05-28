@@ -70,10 +70,10 @@ const PRINT_STYLES = `
   .bw .sign-table td { border-color: #000 !important; border-width: 1.2px !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
-  .bw .report-footer-wrap { border: 1.2px solid #000 !important; border-top: none !important; border-radius: 0 0 6px 6px !important; margin-top: -1px !important; }
+  .bw .report-footer-wrap { border: 1.2px solid #000 !important; border-top: none !important; border-radius:0 !important; margin-top: -1px !important; }
   .bw .obs-table thead td, .bw .obs-table thead th { border: 1.2px solid #000 !important; }
   .bw .report-body { color: #000 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 5px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1.2px solid #000; border-top: none; border-radius: 6px 6px 0 0; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 5px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1.2px solid #000; border-top: none; border-radius: 0; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 3px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1.2px solid #000; }
   .report-table td, .report-table th { border: 1.2px solid #000; padding: 2px 5px; vertical-align: middle; word-break: break-word; font-size: 11.5px; }
@@ -94,8 +94,8 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border-top: 1.2px solid #000; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1.2px solid #000; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; margin-bottom: 2px; }
+  .report-body { border-top: 1.2px solid #000; border-left: none; border-right: none; border-bottom: none; border-radius: 0; overflow: hidden; }
+  .report-footer-wrap { border: 1.2px solid #000; border-top: none; border-radius: 0; overflow: hidden; margin-top: -1px; margin-bottom: 2px; }
 
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
@@ -572,32 +572,16 @@ export const UTReportPrintPage: React.FC = () => {
               Frequency
             </td>
           </tr>
-          {units.length === 0 ? (
-            <tr>
-              <td
-                colSpan={6}
-                style={{
-                  textAlign: "center",
-                  padding: "4px",
-                  color: "#999",
-                  fontSize: "11px",
-                }}
-              >
-                No search units recorded.
-              </td>
-            </tr>
-          ) : (
-            units.map((u: any, i: any) => (
-              <tr key={i}>
-                <td>{v(u.model)}</td>
-                <td>{v(u.angle)}</td>
-                <td>{v(u.srNo)}</td>
-                <td>{v(u.crystalSize)}</td>
-                <td>{v(u.waveMode)}</td>
-                <td>{v(u.frequency)}</td>
-              </tr>
-            ))
-          )}
+        {(units.length > 0 ? units : [{}]).map((u: any, i: any) => (
+  <tr key={i}  style={{ height: "20px" }}>
+    <td>{v(u.model)}</td>
+    <td>{v(u.angle)}</td>
+    <td>{v(u.srNo)}</td>
+    <td>{v(u.crystalSize)}</td>
+    <td>{v(u.waveMode)}</td>
+    <td>{v(u.frequency)}</td>
+  </tr>
+))}
         </tbody>
       </table>
 
@@ -638,37 +622,37 @@ export const UTReportPrintPage: React.FC = () => {
     </>
   );
 
-  // --- Paginate:
-  //   Page 1: sections 1-4 (Job, Equipment, Search Units, Technique) +
-  //           up to (7 - unitCount) observations (shared capacity).
-  //   Page 2: section 5 (Angle Probe Calibration) + remaining observations.
-  //   Page 3+: overflow observations (if any).
-  //   Signatures appear on every page. ---
-  const firstPageCapacity = 7;
-  const unitCount = units.length;
-  const obsLimit = Math.max(0, firstPageCapacity - unitCount);
-  const obsPage1 = obs.slice(0, obsLimit);
-  const obsPage2 = obs.slice(obsLimit);
+ // --- SAME FLOW AS MPT REPORT ---
 
-  const pages = [
-    // Page 1: sections 1–4 + first obs chunk (shared capacity with search units)
+const obsPage1 = obs.slice(0, 5);
+const obsPage2 = obs.slice(5);
+
+const pages = [
+  <>
+    {fixedSections}
+
+    {/* Show calibration on same page naturally */}
+    {calibSection}
+
+    {/* First observation chunk */}
+    {renderObsTable(obsPage1, "6. OBSERVATIONS")}
+
+    {renderSignatures()}
+  </>,
+];
+
+if (obsPage2.length > 0) {
+  pages.push(
     <>
-      {fixedSections}
-      {(obsPage1.length > 0 || obs.length === 0) &&
-        renderObsTable(obsPage1, "6. OBSERVATIONS")}
+      {renderObsTable(
+        obsPage2,
+        "6. OBSERVATIONS (Contd.)"
+      )}
+
       {renderSignatures()}
     </>,
-    // Page 2: Angle Probe Calibration + remaining observations
-    <>
-      {calibSection}
-      {obsPage2.length > 0 &&
-        renderObsTable(
-          obsPage2,
-          obsPage1.length > 0 ? "6. OBSERVATIONS (Contd.)" : "6. OBSERVATIONS",
-        )}
-      {renderSignatures()}
-    </>,
-  ];
+  );
+}
 
   return (
     <>
