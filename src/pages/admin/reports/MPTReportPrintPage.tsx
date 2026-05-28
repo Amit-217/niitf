@@ -544,40 +544,48 @@ export const MPTReportPrintPage = () => {
             <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Reference Std.</td>
-            <td className="val">
-              {standards.length > 0 ? standards.join(", ") : "Not specified"}
-            </td>
+            <td className="lbl">Project</td>
+            <td className="val">{v(jd.project) || "-"}</td>
             <td className="lbl">Inspection Date</td>
             <td className="val">
               {dateRange(jd.inspectionDate, jd.inspectionEndDate) || "-"}
             </td>
           </tr>
           <tr>
-            <td className="lbl">Acceptance Criteria</td>
+             <td className="lbl">Reference Std.</td>
             <td className="val">
-              {acceptance.length > 0 ? acceptance.join(", ") : "Not specified"}
+              {standards.length > 0 ? standards.join(", ") : "Not specified"}
             </td>
+            
             <td className="lbl">Material</td>
             <td className="val">{v(jd.material) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Stage of Inspection</td>
-            <td className="val">{v(jd.stageOfInspection) || "-"}</td>
+             <td className="lbl">Reference Std.</td>
+            <td className="val">
+              {standards.length > 0 ? standards.join(", ") : "Not specified"}
+            </td>
+            
             <td className="lbl">Thickness</td>
             <td className="val">{v(jd.thickness) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Extent of Examination</td>
-            <td className="val">{v(jd.extentOfExamination) || "-"}</td>
+            <td className="lbl">Stage of Inspection</td>
+            <td className="val">{v(jd.stageOfInspection) || "-"}</td>
+           
             <td className="lbl">Surface condition</td>
             <td className="val">{v(jd.surfaceCondition) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Type of Joint</td>
-            <td className="val">{v(jd.typeOfJoint) || "-"}</td>
+            <td className="lbl">Stage of Inspection</td>
+            <td className="val">{v(jd.stageOfInspection) || "-"}</td>
+            
             <td className="lbl">Welding Process</td>
             <td className="val">{v(jd.weldingProcess) || "-"}</td>
+          </tr>
+          <tr>
+            <td className="lbl">Type of Joint</td>
+            <td className="val">{v(jd.typeOfJoint) || "-"}</td>
           </tr>
         </tbody>
       </table>

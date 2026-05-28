@@ -203,6 +203,7 @@ export interface MPTReportPayload {
   jobDetails?: {
     customer?: string;
     client?: string;
+    project?: string;
     reportDate?: string;
     inspectionDate?: string;
     inspectionEndDate?: string;

@@ -117,6 +117,7 @@ export const MPTReportFormPage: React.FC = () => {
   const [reportNo, setReportNo] = useState("");
   const jobCustomer = customerName;
   const [jobClient, setJobClient] = useState("");
+  const [jobProject, setJobProject] = useState("");
   const [jobReportDate, setJobReportDate] = useState("");
   const [jobInspectionDate, setJobInspectionDate] = useState("");
   const [jobInspectionEndDate, setJobInspectionEndDate] = useState("");
@@ -221,6 +222,7 @@ export const MPTReportFormPage: React.FC = () => {
         setReportNo(r.reportNo ?? "");
         const jd = r.jobDetails ?? {};
         setJobClient(jd.client ?? "");
+        setJobProject(jd.project ?? "");
         setJobReportDate(toDate(jd.reportDate));
         setJobInspectionDate(toDate(jd.inspectionDate));
         setJobInspectionEndDate(toDate(jd.inspectionEndDate));
@@ -425,6 +427,7 @@ export const MPTReportFormPage: React.FC = () => {
         jobDetails: {
           customer: jobCustomer,
           client: jobClient,
+          project: jobProject,
           reportDate: jobReportDate || undefined,
           inspectionDate: jobInspectionDate || undefined,
           inspectionEndDate: jobInspectionEndDate || undefined,
@@ -634,6 +637,18 @@ export const MPTReportFormPage: React.FC = () => {
               className={inputClass}
             />
           </div>
+           <div>
+            <label className={labelClass} htmlFor="jobProject">
+              Project
+            </label>
+            <input
+              id="jobProject"
+              type="text"
+              value={jobProject}
+              onChange={(e) => setJobProject(e.target.value)}
+              className={inputClass}
+            />
+          </div>
           <div>
             <label className={labelClass} htmlFor="jobReportDate">
               Report Date
@@ -751,6 +766,21 @@ export const MPTReportFormPage: React.FC = () => {
               placeholder="e.g. As per Drawing"
             />
           </div>
+
+          <div>
+            <label className={labelClass} htmlFor="jobMaterial">
+              Material
+            </label>
+            <input
+              id="jobMaterial"
+              type="text"
+              value={jobMaterial}
+              onChange={(e) => setJobMaterial(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. As per Drawing"
+            />
+          </div>
+          
           <div>
             <label className={labelClass} htmlFor="jobTypeOfJoint">
               Type of Joint
