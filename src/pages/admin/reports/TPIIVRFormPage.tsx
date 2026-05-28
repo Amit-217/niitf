@@ -608,21 +608,14 @@ export const TPIIVRFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Inspection Stage</label>
-            <SelectWithOther
-              value={inspectionStage}
-              onChange={setInspectionStage}
-              otherValue={inspectionStageOther}
-              onOtherChange={setInspectionStageOther}
-              options={[
-                "UT IN P/M CONDITION",
-                "STAGE",
-                "FINAL",
-                "STAGE & FINAL",
-                "INCOMING",
-                "IN-PROCESS",
-                "DISPATCH",
-                "Other",
-              ]}
+            <input
+              type="text"
+              value={inspectionStage === "Other" ? inspectionStageOther : ""}
+              onChange={(e) => {
+                setInspectionStage("Other");
+                setInspectionStageOther(e.target.value);
+              }}
+              className={inputClass}
             />
           </div>
         </div>
@@ -906,8 +899,6 @@ export const TPIIVRFormPage: React.FC = () => {
                       <option value="">Select...</option>
                       <option>STAGE</option>
                       <option>FINAL</option>
-                      <option>STAGE / FINAL</option>
-                      <option>INCOMING</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
