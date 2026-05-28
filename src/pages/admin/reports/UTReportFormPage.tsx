@@ -114,6 +114,24 @@ const emptyCalib = (): CalibRow => ({
   refDb: "",
 });
 
+interface InspRow {
+  name: string;
+  qualification: string;
+  designation: string;
+  signature: string;
+  idNo: string;
+  date: string;
+}
+
+const emptyInspector = (): InspRow => ({
+  name: "",
+  qualification: "UT NDE Level II",
+  designation: "",
+  signature: "",
+  idNo: "",
+  date: "",
+});
+
 // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Page Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 export const UTReportFormPage: React.FC = () => {
@@ -199,16 +217,15 @@ export const UTReportFormPage: React.FC = () => {
   }, []);
 
   // Ã¢â€â‚¬Ã¢â€â‚¬ Final Section Ã¢â€â‚¬Ã¢â€â‚¬
-  const [inspectorName, setInspectorName] = useState("");
-  const [inspectorQual, setInspectorQual] = useState("UT NDE Level II");
-  const [inspectorIdNo, setInspectorIdNo] = useState("");
-  const [inspectorDate, setInspectorDate] = useState("");
+  const [inspectors, setInspectors] = useState<InspRow[]>([emptyInspector()]);
   const [custName, setCustName] = useState("");
   const [custDesig, setCustDesig] = useState("");
+  const [custSig, setCustSig] = useState("");
   const [custIdNo, setCustIdNo] = useState("");
   const [custDate, setCustDate] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientDesig, setClientDesig] = useState("");
+  const [clientSig, setClientSig] = useState("");
   const [clientIdNo, setClientIdNo] = useState("");
   const [clientDate, setClientDate] = useState("");
 
@@ -241,6 +258,16 @@ export const UTReportFormPage: React.FC = () => {
         .filter((_, i) => i !== idx)
         .map((row, i) => ({ ...row, srNo: i + 1 })),
     );
+
+  const updateInsp = (idx: number, key: keyof InspRow, value: string) => {
+    setInspectors((prev) =>
+      prev.map((row, i) => (i === idx ? { ...row, [key]: value } : row)),
+    );
+  };
+  const addInspector = () =>
+    setInspectors((prev) => [...prev, emptyInspector()]);
+  const removeInspector = (idx: number) =>
+    setInspectors((prev) => prev.filter((_, i) => i !== idx));
 
   const updateCalib = (
     setter: React.Dispatch<React.SetStateAction<CalibRow>>,
@@ -391,19 +418,28 @@ export const UTReportFormPage: React.FC = () => {
         setConclusion(con);
         setConclusionCustom(conC);
         const fs = r.finalSection ?? {};
-        const insp = fs.inspector?.[0] ?? {};
-        setInspectorName(insp.name ?? "");
-        setInspectorQual(insp.qualification || "UT NDE Level II");
-        setInspectorIdNo(insp.idNo ?? "");
-        setInspectorDate(toDate(insp.date));
+        setInspectors(
+          fs.inspector?.length
+            ? fs.inspector.map((i: any) => ({
+                name: i.name ?? "",
+                qualification: i.qualification || "UT NDE Level II",
+                designation: i.designation ?? "",
+                signature: i.signature ?? "",
+                idNo: i.idNo ?? "",
+                date: toDate(i.date),
+              }))
+            : [emptyInspector()],
+        );
         const custRep = fs.customer ?? {};
         setCustName(custRep.name ?? "");
         setCustDesig(custRep.designation ?? "");
+        setCustSig(custRep.signature ?? "");
         setCustIdNo(custRep.idNo ?? "");
         setCustDate(toDate(custRep.date));
         const clientRep = fs.clientOrTPI ?? {};
         setClientName(clientRep.name ?? "");
         setClientDesig(clientRep.designation ?? "");
+        setClientSig(clientRep.signature ?? "");
         setClientIdNo(clientRep.idNo ?? "");
         setClientDate(toDate(clientRep.date));
       })
@@ -479,23 +515,20 @@ export const UTReportFormPage: React.FC = () => {
         conclusion: resolve(conclusion, conclusionCustom) || undefined,
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
-          inspector: [
-            {
-              name: inspectorName,
-              qualification: inspectorQual,
-              idNo: inspectorIdNo,
-              date: inspectorDate || undefined,
-            },
-          ],
+          inspector: inspectors
+            .filter((i) => i.name.trim())
+            .map((i) => ({ ...i, date: i.date || undefined })),
           customer: {
             name: custName,
             designation: custDesig,
+            signature: custSig,
             idNo: custIdNo,
             date: custDate || undefined,
           },
           clientOrTPI: {
             name: clientName,
             designation: clientDesig,
+            signature: clientSig,
             idNo: clientIdNo,
             date: clientDate || undefined,
           },
@@ -1248,47 +1281,96 @@ export const UTReportFormPage: React.FC = () => {
 
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {/* NIIT Inspector(s) */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
               Examined By
             </p>
-            <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              National Ind. Insp. & Training
-            </p>
-            <div className="space-y-2">
-              <div>
-                <label className={labelClass}>Inspector Name</label>
-                <select
-                  value={inspectorName}
-                  onChange={(e) => setInspectorName(e.target.value)}
-                  className={`${inputClass} bg-white`}
-                >
-                  <option value="">Select....</option>
-                  {users.map((u) => (
-                    <option key={u._id} value={u.name}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className={labelClass}>Qualification</label>
-                <input
-                  type="text"
-                  value={inspectorQual}
-                  onChange={(e) => setInspectorQual(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>Date</label>
-                <input
-                  type="date"
-                  value={inspectorDate}
-                  onChange={(e) => setInspectorDate(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-semibold text-gray-700 uppercase">
+                National Ind. Insp. &amp; Training
+              </p>
+              <button
+                type="button"
+                onClick={addInspector}
+                className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 rounded-lg px-2 py-1 hover:bg-indigo-50 transition-colors"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              {inspectors.map((insp, idx) => (
+                <div key={idx} className="relative">
+                  {inspectors.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => removeInspector(idx)}
+                        className="absolute top-0 right-0 text-red-400 hover:text-red-600"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                      <p className="text-xs text-gray-400 mb-2">
+                        Inspector {idx + 1}
+                      </p>
+                    </>
+                  )}
+                  <div className="space-y-2">
+                    <div>
+                      <label className={labelClass}>Name</label>
+                      <select
+                        value={insp.name}
+                        onChange={(e) => updateInsp(idx, "name", e.target.value)}
+                        className={`${inputClass} bg-white`}
+                      >
+                        <option value="">Select....</option>
+                        {users.map((u) => (
+                          <option key={u._id} value={u.name}>
+                            {u.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className={labelClass}>Qualification</label>
+                      <input
+                        type="text"
+                        value={insp.qualification}
+                        onChange={(e) => updateInsp(idx, "qualification", e.target.value)}
+                        className={inputClass}
+                        placeholder="e.g. UT NDE Level II"
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Designation</label>
+                      <input
+                        type="text"
+                        value={insp.designation}
+                        onChange={(e) => updateInsp(idx, "designation", e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Signature</label>
+                      <input
+                        type="text"
+                        value={insp.signature}
+                        onChange={(e) => updateInsp(idx, "signature", e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Date</label>
+                      <input
+                        type="date"
+                        value={insp.date}
+                        onChange={(e) => updateInsp(idx, "date", e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
@@ -1314,6 +1396,15 @@ export const UTReportFormPage: React.FC = () => {
                   type="text"
                   value={custDesig}
                   onChange={(e) => setCustDesig(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Signature</label>
+                <input
+                  type="text"
+                  value={custSig}
+                  onChange={(e) => setCustSig(e.target.value)}
                   className={inputClass}
                 />
               </div>
@@ -1351,6 +1442,15 @@ export const UTReportFormPage: React.FC = () => {
                   type="text"
                   value={clientDesig}
                   onChange={(e) => setClientDesig(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Signature</label>
+                <input
+                  type="text"
+                  value={clientSig}
+                  onChange={(e) => setClientSig(e.target.value)}
                   className={inputClass}
                 />
               </div>
