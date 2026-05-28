@@ -186,7 +186,7 @@ export const QuotationsListPage: React.FC = () => {
           <button
             id="add-quote-btn"
             onClick={() =>
-              navigate(`/admin/quotations/${activeTab ?? "training"}/new`)
+              navigate(`/admin/quotations/${activeTab ?? "training"}/new`, { state: { from: 'quotations-list' } })
             }
             className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300 whitespace-nowrap"
           >
