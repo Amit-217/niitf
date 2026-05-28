@@ -14,17 +14,12 @@ const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
 
-  @media screen {
-    body.autoprint-mode { background: #fff !important; }
-    body.autoprint-mode > #root > * { opacity: 0 !important; visibility: hidden !important; }
-    .print-page { margin: 0 auto 16px auto; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
-  }
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; }
     #report-root { background: #fff !important; padding: 0 !important; }
-    .print-page { min-height: 296mm; margin: 0 !important; box-shadow: none !important; break-after: page; page-break-after: always; }
+    .print-page { min-height: 296mm; height: 296mm; margin: 0 !important; box-shadow: none !important; break-after: page; page-break-after: always; }
     .print-page:last-child { break-after: auto; page-break-after: auto; }
     .report-body { overflow: visible !important; }
   }
@@ -39,15 +34,16 @@ const PRINT_STYLES = `
      last one. The same blocks are used on screen and in print. */
   .print-page {
     width: 210mm;
-    min-height: 297mm;
+    height: 297mm;
     background: #fff;
     box-sizing: border-box;
     padding: 0 5mm 5mm 5mm;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
   .print-page-content { flex: 1 1 auto; }
-  .print-page-foot { margin-top: 4px; }
+  .print-page-foot { margin-top: auto; }
 
   /* Unified Header & Footer Styles */
   .rpt-header { 
@@ -317,20 +313,79 @@ export const AWSDReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const cert = report.certification ?? {};
 
-  // Pagination logic
-  const FIRST_PAGE_SIZE = 17;
-  const SUBSEQUENT_PAGE_SIZE = 25;
-  const chunks: any[][] = [];
+  // Dynamic pagination block layout engine
+  const PAGE_HEIGHT_LIMIT = 288; // mm
+  const HEADER_HEIGHT = 28; // mm
+  const FOOTER_HEIGHT = 22; // mm
+  const FIXED_SECTIONS_HEIGHT = 125; // mm (Title + Job info form block + Sketch)
+  const OBS_HEADER_HEIGHT = 40; // mm (vertical text three-level header)
 
-  if (obs.length === 0) {
-    chunks.push([]);
-  } else {
-    // First chunk
-    chunks.push(obs.slice(0, FIRST_PAGE_SIZE));
-    // Subsequent chunks
-    for (let i = FIRST_PAGE_SIZE; i < obs.length; i += SUBSEQUENT_PAGE_SIZE) {
-      chunks.push(obs.slice(i, i + SUBSEQUENT_PAGE_SIZE));
+  type ContentBlock =
+    | { type: "obs-row"; item: any; height: number }
+    | { type: "signatures"; height: number };
+
+  const blocks: ContentBlock[] = [];
+  obs.forEach((o) => {
+    blocks.push({
+      type: "obs-row",
+      item: o,
+      height: 8.2, // mm per observation row (including borders)
+    });
+  });
+  blocks.push({
+    type: "signatures",
+    height: 48,
+  });
+
+  type PageDescriptor = {
+    isFirstPage: boolean;
+    pageBlocks: ContentBlock[];
+  };
+
+  const pages: PageDescriptor[] = [];
+  let currentBlockIndex = 0;
+
+  while (currentBlockIndex < blocks.length) {
+    const isFirstPage = pages.length === 0;
+    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT;
+    if (isFirstPage) {
+      availableHeight -= FIXED_SECTIONS_HEIGHT;
     }
+
+    const pageBlocks: ContentBlock[] = [];
+    let accumulatedHeight = 0;
+    let hasObsTable = false;
+
+    while (currentBlockIndex < blocks.length) {
+      const block = blocks[currentBlockIndex];
+      let blockHeight = block.height;
+
+      // Add table header height if starting observations table on this page
+      if (block.type === "obs-row" && !hasObsTable) {
+        blockHeight += OBS_HEADER_HEIGHT;
+      }
+
+      if (accumulatedHeight + blockHeight <= availableHeight) {
+        pageBlocks.push(block);
+        accumulatedHeight += blockHeight;
+        if (block.type === "obs-row") {
+          hasObsTable = true;
+        }
+        currentBlockIndex++;
+      } else {
+        break;
+      }
+    }
+
+    if (pageBlocks.length === 0 && currentBlockIndex < blocks.length) {
+      pageBlocks.push(blocks[currentBlockIndex]);
+      currentBlockIndex++;
+    }
+
+    pages.push({
+      isFirstPage,
+      pageBlocks,
+    });
   }
 
   const ObsTableHeader = () => (
@@ -803,26 +858,7 @@ export const AWSDReportPrintPage: React.FC = () => {
     </table>
   );
 
-  // ───── Build pages: page 1 = header + fixed sections + first obs chunk;
-  //       later pages = "Continued" title + remaining obs chunk. Signatures
-  //       always render on the last page. Each page is a self-contained A4
-  //       block with the footer pinned at its bottom in normal flow. ─────
-  const pages = chunks.map((chunk, chunkIdx) => {
-    const isLastChunk = chunkIdx === chunks.length - 1;
-    return (
-      <>
-        {chunkIdx === 0 ? (
-          fixedSections
-        ) : (
-          <div className="rpt-title" style={{ borderTop: "none" }}>
-            Report of UT of Welds (AWS D1.1) - Continued
-          </div>
-        )}
-        {renderObsTable(chunk, chunkIdx, isLastChunk)}
-        <ReportSignatures />
-      </>
-    );
-  });
+  // Pages are now built dynamically by the layout engine
 
   return (
     <>
@@ -880,17 +916,35 @@ export const AWSDReportPrintPage: React.FC = () => {
           padding: "16px",
         }}
       >
-        {pages.map((content, i) => (
-          <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
-            <div className="print-page-content">
-              {renderHeader()}
-              <div className="report-body">{content}</div>
+        {pages.map(({ isFirstPage, pageBlocks }, i) => {
+          const pageObs = pageBlocks
+            .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
+            .map((b) => b.item);
+          const hasObsTable = pageObs.length > 0;
+          const hasSignatures = pageBlocks.some((b) => b.type === "signatures");
+          
+          return (
+            <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
+              <div className="print-page-content">
+                {renderHeader()}
+                <div className="report-body">
+                  {isFirstPage ? (
+                    fixedSections
+                  ) : (
+                    <div className="rpt-title" style={{ borderTop: "none" }}>
+                      Report of UT of Welds (AWS D1.1) - Continued
+                    </div>
+                  )}
+                  {hasObsTable && renderObsTable(pageObs, i, pages.length - 1 === i)}
+                  {hasSignatures && <ReportSignatures />}
+                </div>
+              </div>
+              <div className="print-page-foot">
+                <ReportFooter />
+              </div>
             </div>
-            <div className="print-page-foot">
-              <ReportFooter />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );

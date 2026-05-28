@@ -26,18 +26,18 @@ const PRINT_STYLES = `
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
-    body { margin: 0; background: #fff; }
+    body { margin: 0; background: #fff; overflow: visible !important; }
     #report-root { background: #fff !important; padding: 0 !important; }
-    .print-page { min-height: 296mm; margin: 0 !important; box-shadow: none !important; break-after: page; page-break-after: always; }
+    .print-page { min-height: 296mm; height: 296mm; margin: 0 !important; box-shadow: none !important; break-after: page; page-break-after: always; }
     .print-page:last-child { break-after: auto; page-break-after: auto; }
     .report-body { overflow: visible !important; }
   }
 
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .print-page { width: 210mm; min-height: 297mm; background: #fff; box-sizing: border-box; padding: 0 5mm 5mm 5mm; display: flex; flex-direction: column; }
+  .print-page { width: 210mm; height: 297mm; background: #fff; box-sizing: border-box; padding: 0 5mm 5mm 5mm; display: flex; flex-direction: column; overflow: hidden; }
   .print-page-content { flex: 1 1 auto; }
-  .print-page-foot { margin-top: 4px; }
+  .print-page-foot { margin-top: auto; }
   .rpt-header { padding: 2px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
   .logo-box { width: 160px; height: 100px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0px; transform: translateY(-4px); margin-top: 2px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
@@ -435,272 +435,348 @@ export const UTReportPrintPage: React.FC = () => {
     </table>
   );
 
-  const fixedSections = (
-    <>
-      <div className="rpt-title">Ultrasonic Testing Report</div>
-
-      {/* --- 1. JOB DETAILS --- */}
-      <table className="report-table mt-n1">
-        <colgroup>
-          <col style={{ width: "18%" }} />
-          <col style={{ width: "32%" }} />
-          <col style={{ width: "18%" }} />
-          <col style={{ width: "32%" }} />
-        </colgroup>
-        <tbody>
-          <tr>
-            <td colSpan={4} className="section-hdr">
-              1. JOB DETAILS
-            </td>
-          </tr>
-          <tr>
-            <td className="lbl">Customer</td>
-            <td className="val">{v(jd.customer)}</td>
-            <td className="lbl">Report No.</td>
-            <td className="val">{v(report.reportNo)}</td>
-          </tr>
-          <tr>
-            <td className="lbl">Client</td>
-            <td className="val">{v(jd.client)}</td>
-            <td className="lbl">Report Date</td>
-            <td className="val">{fmtDate(jd.reportDate)}</td>
-          </tr>
-          <tr>
-            <td className="lbl">Project</td>
-            <td className="val">{v(jd.project)}</td>
-            <td className="lbl">Inspection Date</td>
-            <td className="val">
-              {fmtDate(jd.inspectionDate)}
-              {jd.inspectionEndDate
-                ? ` to ${fmtDate(jd.inspectionEndDate)}`
-                : ""}
-            </td>
-          </tr>
-          <tr>
-            <td className="lbl">Reference Std.</td>
-            <td className="val">{v(jd.referenceStd)}</td>
-            <td className="lbl">Material</td>
-            <td className="val">{v(jd.material)}</td>
-          </tr>
-          <tr>
-            <td className="lbl">Acceptance Criteria</td>
-            <td className="val">{v(jd.acceptanceCriteria)}</td>
-            <td className="lbl">Thickness</td>
-            <td className="val">{v(jd.thickness)}</td>
-          </tr>
-          <tr>
-            <td className="lbl">Stage of Inspection</td>
-            <td className="val">{v(jd.stageOfInspection)}</td>
-            <td className="lbl">Surface Condition</td>
-            <td className="val">{v(jd.surfaceCondition)}</td>
-          </tr>
-          <tr>
-            <td className="lbl">Extent of Examination</td>
-            <td className="val">{v(jd.extentOfExamination)}</td>
-            <td className="lbl">Surface Temperature</td>
-            <td className="val">{v(jd.surfaceTemperature)}</td>
-          </tr>
-          <tr>
-            <td className="lbl">Type of Joint</td>
-            <td colSpan={3} className="val">
-              {v(jd.typeOfJoint)}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      {/* --- 2. EQUIPMENT DETAILS --- */}
-      <table className="report-table mt-n1">
-        <colgroup>
-          <col style={{ width: "15%" }} />
-          <col style={{ width: "18.3%" }} />
-          <col style={{ width: "15%" }} />
-          <col style={{ width: "18.3%" }} />
-          <col style={{ width: "15%" }} />
-          <col style={{ width: "18.4%" }} />
-        </colgroup>
-        <tbody>
-          <tr>
-            <td colSpan={6} className="section-hdr">
-              2. EQUIPMENT DETAILS
-            </td>
-          </tr>
-          <tr>
-            <td className="lbl">Equip. Type</td>
-            <td className="val">{v(eq.equipmentType)}</td>
-            <td className="lbl">Sr. no.</td>
-            <td className="val">{v(eq.srNo)}</td>
-            <td className="lbl">Make</td>
-            <td className="val">{v(eq.make)}</td>
-          </tr>
-          <tr>
-            <td className="lbl">Calibration Due</td>
-            <td className="val">{fmtDate(eq.calibrationDue)}</td>
-            <td className="lbl">Couplant</td>
-            <td className="val">{v(eq.couplant)}</td>
-            <td className="lbl">Basic Calibration Block</td>
-            <td className="val">{v(eq.basicCalibrationBlock)}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      {/* --- 3. SEARCH UNIT DETAILS --- */}
-      <table className="report-table mt-n1">
-        <tbody>
-          <tr>
-            <td colSpan={6} className="section-hdr">
-              3. SEARCH UNIT DETAILS
-            </td>
-          </tr>
-          <tr>
-            <td className="col-hdr" style={{ width: "20%" }}>
-              Search Unit / Model
-            </td>
-            <td className="col-hdr" style={{ width: "12%" }}>
-              Angle
-            </td>
-            <td className="col-hdr" style={{ width: "18%" }}>
-              Sr. No.
-            </td>
-            <td className="col-hdr" style={{ width: "20%" }}>
-              Crystal Size
-            </td>
-            <td className="col-hdr" style={{ width: "16%" }}>
-              Wave Mode
-            </td>
-            <td className="col-hdr" style={{ width: "14%" }}>
-              Frequency
-            </td>
-          </tr>
-        {(units.length > 0 ? units : [{}]).map((u: any, i: any) => (
-  <tr key={i}  style={{ height: "20px" }}>
-    <td>{v(u.model)}</td>
-    <td>{v(u.angle)}</td>
-    <td>{v(u.srNo)}</td>
-    <td>{v(u.crystalSize)}</td>
-    <td>{v(u.waveMode)}</td>
-    <td>{v(u.frequency)}</td>
-  </tr>
-))}
-        </tbody>
-      </table>
-
-      {/* --- 4. TECHNIQUE DETAILS --- */}
-      <table className="report-table mt-n1">
-        <colgroup>
-          <col style={{ width: "22%" }} />
-          <col style={{ width: "28%" }} />
-          <col style={{ width: "22%" }} />
-          <col style={{ width: "28%" }} />
-        </colgroup>
-        <tbody>
-          <tr>
-            <td colSpan={4} className="section-hdr">
-              4. TECHNIQUE DETAILS
-            </td>
-          </tr>
-          <tr>
-            <td className="lbl">UT Method</td>
-            <td className="val">{v(td.utMethod)}</td>
-            <td className="lbl">Reference Calibration Block</td>
-            <td className="val">{v(td.referenceCalibrationBlock)}</td>
-          </tr>
-          <tr>
-            <td className="lbl">UT Calibration Method</td>
-            <td className="val">{v(td.utCalibrationMethod)}</td>
-            <td className="lbl">Scanning dB</td>
-            <td className="val">{v(td.scanningDb)}</td>
-          </tr>
-          <tr>
-            <td className="lbl">Scanning Sensitivity</td>
-            <td className="val" colSpan={3}>
-              {v(td.scanningSensitivity)}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </>
-  );
-
- // --- SAME FLOW AS MPT REPORT ---
-
-const obsPage1 = obs.slice(0, 5);
-const obsPage2 = obs.slice(5);
-
-const pages = [
+// New render functions for sections previously in fixedSections
+const renderJobSection = () => (
   <>
-    {fixedSections}
+    <div className="rpt-title">Ultrasonic Testing Report</div>
 
-    {/* Show calibration on same page naturally */}
-    {calibSection}
+    {/* --- 1. JOB DETAILS --- */}
+    <table className="report-table mt-n1">
+      <colgroup>
+        <col style={{ width: "18%" }} />
+        <col style={{ width: "32%" }} />
+        <col style={{ width: "18%" }} />
+        <col style={{ width: "32%" }} />
+      </colgroup>
+      <tbody>
+        <tr>
+          <td colSpan={4} className="section-hdr">
+            1. JOB DETAILS
+          </td>
+        </tr>
+        <tr>
+          <td className="lbl">Customer</td>
+          <td className="val">{v(jd.customer)}</td>
+          <td className="lbl">Report No.</td>
+          <td className="val">{v(report.reportNo)}</td>
+        </tr>
+        <tr>
+          <td className="lbl">Client</td>
+          <td className="val">{v(jd.client)}</td>
+          <td className="lbl">Report Date</td>
+          <td className="val">{fmtDate(jd.reportDate)}</td>
+        </tr>
+        <tr>
+          <td className="lbl">Project</td>
+          <td className="val">{v(jd.project)}</td>
+          <td className="lbl">Inspection Date</td>
+          <td className="val">
+            {fmtDate(jd.inspectionDate)}
+            {jd.inspectionEndDate
+              ? ` to ${fmtDate(jd.inspectionEndDate)}`
+              : ""}
+          </td>
+        </tr>
+        <tr>
+          <td className="lbl">Reference Std.</td>
+          <td className="val">{v(jd.referenceStd)}</td>
+          <td className="lbl">Material</td>
+          <td className="val">{v(jd.material)}</td>
+        </tr>
+        <tr>
+          <td className="lbl">Acceptance Criteria</td>
+          <td className="val">{v(jd.acceptanceCriteria)}</td>
+          <td className="lbl">Thickness</td>
+          <td className="val">{v(jd.thickness)}</td>
+        </tr>
+        <tr>
+          <td className="lbl">Stage of Inspection</td>
+          <td className="val">{v(jd.stageOfInspection)}</td>
+          <td className="lbl">Surface Condition</td>
+          <td className="val">{v(jd.surfaceCondition)}</td>
+        </tr>
+        <tr>
+          <td className="lbl">Extent of Examination</td>
+          <td className="val">{v(jd.extentOfExamination)}</td>
+          <td className="lbl">Surface Temperature</td>
+          <td className="val">{v(jd.surfaceTemperature)}</td>
+        </tr>
+        <tr>
+          <td className="lbl">Type of Joint</td>
+          <td colSpan={3} className="val">
+            {v(jd.typeOfJoint)}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </>
+);
 
-    {/* First observation chunk */}
-    {renderObsTable(obsPage1, "6. OBSERVATIONS")}
+const renderEquipmentSection = () => (
+  <table className="report-table mt-n1">
+    <colgroup>
+      <col style={{ width: "15%" }} />
+      <col style={{ width: "18.3%" }} />
+      <col style={{ width: "15%" }} />
+      <col style={{ width: "18.3%" }} />
+      <col style={{ width: "15%" }} />
+      <col style={{ width: "18.4%" }} />
+    </colgroup>
+    <tbody>
+      <tr>
+        <td colSpan={6} className="section-hdr">
+          2. EQUIPMENT DETAILS
+        </td>
+      </tr>
+      <tr>
+        <td className="lbl">Equip. Type</td>
+        <td className="val">{v(eq.equipmentType)}</td>
+        <td className="lbl">Sr. no.</td>
+        <td className="val">{v(eq.srNo)}</td>
+        <td className="lbl">Make</td>
+        <td className="val">{v(eq.make)}</td>
+      </tr>
+      <tr>
+        <td className="lbl">Calibration Due</td>
+        <td className="val">{fmtDate(eq.calibrationDue)}</td>
+        <td className="lbl">Couplant</td>
+        <td className="val">{v(eq.couplant)}</td>
+        <td className="lbl">Basic Calibration Block</td>
+        <td className="val">{v(eq.basicCalibrationBlock)}</td>
+      </tr>
+    </tbody>
+  </table>
+);
 
-    {renderSignatures()}
-  </>,
-];
+const renderSearchTable = (rows: any[], title: string) => (
+  <table className="report-table mt-n1">
+    <tbody>
+      <tr>
+        <td colSpan={6} className="section-hdr">
+          {title}
+        </td>
+      </tr>
+      <tr>
+        <td className="col-hdr" style={{ width: "20%" }}>
+          Search Unit / Model
+        </td>
+        <td className="col-hdr" style={{ width: "12%" }}>
+          Angle
+        </td>
+        <td className="col-hdr" style={{ width: "18%" }}>
+          Sr. No.
+        </td>
+        <td className="col-hdr" style={{ width: "20%" }}>
+          Crystal Size
+        </td>
+        <td className="col-hdr" style={{ width: "16%" }}>
+          Wave Mode
+        </td>
+        <td className="col-hdr" style={{ width: "14%" }}>
+          Frequency
+        </td>
+      </tr>
+      {(rows.length > 0 ? rows : [{}]).map((u: any, i: any) => (
+        <tr key={i} style={{ height: "20px" }}>
+          <td>{v(u.model)}</td>
+          <td>{v(u.angle)}</td>
+          <td>{v(u.srNo)}</td>
+          <td>{v(u.crystalSize)}</td>
+          <td>{v(u.waveMode)}</td>
+          <td>{v(u.frequency)}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+);
 
-if (obsPage2.length > 0) {
-  pages.push(
-    <>
-      {renderObsTable(
-        obsPage2,
-        "6. OBSERVATIONS (Contd.)"
-      )}
+const renderTechniqueSection = () => (
+  <table className="report-table mt-n1">
+    <colgroup>
+      <col style={{ width: "22%" }} />
+      <col style={{ width: "28%" }} />
+      <col style={{ width: "22%" }} />
+      <col style={{ width: "28%" }} />
+    </colgroup>
+    <tbody>
+      <tr>
+        <td colSpan={4} className="section-hdr">
+          4. TECHNIQUE DETAILS
+        </td>
+      </tr>
+      <tr>
+        <td className="lbl">UT Method</td>
+        <td className="val">{v(td.utMethod)}</td>
+        <td className="lbl">Reference Calibration Block</td>
+        <td className="val">{v(td.referenceCalibrationBlock)}</td>
+      </tr>
+      <tr>
+        <td className="lbl">UT Calibration Method</td>
+        <td className="val">{v(td.utCalibrationMethod)}</td>
+        <td className="lbl">Scanning dB</td>
+        <td className="val">{v(td.scanningDb)}</td>
+      </tr>
+      <tr>
+        <td className="lbl">Scanning Sensitivity</td>
+        <td className="val" colSpan={3}>
+          {v(td.scanningSensitivity)}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+);
 
-      {renderSignatures()}
-    </>,
-  );
-}
+  // Dynamic pagination block layout engine
+  const PAGE_HEIGHT_LIMIT = 284; // mm (Adjusted from 288)
+  const HEADER_HEIGHT = 28; // mm
+  const FOOTER_HEIGHT = 22; // mm
+  const FOOTER_SAFE = 8; // mm (New: safe space for footer)
+  const SEARCH_HEADER_HEIGHT = 14; // mm (New: height for search table header)
+  const OBS_HEADER_HEIGHT = 12; // mm
+
+  const estimateObsRowHeight = (o: any): number => {
+    const baseHeight = 6.5; // mm for single-line row
+    const desc = o.jobDescription || "";
+    const interp = o.interpretation || "";
+    const evalText = o.evaluation || o.remark || o.result || "";
+    const maxLen = Math.max(desc.length, interp.length, evalText.length);
+    const lines = Math.max(1, Math.ceil(maxLen / 30));
+    return baseHeight + (lines - 1) * 4.5;
+  };
+
+  type ContentBlock =
+    | { type: "job"; height: number }
+    | { type: "equipment"; height: number }
+    | { type: "search-row"; item: any; height: number }
+    | { type: "technique"; height: number }
+    | { type: "calib"; height: number }
+    | { type: "obs-row"; item: any; height: number };
+
+  const blocks: ContentBlock[] = [];
+
+  blocks.push({
+    type: "job",
+    height: 52, // Estimated height for job details section
+  });
+
+  blocks.push({
+    type: "equipment",
+    height: 24, // Estimated height for equipment details section
+  });
+
+  units.forEach((u:any) => {
+    blocks.push({
+      type: "search-row",
+      item: u,
+      height: 8, // Adjusted height for search row
+    });
+  });
+
+  blocks.push({
+    type: "technique",
+    height: 16, // Estimated height for technique details section
+  });
+
+  blocks.push({
+    type: "calib",
+    height: 28, // Estimated height for calibration section
+  });
+
+  obs.forEach((o) => {
+    blocks.push({
+      type: "obs-row",
+      item: o,
+      height: estimateObsRowHeight(o),
+    });
+  });
+
+  // Removed obs-header block as per instructions
+  // blocks.push({
+  //   type: "obs-header",
+  //   height: 12,
+  // });
+
+  type PageDescriptor = {
+    isFirstPage: boolean;
+    pageBlocks: ContentBlock[];
+  };
+
+  const pages: PageDescriptor[] = [];
+  let currentBlockIndex = 0;
+
+  const NON_SPLIT_BLOCKS = [
+    "job",
+    "equipment",
+    "technique",
+    "calib",
+  ];
+
+  const SIGNATURES_HEIGHT = 48; // mm
+
+  while (currentBlockIndex < blocks.length) {
+    const isFirstPage = pages.length === 0;
+    // Signatures are rendered on every page, so reduce available height by signature height on all pages
+    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT - FOOTER_SAFE; // Added FOOTER_SAFE
+
+    const pageBlocks: ContentBlock[] = [];
+    let accumulatedHeight = 0;
+
+    let hasSearchTable = false;
+    let hasObsTable = false;
+
+    while (currentBlockIndex < blocks.length) {
+      const block = blocks[currentBlockIndex];
+      let blockHeight = block.height;
+
+      // Prevent non-split blocks from splitting
+      if (
+        NON_SPLIT_BLOCKS.includes(block.type) &&
+        accumulatedHeight + blockHeight > availableHeight &&
+        pageBlocks.length > 0 // Only break if there's already content on the page
+      ) {
+        break;
+      }
+
+      // Add table header height if starting search table on this page
+      if (block.type === "search-row" && !hasSearchTable) {
+        blockHeight += SEARCH_HEADER_HEIGHT; // Added search header height
+      }
+
+      // Add table header height if starting observations table on this page (re-added logic)
+      if (block.type === "obs-row" && !hasObsTable) { // hasObsTable is now local to page loop
+        blockHeight += OBS_HEADER_HEIGHT; // Added obs header height
+      }
+
+      if (accumulatedHeight + blockHeight <= availableHeight) {
+        pageBlocks.push(block);
+        accumulatedHeight += blockHeight;
+        // Set flags if a new table starts on this page
+        if (block.type === "search-row") {
+          hasSearchTable = true; // Set flag for search table
+        }
+        if (block.type === "obs-row") {
+          hasObsTable = true; // Set flag for obs table
+        }
+        currentBlockIndex++;
+      } else {
+        break;
+      }
+    }
+
+    if (pageBlocks.length === 0 && currentBlockIndex < blocks.length) {
+      pageBlocks.push(blocks[currentBlockIndex]);
+      currentBlockIndex++;
+    }
+
+    pages.push({
+      isFirstPage,
+      pageBlocks,
+    });
+  }
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
-
-      <div
-        className="no-print"
-        style={{
-          position: "fixed",
-          top: 12,
-          right: 16,
-          zIndex: 100,
-          display: "flex",
-          gap: 8,
-        }}
-      >
-        <button
-          onClick={() => setBwMode((b) => !b)}
-          style={{
-            padding: "7px 16px",
-            background: bwMode ? "#374151" : "#185FA5",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
-          }}
-        >
-          {bwMode ? "Color Mode" : "B&W Mode"}
-        </button>
-        <button
-          onClick={() => window.print()}
-          style={{
-            padding: "7px 16px",
-            background: "#16a34a",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
-          }}
-        >
-          Print
-        </button>
-      </div>
-
       {/* -- Report Content -- */}
       <div
         id="report-root"
@@ -710,17 +786,114 @@ if (obsPage2.length > 0) {
           padding: "16px",
         }}
       >
-        {pages.map((content, i) => (
-          <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
-            <div className="print-page-content">
-              {renderHeader()}
-              <div className="report-body">{content}</div>
+        <div
+          className="no-print"
+          style={{
+            position: "fixed",
+            top: 12,
+            right: 16,
+            zIndex: 100,
+            display: "flex",
+            gap: 8,
+          }}
+        >
+          <button
+            onClick={() => setBwMode((b) => !b)}
+            style={{
+              padding: "7px 16px",
+              background: bwMode ? "#374151" : "#185FA5",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            {bwMode ? "Color Mode" : "B&W Mode"}
+          </button>
+          <button
+            onClick={() => window.print()}
+            style={{
+              padding: "7px 16px",
+              background: "#16a34a",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            Print
+          </button>
+        </div>
+        {pages.map(({ isFirstPage, pageBlocks }, i) => {
+          const hasJob = pageBlocks.some((b) => b.type === "job");
+
+          const hasEquipment = pageBlocks.some(
+            (b) => b.type === "equipment"
+          );
+
+          const hasTechnique = pageBlocks.some(
+            (b) => b.type === "technique"
+          );
+
+          const hasCalib = pageBlocks.some(
+            (b) => b.type === "calib"
+          );
+
+          const searchRows = pageBlocks
+            .filter((b) => b.type === "search-row")
+            .map((b: any) => b.item);
+
+          const obsRows = pageBlocks
+            .filter((b) => b.type === "obs-row")
+            .map((b: any) => b.item);
+
+          const isSearchContd =
+            searchRows.length > 0 &&
+            searchRows[0] !== units[0];
+
+          // Re-added the wrapper as per instructions
+          return (
+            <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
+              <div className="print-page-content">
+                {renderHeader()}
+                <div className="report-body">
+                  {hasJob && renderJobSection()}
+
+                  {hasEquipment && renderEquipmentSection()}
+
+                  {searchRows.length > 0 &&
+                    renderSearchTable(
+                      searchRows,
+                      isSearchContd
+                        ? "3. SEARCH UNIT DETAILS (Contd.)"
+                        : "3. SEARCH UNIT DETAILS"
+                    )}
+
+                  {hasTechnique && renderTechniqueSection()}
+
+                  {hasCalib && calibSection}
+
+                  {obsRows.length > 0 &&
+                    renderObsTable(
+                      obsRows,
+                      obsRows[0] === obs[0]
+                        ? "6. OBSERVATIONS"
+                        : "6. OBSERVATIONS (Contd.)"
+                    )}
+
+                  {renderSignatures()}
+                </div>
+              </div>
+              <div className="print-page-foot">
+                <ReportFooter />
+              </div>
             </div>
-            <div className="print-page-foot">
-              <ReportFooter />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );

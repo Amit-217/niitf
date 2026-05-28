@@ -27,7 +27,7 @@ const PRINT_STYLES = `
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; }
     #report-root { background: #fff !important; padding: 0 !important; }
-    .print-page { min-height: 296mm; margin: 0 !important; box-shadow: none !important; break-after: page; page-break-after: always; }
+    .print-page { min-height: 296mm; height: 296mm; margin: 0 !important; box-shadow: none !important; break-after: page; page-break-after: always; }
     .print-page:last-child { break-after: auto; page-break-after: auto; }
     .report-body { overflow: visible !important; }
   }
@@ -41,15 +41,16 @@ const PRINT_STYLES = `
      last one. The same blocks are used on screen and in print. */
   .print-page {
     width: 210mm;
-    min-height: 297mm;
+    height: 297mm;
     background: #fff;
     box-sizing: border-box;
     padding: 0 5mm 5mm 5mm;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
   .print-page-content { flex: 1 1 auto; }
-  .print-page-foot { margin-top: 4px; }
+  .print-page-foot { margin-top: auto; }
   .rpt-header { padding: 2px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
   .logo-box { width: 160px; height: 100px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0px; transform: translateY(-4px); margin-top: 2px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
@@ -241,13 +242,90 @@ export const UTGReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
-  // Pagination Logic: Max 14 visible rows total for (SUD + Obs) on Page 1.
-  // Capacity is 13 because the obs table column-header row counts as 1 visible row.
-  const firstPageCapacity = 13;
-  const sudCount = sud.length;
-  const obsLimit = Math.max(0, firstPageCapacity - sudCount);
-  const obsPage1 = obs.slice(0, obsLimit);
-  const obsPage2 = obs.slice(obsLimit);
+  // Dynamic pagination block layout engine
+  const PAGE_HEIGHT_LIMIT = 288; // mm
+  const HEADER_HEIGHT = 28; // mm
+  const FOOTER_HEIGHT = 22; // mm
+  const FIXED_SECTIONS_HEIGHT = 115 + (sud.length * 6.5); // mm
+  const OBS_HEADER_HEIGHT = 12; // mm
+
+  const estimateObsRowHeight = (o: any) => {
+    const baseHeight = 6.5; // mm for single-line row
+    const itemName = o.itemName || "";
+    const thickness = o.measuredThickness || "";
+    const evalText = o.evaluation || o.remark || o.result || "";
+    const maxLen = Math.max(itemName.length, thickness.length, evalText.length);
+    const lines = Math.max(1, Math.ceil(maxLen / 35));
+    return baseHeight + (lines - 1) * 4.5;
+  };
+
+  type ContentBlock =
+    | { type: "obs-row"; item: any; height: number }
+    | { type: "signatures"; height: number };
+
+  const blocks: ContentBlock[] = [];
+  obs.forEach((o) => {
+    blocks.push({
+      type: "obs-row",
+      item: o,
+      height: estimateObsRowHeight(o),
+    });
+  });
+  blocks.push({
+    type: "signatures",
+    height: 48,
+  });
+
+  type PageDescriptor = {
+    isFirstPage: boolean;
+    pageBlocks: ContentBlock[];
+  };
+
+  const pages: PageDescriptor[] = [];
+  let currentBlockIndex = 0;
+
+  while (currentBlockIndex < blocks.length) {
+    const isFirstPage = pages.length === 0;
+    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT;
+    if (isFirstPage) {
+      availableHeight -= FIXED_SECTIONS_HEIGHT;
+    }
+
+    const pageBlocks: ContentBlock[] = [];
+    let accumulatedHeight = 0;
+    let hasObsTable = false;
+
+    while (currentBlockIndex < blocks.length) {
+      const block = blocks[currentBlockIndex];
+      let blockHeight = block.height;
+
+      // Add table header height if starting observations table on this page
+      if (block.type === "obs-row" && !hasObsTable) {
+        blockHeight += OBS_HEADER_HEIGHT;
+      }
+
+      if (accumulatedHeight + blockHeight <= availableHeight) {
+        pageBlocks.push(block);
+        accumulatedHeight += blockHeight;
+        if (block.type === "obs-row") {
+          hasObsTable = true;
+        }
+        currentBlockIndex++;
+      } else {
+        break;
+      }
+    }
+
+    if (pageBlocks.length === 0 && currentBlockIndex < blocks.length) {
+      pageBlocks.push(blocks[currentBlockIndex]);
+      currentBlockIndex++;
+    }
+
+    pages.push({
+      isFirstPage,
+      pageBlocks,
+    });
+  }
 
   const renderHeader = () => (
     <div className="rpt-header">
@@ -578,29 +656,7 @@ export const UTGReportPrintPage: React.FC = () => {
     </>
   );
 
-  // ── Paginate: fixed sections + first observation chunk on page 1; the rest
-  //    (with the signatures) flow onto the next page. The page-1 capacity is
-  //    shared between the Search Unit rows and the observation rows. Each page
-  //    is a self-contained A4 block with the footer pinned at its bottom. ──
-  const pages = [
-    <>
-      {fixedSections}
-      {(obsPage1.length > 0 || obs.length === 0) &&
-        renderObsTable(obsPage1, "5. OBSERVATIONS")}
-      <Signatures />
-    </>,
-  ];
-  if (obsPage2.length > 0) {
-    pages.push(
-      <>
-        {renderObsTable(
-          obsPage2,
-          obsPage1.length > 0 ? "5. OBSERVATIONS (Contd.)" : "5. OBSERVATIONS",
-        )}
-        <Signatures />
-      </>,
-    );
-  }
+  // pages are now computed dynamically by the pagination engine
 
   return (
     <>
@@ -654,17 +710,30 @@ export const UTGReportPrintPage: React.FC = () => {
         id="report-root"
         style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
       >
-        {pages.map((content, i) => (
-          <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
-            <div className="print-page-content">
-              {renderHeader()}
-              <div className="report-body">{content}</div>
+        {pages.map(({ isFirstPage, pageBlocks }, i) => {
+          const pageObs = pageBlocks
+            .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
+            .map((b) => b.item);
+          const hasObsTable = pageObs.length > 0;
+          const hasSignatures = pageBlocks.some((b) => b.type === "signatures");
+          const isFirstObs = pageObs[0] === obs[0];
+
+          return (
+            <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
+              <div className="print-page-content">
+                {renderHeader()}
+                <div className="report-body">
+                  {isFirstPage && fixedSections}
+                  {hasObsTable && renderObsTable(pageObs, isFirstObs ? "5. OBSERVATIONS" : "5. OBSERVATIONS (Contd.)")}
+                  {hasSignatures && <Signatures />}
+                </div>
+              </div>
+              <div className="print-page-foot">
+                <ReportFooter />
+              </div>
             </div>
-            <div className="print-page-foot">
-              <ReportFooter />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );

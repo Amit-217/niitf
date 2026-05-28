@@ -17,17 +17,18 @@ const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
 
-  @media screen {
-    body.autoprint-mode { background: #fff !important; }
-    body.autoprint-mode > #root > * { opacity: 0 !important; visibility: hidden !important; }
-    .print-page { margin: 0 auto 16px auto; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
-  }
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; }
     #report-root { background: #fff !important; padding: 0 !important; }
-    .print-page { min-height: 296mm; margin: 0 !important; box-shadow: none !important; break-after: page; page-break-after: always; }
+    .print-page {
+      height: 296mm;
+      margin: 0 !important;
+      box-shadow: none !important;
+      break-after: page;
+      page-break-after: always;
+    }
     .print-page:last-child { break-after: auto; page-break-after: auto; }
     .report-body { overflow: visible !important; }
   }
@@ -40,9 +41,18 @@ const PRINT_STYLES = `
      No position:fixed, so the footer can never be dropped by the print
      compositor and always sits at the bottom of every page, including the
      last one. The same blocks are used on screen and in print. */
-  .print-page { width: 210mm; min-height: 297mm; background: #fff; box-sizing: border-box; padding: 0 5mm 5mm 5mm; display: flex; flex-direction: column; }
+  .print-page {
+    width: 210mm;
+    height: 297mm;
+    background: #fff;
+    box-sizing: border-box;
+    padding: 0 5mm 5mm 5mm;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
   .print-page-content { flex: 1 1 auto; }
-  .print-page-foot { margin-top: 4px; }
+  .print-page-foot { margin-top: auto; }
 
   /* Unified Header & Footer Styles */
   .rpt-header { 
@@ -384,7 +394,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
     </div>
   );
 
-  const fixedSections = (
+  const renderJobDetailsSection = () => (
     <>
       <div className="rpt-title">Inspection Visit Report</div>
 
@@ -460,345 +470,395 @@ export const TPIIVRReportPrintPage: React.FC = () => {
           </tr>
         </tbody>
       </table>
-
-      {/* ── CLIENT & VENDOR DETAILS ── */}
-      <table className="report-table mt-n1">
-        <colgroup>
-          <col style={{ width: "50%" }} />
-          <col style={{ width: "50%" }} />
-        </colgroup>
-        <tbody>
-          <tr>
-            <td className="section-hdr">1. CLIENT DETAILS</td>
-            <td className="section-hdr">2. VENDOR DETAILS</td>
-          </tr>
-          <tr>
-            <td style={{ verticalAlign: "top", padding: 0 }}>
-              <table className="nested-table">
-                <colgroup>
-                  <col style={{ width: "30%" }} />
-                  <col style={{ width: "70%" }} />
-                </colgroup>
-                <tbody>
-                  <tr>
-                    <td className="lbl">Ref</td>
-                    <td className="val">{v(cd.ref)}</td>
-                  </tr>
-                  <tr>
-                    <td className="lbl">Contact</td>
-                    <td className="val">{v(cd.contact)}</td>
-                  </tr>
-                  <tr>
-                    <td className="lbl">Call Date</td>
-                    <td className="val">{fmtDate(cd.callDate)}</td>
-                  </tr>
-                  <tr>
-                    <td className="lbl">Inspection Att. Date</td>
-                    <td className="val">{fmtDate(cd.inspectionAttDt)}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-            <td
-              style={{
-                verticalAlign: "top",
-                padding: 0,
-                borderLeft: "1px solid #444",
-              }}
-            >
-              <table className="nested-table">
-                <colgroup>
-                  <col style={{ width: "36%" }} />
-                  <col style={{ width: "64%" }} />
-                </colgroup>
-                <tbody>
-                  <tr>
-                    <td className="lbl">Vendor</td>
-                    <td className="val">{v(vd.vendor)}</td>
-                  </tr>
-                  <tr>
-                    <td className="lbl">Sub Vendor</td>
-                    <td className="val">{v(vd.subVendor)}</td>
-                  </tr>
-                  <tr>
-                    <td className="lbl">Contact</td>
-                    <td className="val">{v(vd.contact)}</td>
-                  </tr>
-                  <tr>
-                    <td className="lbl">Phone</td>
-                    <td className="val">{v(vd.phone)}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td
-              colSpan={2}
-              className="lbl"
-              style={{
-                fontWeight: "normal",
-                whiteSpace: "normal",
-              }}
-            >
-              <strong>Extra Visit / Date:</strong> {v(ev.date)}
-              &nbsp;&nbsp; <strong>Comment:</strong> {v(ev.comment)}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      {/* ── INSPECTION ITEMS ── */}
-      <table className="items-table mt-n1">
-        <thead>
-          <tr>
-            <td colSpan={9} className="section-hdr">
-              3. INSPECTION ITEMS
-            </td>
-          </tr>
-          <tr>
-            <td className="col-hdr" style={{ width: "8%" }} rowSpan={2}>
-              PO Line No.
-            </td>
-            <td
-              className="col-hdr"
-              style={{ width: "24%", textAlign: "left" }}
-              rowSpan={2}
-            >
-              Description
-            </td>
-            <td
-              className="col-hdr"
-              style={{ width: "16%", textAlign: "left" }}
-              rowSpan={2}
-            >
-              Drg No. / Heat No.
-            </td>
-            <td
-              className="col-hdr"
-              colSpan={5}
-              style={{ textAlign: "center" }}
-            >
-              Quantity in Nos.
-            </td>
-            <td className="col-hdr" style={{ width: "14%" }} rowSpan={2}>
-              Insp. Type
-            </td>
-          </tr>
-          <tr>
-            <td className="col-hdr" style={{ width: "8%" }}>
-              Offered
-            </td>
-            <td className="col-hdr" style={{ width: "8%" }}>
-              Inspected
-            </td>
-            <td className="col-hdr" style={{ width: "8%" }}>
-              Accepted
-            </td>
-            <td className="col-hdr" style={{ width: "7%" }}>
-              Hold
-            </td>
-            <td className="col-hdr" style={{ width: "7%" }}>
-              Reject
-            </td>
-          </tr>
-        </thead>
-        <tbody>
-          {items.length === 0 ? (
-            <tr>
-              <td
-                colSpan={9}
-                style={{
-                  textAlign: "center",
-                  padding: "5px",
-                  color: "#999",
-                  fontSize: "11px",
-                }}
-              >
-                No items recorded.
-              </td>
-            </tr>
-          ) : (
-            items.map((item: any, i: number) => (
-              <tr key={i}>
-                <td>{v(item.poLineNo)}</td>
-                <td className="text-left" style={{ textAlign: "left" }}>
-                  {v(item.description)}
-                </td>
-                <td className="text-left" style={{ textAlign: "left" }}>
-                  {v(item.drgOrHeatNo)}
-                </td>
-                <td>{v(item.qtyOffered)}</td>
-                <td>{v(item.qtyInspected)}</td>
-                <td>{v(item.qtyAccepted)}</td>
-                <td>{v(item.qtyHold)}</td>
-                <td>{v(item.qtyReject)}</td>
-                <td>{v(item.inspectionType)}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-
-      {/* ── INSPECTION ACTIVITIES ── */}
-      <table
-        className="report-table mt-n1"
-        style={{ breakInside: "auto", pageBreakInside: "auto" }}
-      >
-        <thead>
-          <tr>
-            <td className="section-hdr">4. INSPECTION ACTIVITIES</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td className="activities-box">
-              {v(report.inspectionActivities) || " "}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      {/* ── REFERENCE DOCUMENTS ── */}
-      <table
-        className="report-table mt-n1"
-        style={{ breakInside: "auto", pageBreakInside: "auto" }}
-      >
-        <colgroup>
-          <col style={{ width: "30%" }} />
-          <col style={{ width: "50%" }} />
-          <col style={{ width: "20%" }} />
-        </colgroup>
-        <thead>
-          <tr>
-            <td colSpan={3} className="section-hdr">
-              5. REFERENCE DOCUMENTS FOR INSPECTION
-            </td>
-          </tr>
-          <tr>
-            <td className="col-hdr">Document</td>
-            <td className="col-hdr">Reference Number</td>
-            <td className="col-hdr">Rev. No.</td>
-          </tr>
-        </thead>
-        <tbody>
-          {refs.length === 0 ? (
-            <tr>
-              <td
-                colSpan={3}
-                style={{
-                  textAlign: "center",
-                  padding: "4px",
-                  color: "#999",
-                  fontSize: "11px",
-                }}
-              >
-                No reference documents recorded.
-              </td>
-            </tr>
-          ) : (
-            refs.map((doc: any, i: number) => (
-              <tr key={i}>
-                <td className="lbl" style={{ fontWeight: 500 }}>
-                  {v(doc.document)}
-                </td>
-                <td className="val">{v(doc.referenceNumber)}</td>
-                <td className="val">{v(doc.revNo)}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-
-      {/* ── CALIBRATION STATUS ── */}
-      <table
-        className="report-table mt-n1"
-        style={{ breakInside: "auto", pageBreakInside: "auto" }}
-      >
-        <colgroup>
-          <col style={{ width: "28%" }} />
-          <col style={{ width: "18%" }} />
-          <col style={{ width: "18%" }} />
-          <col style={{ width: "18%" }} />
-          <col style={{ width: "18%" }} />
-        </colgroup>
-        <thead>
-          <tr>
-            <td colSpan={5} className="section-hdr">
-              6. CALIBRATION STATUS OF INSTRUMENTS
-            </td>
-          </tr>
-          <tr>
-            <td className="col-hdr">Equipment / Instrument</td>
-            <td className="col-hdr">I.D. Number</td>
-            <td className="col-hdr">Calibration Date</td>
-            <td className="col-hdr">Due Date</td>
-            <td className="col-hdr">NABL Certified</td>
-          </tr>
-        </thead>
-        <tbody>
-          {calib.length === 0 ? (
-            <tr>
-              <td
-                colSpan={5}
-                style={{
-                  textAlign: "center",
-                  padding: "4px",
-                  color: "#999",
-                  fontSize: "11px",
-                }}
-              >
-                No calibration records.
-              </td>
-            </tr>
-          ) : (
-            calib.map((c: any, i: number) => (
-              <tr key={i}>
-                <td className="val">{v(c.equipment)}</td>
-                <td style={{ fontSize: "11px" }}>{v(c.idNumber)}</td>
-                <td style={{ fontSize: "11px" }}>
-                  {fmtDate(c.calibrationDate)}
-                </td>
-                <td style={{ fontSize: "11px" }}>{fmtDate(c.dueDate)}</td>
-                <td style={{ fontSize: "11px" }}>{v(c.nablCertified)}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-
-      {/* ── CONCLUSION ── */}
-      <table
-        className="report-table mt-n1"
-        style={{
-          breakInside: "avoid",
-          pageBreakInside: "avoid",
-        }}
-      >
-        <tbody>
-          <tr>
-            <td className="section-hdr">7. CONCLUSION</td>
-          </tr>
-          <tr>
-            <td className="val" style={{ padding: "8px", minHeight: "40px" }}>
-              {v(report.conclusion) || "-"}
-            </td>
-          </tr>
-        </tbody>
-      </table>
     </>
   );
 
-  // --- All content fits on a single self-contained A4 block. The signature
-  //     block appears once, at the end of the last (only) page's content. Each
-  //     page renders the header at the top and the ReportFooter in normal flow
-  //     at the bottom. ---
-  const pages = [
-    <>
-      {fixedSections}
-      {renderSignatures()}
-    </>,
-  ];
+  const renderClientVendorSection = () => (
+    <table className="report-table mt-n1">
+      <colgroup>
+        <col style={{ width: "50%" }} />
+        <col style={{ width: "50%" }} />
+      </colgroup>
+      <tbody>
+        <tr>
+          <td className="section-hdr">1. CLIENT DETAILS</td>
+          <td className="section-hdr">2. VENDOR DETAILS</td>
+        </tr>
+        <tr>
+          <td style={{ verticalAlign: "top", padding: 0 }}>
+            <table className="nested-table">
+              <colgroup>
+                <col style={{ width: "30%" }} />
+                <col style={{ width: "70%" }} />
+              </colgroup>
+              <tbody>
+                <tr>
+                  <td className="lbl">Ref</td>
+                  <td className="val">{v(cd.ref)}</td>
+                </tr>
+                <tr>
+                  <td className="lbl">Contact</td>
+                  <td className="val">{v(cd.contact)}</td>
+                </tr>
+                <tr>
+                  <td className="lbl">Call Date</td>
+                  <td className="val">{fmtDate(cd.callDate)}</td>
+                </tr>
+                <tr>
+                  <td className="lbl">Inspection Att. Date</td>
+                  <td className="val">{fmtDate(cd.inspectionAttDt)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+          <td
+            style={{
+              verticalAlign: "top",
+              padding: 0,
+              borderLeft: "1px solid #444",
+            }}
+          >
+            <table className="nested-table">
+              <colgroup>
+                <col style={{ width: "36%" }} />
+                <col style={{ width: "64%" }} />
+              </colgroup>
+              <tbody>
+                <tr>
+                  <td className="lbl">Vendor</td>
+                  <td className="val">{v(vd.vendor)}</td>
+                </tr>
+                <tr>
+                  <td className="lbl">Sub Vendor</td>
+                  <td className="val">{v(vd.subVendor)}</td>
+                </tr>
+                <tr>
+                  <td className="lbl">Contact</td>
+                  <td className="val">{v(vd.contact)}</td>
+                </tr>
+                <tr>
+                  <td className="lbl">Phone</td>
+                  <td className="val">{v(vd.phone)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td
+            colSpan={2}
+            className="lbl"
+            style={{
+              fontWeight: "normal",
+              whiteSpace: "normal",
+            }}
+          >
+            <strong>Extra Visit / Date:</strong> {v(ev.date)}
+            &nbsp;&nbsp; <strong>Comment:</strong> {v(ev.comment)}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+
+  const renderItemsTableSection = (pageItems: any[], isFirstChunk: boolean) => (
+    <table className="items-table mt-n1">
+      <thead>
+        <tr>
+          <td colSpan={9} className="section-hdr">
+            {isFirstChunk ? "3. INSPECTION ITEMS" : "3. INSPECTION ITEMS (Contd.)"}
+          </td>
+        </tr>
+        <tr>
+          <td className="col-hdr" style={{ width: "8%" }} rowSpan={2}>
+            PO Line No.
+          </td>
+          <td className="col-hdr" style={{ width: "24%", textAlign: "left" }} rowSpan={2}>
+            Description
+          </td>
+          <td className="col-hdr" style={{ width: "16%", textAlign: "left" }} rowSpan={2}>
+            Drg No. / Heat No.
+          </td>
+          <td className="col-hdr" colSpan={5} style={{ textAlign: "center" }}>
+            Quantity in Nos.
+          </td>
+          <td className="col-hdr" style={{ width: "14%" }} rowSpan={2}>
+            Insp. Type
+          </td>
+        </tr>
+        <tr>
+          <td className="col-hdr" style={{ width: "8%" }}>Offered</td>
+          <td className="col-hdr" style={{ width: "8%" }}>Inspected</td>
+          <td className="col-hdr" style={{ width: "8%" }}>Accepted</td>
+          <td className="col-hdr" style={{ width: "7%" }}>Hold</td>
+          <td className="col-hdr" style={{ width: "7%" }}>Reject</td>
+        </tr>
+      </thead>
+      <tbody>
+        {pageItems.map((item: any, i: number) => (
+          <tr key={i}>
+            <td>{v(item.poLineNo)}</td>
+            <td className="text-left" style={{ textAlign: "left" }}>{v(item.description)}</td>
+            <td className="text-left" style={{ textAlign: "left" }}>{v(item.drgOrHeatNo)}</td>
+            <td>{v(item.qtyOffered)}</td>
+            <td>{v(item.qtyInspected)}</td>
+            <td>{v(item.qtyAccepted)}</td>
+            <td>{v(item.qtyHold)}</td>
+            <td>{v(item.qtyReject)}</td>
+            <td>{v(item.inspectionType)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
+  const renderActivitiesSection = (text: string, isFirstChunk: boolean) => (
+    <table className="report-table mt-n1">
+      <thead>
+        <tr>
+          <td className="section-hdr">
+            {isFirstChunk ? "4. INSPECTION ACTIVITIES" : "4. INSPECTION ACTIVITIES (Contd.)"}
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td className="activities-box">{v(text) || " "}</td>
+        </tr>
+      </tbody>
+    </table>
+  );
+
+  const renderRefsSection = (pageRefs: any[], isFirstChunk: boolean) => (
+    <table className="report-table mt-n1">
+      <colgroup>
+        <col style={{ width: "30%" }} />
+        <col style={{ width: "50%" }} />
+        <col style={{ width: "20%" }} />
+      </colgroup>
+      <thead>
+        <tr>
+          <td colSpan={3} className="section-hdr">
+            {isFirstChunk ? "5. REFERENCE DOCUMENTS FOR INSPECTION" : "5. REFERENCE DOCUMENTS FOR INSPECTION (Contd.)"}
+          </td>
+        </tr>
+        <tr>
+          <td className="col-hdr">Document</td>
+          <td className="col-hdr">Reference Number</td>
+          <td className="col-hdr">Rev. No.</td>
+        </tr>
+      </thead>
+      <tbody>
+        {pageRefs.map((doc: any, i: number) => (
+          <tr key={i}>
+            <td className="lbl" style={{ fontWeight: 500 }}>{v(doc.document)}</td>
+            <td className="val">{v(doc.referenceNumber)}</td>
+            <td className="val">{v(doc.revNo)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
+  const renderCalibSection = (pageCalib: any[], isFirstChunk: boolean) => (
+    <table className="report-table mt-n1">
+      <colgroup>
+        <col style={{ width: "28%" }} />
+        <col style={{ width: "18%" }} />
+        <col style={{ width: "18%" }} />
+        <col style={{ width: "18%" }} />
+        <col style={{ width: "18%" }} />
+      </colgroup>
+      <thead>
+        <tr>
+          <td colSpan={5} className="section-hdr">
+            {isFirstChunk ? "6. CALIBRATION STATUS OF INSTRUMENTS" : "6. CALIBRATION STATUS OF INSTRUMENTS (Contd.)"}
+          </td>
+        </tr>
+        <tr>
+          <td className="col-hdr">Equipment / Instrument</td>
+          <td className="col-hdr">I.D. Number</td>
+          <td className="col-hdr">Calibration Date</td>
+          <td className="col-hdr">Due Date</td>
+          <td className="col-hdr">NABL Certified</td>
+        </tr>
+      </thead>
+      <tbody>
+        {pageCalib.map((c: any, i: number) => (
+          <tr key={i}>
+            <td className="val">{v(c.equipment)}</td>
+            <td style={{ fontSize: "11px" }}>{v(c.idNumber)}</td>
+            <td style={{ fontSize: "11px" }}>{fmtDate(c.calibrationDate)}</td>
+            <td style={{ fontSize: "11px" }}>{fmtDate(c.dueDate)}</td>
+            <td style={{ fontSize: "11px" }}>{v(c.nablCertified)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
+  const renderConclusionSection = (text: string, isFirstChunk: boolean) => (
+    <table className="report-table mt-n1">
+      <tbody>
+        <tr>
+          <td className="section-hdr">
+            {isFirstChunk ? "7. CONCLUSION" : "7. CONCLUSION (Contd.)"}
+          </td>
+        </tr>
+        <tr>
+          <td className="val" style={{ padding: "8px", minHeight: "40px" }}>
+            {v(text) || "-"}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+
+  // Dynamic pagination block layout engine
+  const PAGE_HEIGHT_LIMIT = 288; // mm
+  const HEADER_HEIGHT = 28; // mm
+  const FOOTER_HEIGHT = 22; // mm
+  const FIXED_SECTIONS_HEIGHT = 42; // mm (Title + Job details)
+
+  const estimateItemRowHeight = (item: any) => {
+    const baseHeight = 6.5; // mm
+    const desc = item.description || "";
+    const drg = item.drgOrHeatNo || "";
+    const maxLen = Math.max(desc.length, drg.length);
+    const lines = Math.max(1, Math.ceil(maxLen / 30));
+    return baseHeight + (lines - 1) * 4.5;
+  };
+
+  const estimateTextHeight = (text: string) => {
+    const baseHeight = 12; // mm
+    const lines = Math.max(1, Math.ceil((text || "").length / 90));
+    return baseHeight + lines * 4.5;
+  };
+
+  type ContentBlock =
+    | { type: "client-vendor"; height: number }
+    | { type: "item-row"; item: any; height: number }
+    | { type: "activities"; text: string; height: number }
+    | { type: "ref-row"; item: any; height: number }
+    | { type: "calib-row"; item: any; height: number }
+    | { type: "conclusion"; text: string; height: number };
+
+  const blocks: ContentBlock[] = [];
+  blocks.push({
+    type: "client-vendor",
+    height: 45,
+  });
+
+  items.forEach((item: any) => {
+    blocks.push({
+      type: "item-row",
+      item,
+      height: estimateItemRowHeight(item),
+    });
+  });
+
+  if (report.inspectionActivities) {
+    blocks.push({
+      type: "activities",
+      text: report.inspectionActivities,
+      height: estimateTextHeight(report.inspectionActivities),
+    });
+  }
+
+  refs.forEach((doc: any) => {
+    blocks.push({
+      type: "ref-row",
+      item: doc,
+      height: 6.5,
+    });
+  });
+
+  calib.forEach((c: any) => {
+    blocks.push({
+      type: "calib-row",
+      item: c,
+      height: 6.5,
+    });
+  });
+
+  if (report.conclusion) {
+    blocks.push({
+      type: "conclusion",
+      text: report.conclusion,
+      height: estimateTextHeight(report.conclusion),
+    });
+  }
+
+  type PageDescriptor = {
+    isFirstPage: boolean;
+    pageBlocks: ContentBlock[];
+  };
+
+  const pages: PageDescriptor[] = [];
+  let currentBlockIndex = 0;
+
+  const SIGNATURES_HEIGHT = 42; // mm
+
+  while (currentBlockIndex < blocks.length) {
+    const isFirstPage = pages.length === 0;
+    // Signatures are rendered on every page, so reduce available height by signature height on all pages
+    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT;
+    if (isFirstPage) {
+      availableHeight -= FIXED_SECTIONS_HEIGHT;
+    }
+
+    const pageBlocks: ContentBlock[] = [];
+    let accumulatedHeight = 0;
+    let hasItemsHeader = false;
+    let hasActivitiesHeader = false;
+    let hasRefsHeader = false;
+    let hasCalibHeader = false;
+    let hasConclusionHeader = false;
+
+    while (currentBlockIndex < blocks.length) {
+      const block = blocks[currentBlockIndex];
+      let blockHeight = block.height;
+
+      if (block.type === "item-row" && !hasItemsHeader) {
+        blockHeight += 18;
+      }
+      if (block.type === "activities" && !hasActivitiesHeader) {
+        blockHeight += 8;
+      }
+      if (block.type === "ref-row" && !hasRefsHeader) {
+        blockHeight += 12;
+      }
+      if (block.type === "calib-row" && !hasCalibHeader) {
+        blockHeight += 12;
+      }
+      if (block.type === "conclusion" && !hasConclusionHeader) {
+        blockHeight += 8;
+      }
+
+      if (accumulatedHeight + blockHeight <= availableHeight) {
+        pageBlocks.push(block);
+        accumulatedHeight += blockHeight;
+        if (block.type === "item-row") hasItemsHeader = true;
+        if (block.type === "activities") hasActivitiesHeader = true;
+        if (block.type === "ref-row") hasRefsHeader = true;
+        if (block.type === "calib-row") hasCalibHeader = true;
+        if (block.type === "conclusion") hasConclusionHeader = true;
+        currentBlockIndex++;
+      } else {
+        break;
+      }
+    }
+
+    if (pageBlocks.length === 0 && currentBlockIndex < blocks.length) {
+      pageBlocks.push(blocks[currentBlockIndex]);
+      currentBlockIndex++;
+    }
+
+    pages.push({
+      isFirstPage,
+      pageBlocks,
+    });
+  }
 
   return (
     <>
@@ -852,17 +912,49 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         id="report-root"
         style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
       >
-        {pages.map((content, i) => (
-          <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
-            <div className="print-page-content">
-              {renderHeader()}
-              <div className="report-body">{content}</div>
+        {pages.map(({ isFirstPage, pageBlocks }, i) => {
+          const showClientVendor = pageBlocks.some((b) => b.type === "client-vendor");
+          const pageItems = pageBlocks
+            .filter((b): b is Extract<ContentBlock, { type: "item-row" }> => b.type === "item-row")
+            .map((b) => b.item);
+          const pageActivities = pageBlocks
+            .filter((b): b is Extract<ContentBlock, { type: "activities" }> => b.type === "activities")
+            .map((b) => b.text);
+          const pageRefs = pageBlocks
+            .filter((b): b is Extract<ContentBlock, { type: "ref-row" }> => b.type === "ref-row")
+            .map((b) => b.item);
+          const pageCalib = pageBlocks
+            .filter((b): b is Extract<ContentBlock, { type: "calib-row" }> => b.type === "calib-row")
+            .map((b) => b.item);
+          const pageConclusion = pageBlocks
+            .filter((b): b is Extract<ContentBlock, { type: "conclusion" }> => b.type === "conclusion")
+            .map((b) => b.text);
+
+          const isFirstItem = pageItems[0] === items[0];
+          const isFirstRefs = pageRefs[0] === refs[0];
+          const isFirstCalib = pageCalib[0] === calib[0];
+
+          return (
+            <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
+              <div className="print-page-content">
+                {renderHeader()}
+                <div className="report-body">
+                  {isFirstPage && renderJobDetailsSection()}
+                  {showClientVendor && renderClientVendorSection()}
+                  {pageItems.length > 0 && renderItemsTableSection(pageItems, isFirstItem)}
+                  {pageActivities.length > 0 && renderActivitiesSection(pageActivities[0], true)}
+                  {pageRefs.length > 0 && renderRefsSection(pageRefs, isFirstRefs)}
+                  {pageCalib.length > 0 && renderCalibSection(pageCalib, isFirstCalib)}
+                  {pageConclusion.length > 0 && renderConclusionSection(pageConclusion[0], true)}
+                  {renderSignatures()}
+                </div>
+              </div>
+              <div className="print-page-foot">
+                <ReportFooter />
+              </div>
             </div>
-            <div className="print-page-foot">
-              <ReportFooter />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );

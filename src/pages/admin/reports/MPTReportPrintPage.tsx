@@ -31,7 +31,7 @@ const PRINT_STYLES = `
     body { margin: 0; background: #fff; }
     #report-root { background: #fff !important; padding: 0 !important; }
     .print-page {
-      min-height: 296mm;
+      height: 296mm;
       margin: 0 !important;
       box-shadow: none !important;
       break-after: page;
@@ -50,15 +50,16 @@ const PRINT_STYLES = `
      last one. The same blocks are used on screen and in print. */
   .print-page {
     width: 210mm;
-    min-height: 297mm;
+    height: 297mm;
     background: #fff;
     box-sizing: border-box;
     padding: 0 5mm 5mm 5mm;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
   .print-page-content { flex: 1 1 auto; }
-  .print-page-foot { margin-top: 4px; }
+  .print-page-foot { margin-top: auto; }
 
   /* Unified Header & Footer Styles */
   .rpt-header { 
@@ -715,27 +716,149 @@ export const MPTReportPrintPage = () => {
     </>
   );
 
-  // --- Paginate: fixed sections + first 5 observations on page 1; the rest
-  //     (with the signatures) flow onto subsequent pages. Each page is a
-  //     self-contained A4 block with the footer pinned at its bottom. ---
-  const obsPage1 = obs.slice(0, 5);
-  const obsPage2 = obs.slice(5);
+  // Dynamic pagination block layout engine
+const PAGE_HEIGHT_LIMIT = 286; // mm
+const HEADER_HEIGHT = 28; // mm
+const FOOTER_HEIGHT = 22; // mm
+const FIXED_SECTIONS_HEIGHT = 135; // mm
+const OBS_HEADER_HEIGHT = 12; // mm
+const SIGNATURES_HEIGHT = 38; // mm
 
-  const pages = [
-    <>
-      {fixedSections}
-      {renderObsTable(obsPage1, "5. OBSERVATIONS")}
-      {renderSignatures()}
-    </>,
-  ];
-  if (obsPage2.length > 0) {
-    pages.push(
-      <>
-        {renderObsTable(obsPage2, "5. OBSERVATIONS (Contd.)")}
-        {renderSignatures()}
-      </>,
+// visually around 5 normal rows on first page
+const FIRST_PAGE_OBS_HEIGHT_LIMIT = 38;
+
+// hard safety cap
+const MAX_FIRST_PAGE_OBS = 5;
+
+const estimateObsRowHeight = (o: any) => {
+  const baseHeight = 6.5;
+
+  const desc = o.jobDescription || "";
+  const interp = o.interpretation || "";
+  const evalText = o.evaluation || o.result || o.remark || "";
+
+  // estimate by longest column
+  const maxLen = Math.max(
+    desc.length,
+    interp.length,
+    evalText.length
+  );
+
+  // approximate wrapped lines
+  const lines = Math.max(1, Math.ceil(maxLen / 30));
+
+  return baseHeight + (lines - 1) * 4.5;
+};
+
+type ContentBlock =
+  | {
+      type: "obs-row";
+      item: any;
+      height: number;
+    };
+
+const blocks: ContentBlock[] = [];
+
+obs.forEach((o) => {
+  blocks.push({
+    type: "obs-row",
+    item: o,
+    height: estimateObsRowHeight(o),
+  });
+});
+
+type PageDescriptor = {
+  isFirstPage: boolean;
+  pageBlocks: ContentBlock[];
+};
+
+const pages: PageDescriptor[] = [];
+
+let currentBlockIndex = 0;
+
+while (currentBlockIndex < blocks.length) {
+  const isFirstPage = pages.length === 0;
+
+  // base available area
+  let availableHeight =
+    PAGE_HEIGHT_LIMIT -
+    HEADER_HEIGHT -
+    FOOTER_HEIGHT -
+    SIGNATURES_HEIGHT;
+
+  // first page fixed sections
+  if (isFirstPage) {
+    availableHeight -= FIXED_SECTIONS_HEIGHT;
+
+    // keep footer breathing space
+    availableHeight -= 8;
+
+    // visually max around 5 normal rows
+    availableHeight = Math.min(
+      availableHeight,
+      FIRST_PAGE_OBS_HEIGHT_LIMIT
     );
   }
+
+  const pageBlocks: ContentBlock[] = [];
+
+  let accumulatedHeight = 0;
+  let hasObsTable = false;
+
+  while (currentBlockIndex < blocks.length) {
+    // hard row limit for first page
+    if (
+      isFirstPage &&
+      pageBlocks.length >= MAX_FIRST_PAGE_OBS
+    ) {
+      break;
+    }
+
+    const block = blocks[currentBlockIndex];
+
+    let blockHeight = block.height;
+
+    // add table header once
+    if (
+      block.type === "obs-row" &&
+      !hasObsTable
+    ) {
+      blockHeight += OBS_HEADER_HEIGHT;
+    }
+
+    // move to next page if height exceeds
+    if (
+      accumulatedHeight + blockHeight >
+      availableHeight
+    ) {
+      break;
+    }
+
+    pageBlocks.push(block);
+
+    accumulatedHeight += blockHeight;
+
+    if (block.type === "obs-row") {
+      hasObsTable = true;
+    }
+
+    currentBlockIndex++;
+  }
+
+  // safety fallback for giant row
+  if (
+    pageBlocks.length === 0 &&
+    currentBlockIndex < blocks.length
+  ) {
+    pageBlocks.push(blocks[currentBlockIndex]);
+    currentBlockIndex++;
+  }
+
+  pages.push({
+    isFirstPage,
+    pageBlocks,
+  });
+}
 
   return (
     <>
@@ -788,17 +911,28 @@ export const MPTReportPrintPage = () => {
         id="report-root"
         style={{ background: "#62676e", minHeight: "100vh", padding: "16px" }}
       >
-        {pages.map((content, i) => (
-          <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
-            <div className="print-page-content">
-              {renderHeader()}
-              <div className="report-body">{content}</div>
+        {pages.map(({ isFirstPage, pageBlocks }, i) => {
+          const pageObs = pageBlocks
+            .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
+            .map((b) => b.item);
+          const hasObsTable = pageObs.length > 0;
+
+          return (
+            <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
+              <div className="print-page-content">
+                {renderHeader()}
+                <div className="report-body">
+                  {isFirstPage && fixedSections}
+                  {hasObsTable && renderObsTable(pageObs, isFirstPage ? "5. OBSERVATIONS" : "5. OBSERVATIONS (Contd.)")}
+                  {renderSignatures()}
+                </div>
+              </div>
+              <div className="print-page-foot">
+                <ReportFooter />
+              </div>
             </div>
-            <div className="print-page-foot">
-              <ReportFooter />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );

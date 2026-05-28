@@ -27,16 +27,16 @@ const PRINT_STYLES = `
     .no-print { display: none !important; }
     body { margin: 0; background: #fff; }
     #report-root { background: #fff !important; padding: 0 !important; }
-    .print-page { min-height: 296mm; margin: 0 !important; box-shadow: none !important; break-after: page; page-break-after: always; }
+    .print-page { min-height: 296mm; height: 296mm; margin: 0 !important; box-shadow: none !important; break-after: page; page-break-after: always; }
     .print-page:last-child { break-after: auto; page-break-after: auto; }
     .report-body { overflow: visible !important; }
   }
 
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .print-page { width: 210mm; min-height: 297mm; background: #fff; box-sizing: border-box; padding: 0 5mm 5mm 5mm; display: flex; flex-direction: column; }
+  .print-page { width: 210mm; height: 297mm; background: #fff; box-sizing: border-box; padding: 0 5mm 5mm 5mm; display: flex; flex-direction: column; overflow: hidden; }
   .print-page-content { flex: 1 1 auto; }
-  .print-page-foot { margin-top: 4px; }
+  .print-page-foot { margin-top: auto; }
   .rpt-header { padding: 2px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
   .logo-box { width: 160px; height: 100px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0px; transform: translateY(-4px); margin-top: 2px; }
   .logo-box img { width: 100%; height: 100%; object-fit: contain; }
@@ -59,7 +59,7 @@ const PRINT_STYLES = `
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
   .bw .calib-table th { background: #fff !important; color: #000 !important; }
   .bw .calib-table td:first-child { background: #fff !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1px solid #000 !important; border-top: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1px solid #000 !important; border-top: none !important; border-bottom: none !important; border-radius: 0 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
@@ -72,10 +72,10 @@ const PRINT_STYLES = `
   .bw .sign-table td { border-color: #000 !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
-  .bw .report-body { color: #000 !important; border-top: 1px solid #000 !important; border-left: none !important; border-right: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
-  .bw .report-footer-wrap { border: 1px solid #000 !important; border-top: none !important; border-radius: 0 0 6px 6px !important; }
+  .bw .report-body { color: #000 !important; border-top: 1px solid #000 !important; border-left: none !important; border-right: none !important; border-bottom: none !important; border-radius: 0 !important; }
+  .bw .report-footer-wrap { border: 1px solid #000 !important; border-top: none !important; border-radius: 0 !important; }
 
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #000; border-top: none; border-bottom: none; border-radius: 6px 6px 0 0; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #000; border-top: none; border-bottom: none; border-radius: 0; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 4px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
   .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #000; }
   .report-table td, .report-table th { border: 1px solid #000; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 12px; }
@@ -87,8 +87,8 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border-top: 1px solid #000; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #000; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
+  .report-body { border-top: 1px solid #000; border-left: none; border-right: none; border-bottom: none; border-radius: 0; overflow: hidden; }
+  .report-footer-wrap { border: 1px solid #000; border-top: none; border-radius: 0; overflow: hidden; margin-top: -1px; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
@@ -564,16 +564,21 @@ export const VSSCUTReportPrintPage: React.FC = () => {
             </td>
           </tr>
           <tr>
-            <td className="val">
-              Skip: <strong>{v(npc.skip)}</strong>
-            </td>
-            <td className="val">
-              BP – %FSH: <strong>{v(npc.bp)}</strong>
-            </td>
-            <td className="val">
-              DAC dB: <strong>{v(npc.dacDb)}</strong>
-            </td>
-          </tr>
+  <td className="val">
+    Skip:{" "}
+    <strong>
+      {v(npc.skip)} BP – {v(npc.bp)}
+    </strong>
+  </td>
+
+  <td className="val">
+    DAC dB = <strong>{v(npc.dacDb)}</strong>
+  </td>
+
+  <td className="val">
+    Scanning dB = <strong>{v(npc.scanningDb)}</strong>
+  </td>
+</tr>
         </tbody>
       </table>
     </>
