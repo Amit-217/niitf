@@ -117,7 +117,7 @@ interface InspRow {
 
 const emptyInspector = (): InspRow => ({
   name: "",
-  qualification: "UTG NDE Level II",
+  qualification: "UT NDE Level II",
   designation: "",
   signature: "",
   idNo: "",
@@ -153,8 +153,6 @@ export const UTGReportFormPage: React.FC = () => {
   const [jobRefStdOther, setJobRefStdOther] = useState("");
   const [jobInspectionTime, setJobInspectionTime] = useState("");
   const [jobAcceptanceCriteria, setJobAcceptanceCriteria] = useState("");
-  const [jobAcceptanceCriteriaOther, setJobAcceptanceCriteriaOther] =
-    useState("");
   const [jobMaterial, setJobMaterial] = useState("");
   const [jobStage, setJobStage] = useState("");
   const [jobStageOther, setJobStageOther] = useState("");
@@ -196,7 +194,7 @@ export const UTGReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   // ── Examined By ──
@@ -292,14 +290,7 @@ export const UTGReportFormPage: React.FC = () => {
         setJobRefStd(refStd);
         setJobRefStdOther(refStdO);
         setJobInspectionTime(jd.inspectionTime ?? "");
-        const [acc, accO] = fromOther(jd.acceptanceCriteria, [
-          "ASME SEC VIII Appendix 4",
-          "ASME SEC VIII Appendix 12",
-          "ASME B 31.3",
-          "Other",
-        ]);
-        setJobAcceptanceCriteria(acc);
-        setJobAcceptanceCriteriaOther(accO);
+        setJobAcceptanceCriteria(jd.acceptanceCriteria ?? "");
         setJobMaterial(jd.material ?? "");
         const [stage, stageO] = fromOther(jd.stageOfInspection, [
           "After welding",
@@ -422,7 +413,7 @@ export const UTGReportFormPage: React.FC = () => {
           fs.inspector?.length
             ? fs.inspector.map((i: any) => ({
                 name: i.name ?? "",
-                qualification: i.qualification || "UTG NDE Level II",
+                qualification: i.qualification || "UT NDE Level II",
                 designation: i.designation ?? "",
                 signature: i.signature ?? "",
                 idNo: i.idNo ?? "",
@@ -468,10 +459,7 @@ export const UTGReportFormPage: React.FC = () => {
           inspectionEndDate: jobInspectionEndDate || undefined,
           referenceStd: resolve(jobRefStd, jobRefStdOther),
           inspectionTime: jobInspectionTime,
-          acceptanceCriteria: resolve(
-            jobAcceptanceCriteria,
-            jobAcceptanceCriteriaOther,
-          ),
+          acceptanceCriteria: jobAcceptanceCriteria,
           material: jobMaterial,
           stageOfInspection: resolve(jobStage, jobStageOther),
           surfaceCondition: resolve(
@@ -684,18 +672,12 @@ export const UTGReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Acceptance Criteria</label>
-            <SelectWithOther
+            <input
+              type="text"
               value={jobAcceptanceCriteria}
-              onChange={setJobAcceptanceCriteria}
-              otherValue={jobAcceptanceCriteriaOther}
-              onOtherChange={setJobAcceptanceCriteriaOther}
-              options={[
-                "ASME SEC VIII Appendix 4",
-                "ASME SEC VIII Appendix 12",
-                "ASME B 31.3",
-                "Other",
-              ]}
-              placeholder="Select Acceptance Criteria"
+              onChange={(e) => setJobAcceptanceCriteria(e.target.value)}
+              className={inputClass}
+              placeholder="Acceptance criteria"
             />
           </div>
           <div>
@@ -888,9 +870,6 @@ export const UTGReportFormPage: React.FC = () => {
                       <option value="">Select...</option>
                       <option>T/R</option>
                       <option>Normal (0°)</option>
-                      <option>45°</option>
-                      <option>60°</option>
-                      <option>70°</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -911,7 +890,7 @@ export const UTGReportFormPage: React.FC = () => {
                       onOtherChange={(v) =>
                         updateSearchUnit(idx, "crystalSizeOther", v)
                       }
-                      options={["Ø5mm", "Ø10mm", "8x9 mm", "20x22 mm", "Other"]}
+                      options={["Ø5mm", "Ø10mm", "Other"]}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -924,7 +903,6 @@ export const UTGReportFormPage: React.FC = () => {
                     >
                       <option value="">Select...</option>
                       <option>Longitudinal</option>
-                      <option>Shear</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1 min-w-[130px]">
@@ -1110,7 +1088,9 @@ export const UTGReportFormPage: React.FC = () => {
                       <label className={labelClass}>Name</label>
                       <select
                         value={insp.name}
-                        onChange={(e) => updateInsp(idx, "name", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "name", e.target.value)
+                        }
                         className={`${inputClass} bg-white`}
                       >
                         <option value="">Select....</option>
@@ -1126,9 +1106,11 @@ export const UTGReportFormPage: React.FC = () => {
                       <input
                         type="text"
                         value={insp.qualification}
-                        onChange={(e) => updateInsp(idx, "qualification", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "qualification", e.target.value)
+                        }
                         className={inputClass}
-                        placeholder="e.g. UTG NDE Level II"
+                        placeholder="e.g. UT NDE Level II"
                       />
                     </div>
                     <div>
@@ -1136,7 +1118,9 @@ export const UTGReportFormPage: React.FC = () => {
                       <input
                         type="text"
                         value={insp.designation}
-                        onChange={(e) => updateInsp(idx, "designation", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "designation", e.target.value)
+                        }
                         className={inputClass}
                       />
                     </div>
@@ -1145,7 +1129,9 @@ export const UTGReportFormPage: React.FC = () => {
                       <input
                         type="text"
                         value={insp.signature}
-                        onChange={(e) => updateInsp(idx, "signature", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "signature", e.target.value)
+                        }
                         className={inputClass}
                       />
                     </div>
@@ -1154,7 +1140,9 @@ export const UTGReportFormPage: React.FC = () => {
                       <input
                         type="date"
                         value={insp.date}
-                        onChange={(e) => updateInsp(idx, "date", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "date", e.target.value)
+                        }
                         className={inputClass}
                       />
                     </div>
