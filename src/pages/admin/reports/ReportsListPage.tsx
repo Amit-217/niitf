@@ -309,7 +309,7 @@ export const ReportsListPage = () => {
           </div>
 
           <button
-            onClick={() => navigate(`/admin/reports/${activeTab}/new`)}
+            onClick={() => navigate(`/admin/reports/${activeTab}/new`, { state: { from: "reports-list" } })}
             className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300 whitespace-nowrap"
           >
             <Plus size={17} /> New {activeInfo.label}
