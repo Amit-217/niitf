@@ -158,6 +158,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
   const [tsCalBlockNormal, setTsCalBlockNormal] = useState("Step Block (MDN 250)");
   const [tsRefBlockAngle, setTsRefBlockAngle] = useState("");
   const [tsRefBlockNormal, setTsRefBlockNormal] = useState("");
+  const [tsRefBlockAngleCustom, setTsRefBlockAngleCustom] = useState("");
   const [tsRefBlockNormalCustom, setTsRefBlockNormalCustom] = useState("");
 
   // ── Angle Probe Calibration ──
@@ -304,10 +305,17 @@ export const VSSCUTReportFormPage: React.FC = () => {
         setTsNormalRange(ts.normalRange ?? "");
         setTsCalBlockAngle(ts.standardCalBlock?.angle ?? "");
         setTsCalBlockNormal(ts.standardCalBlock?.normal ?? "");
-        setTsRefBlockAngle(ts.identificationNoOfRefBlock?.angle ?? "");
+        const [rba, rbaC] = fromOther(
+        ts.identificationNoOfRefBlock?.angle,
+        [
+          "'G' Notch (LSP 34 A side only)",
+          "Other",
+        ]
+        );
+        setTsRefBlockAngle(rba);
+        setTsRefBlockAngleCustom(rbaC);
         const [rbn, rbnC] = fromOther(ts.identificationNoOfRefBlock?.normal, [
           "2mmFBH (PJS-01-2007/4)",
-          
           "Other",
         ]);
         setTsRefBlockNormal(rbn);
@@ -449,7 +457,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
             normal: tsCalBlockNormal,
           },
           identificationNoOfRefBlock: {
-            angle: tsRefBlockAngle,
+            angle: resolve(tsRefBlockAngle,tsRefBlockAngleCustom),
             normal: resolve(tsRefBlockNormal, tsRefBlockNormalCustom),
           },
         },
@@ -782,18 +790,22 @@ export const VSSCUTReportFormPage: React.FC = () => {
               className={inputClass}
             />
           </div>
-          <div>
-            <label className={labelClass}>
-              Idtn. No of Ref Block — For Angle
-            </label>
-            <input
-              type="text"
-              value={tsRefBlockAngle}
-              onChange={(e) => setTsRefBlockAngle(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 'G' Notch (LSP 34 A side only)"
-            />
-          </div>
+         <div>
+  <label className={labelClass}>
+    Idtn. No of Ref Block — For Angle
+  </label>
+
+  <SelectWithCustom
+    value={tsRefBlockAngle}
+    onChange={setTsRefBlockAngle}
+    customValue={tsRefBlockAngleCustom}
+    onCustomChange={setTsRefBlockAngleCustom}
+    options={[
+      "'G' Notch (LSP 34 A side only)",
+      "Other",
+    ]}
+  />
+</div>
           <div>
             <label className={labelClass}>
               Idtn. No of Ref Block — For Normal

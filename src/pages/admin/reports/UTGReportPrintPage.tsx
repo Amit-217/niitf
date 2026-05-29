@@ -31,7 +31,7 @@ const PRINT_STYLES = `
     .print-page:last-child { break-after: auto; page-break-after: auto; }
     .report-body { overflow: visible !important; }
   }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
 
   /* Each page is a self-contained A4 block: header at the top, content in a
@@ -68,37 +68,37 @@ const PRINT_STYLES = `
   .bw .hdr-center .sub { color: #333 !important; }
   .bw .hdr-center .iso { color: #000 !important; }
   .bw .logo-box { background: #fff !important; }
-  .bw .section-hdr { background: #fff !important; color: #000 !important; border-bottom: 1px solid #000 !important; }
+  .bw .section-hdr { background: #fff !important; color: #000 !important; border-bottom: 1.2px solid #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1px solid #000 !important; border-top: none !important; border-radius: 6px 6px 0 0 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1.2px solid #000 !important; border-top: none !important; border-radius: 0 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
   .bw .accept-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .reject-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .neutral-badge { background: transparent !important; color: #000 !important; border: none !important; }
-  .bw .report-table td, .bw .report-table th { border-color: #000 !important; }
-  .bw .obs-table td, .bw .obs-table th { border-color: #000 !important; }
+  .bw .report-table td, .bw .report-table th { border-color: #000 !important; border-width: 1.2px !important; }
+  .bw .obs-table td, .bw .obs-table th { border-color: #000 !important; border-width: 1.2px !important; }
   .bw .obs-table th { background: #fff !important; color: #000 !important; }
-  .bw .sign-table td { border-color: #000 !important; }
+  .bw .sign-table td { border-color: #000 !important; border-width: 1.2px !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
-  .bw .report-body { color: #000 !important; border-top: 1px solid #000 !important; border-left: none !important; border-right: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
-  .bw .report-footer-wrap { border: 1px solid #000 !important; border-top: none !important; border-radius: 0 0 6px 6px !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #000; border-top: none; border-radius: 6px 6px 0 0; }
-  .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
-  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #000; }
-  .report-table td, .report-table th { border: 1px solid #000; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
-  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
-  .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; white-space: nowrap; width: 22%; }
-  .val { font-size: 11px; color: #000; }
-  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #000; }
-  .obs-table td, .obs-table th { border: 1px solid #000; padding: 3px 5px; font-size: 10px; vertical-align: top; word-break: break-word; }
-  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; text-align: left; }
-  .obs-table th:first-child, .obs-table td:first-child { width: 28px; min-width: 28px; max-width: 28px; }
+  .bw .report-body { color: #000 !important; border-top: 1.2px solid #000 !important; border-left: none !important; border-right: none !important; border-bottom: none !important; border-radius: 0 !important; }
+  .bw .report-footer-wrap { border: 1.2px solid #000 !important; border-top: none !important; border-radius: 0 !important; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 16px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1.2px solid #000; border-top: none; border-radius: 0; }
+  .section-hdr { background: #185FA5; color: #fff; font-size: 13px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left !important; }
+  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1.2px solid #000; }
+  .report-table td, .report-table th { border: 1.2px solid #000; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11.5px; }
+  .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 12px; text-align: left; color: #0C447C; }
+  .lbl { background: #f7fafc; font-weight: 600; font-size: 11.5px; white-space: nowrap; width: 22%; }
+  .val { font-size: 11.5px; color: #000; }
+  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1.2px solid #000; }
+  .obs-table td, .obs-table th { border: 1.2px solid #000; padding: 3px 6px; font-size: 11.5px; vertical-align: top; word-break: break-word; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 11.5px; font-weight: 700; text-align: center !important; }
+  .obs-table th:first-child, .obs-table td:first-child { width: 35px; min-width: 35px; max-width: 35px; }
   .obs-table tr { break-inside: avoid; page-break-inside: avoid; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #000; padding: 2px 4px; font-size: 11px; vertical-align: top; }
+  .sign-table td { border: 1.2px solid #000; padding: 2px 4px; font-size: 11px; vertical-align: top; }
   .sign-table td:first-child { border-left: none; }
   .sign-table td:last-child { border-right: none; }
   .mt-n1 { margin-top: -1px; }
@@ -106,13 +106,13 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border-top: 1px solid #000; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #000; border-top: 1px solid #000; border-radius: 0 0 6px 6px; overflow: hidden; }
+  .report-body { border-top: 1.2px solid #000; border-left: none; border-right: none; border-bottom: none; border-radius:0; overflow: hidden; }
+  .report-footer-wrap { border: 1.2px solid #000; border-top: none; border-radius: 0 ; overflow: hidden; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
 
-  .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .footer { background: #f8fafc; padding: 6px 10px; font-size: 11px; color: #4b5563; margin-top: 0; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 `;
@@ -242,38 +242,44 @@ export const UTGReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const fs = report.finalSection ?? {};
   const inspector = fs.inspector?.[0] ?? {};
+
   // Dynamic pagination block layout engine
-  const PAGE_HEIGHT_LIMIT = 288; // mm
+  const PAGE_HEIGHT_LIMIT = 292; // mm
   const HEADER_HEIGHT = 28; // mm
   const FOOTER_HEIGHT = 22; // mm
-  const FIXED_SECTIONS_HEIGHT = 115 + (sud.length * 6.5); // mm
   const OBS_HEADER_HEIGHT = 12; // mm
+  const SIGNATURES_HEIGHT = 48; // mm
+
+  const SEARCH_UNIT_ROW_HEIGHT = 6;
+  const searchUnitHeight = sud.length > 0 ? sud.length * SEARCH_UNIT_ROW_HEIGHT : 6;
+  // 108 is base for Title + Job + Equip + Technique + Search Header
+  const FIXED_SECTIONS_HEIGHT = 108 + searchUnitHeight;
 
   const estimateObsRowHeight = (o: any) => {
-    const baseHeight = 6.5; // mm for single-line row
+    const baseHeight = 5.5;
     const itemName = o.itemName || "";
     const thickness = o.measuredThickness || "";
     const evalText = o.evaluation || o.remark || o.result || "";
-    const maxLen = Math.max(itemName.length, thickness.length, evalText.length);
-    const lines = Math.max(1, Math.ceil(maxLen / 35));
-    return baseHeight + (lines - 1) * 4.5;
+
+    const maxLen = Math.max(
+      itemName.length,
+      thickness.length,
+      evalText.length
+    );
+
+    const lines = Math.max(1, Math.ceil(maxLen / 32));
+    return baseHeight + (lines - 1) * 3.2;
   };
 
-  type ContentBlock =
-    | { type: "obs-row"; item: any; height: number }
-    | { type: "signatures"; height: number };
+  type ContentBlock = { type: "obs-row"; item: any; height: number };
 
   const blocks: ContentBlock[] = [];
-  obs.forEach((o) => {
+  obs.forEach((o:any) => {
     blocks.push({
       type: "obs-row",
       item: o,
       height: estimateObsRowHeight(o),
     });
-  });
-  blocks.push({
-    type: "signatures",
-    height: 48,
   });
 
   type PageDescriptor = {
@@ -286,9 +292,11 @@ export const UTGReportPrintPage: React.FC = () => {
 
   while (currentBlockIndex < blocks.length) {
     const isFirstPage = pages.length === 0;
-    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT;
+    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT;
+
     if (isFirstPage) {
       availableHeight -= FIXED_SECTIONS_HEIGHT;
+      availableHeight -= 8;
     }
 
     const pageBlocks: ContentBlock[] = [];
@@ -304,16 +312,16 @@ export const UTGReportPrintPage: React.FC = () => {
         blockHeight += OBS_HEADER_HEIGHT;
       }
 
-      if (accumulatedHeight + blockHeight <= availableHeight) {
-        pageBlocks.push(block);
-        accumulatedHeight += blockHeight;
-        if (block.type === "obs-row") {
-          hasObsTable = true;
-        }
-        currentBlockIndex++;
-      } else {
+      if (accumulatedHeight + blockHeight > availableHeight) {
         break;
       }
+
+        pageBlocks.push(block);
+        accumulatedHeight += blockHeight;
+      if (block.type === "obs-row") {
+        hasObsTable = true;
+      }
+      currentBlockIndex++;
     }
 
     if (pageBlocks.length === 0 && currentBlockIndex < blocks.length) {
@@ -346,14 +354,14 @@ export const UTGReportPrintPage: React.FC = () => {
       </div>
     </div>
   );
-
+  const sudCount = sud.length;
   const renderObsTable = (data: any[], title: string) => (
     <table className="obs-table mt-n1">
       <colgroup>
-        <col style={{ width: "5%" }} />
+        <col style={{ width: "35px" }} />
+        <col style={{ width: "25%" }} />
+        <col style={{ width: "45%" }} />
         <col style={{ width: "15%" }} />
-        <col style={{ width: "60%" }} />
-        <col style={{ width: "10%" }} />
       </colgroup>
       <thead>
         <tr>
@@ -362,13 +370,14 @@ export const UTGReportPrintPage: React.FC = () => {
           </td>
         </tr>
         <tr>
-          <th>Sr. No.</th>
-          <th>Item Name</th>
-          <th>Measured Thickness</th>
-          <th>Evaluation</th>
+          <th style={{textAlign: "center"}}>Sr. No.</th>
+          <th style={{textAlign: "center"}}>Item Name</th>
+          <th style={{textAlign: "center"}}>Measured Thickness</th>
+          <th style={{textAlign: "center"}}>Evaluation</th>
         </tr>
       </thead>
       <tbody>
+        
         {data.length === 0 && sudCount === 0 ? (
           <tr>
             <td
@@ -386,10 +395,10 @@ export const UTGReportPrintPage: React.FC = () => {
         ) : (
           data.map((o: any, i: number) => (
             <tr key={i}>
-              <td>{v(o.srNo) || i + 1}</td>
-              <td>{v(o.itemName) || "-"}</td>
-              <td>{v(o.measuredThickness) || "-"}</td>
-              <td>{v(o.evaluation || o.remark || o.result) || "-"}</td>
+              <td style={{ textAlign: "center" }}>{v(o.srNo) || i + 1}</td>
+              <td style={{textAlign: "left",paddingLeft:"10px"}}>{v(o.itemName) || "-"}</td>
+              <td style={{textAlign: "left",paddingLeft:"10px"}}>{v(o.measuredThickness) || "-"}</td>
+              <td style={{ textAlign: "center" }}>{v(o.evaluation || o.remark || o.result) || "-"}</td>
             </tr>
           ))
         )}
@@ -422,7 +431,7 @@ export const UTGReportPrintPage: React.FC = () => {
   );
 
   const Signatures = () => (
-    <div className="report-footer-wrap">
+    <div className="report-footer-wrap mt-n1">
       <table className="sign-table mt-n1">
         <colgroup>
           <col style={{ width: "33.3%" }} />
@@ -587,22 +596,22 @@ export const UTGReportPrintPage: React.FC = () => {
             </td>
           </tr>
           <tr>
-            <td className="col-hdr" style={{ width: "22%" }}>
+            <td className="col-hdr" style={{ width: "22%", textAlign: "center"}}>
               Search Unit / Model
             </td>
-            <td className="col-hdr" style={{ width: "12%" }}>
+            <td className="col-hdr" style={{ width: "12%", textAlign: "center" }}>
               Angle
             </td>
-            <td className="col-hdr" style={{ width: "18%" }}>
+            <td className="col-hdr" style={{ width: "18%", textAlign: "center" ,}}>
               Sr. No.
             </td>
-            <td className="col-hdr" style={{ width: "18%" }}>
+            <td className="col-hdr" style={{ width: "18%", textAlign: "center" }}>
               Crystal Size
             </td>
-            <td className="col-hdr" style={{ width: "15%" }}>
+            <td className="col-hdr" style={{ width: "15%", textAlign: "center" }}>
               Wave Mode
             </td>
-            <td className="col-hdr" style={{ width: "15%" }}>
+            <td className="col-hdr" style={{ width: "15%", textAlign: "center" }}>
               Frequency
             </td>
           </tr>
@@ -623,12 +632,12 @@ export const UTGReportPrintPage: React.FC = () => {
           ) : (
             sud.map((u: any, i: number) => (
               <tr key={i}>
-                <td>{v(u.searchUnit || u.model)}</td>
-                <td>{v(u.angle)}</td>
-                <td>{v(u.srNo)}</td>
-                <td>{v(u.crystalSize)}</td>
-                <td>{v(u.waveMode)}</td>
-                <td>{v(u.frequency)}</td>
+                <td style={{ paddingLeft: "8px" }}>{v(u.searchUnit || u.model)}</td>
+                <td style={{ textAlign: "center" }}>{v(u.angle)}</td>
+                <td style={{ textAlign: "center" }}>{v(u.srNo)}</td>
+                <td style={{ textAlign: "center" }}>{v(u.crystalSize)}</td>
+                <td style={{ textAlign: "center" }}>{v(u.waveMode)}</td>
+                <td style={{ textAlign: "center" }}>{v(u.frequency)}</td>
               </tr>
             ))
           )}
@@ -708,14 +717,13 @@ export const UTGReportPrintPage: React.FC = () => {
       {/* ── Report Content ── */}
       <div
         id="report-root"
-        style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
+        style={{ background: "#62676e", minHeight: "100vh", padding: "16px" }}
       >
         {pages.map(({ isFirstPage, pageBlocks }, i) => {
           const pageObs = pageBlocks
             .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
             .map((b) => b.item);
           const hasObsTable = pageObs.length > 0;
-          const hasSignatures = pageBlocks.some((b) => b.type === "signatures");
           const isFirstObs = pageObs[0] === obs[0];
 
           return (
@@ -724,8 +732,12 @@ export const UTGReportPrintPage: React.FC = () => {
                 {renderHeader()}
                 <div className="report-body">
                   {isFirstPage && fixedSections}
-                  {hasObsTable && renderObsTable(pageObs, isFirstObs ? "5. OBSERVATIONS" : "5. OBSERVATIONS (Contd.)")}
-                  {hasSignatures && <Signatures />}
+                  {hasObsTable &&
+                    renderObsTable(
+                      pageObs,
+                      isFirstObs ? "5. OBSERVATIONS" : "5. OBSERVATIONS (Contd.)"
+                    )}
+                  <Signatures />
                 </div>
               </div>
               <div className="print-page-foot">
