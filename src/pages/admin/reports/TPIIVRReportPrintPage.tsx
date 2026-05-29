@@ -61,7 +61,10 @@ const PRINT_STYLES = `
     overflow: hidden;
   }
   .print-page-content { flex: 1 1 auto; min-height: 0; overflow: hidden; }
-  .print-page-foot { flex: 0 0 auto; }
+  .print-page-foot {
+  margin-top: auto;
+  flex-shrink: 0;
+}
 
   /* Unified Header & Footer Styles */
   .rpt-header { 
@@ -210,6 +213,18 @@ const fmtDate = (d?: string | null) => {
   return `${String(dt.getDate()).padStart(2, "0")}.${String(dt.getMonth() + 1).padStart(2, "0")}.${dt.getFullYear()}`;
 };
 
+const splitTextIntoChunks = (
+  text: string,
+  charsPerChunk: number = 900
+) => {
+  if (!text) return [];
+
+  const chunks: string[] = [];
+  for (let i = 0; i < text.length; i += charsPerChunk) {
+    chunks.push(text.slice(i, i + charsPerChunk));
+  }
+  return chunks;
+};
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export const TPIIVRReportPrintPage: React.FC = () => {
@@ -624,11 +639,11 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   const renderActivitiesSection = (text: string, isFirstChunk: boolean) => (
-    <table className="report-table mt-n1">
+    <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
       <thead>
         <tr>
           <td className="section-hdr">
-            {isFirstChunk ? "4. INSPECTION ACTIVITIES" : "4. INSPECTION ACTIVITIES (Contd.)"}
+            {isFirstChunk ? "4. INSPECTION ACTIVITIES" : "INSPECTION ACTIVITIES (Contd.)"}
           </td>
         </tr>
       </thead>
@@ -641,7 +656,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   const renderRefsSection = (pageRefs: any[], isFirstChunk: boolean) => (
-    <table className="report-table mt-n1">
+    <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
       <colgroup>
         <col style={{ width: "30%" }} />
         <col style={{ width: "50%" }} />
@@ -650,7 +665,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       <thead>
         <tr>
           <td colSpan={3} className="section-hdr">
-            {isFirstChunk ? "5. REFERENCE DOCUMENTS FOR INSPECTION" : "5. REFERENCE DOCUMENTS FOR INSPECTION (Contd.)"}
+            {isFirstChunk ? "5. REFERENCE DOCUMENTS FOR INSPECTION" : "REFERENCE DOCUMENTS FOR INSPECTION (Contd.)"}
           </td>
         </tr>
         <tr>
@@ -672,7 +687,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   const renderCalibSection = (pageCalib: any[], isFirstChunk: boolean) => (
-    <table className="report-table mt-n1">
+    <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
       <colgroup>
         <col style={{ width: "28%" }} />
         <col style={{ width: "18%" }} />
@@ -682,7 +697,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       </colgroup>
       <thead>
         <tr>
-          <td colSpan={5} className="section-hdr">
+          <td colSpan={5} className="section-hdr" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
             {isFirstChunk ? "6. CALIBRATION STATUS OF INSTRUMENTS" : "6. CALIBRATION STATUS OF INSTRUMENTS (Contd.)"}
           </td>
         </tr>
@@ -709,11 +724,11 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   const renderConclusionSection = (text: string, isFirstChunk: boolean) => (
-    <table className="report-table mt-n1">
+    <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
       <tbody>
         <tr>
           <td className="section-hdr">
-            {isFirstChunk ? "7. CONCLUSION" : "7. CONCLUSION (Contd.)"}
+            {isFirstChunk ? "7. CONCLUSION" : "CONCLUSION (Contd.)"}
           </td>
         </tr>
         <tr>
@@ -726,11 +741,15 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   // Dynamic pagination block layout engine
-  const PAGE_HEIGHT_LIMIT = 288; // mm
-  const HEADER_HEIGHT = 28; // mm
-  const FOOTER_HEIGHT = 28; // mm (footer address block ~20mm + footer-meta ~5mm + 3mm margin)
-  const FIXED_SECTIONS_HEIGHT = 52; // mm (Title + Job details)
+  const PAGE_HEIGHT_LIMIT = 288;
 
+const HEADER_HEIGHT = 30;
+const FOOTER_HEIGHT = 28;
+const SIGNATURES_HEIGHT = 80;
+
+const RESERVED_BOTTOM =
+  FOOTER_HEIGHT + SIGNATURES_HEIGHT + 4; // mm (Title + Job details)
+const FIXED_SECTIONS_HEIGHT = 40;
   const estimateItemRowHeight = (item: any) => {
     const baseHeight = 6.5; // mm
     const desc = item.description || "";
@@ -740,19 +759,39 @@ export const TPIIVRReportPrintPage: React.FC = () => {
     return baseHeight + (lines - 1) * 4.5;
   };
 
-  const estimateTextHeight = (text: string) => {
+  const estimateTextHeight = (text: string, charsPerLine: number = 90) => {
     const baseHeight = 12; // mm
-    const lines = Math.max(1, Math.ceil((text || "").length / 90));
-    return baseHeight + lines * 4.5;
+    const lines = Math.max(1, Math.ceil((text || "").length / charsPerLine));
+    return baseHeight + (lines - 1) * 4.5; // Adjusted to account for baseHeight already including first line
   };
 
   type ContentBlock =
     | { type: "client-vendor"; height: number }
     | { type: "item-row"; item: any; height: number }
-    | { type: "activities"; text: string; height: number }
-    | { type: "ref-row"; item: any; height: number }
-    | { type: "calib-row"; item: any; height: number }
-    | { type: "conclusion"; text: string; height: number };
+    | {
+        type: "activities";
+        text: string;
+        height: number;
+        isContinuation?: boolean;
+      }
+  | {
+      type: "ref-row";
+      item: any;
+      height: number;
+      isContinuation?: boolean;
+    }
+  | {
+      type: "calib-row";
+      item: any;
+      height: number;
+      isContinuation?: boolean;
+    }
+  | {
+      type: "conclusion";
+      text: string;
+      height: number;
+      isContinuation?: boolean;
+    };
 
   const blocks: ContentBlock[] = [];
   blocks.push({
@@ -768,13 +807,14 @@ export const TPIIVRReportPrintPage: React.FC = () => {
     });
   });
 
-  if (report.inspectionActivities) {
+  splitTextIntoChunks(report.inspectionActivities).forEach((chunk, index) => {
     blocks.push({
       type: "activities",
-      text: report.inspectionActivities,
-      height: estimateTextHeight(report.inspectionActivities),
+      text: chunk,
+      height: estimateTextHeight(chunk),
+      isContinuation: index > 0,
     });
-  }
+  });
 
   refs.forEach((doc: any) => {
     blocks.push({
@@ -792,13 +832,14 @@ export const TPIIVRReportPrintPage: React.FC = () => {
     });
   });
 
-  if (report.conclusion) {
+  splitTextIntoChunks(report.conclusion, 700).forEach((chunk, index) => {
     blocks.push({
       type: "conclusion",
-      text: report.conclusion,
-      height: estimateTextHeight(report.conclusion),
+      text: chunk,
+      height: estimateTextHeight(chunk),
+      isContinuation: index > 0,
     });
-  }
+  });
 
   type PageDescriptor = {
     isFirstPage: boolean;
@@ -808,12 +849,15 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   const pages: PageDescriptor[] = [];
   let currentBlockIndex = 0;
 
-  const SIGNATURES_HEIGHT = 48; // mm
+ // mm
 
   while (currentBlockIndex < blocks.length) {
     const isFirstPage = pages.length === 0;
     // Signatures are rendered on every page, so reduce available height by signature height on all pages
-    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT;
+    let availableHeight =
+  PAGE_HEIGHT_LIMIT -
+  HEADER_HEIGHT -
+  RESERVED_BOTTOM;
     if (isFirstPage) {
       availableHeight -= FIXED_SECTIONS_HEIGHT;
     }
@@ -833,16 +877,16 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       if (block.type === "item-row" && !hasItemsHeader) {
         blockHeight += 18;
       }
-      if (block.type === "activities" && !hasActivitiesHeader) {
+      if (block.type === "activities" && !hasActivitiesHeader && !block.isContinuation) {
         blockHeight += 8;
       }
-      if (block.type === "ref-row" && !hasRefsHeader) {
+      if (block.type === "ref-row" && !hasRefsHeader && !block.isContinuation) {
         blockHeight += 12;
       }
-      if (block.type === "calib-row" && !hasCalibHeader) {
+      if (block.type === "calib-row" && !hasCalibHeader && !block.isContinuation) {
         blockHeight += 12;
       }
-      if (block.type === "conclusion" && !hasConclusionHeader) {
+      if (block.type === "conclusion" && !hasConclusionHeader && !block.isContinuation) {
         blockHeight += 8;
       }
 
@@ -928,18 +972,24 @@ export const TPIIVRReportPrintPage: React.FC = () => {
           const pageItems = pageBlocks
             .filter((b): b is Extract<ContentBlock, { type: "item-row" }> => b.type === "item-row")
             .map((b) => b.item);
-          const pageActivities = pageBlocks
-            .filter((b): b is Extract<ContentBlock, { type: "activities" }> => b.type === "activities")
-            .map((b) => b.text);
+          const pageActivities = pageBlocks.filter(
+            (
+              b
+            ): b is Extract<ContentBlock, { type: "activities" }> =>
+              b.type === "activities"
+          );
           const pageRefs = pageBlocks
             .filter((b): b is Extract<ContentBlock, { type: "ref-row" }> => b.type === "ref-row")
             .map((b) => b.item);
           const pageCalib = pageBlocks
             .filter((b): b is Extract<ContentBlock, { type: "calib-row" }> => b.type === "calib-row")
             .map((b) => b.item);
-          const pageConclusion = pageBlocks
-            .filter((b): b is Extract<ContentBlock, { type: "conclusion" }> => b.type === "conclusion")
-            .map((b) => b.text);
+          const pageConclusion = pageBlocks.filter(
+            (
+              b
+            ): b is Extract<ContentBlock, { type: "conclusion" }> =>
+              b.type === "conclusion"
+          );
 
           const isFirstItem = pageItems[0] === items[0];
           const isFirstRefs = pageRefs[0] === refs[0];
@@ -953,12 +1003,24 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                   {isFirstPage && renderJobDetailsSection()}
                   {showClientVendor && renderClientVendorSection()}
                   {pageItems.length > 0 && renderItemsTableSection(pageItems, isFirstItem)}
-                  {pageActivities.length > 0 && renderActivitiesSection(pageActivities[0], true)}
+                 {pageActivities.map((a, idx) =>
+  renderActivitiesSection(
+    a.text,
+    idx === 0 && !a.isContinuation
+  )
+)}
                   {pageRefs.length > 0 && renderRefsSection(pageRefs, isFirstRefs)}
                   {pageCalib.length > 0 && renderCalibSection(pageCalib, isFirstCalib)}
-                  {pageConclusion.length > 0 && renderConclusionSection(pageConclusion[0], true)}
-                  {renderSignatures()}
+                 {pageConclusion.map((c, idx) =>
+  renderConclusionSection(
+    c.text,
+    idx === 0 && !c.isContinuation
+  )
+)}
                 </div>
+                
+                  {renderSignatures()}
+                
               </div>
               <div className="print-page-foot">
                 <ReportFooter />
