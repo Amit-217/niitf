@@ -60,7 +60,7 @@ const PRINT_STYLES = `
     flex-direction: column;
     overflow: hidden;
   }
-  .print-page-content { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+  .print-page-content { flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
   .print-page-foot {
   margin-top: auto;
   flex-shrink: 0;
@@ -186,8 +186,15 @@ const PRINT_STYLES = `
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border-top: 1.2px solid #000; border-left: none; border-right: none; border-bottom: none; border-radius: 0; overflow: hidden; }
-  .report-footer-wrap { border: 1.2px solid #000; border-top: none; border-radius: 0; overflow: hidden; margin-top: -1px; }
+  .report-body {
+  border-top: 1.2px solid #000;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 0;
+}
+  
+  .report-footer-wrap { border: 1.2px solid #000; border-radius: 0; overflow: hidden; margin-top: -1.2px; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .report-footer-wrap .sign-table td:first-child { border-left: none; }
@@ -195,7 +202,25 @@ const PRINT_STYLES = `
   .report-footer-wrap .sign-table tr:last-child td { border-bottom: none; }
 
 
-  .activities-box { border: 1.2px solid #000; padding: 6px 8px; font-size: 11px; min-height: 40px; white-space: pre-wrap; word-break: break-word; }
+ .activities-box {
+    padding: 6px 8px;
+    font-size: 11px;
+    min-height: 40px;
+    height: 100%;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow: hidden;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    border: none !important;
+}
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -596,42 +621,42 @@ export const TPIIVRReportPrintPage: React.FC = () => {
           </td>
         </tr>
         <tr>
-          <td className="col-hdr" style={{ width: "8%" }} rowSpan={2}>
+          <td className="col-hdr" style={{ width: "8%",textAlign:"center" }} rowSpan={2}>
             PO Line No.
           </td>
-          <td className="col-hdr" style={{ width: "24%", textAlign: "left" }} rowSpan={2}>
+          <td className="col-hdr" style={{ width: "24%", textAlign: "center" }} rowSpan={2}>
             Description
           </td>
-          <td className="col-hdr" style={{ width: "16%", textAlign: "left" }} rowSpan={2}>
+          <td className="col-hdr" style={{ width: "16%", textAlign: "center" }} rowSpan={2}>
             Drg No. / Heat No.
           </td>
           <td className="col-hdr" colSpan={5} style={{ textAlign: "center" }}>
             Quantity in Nos.
           </td>
-          <td className="col-hdr" style={{ width: "14%" }} rowSpan={2}>
+          <td className="col-hdr" style={{ width: "14%", textAlign: "center"}} rowSpan={2}>
             Insp. Type
           </td>
         </tr>
         <tr>
-          <td className="col-hdr" style={{ width: "8%" }}>Offered</td>
-          <td className="col-hdr" style={{ width: "8%" }}>Inspected</td>
-          <td className="col-hdr" style={{ width: "8%" }}>Accepted</td>
-          <td className="col-hdr" style={{ width: "7%" }}>Hold</td>
-          <td className="col-hdr" style={{ width: "7%" }}>Reject</td>
+          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>Offered</td>
+          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>Inspected</td>
+          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>Accepted</td>
+          <td className="col-hdr" style={{ width: "7%", textAlign: "center" }}>Hold</td>
+          <td className="col-hdr" style={{ width: "7%", textAlign: "center" }}>Reject</td>
         </tr>
       </thead>
       <tbody>
         {pageItems.map((item: any, i: number) => (
-          <tr key={i}>
-            <td>{v(item.poLineNo)}</td>
-            <td className="text-left" style={{ textAlign: "left" }}>{v(item.description)}</td>
-            <td className="text-left" style={{ textAlign: "left" }}>{v(item.drgOrHeatNo)}</td>
-            <td>{v(item.qtyOffered)}</td>
-            <td>{v(item.qtyInspected)}</td>
-            <td>{v(item.qtyAccepted)}</td>
-            <td>{v(item.qtyHold)}</td>
-            <td>{v(item.qtyReject)}</td>
-            <td>{v(item.inspectionType)}</td>
+          <tr key={i} >
+            <td style={{textAlign:"center"}}>{v(item.poLineNo)}</td>
+            <td style={{ textAlign: "center" }}>{v(item.description)}</td>
+            <td style={{ textAlign: "center" }}>{v(item.drgOrHeatNo)}</td>
+            <td style={{textAlign:"center"}}>{v(item.qtyOffered)}</td>
+            <td style={{textAlign:"center"}}>{v(item.qtyInspected)}</td>
+            <td style={{textAlign:"center"}}>{v(item.qtyAccepted)}</td>
+            <td style={{textAlign:"center"}}>{v(item.qtyHold)}</td>
+            <td style={{textAlign:"center"}}>{v(item.qtyReject)}</td>
+            <td style={{textAlign:"center"}}>{v(item.inspectionType)}</td>
           </tr>
         ))}
       </tbody>
@@ -669,17 +694,17 @@ export const TPIIVRReportPrintPage: React.FC = () => {
           </td>
         </tr>
         <tr>
-          <td className="col-hdr">Document</td>
-          <td className="col-hdr">Reference Number</td>
-          <td className="col-hdr">Rev. No.</td>
+          <td className="col-hdr" style={{textAlign:"center"}}>Document</td>
+          <td className="col-hdr"style={{textAlign:"center"}}>Reference Number</td>
+          <td className="col-hdr"style={{textAlign:"center"}}>Rev. No.</td>
         </tr>
       </thead>
       <tbody>
         {pageRefs.map((doc: any, i: number) => (
           <tr key={i}>
-            <td className="lbl" style={{ fontWeight: 500 }}>{v(doc.document)}</td>
-            <td className="val">{v(doc.referenceNumber)}</td>
-            <td className="val">{v(doc.revNo)}</td>
+            <td className="lbl" style={{ fontWeight: 500,textAlign:"center" }}>{v(doc.document)}</td>
+            <td className="val" style={{textAlign:"center"}}>{v(doc.referenceNumber)}</td>
+            <td className="val"style={{textAlign:"center"}}>{v(doc.revNo)}</td>
           </tr>
         ))}
       </tbody>
@@ -702,21 +727,21 @@ export const TPIIVRReportPrintPage: React.FC = () => {
           </td>
         </tr>
         <tr>
-          <td className="col-hdr">Equipment / Instrument</td>
-          <td className="col-hdr">I.D. Number</td>
-          <td className="col-hdr">Calibration Date</td>
-          <td className="col-hdr">Due Date</td>
-          <td className="col-hdr">NABL Certified</td>
+          <td className="col-hdr" style={{textAlign:"center"}}>Equipment / Instrument</td>
+          <td className="col-hdr" style={{textAlign:"center"}}>I.D. Number</td>
+          <td className="col-hdr" style={{textAlign:"center"}}>Calibration Date</td>
+          <td className="col-hdr" style={{textAlign:"center"}}>Due Date</td>
+          <td className="col-hdr" style={{textAlign:"center"}}>NABL Certified</td>
         </tr>
       </thead>
       <tbody>
         {pageCalib.map((c: any, i: number) => (
           <tr key={i}>
-            <td className="val">{v(c.equipment)}</td>
-            <td style={{ fontSize: "11px" }}>{v(c.idNumber)}</td>
-            <td style={{ fontSize: "11px" }}>{fmtDate(c.calibrationDate)}</td>
-            <td style={{ fontSize: "11px" }}>{fmtDate(c.dueDate)}</td>
-            <td style={{ fontSize: "11px" }}>{v(c.nablCertified)}</td>
+            <td className="val" style={{textAlign:"center"}}>{v(c.equipment)}</td>
+            <td className="val" style={{textAlign:"center"}}>{v(c.idNumber)}</td>
+            <td className="val" style={{textAlign:"center"}}>{fmtDate(c.calibrationDate)}</td>
+            <td className="val" style={{textAlign:"center"}}>{fmtDate(c.dueDate)}</td>
+            <td className="val" style={{textAlign:"center"}}>{v(c.nablCertified)}</td>
           </tr>
         ))}
       </tbody>
@@ -741,28 +766,86 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   // Dynamic pagination block layout engine
-  const PAGE_HEIGHT_LIMIT = 288;
+const PAGE_HEIGHT_LIMIT = 288;
 
-const HEADER_HEIGHT = 30;
-const FOOTER_HEIGHT = 28;
-const SIGNATURES_HEIGHT = 80;
+const HEADER_HEIGHT = 28;
+const FOOTER_HEIGHT = 20;
+const SIGNATURES_HEIGHT = 48;
 
-const RESERVED_BOTTOM =
-  FOOTER_HEIGHT + SIGNATURES_HEIGHT + 4; // mm (Title + Job details)
 const FIXED_SECTIONS_HEIGHT = 40;
+
+
   const estimateItemRowHeight = (item: any) => {
-    const baseHeight = 6.5; // mm
+    const baseHeight = 2; // mm
     const desc = item.description || "";
     const drg = item.drgOrHeatNo || "";
     const maxLen = Math.max(desc.length, drg.length);
     const lines = Math.max(1, Math.ceil(maxLen / 30));
-    return baseHeight + (lines - 1) * 4.5;
+    return baseHeight + (lines - 1) * 2.1;
   };
 
   const estimateTextHeight = (text: string, charsPerLine: number = 90) => {
-    const baseHeight = 12; // mm
+    const baseHeight = 2; // mm
     const lines = Math.max(1, Math.ceil((text || "").length / charsPerLine));
-    return baseHeight + (lines - 1) * 4.5; // Adjusted to account for baseHeight already including first line
+    return baseHeight + (lines - 1) * 2.1; // Adjusted to account for baseHeight already including first line
+  };
+
+  const splitTextByRenderedHeight = (
+    text: string,
+    maxHeightMm: number
+  ) => {
+    if (!text) return [];
+
+    const pxPerMm = 5.83;
+    const maxHeightPx = maxHeightMm * pxPerMm;
+
+    const container = document.createElement("div");
+
+    container.style.position = "absolute";
+    container.style.visibility = "hidden";
+    container.style.width = "700px";
+    container.style.fontSize = "11px";
+    container.style.lineHeight = "1.4";
+    container.style.whiteSpace = "pre-wrap";
+    container.style.wordBreak = "break-word";
+    container.style.padding = "6px 8px";
+
+    document.body.appendChild(container);
+
+    const chunks: string[] = [];
+
+    let remaining = text;
+
+    while (remaining.length > 0) {
+      let low = 0;
+      let high = remaining.length;
+      let bestFit = "";
+
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+
+        const testChunk = remaining.slice(0, mid);
+
+        container.innerText = testChunk;
+
+        if (container.scrollHeight <= maxHeightPx) {
+          bestFit = testChunk;
+          low = mid + 1;
+        } else {
+          high = mid - 1;
+        }
+      }
+
+      if (!bestFit) break;
+
+      chunks.push(bestFit);
+
+      remaining = remaining.slice(bestFit.length);
+    }
+
+    document.body.removeChild(container);
+
+    return chunks;
   };
 
   type ContentBlock =
@@ -796,7 +879,7 @@ const FIXED_SECTIONS_HEIGHT = 40;
   const blocks: ContentBlock[] = [];
   blocks.push({
     type: "client-vendor",
-    height: 45,
+    height: 33,
   });
 
   items.forEach((item: any) => {
@@ -807,15 +890,20 @@ const FIXED_SECTIONS_HEIGHT = 40;
     });
   });
 
-  splitTextIntoChunks(report.inspectionActivities).forEach((chunk, index) => {
-    blocks.push({
-      type: "activities",
-      text: chunk,
-      height: estimateTextHeight(chunk),
-      isContinuation: index > 0,
-    });
-  });
+ 
+const activityChunks = splitTextByRenderedHeight(
+  report.inspectionActivities || "",
+  20
+);
 
+activityChunks.forEach((chunk, index) => {
+  blocks.push({
+    type: "activities",
+    text: chunk,
+    height: 20,
+    isContinuation: index > 0,
+  });
+});
   refs.forEach((doc: any) => {
     blocks.push({
       type: "ref-row",
@@ -854,10 +942,12 @@ const FIXED_SECTIONS_HEIGHT = 40;
   while (currentBlockIndex < blocks.length) {
     const isFirstPage = pages.length === 0;
     // Signatures are rendered on every page, so reduce available height by signature height on all pages
-    let availableHeight =
+   let availableHeight =
   PAGE_HEIGHT_LIMIT -
   HEADER_HEIGHT -
-  RESERVED_BOTTOM;
+  FOOTER_HEIGHT -
+  SIGNATURES_HEIGHT -
+  10;
     if (isFirstPage) {
       availableHeight -= FIXED_SECTIONS_HEIGHT;
     }
@@ -1003,22 +1093,17 @@ const FIXED_SECTIONS_HEIGHT = 40;
                   {isFirstPage && renderJobDetailsSection()}
                   {showClientVendor && renderClientVendorSection()}
                   {pageItems.length > 0 && renderItemsTableSection(pageItems, isFirstItem)}
-                 {pageActivities.map((a, idx) =>
-  renderActivitiesSection(
-    a.text,
-    idx === 0 && !a.isContinuation
-  )
-)}
+                  {pageActivities.length > 0 && renderActivitiesSection(
+                    pageActivities.map(a => a.text).join(""),
+                    !pageActivities[0].isContinuation
+                  )}
                   {pageRefs.length > 0 && renderRefsSection(pageRefs, isFirstRefs)}
                   {pageCalib.length > 0 && renderCalibSection(pageCalib, isFirstCalib)}
-                 {pageConclusion.map((c, idx) =>
-  renderConclusionSection(
-    c.text,
-    idx === 0 && !c.isContinuation
-  )
-)}
+                  {pageConclusion.length > 0 && renderConclusionSection(
+                    pageConclusion.map(c => c.text).join(""),
+                    !pageConclusion[0].isContinuation
+                  )}
                 </div>
-                
                   {renderSignatures()}
                 
               </div>
