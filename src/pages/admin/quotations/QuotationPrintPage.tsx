@@ -449,8 +449,8 @@ export const QuotationPrintPage: React.FC = () => {
         style={{
           width: "100%",
           borderCollapse: "collapse",
-
           fontSize: "14px",
+          borderTop: "1px solid #000",
           borderBottom: "0px",
         }}
       >
@@ -460,11 +460,13 @@ export const QuotationPrintPage: React.FC = () => {
             <td
               style={{
                 width: "50%",
-                border: "1px solid #000",
+                borderTop: "0px",
+                borderLeft: "1px solid #000",
+                borderBottom: "1px solid #000",
+                borderRight: "0px",
                 verticalAlign: "top",
                 padding: "8px",
                 lineHeight: "1.5",
-                borderRight: "0px",
               }}
             >
               <div>
@@ -496,10 +498,12 @@ export const QuotationPrintPage: React.FC = () => {
             <td
               style={{
                 width: "50%",
-                border: "0px solid #000",
+                borderTop: "0px",
+                borderRight: "0px",
+                borderBottom: "0px",
+                borderLeft: "0px",
                 padding: 0,
                 verticalAlign: "top",
-                borderLeft: "0px",
               }}
             >
               <table
@@ -510,8 +514,8 @@ export const QuotationPrintPage: React.FC = () => {
               >
                 <tbody>
                   <tr>
-                    <td className="info-label">Quotation No.:</td>
-                    <td className="info-value">{data.quotationNo}</td>
+                    <td className="info-label" style={{ borderTop: "0px" }}>Quotation No.:</td>
+                    <td className="info-value" style={{ borderTop: "0px" }}>{data.quotationNo}</td>
                   </tr>
 
                   <tr>
