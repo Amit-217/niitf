@@ -58,10 +58,49 @@ export const QuotationFormPage: React.FC = () => {
     date: new Date().toISOString().split("T")[0],
     contactPersons: [{ name: "", mobile: "" }],
     services: [
-      { srNo: 1, description: "", level: "NA", sacCode: "", quantity: 0, unit: "", price: 0, amount: 0 },
-      { srNo: 2, description: "Transportation Charges", _isFixed: true, level: "NA", sacCode: "NA", quantity: 1, unit: "Per", price: 0, amount: 0 },
-      { srNo: 3, description: "Lodging Charges", _isFixed: true, level: "NA", sacCode: "NA", quantity: 1, unit: "Per", price: 0, amount: 0 },
-      { srNo: 4, description: "Boarding Charges", _isFixed: true, level: "NA", sacCode: "NA", quantity: 1, unit: "Per", price: 0, amount: 0 },
+      {
+        srNo: 1,
+        description: "",
+        level: "NA",
+        sacCode: "",
+        quantity: 0,
+        unit: "",
+        price: 0,
+        amount: 0,
+      },
+      {
+        srNo: 2,
+        description: "Transportation Charges",
+        _isFixed: true,
+        level: "NA",
+        sacCode: "NA",
+        quantity: 1,
+        unit: "Per",
+        price: 0,
+        amount: 0,
+      },
+      {
+        srNo: 3,
+        description: "Lodging Charges",
+        _isFixed: true,
+        level: "NA",
+        sacCode: "NA",
+        quantity: 1,
+        unit: "Per",
+        price: 0,
+        amount: 0,
+      },
+      {
+        srNo: 4,
+        description: "Boarding Charges",
+        _isFixed: true,
+        level: "NA",
+        sacCode: "NA",
+        quantity: 1,
+        unit: "Per",
+        price: 0,
+        amount: 0,
+      },
     ],
     // Service Specific
     extraCharges: {
@@ -147,7 +186,10 @@ export const QuotationFormPage: React.FC = () => {
           }
           // Derive _isFixed and _isCustom for each service row
           if (data.services) {
-            const descList = type === "training" ? TRAINING_DESCRIPTIONS : SERVICE_DESCRIPTIONS;
+            const descList =
+              type === "training"
+                ? TRAINING_DESCRIPTIONS
+                : SERVICE_DESCRIPTIONS;
             data.services = data.services.map(
               (s: { description?: string; [key: string]: unknown }) => ({
                 ...s,
@@ -161,8 +203,21 @@ export const QuotationFormPage: React.FC = () => {
             );
             // Add missing fixed rows for both service and training (backward compatibility)
             FIXED_CHARGE_DESCS.forEach((desc) => {
-              if (!data.services.find((s: { description?: string }) => s.description === desc)) {
-                data.services.push({ description: desc, _isFixed: true, level: "NA", sacCode: "NA", quantity: 1, unit: "Per", price: 0, amount: 0 });
+              if (
+                !data.services.find(
+                  (s: { description?: string }) => s.description === desc,
+                )
+              ) {
+                data.services.push({
+                  description: desc,
+                  _isFixed: true,
+                  level: "NA",
+                  sacCode: "NA",
+                  quantity: 1,
+                  unit: "Per",
+                  price: 0,
+                  amount: 0,
+                });
               }
             });
           }
@@ -182,7 +237,10 @@ export const QuotationFormPage: React.FC = () => {
           ...(presetCust
             ? {
                 contactPersons: [
-                  { ...prev.contactPersons[0], name: presetCust.contactPerson || "" },
+                  {
+                    ...prev.contactPersons[0],
+                    name: presetCust.contactPerson || "",
+                  },
                 ],
               }
             : {}),
@@ -504,6 +562,7 @@ export const QuotationFormPage: React.FC = () => {
               <tbody className="divide-y divide-gray-100">
                 {formData.services.map((row: any, i: number) => (
                   <tr key={i} className={row._isFixed ? "bg-amber-50" : ""}>
+                    {/* Sr No */}
                     <td className="px-2 py-2">
                       <input
                         type="number"
@@ -514,145 +573,178 @@ export const QuotationFormPage: React.FC = () => {
                         className="w-14 px-2 py-2 border border-gray-300 rounded-lg text-sm text-center"
                       />
                     </td>
-                    <td className="px-2 py-2">
-                      {row._isFixed ? (
-                        <div className="px-3 py-2 text-sm font-semibold text-gray-700 bg-amber-50 rounded-lg border border-amber-200">
-                          {row.description}
-                        </div>
-                      ) : type === "service" ? (
-                        <div className="flex flex-col gap-1">
-                          <select
-                            value={
-                              row._isCustom ? "__custom__" : row.description
-                            }
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              const updated = [...formData.services];
-                              if (val === "__custom__") {
-                                updated[i] = {
-                                  ...updated[i],
-                                  _isCustom: true,
-                                  description: "",
-                                };
-                              } else {
-                                updated[i] = {
-                                  ...updated[i],
-                                  _isCustom: false,
-                                  description: val,
-                                };
-                              }
-                              setFormData({ ...formData, services: updated });
-                            }}
-                            className="w-full px-3 py-2 border rounded-lg text-sm"
-                          >
-                            <option value="">Select description...</option>
-                            {SERVICE_DESCRIPTIONS.map((d) => (
-                              <option key={d} value={d}>
-                                {d}
-                              </option>
-                            ))}
-                            <option value="__custom__">Other</option>
-                          </select>
-                          {row._isCustom && (
-                            <input
-                              type="text"
-                              value={row.description}
-                              onChange={(e) =>
-                                handleServiceChange(
-                                  i,
-                                  "description",
-                                  e.target.value,
-                                )
-                              }
-                              className="w-full px-3 py-2 border rounded-lg text-sm"
-                              placeholder="Enter custom description..."
-                              autoFocus
-                            />
+
+                    {/* Fixed Training Row */}
+                    {type === "training" && row._isFixed ? (
+                      <>
+                        {/* Description colspan 3 */}
+                        <td colSpan={3} className="px-2 py-2">
+                          <div className="px-3 py-2 text-sm font-semibold text-gray-700 bg-amber-50 rounded-lg border border-amber-200">
+                            {row.description}
+                          </div>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        {/* Description */}
+                        <td className="px-2 py-2">
+                          {row._isFixed ? (
+                            <div className="px-3 py-2 text-sm font-semibold text-gray-700 bg-amber-50 rounded-lg border border-amber-200">
+                              {row.description}
+                            </div>
+                          ) : type === "service" ? (
+                            <div className="flex flex-col gap-1">
+                              <select
+                                value={
+                                  row._isCustom ? "__custom__" : row.description
+                                }
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  const updated = [...formData.services];
+
+                                  if (val === "__custom__") {
+                                    updated[i] = {
+                                      ...updated[i],
+                                      _isCustom: true,
+                                      description: "",
+                                    };
+                                  } else {
+                                    updated[i] = {
+                                      ...updated[i],
+                                      _isCustom: false,
+                                      description: val,
+                                    };
+                                  }
+
+                                  setFormData({
+                                    ...formData,
+                                    services: updated,
+                                  });
+                                }}
+                                className="w-full px-3 py-2 border rounded-lg text-sm"
+                              >
+                                <option value="">Select description...</option>
+
+                                {SERVICE_DESCRIPTIONS.map((d) => (
+                                  <option key={d} value={d}>
+                                    {d}
+                                  </option>
+                                ))}
+
+                                <option value="__custom__">Other</option>
+                              </select>
+
+                              {row._isCustom && (
+                                <input
+                                  type="text"
+                                  value={row.description}
+                                  onChange={(e) =>
+                                    handleServiceChange(
+                                      i,
+                                      "description",
+                                      e.target.value,
+                                    )
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                                  placeholder="Enter custom description..."
+                                  autoFocus
+                                />
+                              )}
+                            </div>
+                          ) : (
+                            <div className="flex flex-col gap-1">
+                              <select
+                                value={
+                                  row._isCustom ? "__custom__" : row.description
+                                }
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  const updated = [...formData.services];
+
+                                  if (val === "__custom__") {
+                                    updated[i] = {
+                                      ...updated[i],
+                                      _isCustom: true,
+                                      description: "",
+                                    };
+                                  } else {
+                                    updated[i] = {
+                                      ...updated[i],
+                                      _isCustom: false,
+                                      description: val,
+                                    };
+                                  }
+
+                                  setFormData({
+                                    ...formData,
+                                    services: updated,
+                                  });
+                                }}
+                                className="w-full min-w-[300px] px-3 py-2 border rounded-lg text-sm"
+                              >
+                                <option value="">Select description...</option>
+
+                                {TRAINING_DESCRIPTIONS.map((d) => (
+                                  <option key={d} value={d}>
+                                    {d}
+                                  </option>
+                                ))}
+
+                                <option value="__custom__">Custom</option>
+                              </select>
+
+                              {row._isCustom && (
+                                <input
+                                  type="text"
+                                  value={row.description}
+                                  onChange={(e) =>
+                                    handleServiceChange(
+                                      i,
+                                      "description",
+                                      e.target.value,
+                                    )
+                                  }
+                                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                                  placeholder="Enter custom description..."
+                                  autoFocus
+                                />
+                              )}
+                            </div>
                           )}
-                        </div>
-                      ) : (
-                        <div className="flex flex-col gap-1">
-                          {/* increase the width of the select dropdown wich is display in the table value */}
-                          <select
-                            value={
-                              row._isCustom ? "__custom__" : row.description
-                            }
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              const updated = [...formData.services];
-                              if (val === "__custom__") {
-                                updated[i] = {
-                                  ...updated[i],
-                                  _isCustom: true,
-                                  description: "",
-                                };
-                              } else {
-                                updated[i] = {
-                                  ...updated[i],
-                                  _isCustom: false,
-                                  description: val,
-                                };
-                              }
-                              setFormData({ ...formData, services: updated });
-                            }}
-                            className="w-full px-1 py-2 border rounded-lg text-sm"
-                          >
-                            <option value="">Select description...</option>
-                            {TRAINING_DESCRIPTIONS.map((d) => (
-                              <option key={d} value={d}>
-                                {d}
-                              </option>
-                            ))}
-                            <option value="__custom__">Custom</option>
-                          </select>
-                          {row._isCustom && (
-                            <input
-                              type="text"
-                              value={row.description}
+                        </td>
+
+                        {/* Level */}
+                        {type === "training" && (
+                          <td className="px-2 py-2">
+                            <select
+                              value={row.level}
                               onChange={(e) =>
-                                handleServiceChange(
-                                  i,
-                                  "description",
-                                  e.target.value,
-                                )
+                                handleServiceChange(i, "level", e.target.value)
                               }
-                              className="w-full px-3 py-2 border rounded-lg text-sm"
-                              placeholder="Enter custom description..."
-                              autoFocus
-                            />
-                          )}
-                        </div>
-                      )}
-                    </td>
-                    {type === "training" && (
-                      <td className="px-2 py-2">
-                        {row._isFixed ? (
-                          <span className="px-2 py-1 text-sm text-gray-500">NA</span>
-                        ) : (
-                          <select
-                            value={row.level}
-                            onChange={(e) =>
-                              handleServiceChange(i, "level", e.target.value)
-                            }
-                            className="w-16 px-3 py-2 border rounded-lg text-sm"
-                          >
-                            <option value="I">I</option>
-                            <option value="II">II</option>
-                          </select>
+                              className="w-16 px-3 py-2 border rounded-lg text-sm"
+                            >
+                              <option value="I">I</option>
+                              <option value="II">II</option>
+                            </select>
+                          </td>
                         )}
-                      </td>
+
+                        {/* SAC Code */}
+                        <td className="px-1 py-2">
+                          <input
+                            type="text"
+                            value={row.sacCode}
+                            placeholder="SAC Code"
+                            onChange={(e) =>
+                              handleServiceChange(i, "sacCode", e.target.value)
+                            }
+                            className="w-full px-1 py-2 border rounded-lg text-sm"
+                          />
+                        </td>
+                      </>
                     )}
-                    <td className="px-1 py-2">
-                      <input
-                        type="text"
-                        value={row.sacCode}
-                        placeholder="SAC Code"
-                        onChange={(e) =>
-                          handleServiceChange(i, "sacCode", e.target.value)
-                        }
-                        className="w-full px-1 py-2 border rounded-lg text-sm"
-                      />
-                    </td>
+
+                    {/* Quantity */}
                     <td className="px-1 w-28 py-2">
                       <input
                         type="number"
@@ -663,6 +755,8 @@ export const QuotationFormPage: React.FC = () => {
                         className="w-full px-3 py-2 border rounded-lg text-sm"
                       />
                     </td>
+
+                    {/* Unit */}
                     <td className="px-2 py-2">
                       <input
                         type="text"
@@ -674,6 +768,8 @@ export const QuotationFormPage: React.FC = () => {
                         className="w-full px-3 py-2 border rounded-lg text-sm"
                       />
                     </td>
+
+                    {/* Price */}
                     <td className="px-2 py-2">
                       <input
                         type="number"
@@ -684,6 +780,8 @@ export const QuotationFormPage: React.FC = () => {
                         className="w-full px-3 py-2 border rounded-lg text-sm"
                       />
                     </td>
+
+                    {/* Amount */}
                     <td className="px-2 py-2">
                       <input
                         readOnly
@@ -692,6 +790,8 @@ export const QuotationFormPage: React.FC = () => {
                         className="w-full px-3 py-2 border rounded-lg text-sm bg-gray-50 font-bold"
                       />
                     </td>
+
+                    {/* Action */}
                     <td className="px-2 py-2 text-center">
                       {!row._isFixed && (
                         <button

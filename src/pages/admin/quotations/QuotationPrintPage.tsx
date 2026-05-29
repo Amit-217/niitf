@@ -276,7 +276,17 @@ export const QuotationPrintPage: React.FC = () => {
     unit?: string;
     price: number;
     amount: number;
+    _isFixed?: boolean;
   };
+
+  const FIXED_CHARGE_DESCS = [
+    "Transportation Charges",
+    "Lodging Charges",
+    "Boarding Charges",
+  ];
+
+  const isChargeRow = (row: QuotationRow) =>
+    row._isFixed || FIXED_CHARGE_DESCS.includes(row.description);
 
   const rows: QuotationRow[] = [
     ...(Array.isArray(data.services) ? data.services : []),
@@ -297,20 +307,44 @@ export const QuotationPrintPage: React.FC = () => {
   const termLines: string[] = [];
 
   if (type === "training") {
-    termLines.push(`${pad2(tc++)}. Minimum Candidates required for campus training: ${data.trainingDetails?.minCandidates || 5}`);
-    termLines.push(`${pad2(tc++)}. ${data.trainingDetails?.trainingMode || "Training will be conducted as per yours written practice."}`);
-    termLines.push(`${pad2(tc++)}. In addition to the course fee, as stated above ${data.gstPercentage}% GST will be applicable.`);
-    termLines.push(`${pad2(tc++)}. Course fee includes study material, exam fee, certificate fee.`);
-    termLines.push(`${pad2(tc++)}. Payment terms: ${data.termsAndConditions?.paymentTerms}`);
+    termLines.push(
+      `${pad2(tc++)}. Minimum Candidates required for campus training: ${data.trainingDetails?.minCandidates || 5} Nos`,
+    );
+    termLines.push(
+      `${pad2(tc++)}. ${data.trainingDetails?.trainingMode || "Training will be conducted as per yours written practice."}`,
+    );
+    termLines.push(
+      `${pad2(tc++)}. In addition to the course fee, as stated above ${data.gstPercentage}% GST will be applicable.`,
+    );
+    termLines.push(
+      `${pad2(tc++)}. Course fee includes study material, exam fee, certificate fee.`,
+    );
+    termLines.push(
+      `${pad2(tc++)}. Payment terms: ${data.termsAndConditions?.paymentTerms}`,
+    );
   } else {
     if (data.extraCharges?.minimumVisit > 0)
-      termLines.push(`${pad2(tc++)}. Minimum Visit Charges: ${data.extraCharges.minimumVisit}`);
-    termLines.push(`${pad2(tc++)}. GST: ${data.gstPercentage}% on total charge.`);
-    termLines.push(`${pad2(tc++)}. Payment terms: ${data.termsAndConditions?.paymentTerms}`);
-    termLines.push(`${pad2(tc++)}. Material handling ${data.termsAndConditions?.materialHandling}`);
-    termLines.push(`${pad2(tc++)}. NDE Level II personnel ${data.termsAndConditions?.personnel}`);
-    termLines.push(`${pad2(tc++)}. Machines ${data.termsAndConditions?.machines}`);
-    termLines.push(`${pad2(tc++)}. Consumables ${data.termsAndConditions?.consumables}`);
+      termLines.push(
+        `${pad2(tc++)}. Minimum Visit Charges: ${data.extraCharges.minimumVisit}`,
+      );
+    termLines.push(
+      `${pad2(tc++)}. GST: ${data.gstPercentage}% on total charge.`,
+    );
+    termLines.push(
+      `${pad2(tc++)}. Payment terms: ${data.termsAndConditions?.paymentTerms}`,
+    );
+    termLines.push(
+      `${pad2(tc++)}. Material handling ${data.termsAndConditions?.materialHandling}`,
+    );
+    termLines.push(
+      `${pad2(tc++)}. NDE Level II personnel ${data.termsAndConditions?.personnel}`,
+    );
+    termLines.push(
+      `${pad2(tc++)}. Machines ${data.termsAndConditions?.machines}`,
+    );
+    termLines.push(
+      `${pad2(tc++)}. Consumables ${data.termsAndConditions?.consumables}`,
+    );
   }
 
   // --- Pagination block engine ---
@@ -356,7 +390,10 @@ export const QuotationPrintPage: React.FC = () => {
         break;
       }
     }
-    if (pb.length === 0) { pb.push(allBlocks[bi]); bi++; }
+    if (pb.length === 0) {
+      pb.push(allBlocks[bi]);
+      bi++;
+    }
     pageList.push(pb);
   }
 
@@ -402,165 +439,156 @@ export const QuotationPrintPage: React.FC = () => {
     </>
   );
 
-const renderIntro = () => (
-  <>
-    <div className="title" style={{ marginBottom: "8px" }}>
-      QUOTATION
-    </div>
+  const renderIntro = () => (
+    <>
+      <div className="title" style={{ marginBottom: "8px" }}>
+        QUOTATION
+      </div>
 
-    <table
-      style={{
-        width: "100%",
-        borderCollapse: "collapse",
-        
-        fontSize: "14px",
-        borderBottom:"0px"
-      }}
-    >
-      <tbody>
-        <tr>
-          {/* LEFT SIDE */}
-          <td
-            style={{
-              width: "50%",
-              border: "1px solid #000",
-              verticalAlign: "top",
-              padding: "8px",
-              lineHeight: "1.5",
-              borderRight:"0px",
-            }}
-          >
-            <div><strong>TO,</strong></div>
-
-            <div>
-              <strong>Customer:</strong>{" "}
-              {customer?.companyName || "-"}
-            </div>
-
-            <div>
-              <strong>Address:</strong>{" "}
-              {customer?.address || "-"}
-            </div>
-
-          
-            <div>
-              <strong>GST No:</strong>{" "}
-              {customer?.gstNo || "-"}
-            </div>
-
-            <div>
-              <strong>Contact Name:</strong>{" "}
-              {customer?.contactPerson || "-"}
-            </div>
-
-            <div>
-              <strong>Contact No.:</strong>{" "}
-              {customer?.mobile || "-"}
-            </div>
-          </td>
-
-          {/* RIGHT SIDE */}
-          <td
-            style={{
-              width: "50%",
-              border: "0px solid #000",
-              padding: 0,
-              verticalAlign: "top",
-              borderLeft:"0px",
-            }}
-          >
-            <table
+      <table
+        style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          fontSize: "14px",
+          borderTop: "1px solid #000",
+          borderBottom: "0px",
+        }}
+      >
+        <tbody>
+          <tr>
+            {/* LEFT SIDE */}
+            <td
               style={{
-                width: "100%",
-                borderCollapse: "collapse",
+                width: "50%",
+                borderTop: "0px",
+                borderLeft: "1px solid #000",
+                borderBottom: "1px solid #000",
+                borderRight: "0px",
+                verticalAlign: "top",
+                padding: "8px",
+                lineHeight: "1.5",
               }}
             >
-              <tbody
+              <div>
+                <strong>TO,</strong>
+              </div>
+
+              <div>
+                <strong>Customer:</strong> {customer?.companyName || "-"}
+              </div>
+
+              <div>
+                <strong>Address:</strong> {customer?.address || "-"}
+              </div>
+
+              <div>
+                <strong>GST No:</strong> {customer?.gstNo || "-"}
+              </div>
+
+              <div>
+                <strong>Contact Name:</strong> {customer?.contactPerson || "-"}
+              </div>
+
+              <div>
+                <strong>Contact No.:</strong> {customer?.mobile || "-"}
+              </div>
+            </td>
+
+            {/* RIGHT SIDE */}
+            <td
+              style={{
+                width: "50%",
+                borderTop: "0px",
+                borderRight: "0px",
+                borderBottom: "0px",
+                borderLeft: "0px",
+                padding: 0,
+                verticalAlign: "top",
+              }}
+            >
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                }}
               >
-                <tr>
-                  <td className="info-label">Quotation No.:</td>
-                  <td className="info-value">
-                    {data.quotationNo}
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td className="info-label" style={{ borderTop: "0px" }}>Quotation No.:</td>
+                    <td className="info-value" style={{ borderTop: "0px" }}>{data.quotationNo}</td>
+                  </tr>
 
-                <tr>
-                  <td className="info-label">Date:</td>
-                  <td className="info-value">
-                    {data.date
-                      ? new Date(data.date).toLocaleDateString("en-GB")
-                      : "-"}
-                  </td>
-                </tr>
+                  <tr>
+                    <td className="info-label">Date:</td>
+                    <td className="info-value">
+                      {data.date
+                        ? new Date(data.date).toLocaleDateString("en-GB")
+                        : "-"}
+                    </td>
+                  </tr>
 
-                <tr>
-                  <td className="info-label">
-                    Enquiry Reference:
-                  </td>
-                  <td className="info-value">
-                    {data.enquiryReference || "By Call"}
-                  </td>
-                </tr>
+                  <tr>
+                    <td className="info-label">Enquiry Reference:</td>
+                    <td className="info-value">
+                      {data.enquiryReference || "By Call"}
+                    </td>
+                  </tr>
 
-                <tr>
-                  <td className="info-label">
-                    Contact Person:
-                  </td>
-                  <td className="info-value">
-                    {data.preparedBy?.name ||
-                      "Mr. B. T. Kadam"}
-                  </td>
-                </tr>
+                  <tr>
+                    <td className="info-label">Contact Person:</td>
+                    <td className="info-value">
+                      {data.preparedBy?.name || "Mr. B. T. Kadam"}
+                    </td>
+                  </tr>
 
-                <tr>
-                  <td className="info-label">Mail ID:</td>
-                  <td className="info-value">
-                    niit004@gmail.com
-                  </td>
-                </tr>
+                  <tr>
+                    <td className="info-label">Mail ID:</td>
+                    <td className="info-value">niit004@gmail.com</td>
+                  </tr>
 
-                <tr>
-                  <td className="info-label"
-                  style={{borderBottom:"0px"}}>
-                    Contact Numbers:
-                  </td>
-                  <td className="info-value"
-                   style={{borderBottom:"0px"}}>
-                    +91 9860186056 / 7875154431
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </td>
-        </tr>
+                  <tr>
+                    <td className="info-label" style={{ borderBottom: "0px" }}>
+                      Contact Numbers:
+                    </td>
+                    <td className="info-value" style={{ borderBottom: "0px" }}>
+                      +91 9860186056 / 7875154431
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
 
-        {/* DEAR SIR ROW */}
-        <tr>
-          <td
-            colSpan={2}
-            style={{
-              border: "1px solid #000",
-              padding: "8px",
-              lineHeight: "1.5",
-              borderBottom:"0px",
-            }}
-          >
-            <strong>Dear Sir,</strong>
-            <br />
-            This is reference to discussion with you; we are
-            pleased to quote our best competitive Price for
-            Inspection.
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </>
-);
+          {/* DEAR SIR ROW */}
+          <tr>
+            <td
+              colSpan={2}
+              style={{
+                border: "1px solid #000",
+                padding: "8px",
+                lineHeight: "1.5",
+                borderBottom: "0px",
+              }}
+            >
+              <strong>Dear Sir,</strong>
+              <br />
+              <p>
+                {type === "training"
+                  ? "This is in reference to our discussion with you; we are pleased to quote our best competitive price for Training and Certification."
+                  : "This is in reference to our discussion with you; we are pleased to quote our best competitive price for services."}
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </>
+  );
 
   const renderTableSection = (pageBlocks: Block[]) => {
     const hasTableHeader = pageBlocks.some((b) => b.type === "table-header");
     const svcRows = pageBlocks.filter(
-      (b): b is Extract<Block, { type: "service-row" }> => b.type === "service-row"
+      (b): b is Extract<Block, { type: "service-row" }> =>
+        b.type === "service-row",
     );
     const hasTotals = pageBlocks.some((b) => b.type === "table-totals");
     if (!hasTableHeader && !svcRows.length && !hasTotals) return null;
@@ -568,13 +596,22 @@ const renderIntro = () => (
     return (
       <table
         className="quotation-table"
-        style={{ width: "100%", borderCollapse: "collapse", marginBottom: "10px", marginTop:"-10px"}}
+        style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          marginBottom: "10px",
+          marginTop: "-10px",
+        }}
       >
         {hasTableHeader && (
           <thead>
             <tr>
               <th style={{ width: "8%" }}>Sr. No.</th>
-              <th style={{ width: type === "training" ? "27%" : "35%" }}>Description of Services</th>
+              <th style={{ width: type === "training" ? "27%" : "35%" }}>
+                {type === "training"
+                  ? "Description of Training"
+                  : "Description of Services"}
+              </th>
               {type === "training" && <th style={{ width: "10%" }}>Level</th>}
               <th style={{ width: "12%" }}>SAC Code</th>
               <th style={{ width: "7%" }}>Qty</th>
@@ -587,29 +624,85 @@ const renderIntro = () => (
         <tbody>
           {svcRows.map((b) => (
             <tr key={b.idx}>
-              <td style={{ textAlign: "center" }}>{(b.idx + 1).toString().padStart(2, "0")}</td>
-              <td>{b.row.description}</td>
-              {type === "training" && <td style={{ textAlign: "center" }}>{b.row.level || "NA"}</td>}
-              <td style={{ textAlign: "center" }}>{b.row.sacCode || "NA"}</td>
+              {/* Sr No */}
+              <td style={{ textAlign: "center" }}>
+                {(b.idx + 1).toString().padStart(2, "0")}
+              </td>
+
+              {/* FIXED TRAINING ROW */}
+              {type === "training" && isChargeRow(b.row) ? (
+                <>
+                  {/* Description spans Description + Level + SAC */}
+                  <td colSpan={3}>{b.row.description}</td>
+                </>
+              ) : (
+                <>
+                  {/* Description */}
+                  <td>{b.row.description}</td>
+
+                  {/* Level */}
+                  {type === "training" && (
+                    <td style={{ textAlign: "center" }}>{b.row.level || ""}</td>
+                  )}
+
+                  {/* SAC Code */}
+                  <td style={{ textAlign: "center" }}>{b.row.sacCode || ""}</td>
+                </>
+              )}
+
+              {/* Qty */}
               <td style={{ textAlign: "center" }}>{b.row.quantity || 1}</td>
+
+              {/* Unit */}
               <td style={{ textAlign: "center" }}>{b.row.unit || "Nos"}</td>
+
+              {/* Price */}
               <td style={{ textAlign: "right" }}>{fmtAmount(b.row.price)}</td>
+
+              {/* Amount */}
               <td style={{ textAlign: "right" }}>{fmtAmount(b.row.amount)}</td>
             </tr>
           ))}
+
           {hasTotals && (
             <>
               <tr>
-                <td colSpan={colSpan} style={{ textAlign: "right", fontWeight: "bold" }}>Subtotal</td>
-                <td style={{ textAlign: "right", fontWeight: "bold" }}>{fmtAmount(computedSubtotal)}</td>
+                <td
+                  colSpan={colSpan}
+                  style={{ textAlign: "right", fontWeight: "bold" }}
+                >
+                  Subtotal
+                </td>
+
+                <td style={{ textAlign: "right", fontWeight: "bold" }}>
+                  {fmtAmount(computedSubtotal)}
+                </td>
               </tr>
+
               <tr>
-                <td colSpan={colSpan} style={{ textAlign: "right", fontWeight: "bold" }}>GST ({data.gstPercentage}%)</td>
-                <td style={{ textAlign: "right", fontWeight: "bold" }}>{fmtAmount(computedGstAmount)}</td>
+                <td
+                  colSpan={colSpan}
+                  style={{ textAlign: "right", fontWeight: "bold" }}
+                >
+                  GST ({data.gstPercentage}%)
+                </td>
+
+                <td style={{ textAlign: "right", fontWeight: "bold" }}>
+                  {fmtAmount(computedGstAmount)}
+                </td>
               </tr>
+
               <tr>
-                <td colSpan={colSpan} style={{ textAlign: "right", fontWeight: "bold" }}>Total Amount</td>
-                <td style={{ textAlign: "right", fontWeight: "bold" }}>{fmtAmount(computedTotalAmount)}</td>
+                <td
+                  colSpan={colSpan}
+                  style={{ textAlign: "right", fontWeight: "bold" }}
+                >
+                  Total Amount
+                </td>
+
+                <td style={{ textAlign: "right", fontWeight: "bold" }}>
+                  {fmtAmount(computedTotalAmount)}
+                </td>
               </tr>
             </>
           )}
@@ -620,22 +713,35 @@ const renderIntro = () => (
 
   const renderSignoff = () => (
     <div className="quotation-signoff">
-      <p style={{ marginBottom: "6px",fontSize:"16px" ,marginTop:"10px"}}>
+      <p style={{ marginBottom: "6px", fontSize: "16px", marginTop: "10px" }}>
         We trust the above notice is quite competitive acceptable to you Looking
         forward to favorable reply &amp; confirmed order on us.
       </p>
-      <div style={{ marginTop: "28px", fontWeight: "bold" }}>Your faithfully,</div>
+      <div style={{ marginTop: "28px", fontWeight: "bold" }}>
+        Your faithfully,
+      </div>
       <div style={{ marginTop: "8px", fontWeight: "bold" }}>
         {data.preparedBy?.name || "Mr. Bajirao T. Kadam"}
       </div>
       <div>
-        {data.preparedBy?.designation || "ASNT Level III (RT, UT, MT, PT, VT, ET, MFL)"}
+        {data.preparedBy?.designation ||
+          "ASNT Level III (RT, UT, MT, PT, VT, ET, MFL)"}
       </div>
       <div>Competent Person under Factory Act 1948</div>
       <div style={{ fontWeight: "bold" }}>
         National Industrial Inspection &amp; Training Baramati
       </div>
       <div>+91 7875154431, 9860186056</div>
+      <div
+        style={{
+          marginTop: "12px",
+          textAlign: "center",
+          fontSize: "11px",
+          color: "#555",
+        }}
+      >
+        This is a computer generated quotation.
+      </div>
     </div>
   );
 
@@ -646,7 +752,14 @@ const renderIntro = () => (
       {/* Screen toolbar */}
       <div
         className="no-print"
-        style={{ position: "fixed", top: 12, right: 16, zIndex: 100, display: "flex", gap: 8 }}
+        style={{
+          position: "fixed",
+          top: 12,
+          right: 16,
+          zIndex: 100,
+          display: "flex",
+          gap: 8,
+        }}
       >
         <button
           onClick={() => window.print()}
@@ -672,7 +785,7 @@ const renderIntro = () => (
         {pageList.map((pageBlocks, i) => {
           const hasIntro = pageBlocks.some((b) => b.type === "intro");
           const termBlocks = pageBlocks.filter(
-            (b): b is Extract<Block, { type: "term" }> => b.type === "term"
+            (b): b is Extract<Block, { type: "term" }> => b.type === "term",
           );
           const hasSignoff = pageBlocks.some((b) => b.type === "signoff");
 
@@ -683,17 +796,17 @@ const renderIntro = () => (
                 <div className="quotation-body">
                   {hasIntro && renderIntro()}
                   {renderTableSection(pageBlocks)}
-                <div className="final-section">
-  {termBlocks.length > 0 && (
-    <div className="quotation-terms terms-box">
-      {termBlocks.map((b, idx) => (
-        <div key={idx}>{b.text}</div>
-      ))}
-    </div>
-  )}
+                  <div className="final-section">
+                    {termBlocks.length > 0 && (
+                      <div className="quotation-terms terms-box">
+                        {termBlocks.map((b, idx) => (
+                          <div key={idx}>{b.text}</div>
+                        ))}
+                      </div>
+                    )}
 
-  {hasSignoff && renderSignoff()}
-</div>
+                    {hasSignoff && renderSignoff()}
+                  </div>
                 </div>
               </div>
               <div className="quotation-page-footer">

@@ -818,7 +818,9 @@ export const InvoicePrintPage: React.FC = () => {
                       className="gst-value bold red"
                       style={{ borderTop: "1px solid #000", width: "112px" }}
                     >
-                      {fmtNum(data.subtotal ?? data.totalAmount)}
+                      {fmtNum(
+                        (data.subtotal ?? data.totalAmount ?? 0) + totalTaxAmt,
+                      )}
                     </td>
                   </tr>
                 )}
@@ -1061,7 +1063,7 @@ export const InvoicePrintPage: React.FC = () => {
         </tbody>
       </table>
 
-      <div className="footer-note">This is a Computer generated invoice.</div>
+      <div className="footer-note">This is a computer generated invoice.</div>
     </>
   );
 
