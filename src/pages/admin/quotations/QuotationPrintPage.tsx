@@ -728,6 +728,16 @@ export const QuotationPrintPage: React.FC = () => {
         National Industrial Inspection &amp; Training Baramati
       </div>
       <div>+91 7875154431, 9860186056</div>
+      <div
+        style={{
+          marginTop: "12px",
+          textAlign: "center",
+          fontSize: "11px",
+          color: "#555",
+        }}
+      >
+        This is a computer generated quotation.
+      </div>
     </div>
   );
 
