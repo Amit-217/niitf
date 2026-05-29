@@ -17,6 +17,15 @@ const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
 
+  @media screen {
+    body.autoprint-mode { background: #fff !important; }
+    body.autoprint-mode > #root > * { opacity: 0 !important; visibility: hidden !important; }
+    .print-page {
+      margin: 0 auto 16px auto;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    }
+  }
+
   @media print {
     body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
@@ -51,8 +60,8 @@ const PRINT_STYLES = `
     flex-direction: column;
     overflow: hidden;
   }
-  .print-page-content { flex: 1 1 auto; }
-  .print-page-foot { margin-top: auto; }
+  .print-page-content { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+  .print-page-foot { flex: 0 0 auto; }
 
   /* Unified Header & Footer Styles */
   .rpt-header { 
@@ -128,54 +137,54 @@ const PRINT_STYLES = `
   .bw .hdr-center .sub { color: #333 !important; }
   .bw .hdr-center .iso { color: #000 !important; }
   .bw .logo-box { background: #fff !important; }
-  .bw .section-hdr { background: #fff !important; color: #000 !important; border-bottom: 1px solid #444 !important; }
+  .bw .section-hdr { background: #fff !important; color: #000 !important; border-bottom: 1.2px solid #000 !important; }
   .bw .col-hdr { background: #fff !important; color: #000 !important; }
-  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1px solid #444 !important; border-top: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
+  .bw .rpt-title { background: #fff !important; color: #000 !important; border: 1.2px solid #000 !important; border-top: none !important; border-bottom: none !important; border-radius: 0 !important; }
   .bw .footer-meta { background: #fff !important; color: #000 !important; }
   .bw .footer-meta span { color: #000 !important; }
   .bw .std-tag { background: #fff !important; color: #000 !important; border: 1px solid #777 !important; }
   .bw .accept-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .reject-badge { background: transparent !important; color: #000 !important; border: none !important; }
   .bw .neutral-badge { background: transparent !important; color: #000 !important; border: none !important; }
-  .bw .report-table td, .bw .report-table th { border-color: #444 !important; }
-  .bw .obs-table td, .bw .obs-table th { border-color: #444 !important; }
+  .bw .report-table td, .bw .report-table th { border-color: #000 !important; border-width: 1.2px !important; }
+  .bw .obs-table td, .bw .obs-table th { border-color: #000 !important; border-width: 1.2px !important; }
   .bw .obs-table th { background: #fff !important; color: #000 !important; }
-  .bw .sign-table td { border-color: #444 !important; }
+  .bw .sign-table td { border-color: #000 !important; border-width: 1.2px !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
-  .bw .footer { background: #fff !important; color: #000 !important; border-color: #444 !important; }
-  .bw .report-body { color: #000 !important; border-top: 1px solid #444 !important; border-left: none !important; border-right: none !important; border-bottom: none !important; border-radius: 6px 6px 0 0 !important; }
-  .bw .report-footer-wrap { border: 1px solid #444 !important; border-radius: 0 0 6px 6px !important; }
-  .bw .items-table td, .bw .items-table th { border-color: #444 !important; }
-  .bw .activities-box { border-color: #444 !important; }
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #444; border-top: none; border-bottom: none; border-radius: 6px 6px 0 0; }
+  .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
+  .bw .report-body { color: #000 !important; border-top: 1.2px solid #000 !important; border-left: none !important; border-right: none !important; border-bottom: none !important; border-radius: 0 !important; }
+  .bw .report-footer-wrap { border: 1.2px solid #000 !important; border-top: none !important; border-radius: 0 !important; }
+  .bw .items-table td, .bw .items-table th { border-color: #000 !important; border-width: 1.2px !important; }
+  .bw .activities-box { border-color: #000 !important; }
+  .bw .nested-table td { border-color: #000 !important; border-width: 1.2px !important; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 7px; font-size: 15px; font-weight: 700; color: #0C447C; text-transform: uppercase; letter-spacing: 0.4px; border: 1.2px solid #000; border-top: none; border-bottom: none; border-radius: 0; }
   .section-hdr { background: #185FA5; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 8px; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; }
-  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1px solid #444; }
-  .report-table td, .report-table th { border: 1px solid #444; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
+  .report-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; border: 1.2px solid #000; }
+  .report-table td, .report-table th { border: 1.2px solid #000; padding: 2px 4px; vertical-align: middle; word-break: break-word; font-size: 11px; }
   .col-hdr { background: #E6F1FB; font-weight: 700; font-size: 11px; text-align: left; color: #0C447C; }
   .lbl { background: #f7fafc; font-weight: 600; font-size: 11px; }
   .val { font-size: 11px; color: #000; }
   .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  .items-table td, .items-table th { border: 1px solid #444; padding: 2px 4px; font-size: 10px; vertical-align: middle; word-break: break-word; text-align: left; }
+  .items-table td, .items-table th { border: 1.2px solid #000; padding: 2px 4px; font-size: 10px; vertical-align: middle; word-break: break-word; text-align: left; }
   .items-table th { background: #E6F1FB; color: #0C447C; font-size: 9.5px; font-weight: 700; }
   .items-table td.text-left { text-align: left; }
   .items-table td.section-hdr { text-align: left; }
   .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
-  .sign-table td { border: 1px solid #444; padding: 2px 4px; font-size: 12px; vertical-align: top; }
+  .sign-table td { border: 1.2px solid #000; padding: 2px 4px; font-size: 12px; vertical-align: top; }
   .nested-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: none !important; }
-  .nested-table td { border: 1px solid #444; }
+  .nested-table td { border: 1.2px solid #000; }
   .nested-table tr:first-child td { border-top: none !important; }
   .nested-table tr:last-child td { border-bottom: none !important; }
   .nested-table td:first-child { border-left: none !important; }
   .nested-table td:last-child { border-right: none !important; }
-  .bw .nested-table td { border-color: #444 !important; }
 
   .mt-n1 { margin-top: -1px; }
   .accept-badge, .reject-badge, .neutral-badge { display: inline-block; font-size: 10px; padding: 0; border-radius: 0; font-weight: 700; background: transparent; border: none; }
   .accept-badge { color: #000; }
   .reject-badge { color: #000; }
   .neutral-badge { color: #000; }
-  .report-body { border-top: 1px solid #444; border-left: none; border-right: none; border-bottom: none; border-radius: 6px 6px 0 0; overflow: hidden; }
-  .report-footer-wrap { border: 1px solid #444; border-top: 1px solid #444; border-radius: 0 0 6px 6px; overflow: hidden; margin-top: -1px; }
+  .report-body { border-top: 1.2px solid #000; border-left: none; border-right: none; border-bottom: none; border-radius: 0; overflow: hidden; }
+  .report-footer-wrap { border: 1.2px solid #000; border-top: none; border-radius: 0; overflow: hidden; margin-top: -1px; }
   .report-footer-wrap .sign-table.mt-n1 { margin-top: 0; }
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
   .report-footer-wrap .sign-table td:first-child { border-left: none; }
@@ -183,7 +192,7 @@ const PRINT_STYLES = `
   .report-footer-wrap .sign-table tr:last-child td { border-bottom: none; }
 
 
-  .activities-box { border: 1px solid #444; padding: 6px 8px; font-size: 11px; min-height: 40px; white-space: pre-wrap; word-break: break-word; }
+  .activities-box { border: 1.2px solid #000; padding: 6px 8px; font-size: 11px; min-height: 40px; white-space: pre-wrap; word-break: break-word; }
   .footer { background: #f8fafc; padding: 6px 10px; font-size: 10px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -237,28 +246,30 @@ export const TPIIVRReportPrintPage: React.FC = () => {
     if (!id) return;
     const fetcher = isPublic ? getPublicTPIIVRReportById : getTPIIVRReportById;
     fetcher(id)
-      .then((res: any) => setReport((res as any).data ?? res))
+      .then((res: any) => setReport(res.data?.data ?? res.data ?? res))
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
   }, [id, isPublic]);
 
   useEffect(() => {
-    if (!loading && report && autoPrint) {
+    if (autoPrint) {
       document.body.classList.add("autoprint-mode");
-      const t = setTimeout(() => {
-        // Trigger multiple reflows to "wake up" the rendering engine
+      return () => document.body.classList.remove("autoprint-mode");
+    }
+  }, [autoPrint]);
+
+  useEffect(() => {
+    if (!loading && report && autoPrint) {
+      setTimeout(() => {
         window.scrollTo(0, 10);
         window.scrollTo(0, document.body.scrollHeight);
         window.scrollTo(0, 1);
         window.scrollTo(0, 0);
 
-        // Force a tiny delay after scrolling before printing
         requestAnimationFrame(() => {
           window.print();
-          document.body.classList.remove("autoprint-mode");
         });
       }, 1200);
-      return () => clearTimeout(t);
     }
   }, [loading, report, autoPrint]);
 
@@ -515,7 +526,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
             style={{
               verticalAlign: "top",
               padding: 0,
-              borderLeft: "1px solid #444",
+              borderLeft: "1.2px solid #000",
             }}
           >
             <table className="nested-table">
@@ -717,8 +728,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   // Dynamic pagination block layout engine
   const PAGE_HEIGHT_LIMIT = 288; // mm
   const HEADER_HEIGHT = 28; // mm
-  const FOOTER_HEIGHT = 22; // mm
-  const FIXED_SECTIONS_HEIGHT = 42; // mm (Title + Job details)
+  const FOOTER_HEIGHT = 28; // mm (footer address block ~20mm + footer-meta ~5mm + 3mm margin)
+  const FIXED_SECTIONS_HEIGHT = 52; // mm (Title + Job details)
 
   const estimateItemRowHeight = (item: any) => {
     const baseHeight = 6.5; // mm
@@ -797,7 +808,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   const pages: PageDescriptor[] = [];
   let currentBlockIndex = 0;
 
-  const SIGNATURES_HEIGHT = 42; // mm
+  const SIGNATURES_HEIGHT = 48; // mm
 
   while (currentBlockIndex < blocks.length) {
     const isFirstPage = pages.length === 0;
