@@ -291,19 +291,19 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               <td style={{ fontWeight: 600, fontSize: "11px" }}>RQS / VSSC</td>
             </tr>
             <tr>
-              <td>Name: {v(inspector.name) || "-"}</td>
-              <td>Name: {v(fs.qc?.name) || "-"}</td>
-              <td>Name: {v(fs.rqs?.name) || "-"}</td>
+              <td>Name:- {v(inspector.name) || "-"}</td>
+              <td>Name:- {v(fs.qc?.name) || "-"}</td>
+              <td>Name:- {v(fs.rqs?.name) || "-"}</td>
             </tr>
             <tr>
-              <td style={{ height: "60px" }}>Signature: {v(inspector.signature)}</td>
-              <td style={{ height: "60px" }}>Signature: {v(fs.qc?.signature)}</td>
-              <td style={{ height: "60px" }}>Signature: {v(fs.rqs?.signature)}</td>
+              <td style={{ height: "60px" }}>Signature:- {v(inspector.signature)}</td>
+              <td style={{ height: "60px" }}>Signature:- {v(fs.qc?.signature)}</td>
+              <td style={{ height: "60px" }}>Signature:- {v(fs.rqs?.signature)}</td>
             </tr>
             <tr>
-              <td>Date: {fmtDate(inspector.date) || "-"}</td>
-              <td>Date: {fmtDate(fs.qc?.date) || "-"}</td>
-              <td>Date: {fmtDate(fs.rqs?.date) || "-"}</td>
+              <td>Date:- {fmtDate(inspector.date) || "-"}</td>
+              <td>Date:- {fmtDate(fs.qc?.date) || "-"}</td>
+              <td>Date:- {fmtDate(fs.rqs?.date) || "-"}</td>
             </tr>
           </tbody>
         </table>

@@ -433,13 +433,13 @@ export const ReportsListPage = () => {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-gray-700">
-                      {r.jobDetails?.customer || r.jobDetails?.client || r.client || r.customer || "—"}
+                      {r.customerId?.companyName || r.jobDetails?.customer || r.jobDetails?.client || r.client || r.customer || "—"}
                     </td>
                     <td className="px-4 py-3 text-gray-600">
-                      {fmt(r.jobDetails?.reportDate || r.dtOfInspection || r.reportDate)}
+                      {fmt(r.dateOfInspection || r.jobDetails?.reportDate || r.dtOfInspection || r.reportDate)}
                     </td>
                     <td className="px-4 py-3 text-gray-600">
-                      {r.jobDetails?.stageOfInspection || r.inspectionStage || r.stageOfInspection || "—"}
+                      {r.stageOfInspection || r.jobDetails?.stageOfInspection || r.inspectionStage || "—"}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${

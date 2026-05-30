@@ -465,13 +465,13 @@ export const UTGReportPrintPage: React.FC = () => {
               {v(inspector.qualification) || "UT NDE Level II"}
               {inspector.designation ? ` / ${inspector.designation}` : ""}
             </td>
-            <td>Designation: {v(fs.customer?.designation) || "-"}</td>
-            <td>Designation: {v(fs.clientOrTPI?.designation) || "-"}</td>
+            <td>Designation:- {v(fs.customer?.designation) || "-"}</td>
+            <td>Designation:- {v(fs.clientOrTPI?.designation) || "-"}</td>
           </tr>
           <tr>
-            <td style={{ height: 60 }}>Signature:</td>
-            <td style={{ height: 60 }}>Signature:</td>
-            <td style={{ height: 60 }}>Signature:</td>
+            <td style={{ height: 60 }}>Signature:-</td>
+            <td style={{ height: 60 }}>Signature:-</td>
+            <td style={{ height: 60 }}>Signature:-</td>
           </tr>
           <tr>
             <td>Date: {fmtDate(inspector.date) || "-"}</td>
@@ -502,21 +502,21 @@ export const UTGReportPrintPage: React.FC = () => {
             </td>
           </tr>
           <tr>
-            <td className="lbl">Customer</td>
+            <td className="lbl">Customer:</td>
             <td className="val">{v(jd.customer) || "-"}</td>
-            <td className="lbl">Report No.</td>
+            <td className="lbl">Report No.:</td>
             <td className="val">{v(report.reportNo) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Client</td>
+            <td className="lbl">Client:</td>
             <td className="val">{v(jd.client) || "-"}</td>
-            <td className="lbl">Report Date</td>
+            <td className="lbl">Report Date:</td>
             <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Project</td>
+            <td className="lbl">Project:</td>
             <td className="val">{v(jd.project) || "-"}</td>
-            <td className="lbl">Inspection Date</td>
+            <td className="lbl">Inspection Date:</td>
             <td className="val">
               {fmtDate(jd.inspectionDate)}
               {jd.inspectionEndDate
@@ -526,27 +526,27 @@ export const UTGReportPrintPage: React.FC = () => {
             </td>
           </tr>
           <tr>
-            <td className="lbl">Reference Std.</td>
+            <td className="lbl">Reference Std.:</td>
             <td className="val" colSpan={3}>
               {v(jd.referenceStd) || "-"}
             </td>
           </tr>
           <tr>
-            <td className="lbl">Acceptance Criteria</td>
+            <td className="lbl">Acceptance Criteria:</td>
             <td className="val">{v(jd.acceptanceCriteria) || "-"}</td>
-            <td className="lbl">Material</td>
+            <td className="lbl">Material:</td>
             <td className="val">{v(jd.material) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Stage of Inspection</td>
+            <td className="lbl">Stage of Inspection:</td>
             <td className="val">{v(jd.stageOfInspection) || "-"}</td>
-            <td className="lbl">Surface Condition</td>
+            <td className="lbl">Surface Condition:</td>
             <td className="val">{v(jd.surfaceCondition) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Extent of Examination</td>
+            <td className="lbl">Extent of Examination:</td>
             <td className="val">{v(jd.extentOfExamination) || "-"}</td>
-            <td className="lbl">Surface Temperature</td>
+            <td className="lbl">Surface Temperature:</td>
             <td className="val">{v(jd.surfaceTemperature) || "-"}</td>
           </tr>
         </tbody>
@@ -567,21 +567,21 @@ export const UTGReportPrintPage: React.FC = () => {
             </td>
           </tr>
           <tr>
-            <td className="lbl">Equip. Type</td>
+            <td className="lbl">Equip. Type:</td>
             <td className="val">{v(eq.equipmentType) || "-"}</td>
-            <td className="lbl">Sr. No.</td>
+            <td className="lbl">Sr. No.:</td>
             <td className="val">{v(eq.srNo) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Make</td>
+            <td className="lbl">Make:</td>
             <td className="val">{v(eq.make) || "-"}</td>
-            <td className="lbl">Calibration Due</td>
+            <td className="lbl">Calibration Due:</td>
             <td className="val">{fmtDate(eq.calibrationDue) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Couplant</td>
+            <td className="lbl">Couplant:</td>
             <td className="val">{v(eq.couplant) || "-"}</td>
-            <td className="lbl">Basic Calibration Block</td>
+            <td className="lbl">Basic Calibration Block:</td>
             <td className="val">{v(eq.basicCalibrationBlock) || "-"}</td>
           </tr>
         </tbody>
@@ -657,7 +657,7 @@ export const UTGReportPrintPage: React.FC = () => {
             </td>
           </tr>
           <tr>
-            <td className="lbl">UT Method</td>
+            <td className="lbl">UT Method:</td>
             <td className="val">{v(td.utMethod) || "-"}</td>
           </tr>
         </tbody>

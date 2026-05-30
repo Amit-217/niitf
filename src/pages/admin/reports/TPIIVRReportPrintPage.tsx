@@ -433,8 +433,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
             <td>Name: {v(sigs.niit?.name) || "-"}</td>
           </tr>
           <tr>
-            <td style={{ height: "60px" }}>Signature:</td>
-            <td style={{ height: "60px" }}>Signature:</td>
+            <td style={{ height: "60px" }}>Signature:-</td>
+            <td style={{ height: "60px" }}>Signature:-</td>
           </tr>
           <tr>
             <td>Date: {fmtDate(sigs.vendor?.date) || "-"}</td>
@@ -473,7 +473,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               </span>
               {v(report.irRev)}
             </td>
-            <td className="lbl">Dt. of Inspection</td>
+            <td className="lbl">Dt. of Inspection:</td>
             <td className="val" style={{ fontWeight: 600 }}>
               {fmtDate(report.dtOfInspection)}
             </td>
@@ -490,33 +490,33 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         </colgroup>
         <tbody>
           <tr>
-            <td className="lbl">Client:-</td>
+            <td className="lbl">Client:</td>
             <td className="val">{v(report.client)}</td>
-            <td className="lbl">Inspection location</td>
+            <td className="lbl">Inspection location:</td>
             <td className="val">{v(report.inspectionLocation)}</td>
           </tr>
           <tr>
-            <td className="lbl">Project</td>
+            <td className="lbl">Project:</td>
             <td className="val">{v(report.project)}</td>
-            <td className="lbl">Appd. QAP No</td>
+            <td className="lbl">Appd. QAP No.:</td>
             <td className="val">{v(report.appdQapNo)}</td>
           </tr>
           <tr>
-            <td className="lbl">Client PO No</td>
+            <td className="lbl">Client PO No.:</td>
             <td className="val">{v(report.clientPoNo)}</td>
-            <td className="lbl">Appd. QAP Dt.</td>
+            <td className="lbl">Appd. QAP Dt.:</td>
             <td className="val">{fmtDate(report.appdQapDt)}</td>
           </tr>
           <tr>
-            <td className="lbl">PO Amed. No</td>
+            <td className="lbl">PO Amed. No.:</td>
             <td className="val">{v(report.poAmedNo)}</td>
-            <td className="lbl">Part Name</td>
+            <td className="lbl">Part Name:</td>
             <td className="val">{v(report.partName)}</td>
           </tr>
           <tr>
-            <td className="lbl">PO Date</td>
+            <td className="lbl">PO Date:</td>
             <td className="val">{fmtDate(report.poDate)}</td>
-            <td className="lbl">Inspection Stage</td>
+            <td className="lbl">Inspection Stage:</td>
             <td className="val">{v(report.inspectionStage)}</td>
           </tr>
         </tbody>
@@ -544,19 +544,19 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               </colgroup>
               <tbody>
                 <tr>
-                  <td className="lbl">Ref</td>
+                  <td className="lbl">Ref:</td>
                   <td className="val">{v(cd.ref)}</td>
                 </tr>
                 <tr>
-                  <td className="lbl">Contact</td>
+                  <td className="lbl">Contact:</td>
                   <td className="val">{v(cd.contact)}</td>
                 </tr>
                 <tr>
-                  <td className="lbl">Call Date</td>
+                  <td className="lbl">Call Date:</td>
                   <td className="val">{fmtDate(cd.callDate)}</td>
                 </tr>
                 <tr>
-                  <td className="lbl">Inspection Att. Date</td>
+                  <td className="lbl">Inspection Att. Date:</td>
                   <td className="val">{fmtDate(cd.inspectionAttDt)}</td>
                 </tr>
               </tbody>
@@ -576,19 +576,19 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               </colgroup>
               <tbody>
                 <tr>
-                  <td className="lbl">Vendor</td>
+                  <td className="lbl">Vendor:</td>
                   <td className="val">{v(vd.vendor)}</td>
                 </tr>
                 <tr>
-                  <td className="lbl">Sub Vendor</td>
+                  <td className="lbl">Sub Vendor:</td>
                   <td className="val">{v(vd.subVendor)}</td>
                 </tr>
                 <tr>
-                  <td className="lbl">Contact</td>
+                  <td className="lbl">Contact:</td>
                   <td className="val">{v(vd.contact)}</td>
                 </tr>
                 <tr>
-                  <td className="lbl">Phone</td>
+                  <td className="lbl">Phone:</td>
                   <td className="val">{v(vd.phone)}</td>
                 </tr>
               </tbody>
