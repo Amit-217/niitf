@@ -9,7 +9,7 @@ import {
 } from "../../../api/customerApi";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 
-// â”€â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Styles ──────────────────────────────────────────────────────────────────
 
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
@@ -18,7 +18,7 @@ const sectionClass = "bg-white rounded-xl border border-gray-200 p-5 mb-5";
 const sectionTitleClass =
   "text-sm font-semibold text-indigo-700 uppercase tracking-wide mb-4 pb-2 border-b border-gray-100";
 
-// â”€â”€â”€ SelectWithOther â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SelectWithOther ─────────────────────────────────────────────────────────
 
 interface SelectWithOtherProps {
   id?: string;
@@ -65,49 +65,51 @@ const SelectWithOther: React.FC<SelectWithOtherProps> = ({
   </div>
 );
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ───────────────────────────────────────────────────────────────────
 
 interface ObsRow {
-  lineNo: number;
-  indicationNo: string;
+  serialNo: string;
+  jointDetails: string;
+  drawingNoPartNo: string;
+  jobThickness: string;
+  partNo: string;
   transducerAngle: string;
-  transducerAngleOther: string;
-  fromFace: string;
-  leg: string;
-  dbIndicationLevel: string;
-  dbReferenceLevel: string;
-  dbAttenuationFactor: string;
-  dbIndicationRating: string;
+  jointNo: string;
+  indicationLevelA: string;
+  referenceLevelB: string;
+  attenuationFactorC: string;
+  indicationRatingD: string;
   length: string;
   angularDistance: string;
-  depthFromA: string;
-  distanceFromX: string;
-  distanceFromY: string;
-  interpretation: string;
-  evaluation: string;
+  depthFromASurface: string;
+  distanceX: string;
+  distanceY: string;
+  discontinuityEvaluation: string;
+  remarks: string;
 }
 
 const emptyObs = (lineNo: number): ObsRow => ({
-  lineNo,
-  indicationNo: "",
+  serialNo: lineNo.toString(),
+  jointDetails: "",
+  drawingNoPartNo: "",
+  jobThickness: "",
+  partNo: "",
   transducerAngle: "",
-  transducerAngleOther: "",
-  fromFace: "",
-  leg: "",
-  dbIndicationLevel: "",
-  dbReferenceLevel: "",
-  dbAttenuationFactor: "",
-  dbIndicationRating: "",
+  jointNo: "",
+  indicationLevelA: "",
+  referenceLevelB: "",
+  attenuationFactorC: "",
+  indicationRatingD: "",
   length: "",
   angularDistance: "",
-  depthFromA: "",
-  distanceFromX: "",
-  distanceFromY: "",
-  interpretation: "",
-  evaluation: "",
+  depthFromASurface: "",
+  distanceX: "",
+  distanceY: "",
+  discontinuityEvaluation: "",
+  remarks: "",
 });
 
-// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Page ────────────────────────────────────────────────────────────────────
 
 export const AWSDReportFormPage: React.FC = () => {
   const navigate = useNavigate();
@@ -124,26 +126,43 @@ export const AWSDReportFormPage: React.FC = () => {
 
   const [saving, setSaving] = useState(false);
 
-  // â”€â”€ Header Fields â”€â”€
+  // ── Header Fields ──
   const [reportNo, setReportNo] = useState("");
   const [project, setProject] = useState("");
-
-  // â”€â”€ Job Info â”€â”€
-  const [weldIdentification, setWeldIdentification] = useState("");
-  const [materialThickness, setMaterialThickness] = useState("");
-  const [weldJointAWS, setWeldJointAWS] = useState("");
+  const [dateOfInspection, setDateOfInspection] = useState("");
+  
+  // ── Job Info ──
+  const [jobDescription, setJobDescription] = useState("");
+  const [drawingNo, setDrawingNo] = useState("");
+  const [calibrationBlock, setCalibrationBlock] = useState("");
+  const [qtyOfJts, setQtyOfJts] = useState("");
+  const [flawDetectorSrNo, setFlawDetectorSrNo] = useState("");
   const [weldingProcess, setWeldingProcess] = useState("");
   const [weldingProcessOther, setWeldingProcessOther] = useState("");
-  const [qualityRequirementsSection, setQualityRequirementsSection] =
-    useState("");
-  const [jobEvaluation, setJobEvaluation] = useState("");
+  const [machineCalibration, setMachineCalibration] = useState("");
+  const [surfaceCondition, setSurfaceCondition] = useState("");
+  const [poNo, setPoNo] = useState("");
+  const [couplant, setCouplant] = useState("");
+  const [stageOfInspection, setStageOfInspection] = useState("");
+  const [material, setMaterial] = useState("");
+  const [qapNo, setQapNo] = useState("");
+  const [accStandard, setAccStandard] = useState("AWS D1.1 Table 8.3");
 
-  // â”€â”€ Observations â”€â”€
+  // ── Probe Details ──
+  const [probe, setProbe] = useState("");
+  const [overallProbeAngle, setOverallProbeAngle] = useState("");
+  const [frequency, setFrequency] = useState("");
+  const [range, setRange] = useState("");
+  const [scanningSensitivity, setScanningSensitivity] = useState("");
+  const [referenceDb, setReferenceDb] = useState("");
+  const [scanningDb, setScanningDb] = useState("");
+
+  // ── Observations ──
   const [observations, setObservations] = useState<ObsRow[]>(
     Array.from({ length: 3 }, (_, i) => emptyObs(i + 1)),
   );
 
-  // â”€â”€ Footer / Certification â”€â”€
+  // ── Footer / Certification ──
   const [testDate, setTestDate] = useState("");
   const [inspectedBy, setInspectedBy] = useState("");
   const [certYear, setCertYear] = useState("");
@@ -151,7 +170,7 @@ export const AWSDReportFormPage: React.FC = () => {
   const [authorizedBy, setAuthorizedBy] = useState("");
   const [footerDate, setFooterDate] = useState("");
 
-  // â”€â”€ Load in edit mode â”€â”€
+  // ── Load in edit mode ──
   useEffect(() => {
     if (!id) return;
     const toDate = (d?: string | null) => (d ? d.split("T")[0] : "");
@@ -166,7 +185,6 @@ export const AWSDReportFormPage: React.FC = () => {
       .then((res: any) => {
         const r = (res as any).data ?? res;
         if (r.customerId) {
-          // Handle populated customer object or string ID
           if (typeof r.customerId === "object" && r.customerId._id) {
             setCustomerId(r.customerId._id);
             setCustomerName(r.customerId.companyName || "");
@@ -176,52 +194,57 @@ export const AWSDReportFormPage: React.FC = () => {
         }
         setReportNo(r.reportNo ?? "");
         setProject(r.project ?? "");
-        setWeldIdentification(r.weldIdentification ?? "");
-        setMaterialThickness(r.materialThickness ?? "");
-        setWeldJointAWS(r.weldJointAWS ?? "");
+        setDateOfInspection(toDate(r.dateOfInspection));
+        
+        setJobDescription(r.jobDescription ?? "");
+        setDrawingNo(r.drawingNo ?? "");
+        setCalibrationBlock(r.calibrationBlock ?? "");
+        setQtyOfJts(r.qtyOfJts ?? "");
+        setFlawDetectorSrNo(r.flawDetectorSrNo ?? "");
         const [wp, wpO] = fromOther(r.weldingProcess, [
-          "SMAW",
-          "GMAW",
-          "FCAW",
-          "SAW",
-          "GTAW",
-          "MAG",
-          "Other",
+          "SMAW", "GMAW", "FCAW", "SAW", "GTAW", "MAG", "Other",
         ]);
         setWeldingProcess(wp);
         setWeldingProcessOther(wpO);
-        setQualityRequirementsSection(r.qualityRequirementsSection ?? "");
-        setJobEvaluation(r.evaluation ?? r.remarks ?? "");
+        setMachineCalibration(r.machineCalibration ?? "");
+        setSurfaceCondition(r.surfaceCondition ?? "");
+        setPoNo(r.poNo ?? "");
+        setCouplant(r.couplant ?? "");
+        setStageOfInspection(r.stageOfInspection ?? "");
+        setMaterial(r.material ?? "");
+        setQapNo(r.qapNo ?? "");
+        setAccStandard(r.accStandard ?? "AWS D1.1 Table 8.3");
+
+        setProbe(r.probe ?? "");
+        setOverallProbeAngle(r.probeAngle ?? "");
+        setFrequency(r.frequency ?? "");
+        setRange(r.range ?? "");
+        setScanningSensitivity(r.scanningSensitivity ?? "");
+        setReferenceDb(r.referenceDb ?? "");
+        setScanningDb(r.scanningDb ?? "");
+
         if (r.observations?.length) {
           setObservations(
-            r.observations.map((o: any) => {
-              const [ta, taO] = fromOther(o.transducerAngle, [
-                "45°",
-                "60°",
-                "70°",
-                "Normal (0°)",
-                "Other",
-              ]);
-              return {
-                lineNo: o.lineNo,
-                indicationNo: o.indicationNo ?? "",
-                transducerAngle: ta,
-                transducerAngleOther: taO,
-                fromFace: o.fromFace ?? "",
-                leg: o.leg ?? "",
-                dbIndicationLevel: o.decibels?.indicationLevel ?? "",
-                dbReferenceLevel: o.decibels?.referenceLevel ?? "",
-                dbAttenuationFactor: o.decibels?.attenuationFactor ?? "",
-                dbIndicationRating: o.decibels?.indicationRating ?? "",
-                length: o.discontinuity?.length ?? "",
-                angularDistance: o.discontinuity?.angularDistance ?? "",
-                depthFromA: o.discontinuity?.depthFromA ?? "",
-                distanceFromX: o.discontinuity?.distanceFromX ?? "",
-                distanceFromY: o.discontinuity?.distanceFromY ?? "",
-                interpretation: o.interpretation ?? "",
-                evaluation: o.evaluation ?? o.remarks ?? "",
-              };
-            }),
+            r.observations.map((o: any) => ({
+              serialNo: o.serialNo ?? "",
+              jointDetails: o.jointDetails ?? "",
+              drawingNoPartNo: o.drawingNoPartNo ?? "",
+              jobThickness: o.jobThickness ?? "",
+              partNo: o.partNo ?? "",
+              transducerAngle: o.transducerAngle ?? "",
+              jointNo: o.jointNo ?? "",
+              indicationLevelA: o.decibels?.indicationLevelA ?? "",
+              referenceLevelB: o.decibels?.referenceLevelB ?? "",
+              attenuationFactorC: o.decibels?.attenuationFactorC ?? "",
+              indicationRatingD: o.decibels?.indicationRatingD ?? "",
+              length: o.discontinuity?.length ?? "",
+              angularDistance: o.discontinuity?.angularDistance ?? "",
+              depthFromASurface: o.discontinuity?.depthFromASurface ?? "",
+              distanceX: o.discontinuity?.distanceX ?? "",
+              distanceY: o.discontinuity?.distanceY ?? "",
+              discontinuityEvaluation: o.discontinuityEvaluation ?? "",
+              remarks: o.remarks ?? "",
+            })),
           );
         }
         const cert = r.certification ?? {};
@@ -235,7 +258,7 @@ export const AWSDReportFormPage: React.FC = () => {
       .catch(() => toast.error("Failed to load report."));
   }, [id]);
 
-  // â”€â”€ Helpers â”€â”€
+  // ── Helpers ──
   const resolve = (val: string, other: string) =>
     val === "Other" && other.trim() ? other.trim() : val;
 
@@ -249,10 +272,10 @@ export const AWSDReportFormPage: React.FC = () => {
 
   const removeObs = (idx: number) =>
     setObservations((prev) =>
-      prev.filter((_, i) => i !== idx).map((r, i) => ({ ...r, lineNo: i + 1 })),
+      prev.filter((_, i) => i !== idx).map((r, i) => ({ ...r, serialNo: (i + 1).toString() })),
     );
 
-  // â”€â”€ Submit â”€â”€
+  // ── Submit ──
   const handleSubmit = async (status: "draft" | "final") => {
     if (!isEditMode && !customerId) {
       toast.error("Please select a customer first.");
@@ -266,38 +289,56 @@ export const AWSDReportFormPage: React.FC = () => {
         reportNo: reportNo.trim(),
         status,
         project,
-        weldIdentification,
-        materialThickness,
-        weldJointAWS,
+        dateOfInspection: dateOfInspection || undefined,
+        jobDescription,
+        drawingNo,
+        calibrationBlock,
+        qtyOfJts,
+        flawDetectorSrNo,
         weldingProcess: resolve(weldingProcess, weldingProcessOther),
-        qualityRequirementsSection,
-        evaluation: jobEvaluation,
+        machineCalibration,
+        surfaceCondition,
+        poNo,
+        couplant,
+        stageOfInspection,
+        material,
+        qapNo,
+        accStandard,
+        probe,
+        probeAngle: overallProbeAngle,
+        frequency,
+        range,
+        scanningSensitivity,
+        referenceDb,
+        scanningDb,
         observations: observations
           .filter(
             (o) =>
-              o.indicationNo.trim() || o.transducerAngle || o.interpretation,
+              o.serialNo.trim() || o.jointDetails.trim() || o.remarks.trim(),
           )
           .map((o) => ({
-            lineNo: o.lineNo,
-            indicationNo: o.indicationNo,
-            transducerAngle: resolve(o.transducerAngle, o.transducerAngleOther),
-            fromFace: o.fromFace,
-            leg: o.leg,
+            serialNo: o.serialNo,
+            jointDetails: o.jointDetails,
+            drawingNoPartNo: o.drawingNoPartNo,
+            jobThickness: o.jobThickness,
+            partNo: o.partNo,
+            transducerAngle: o.transducerAngle,
+            jointNo: o.jointNo,
             decibels: {
-              indicationLevel: o.dbIndicationLevel,
-              referenceLevel: o.dbReferenceLevel,
-              attenuationFactor: o.dbAttenuationFactor,
-              indicationRating: o.dbIndicationRating,
+              indicationLevelA: o.indicationLevelA,
+              referenceLevelB: o.referenceLevelB,
+              attenuationFactorC: o.attenuationFactorC,
+              indicationRatingD: o.indicationRatingD,
             },
             discontinuity: {
               length: o.length,
               angularDistance: o.angularDistance,
-              depthFromA: o.depthFromA,
-              distanceFromX: o.distanceFromX,
-              distanceFromY: o.distanceFromY,
+              depthFromASurface: o.depthFromASurface,
+              distanceX: o.distanceX,
+              distanceY: o.distanceY,
             },
-            interpretation: o.interpretation,
-            evaluation: o.evaluation,
+            discontinuityEvaluation: o.discontinuityEvaluation,
+            remarks: o.remarks,
           })),
         certification: {
           testDate: testDate || undefined,
@@ -340,13 +381,12 @@ export const AWSDReportFormPage: React.FC = () => {
         </button>
         <div>
           <h1 className="text-xl font-bold text-gray-900">
-            Report of UT of Welds (AWS D1.1)
+            ULTRASONIC INSPECTION REPORT (AWS D1.1)
           </h1>
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
       </div>
 
-      {/* â”€â”€ Missing Customer Banner â”€â”€ */}
       {!customerId && (
         <CustomerPickerBanner
           onCustomerSelected={(id, name) => {
@@ -356,69 +396,46 @@ export const AWSDReportFormPage: React.FC = () => {
         />
       )}
 
-      {/* Report No. + Project */}
+      {/* Top Details */}
       <div className={sectionClass}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
-            <label className={labelClass}>
-              Report No. {isEditMode ? "" : "(Auto-generated)"}
-            </label>
+            <label className={labelClass}>Report No.</label>
             <input
               type="text"
               value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
               readOnly
-              className={
-                inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"
-              }
-              placeholder="Auto-generated on save"
+              className={inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"}
+              placeholder="Auto-generated"
             />
+          </div>
+          <div>
+            <label className={labelClass}>Date of Inspection</label>
+            <input type="date" value={dateOfInspection} onChange={(e) => setDateOfInspection(e.target.value)} className={inputClass} />
           </div>
           <div>
             <label className={labelClass}>Project</label>
-            <input
-              type="text"
-              value={project}
-              onChange={(e) => setProject(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. Structural Bridge Fabrication"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* â”€â”€ Job Info â”€â”€ */}
-      <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Job Information</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Weld Identification</label>
-            <input
-              type="text"
-              value={weldIdentification}
-              onChange={(e) => setWeldIdentification(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. W-01 to W-10"
-            />
+            <input type="text" value={project} onChange={(e) => setProject(e.target.value)} className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>Material Thickness</label>
-            <input
-              type="text"
-              value={materialThickness}
-              onChange={(e) => setMaterialThickness(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 20 mm"
-            />
+            <label className={labelClass}>Job Description</label>
+            <input type="text" value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>Weld Joint AWS</label>
-            <input
-              type="text"
-              value={weldJointAWS}
-              onChange={(e) => setWeldJointAWS(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. B-U2-GF"
-            />
+            <label className={labelClass}>Drawing No</label>
+            <input type="text" value={drawingNo} onChange={(e) => setDrawingNo(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Calibration. Block</label>
+            <input type="text" value={calibrationBlock} onChange={(e) => setCalibrationBlock(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>QTY of Jts.</label>
+            <input type="text" value={qtyOfJts} onChange={(e) => setQtyOfJts(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Flaw Detector/Sr. No.</label>
+            <input type="text" value={flawDetectorSrNo} onChange={(e) => setFlawDetectorSrNo(e.target.value)} className={inputClass} />
           </div>
           <div>
             <label className={labelClass}>Welding Process</label>
@@ -431,30 +448,76 @@ export const AWSDReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>
-              Quality Requirements â€” Section No.
-            </label>
-            <input
-              type="text"
-              value={qualityRequirementsSection}
-              onChange={(e) => setQualityRequirementsSection(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. Clause 8, Part F"
-            />
+            <label className={labelClass}>Machine Calibration</label>
+            <input type="text" value={machineCalibration} onChange={(e) => setMachineCalibration(e.target.value)} className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>Evaluation</label>
-            <input
-              type="text"
-              value={jobEvaluation}
-              onChange={(e) => setJobEvaluation(e.target.value)}
-              className={inputClass}
-            />
+            <label className={labelClass}>Surface Condition</label>
+            <input type="text" value={surfaceCondition} onChange={(e) => setSurfaceCondition(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>P.O. No.</label>
+            <input type="text" value={poNo} onChange={(e) => setPoNo(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Couplant</label>
+            <input type="text" value={couplant} onChange={(e) => setCouplant(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Stage of inspection</label>
+            <input type="text" value={stageOfInspection} onChange={(e) => setStageOfInspection(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Material</label>
+            <input type="text" value={material} onChange={(e) => setMaterial(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>QAP NO.</label>
+            <input type="text" value={qapNo} onChange={(e) => setQapNo(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Acc. Standard</label>
+            <input type="text" value={accStandard} onChange={(e) => setAccStandard(e.target.value)} className={inputClass} />
           </div>
         </div>
       </div>
 
-      {/* â”€â”€ Observations Table â”€â”€ */}
+      {/* ── Probe Details ── */}
+      <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>Probe Details</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
+          <div>
+            <label className={labelClass}>Probe</label>
+            <input type="text" value={probe} onChange={(e) => setProbe(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Probe Angle</label>
+            <input type="text" value={overallProbeAngle} onChange={(e) => setOverallProbeAngle(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Frequency</label>
+            <input type="text" value={frequency} onChange={(e) => setFrequency(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Range</label>
+            <input type="text" value={range} onChange={(e) => setRange(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Scanning Sensitivity</label>
+            <input type="text" value={scanningSensitivity} onChange={(e) => setScanningSensitivity(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Reference dB</label>
+            <input type="text" value={referenceDb} onChange={(e) => setReferenceDb(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Scanning dB</label>
+            <input type="text" value={scanningDb} onChange={(e) => setScanningDb(e.target.value)} className={inputClass} />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Observations Table ── */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
@@ -469,266 +532,61 @@ export const AWSDReportFormPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Decibels sub-header */}
         <div className="overflow-x-auto">
           <table className="w-full text-xs border-collapse min-w-[1400px]">
             <thead>
-              <tr className="bg-gray-50 text-gray-600 uppercase">
-                <th
-                  rowSpan={2}
-                  className="border border-gray-200 px-2 py-2 text-center w-10"
-                >
-                  Line No.
-                </th>
-                <th
-                  rowSpan={2}
-                  className="border border-gray-200 px-2 py-2 text-center"
-                >
-                  Indication No.
-                </th>
-                <th
-                  rowSpan={2}
-                  className="border border-gray-200 px-2 py-2 text-left"
-                >
-                  Transducer Angle
-                </th>
-                <th
-                  rowSpan={2}
-                  className="border border-gray-200 px-2 py-2 text-center"
-                >
-                  From Face
-                </th>
-                <th
-                  rowSpan={2}
-                  className="border border-gray-200 px-2 py-2 text-center"
-                >
-                  Leg
-                </th>
-                <th
-                  colSpan={4}
-                  className="border border-gray-200 px-2 py-2 text-center bg-indigo-50 text-indigo-700"
-                >
-                  Decibels
-                </th>
-                <th
-                  colSpan={5}
-                  className="border border-gray-200 px-2 py-2 text-center bg-orange-50 text-orange-700"
-                >
-                  Discontinuity
-                </th>
-                <th
-                  rowSpan={2}
-                  className="border border-gray-200 px-2 py-2 text-center"
-                >
-                  Interpretation
-                </th>
-                <th
-                  rowSpan={2}
-                  className="border border-gray-200 px-2 py-2 w-8"
-                ></th>
+              <tr className="bg-gray-50 text-gray-600 uppercase text-center">
+                <th rowSpan={2} className="border border-gray-200 px-2 py-2 w-10">Serial Number</th>
+                <th rowSpan={2} className="border border-gray-200 px-2 py-2">Joint Details</th>
+                <th rowSpan={2} className="border border-gray-200 px-2 py-2">Drawing No. / Part No.</th>
+                <th rowSpan={2} className="border border-gray-200 px-2 py-2">Job Thickness (mm)</th>
+                <th rowSpan={2} className="border border-gray-200 px-2 py-2">Part Number</th>
+                <th rowSpan={2} className="border border-gray-200 px-2 py-2">Transducer Angle</th>
+                <th rowSpan={2} className="border border-gray-200 px-2 py-2">Joint No</th>
+                <th colSpan={4} className="border border-gray-200 px-2 py-2 bg-indigo-50 text-indigo-700">Decibels</th>
+                <th colSpan={5} className="border border-gray-200 px-2 py-2 bg-orange-50 text-orange-700">Discontinuity</th>
+                <th rowSpan={2} className="border border-gray-200 px-2 py-2">Discontinuity Evaluation</th>
+                <th rowSpan={2} className="border border-gray-200 px-2 py-2">Remarks</th>
+                <th rowSpan={2} className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
-              <tr className="bg-gray-50 text-gray-600">
-                <th className="border border-gray-200 px-2 py-1 text-center bg-indigo-50">
-                  a. Indication Level
-                </th>
-                <th className="border border-gray-200 px-2 py-1 text-center bg-indigo-50">
-                  b. Reference Level
-                </th>
-                <th className="border border-gray-200 px-2 py-1 text-center bg-indigo-50">
-                  c. Attenuation Factor
-                </th>
-                <th className="border border-gray-200 px-2 py-1 text-center bg-indigo-50">
-                  d. Indication Rating
-                </th>
-                <th className="border border-gray-200 px-2 py-1 text-center bg-orange-50">
-                  Length
-                </th>
-                <th className="border border-gray-200 px-2 py-1 text-center bg-orange-50">
-                  Angular Distance
-                </th>
-                <th className="border border-gray-200 px-2 py-1 text-center bg-orange-50">
-                  Depth from &apos;A&apos; Surface
-                </th>
-                <th className="border border-gray-200 px-2 py-1 text-center bg-orange-50">
-                  From X
-                </th>
-                <th className="border border-gray-200 px-2 py-1 text-center bg-orange-50">
-                  From Y
-                </th>
+              <tr className="bg-gray-50 text-gray-600 text-center">
+                <th className="border border-gray-200 px-2 py-1 bg-indigo-50">Indication Level (a)</th>
+                <th className="border border-gray-200 px-2 py-1 bg-indigo-50">Reference Level (b)</th>
+                <th className="border border-gray-200 px-2 py-1 bg-indigo-50">Attenuation Factor (c)</th>
+                <th className="border border-gray-200 px-2 py-1 bg-indigo-50">Indication Rating (d)</th>
+                <th className="border border-gray-200 px-2 py-1 bg-orange-50">Length (mm)</th>
+                <th className="border border-gray-200 px-2 py-1 bg-orange-50">Angular Distance (Sound Path)</th>
+                <th className="border border-gray-200 px-2 py-1 bg-orange-50">Depth from "A" Surface</th>
+                <th className="border border-gray-200 px-2 py-1 bg-orange-50">Distance MM From X</th>
+                <th className="border border-gray-200 px-2 py-1 bg-orange-50">Distance MM From Y</th>
               </tr>
             </thead>
             <tbody>
               {observations.map((row, idx) => (
                 <tr key={idx} className="hover:bg-gray-50">
-                  <td className="border border-gray-200 px-2 py-1 text-center text-gray-500">
-                    {row.lineNo}
+                  <td className="border border-gray-200 px-1 py-1 text-center">
+                    <input type="text" value={row.serialNo} onChange={(e) => updateObs(idx, "serialNo", e.target.value)} className={inputClass + " text-center"} />
                   </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <input
-                      type="text"
-                      value={row.indicationNo}
-                      onChange={(e) =>
-                        updateObs(idx, "indicationNo", e.target.value)
-                      }
-                      className={inputClass}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 min-w-[130px]">
-                    <SelectWithOther
-                      value={row.transducerAngle}
-                      onChange={(v) => updateObs(idx, "transducerAngle", v)}
-                      otherValue={row.transducerAngleOther}
-                      onOtherChange={(v) =>
-                        updateObs(idx, "transducerAngleOther", v)
-                      }
-                      options={[
-                        "45°",
-                        "60°",
-                        "70°",
-                        "Normal (0°)",
-                        "Other",
-                      ]}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={row.fromFace}
-                      onChange={(e) =>
-                        updateObs(idx, "fromFace", e.target.value)
-                      }
-                      className="w-full border border-gray-300 rounded px-1 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <option value="">-</option>
-                      <option>A</option>
-                      <option>B</option>
-                      <option>C</option>
-                      <option>D</option>
-                    </select>
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={row.leg}
-                      onChange={(e) => updateObs(idx, "leg", e.target.value)}
-                      className="w-full border border-gray-300 rounded px-1 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <option value="">-</option>
-                      <option>1</option>
-                      <option>2</option>
-                      <option>1.5</option>
-                    </select>
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30">
-                    <input
-                      type="text"
-                      value={row.dbIndicationLevel}
-                      onChange={(e) =>
-                        updateObs(idx, "dbIndicationLevel", e.target.value)
-                      }
-                      className={inputClass}
-                      placeholder="dB"
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30">
-                    <input
-                      type="text"
-                      value={row.dbReferenceLevel}
-                      onChange={(e) =>
-                        updateObs(idx, "dbReferenceLevel", e.target.value)
-                      }
-                      className={inputClass}
-                      placeholder="dB"
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30">
-                    <input
-                      type="text"
-                      value={row.dbAttenuationFactor}
-                      onChange={(e) =>
-                        updateObs(idx, "dbAttenuationFactor", e.target.value)
-                      }
-                      className={inputClass}
-                      placeholder="dB"
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30">
-                    <input
-                      type="text"
-                      value={row.dbIndicationRating}
-                      onChange={(e) =>
-                        updateObs(idx, "dbIndicationRating", e.target.value)
-                      }
-                      className={inputClass}
-                      placeholder="dB"
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
-                    <input
-                      type="text"
-                      value={row.length}
-                      onChange={(e) => updateObs(idx, "length", e.target.value)}
-                      className={inputClass}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
-                    <input
-                      type="text"
-                      value={row.angularDistance}
-                      onChange={(e) =>
-                        updateObs(idx, "angularDistance", e.target.value)
-                      }
-                      className={inputClass}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
-                    <input
-                      type="text"
-                      value={row.depthFromA}
-                      onChange={(e) =>
-                        updateObs(idx, "depthFromA", e.target.value)
-                      }
-                      className={inputClass}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
-                    <input
-                      type="text"
-                      value={row.distanceFromX}
-                      onChange={(e) =>
-                        updateObs(idx, "distanceFromX", e.target.value)
-                      }
-                      className={inputClass}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
-                    <input
-                      type="text"
-                      value={row.distanceFromY}
-                      onChange={(e) =>
-                        updateObs(idx, "distanceFromY", e.target.value)
-                      }
-                      className={inputClass}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={row.interpretation}
-                      onChange={(e) =>
-                        updateObs(idx, "interpretation", e.target.value)
-                      }
-                      className="w-full border border-gray-300 rounded px-1 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <option value="">-</option>
-                      <option>Accept</option>
-                      <option>Reject</option>
-                    </select>
-                  </td>
+                  <td className="border border-gray-200 px-1 py-1"><input type="text" value={row.jointDetails} onChange={(e) => updateObs(idx, "jointDetails", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1"><input type="text" value={row.drawingNoPartNo} onChange={(e) => updateObs(idx, "drawingNoPartNo", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1"><input type="text" value={row.jobThickness} onChange={(e) => updateObs(idx, "jobThickness", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1"><input type="text" value={row.partNo} onChange={(e) => updateObs(idx, "partNo", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1"><input type="text" value={row.transducerAngle} onChange={(e) => updateObs(idx, "transducerAngle", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1"><input type="text" value={row.jointNo} onChange={(e) => updateObs(idx, "jointNo", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30"><input type="text" value={row.indicationLevelA} onChange={(e) => updateObs(idx, "indicationLevelA", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30"><input type="text" value={row.referenceLevelB} onChange={(e) => updateObs(idx, "referenceLevelB", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30"><input type="text" value={row.attenuationFactorC} onChange={(e) => updateObs(idx, "attenuationFactorC", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30"><input type="text" value={row.indicationRatingD} onChange={(e) => updateObs(idx, "indicationRatingD", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1 bg-orange-50/30"><input type="text" value={row.length} onChange={(e) => updateObs(idx, "length", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1 bg-orange-50/30"><input type="text" value={row.angularDistance} onChange={(e) => updateObs(idx, "angularDistance", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1 bg-orange-50/30"><input type="text" value={row.depthFromASurface} onChange={(e) => updateObs(idx, "depthFromASurface", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1 bg-orange-50/30"><input type="text" value={row.distanceX} onChange={(e) => updateObs(idx, "distanceX", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1 bg-orange-50/30"><input type="text" value={row.distanceY} onChange={(e) => updateObs(idx, "distanceY", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1"><input type="text" value={row.discontinuityEvaluation} onChange={(e) => updateObs(idx, "discontinuityEvaluation", e.target.value)} className={inputClass} /></td>
+                  <td className="border border-gray-200 px-1 py-1"><input type="text" value={row.remarks} onChange={(e) => updateObs(idx, "remarks", e.target.value)} className={inputClass} /></td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
                     {observations.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeObs(idx)}
-                        className="text-red-400 hover:text-red-600"
-                      >
+                      <button type="button" onClick={() => removeObs(idx)} className="text-red-400 hover:text-red-600">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     )}
@@ -740,108 +598,53 @@ export const AWSDReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Certification & Signatures â”€â”€ */}
+      {/* ── Certification & Signatures ── */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Certification &amp; Signatures</h2>
-        <p className="text-xs text-gray-500 mb-4 italic">
-          We, the undersigned, certify that the statements in this record are
-          correct and that the welds were prepared and tested in conformance
-          with the requirements of Clause 8, Part F of AWS D1.1/D1.1M, (year)
-          Structural Welding Code — Steel.
-        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className={labelClass}>Year (for certification)</label>
-            <input
-              type="text"
-              value={certYear}
-              onChange={(e) => setCertYear(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 2025"
-            />
+            <input type="text" value={certYear} onChange={(e) => setCertYear(e.target.value)} className={inputClass} placeholder="e.g. 2025" />
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {/* Left */}
           <div className="space-y-3">
             <div>
               <label className={labelClass}>Test Date</label>
-              <input
-                type="date"
-                value={testDate}
-                onChange={(e) => setTestDate(e.target.value)}
-                className={inputClass}
-              />
+              <input type="date" value={testDate} onChange={(e) => setTestDate(e.target.value)} className={inputClass} />
             </div>
             <div>
               <label className={labelClass}>Inspected By</label>
-              <input
-                type="text"
-                value={inspectedBy}
-                onChange={(e) => setInspectedBy(e.target.value)}
-                className={inputClass}
-                placeholder="e.g. Mr. Mayur Bankar"
-              />
+              <input type="text" value={inspectedBy} onChange={(e) => setInspectedBy(e.target.value)} className={inputClass} />
             </div>
           </div>
-          {/* Right */}
           <div className="space-y-3">
             <div>
               <label className={labelClass}>Manufacturer or Contractor</label>
-              <input
-                type="text"
-                value={manufacturerOrContractor}
-                onChange={(e) => setManufacturerOrContractor(e.target.value)}
-                className={inputClass}
-                placeholder="e.g. M/s XYZ Fabricators"
-              />
+              <input type="text" value={manufacturerOrContractor} onChange={(e) => setManufacturerOrContractor(e.target.value)} className={inputClass} />
             </div>
             <div>
               <label className={labelClass}>Authorized By</label>
-              <input
-                type="text"
-                value={authorizedBy}
-                onChange={(e) => setAuthorizedBy(e.target.value)}
-                className={inputClass}
-              />
+              <input type="text" value={authorizedBy} onChange={(e) => setAuthorizedBy(e.target.value)} className={inputClass} />
             </div>
             <div>
               <label className={labelClass}>Date</label>
-              <input
-                type="date"
-                value={footerDate}
-                onChange={(e) => setFooterDate(e.target.value)}
-                className={inputClass}
-              />
+              <input type="date" value={footerDate} onChange={(e) => setFooterDate(e.target.value)} className={inputClass} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* â”€â”€ Action Buttons â”€â”€ */}
+      {/* ── Action Buttons ── */}
       <div className="flex items-center justify-end gap-3 pb-8">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="px-5 py-2.5 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-        >
+        <button type="button" onClick={() => navigate(-1)} className="px-5 py-2.5 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
           Cancel
         </button>
-        <button
-          type="button"
-          disabled={saving}
-          onClick={() => handleSubmit("draft")}
-          className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors disabled:opacity-50"
-        >
+        <button type="button" disabled={saving} onClick={() => handleSubmit("draft")} className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors disabled:opacity-50">
           <Save className="w-4 h-4" />
           {saving ? "Saving..." : "Save as Draft"}
         </button>
-        <button
-          type="button"
-          disabled={saving}
-          onClick={() => handleSubmit("final")}
-          className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
-        >
+        <button type="button" disabled={saving} onClick={() => handleSubmit("final")} className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50">
           <Save className="w-4 h-4" />
           {saving ? "Saving..." : "Save as Final"}
         </button>
