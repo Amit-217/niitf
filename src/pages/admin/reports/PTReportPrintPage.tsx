@@ -428,14 +428,14 @@ export const PTReportPrintPage: React.FC = () => {
             <td>Designation: {v((jd as any).clientDesignation) || "-"}</td>
           </tr>
           <tr>
-            <td style={{ height: "60px" }}>Signature:</td>
-            <td>Signature:</td>
-            <td>Signature:</td>
+            <td style={{ height: "60px" }}>Signature:-</td>
+            <td>Signature:-</td>
+            <td>Signature:-</td>
           </tr>
           <tr>
-            <td>Date: {fmtDate(jd.reportDate)}</td>
-            <td>Date: {fmtDate(jd.reportDate)}</td>
-            <td>Date: {fmtDate(jd.reportDate)}</td>
+            <td>Date:- {fmtDate(jd.reportDate)}</td>
+            <td>Date:- {fmtDate(jd.reportDate)}</td>
+            <td>Date:- {fmtDate(jd.reportDate)}</td>
           </tr>
         </tbody>
       </table>
@@ -546,7 +546,7 @@ export const PTReportPrintPage: React.FC = () => {
           </tr>
           <tr>
             <td className="lbl" style={{ width: "22%" }}>
-              Customer
+              Customer:
             </td>
             <td className="val" style={{ width: "28%" }}>
               {v(jd.customer)}
@@ -559,56 +559,56 @@ export const PTReportPrintPage: React.FC = () => {
             </td>
           </tr>
           <tr>
-            <td className="lbl">Client</td>
+            <td className="lbl">Client:</td>
             <td className="val">{v(jd.client)}</td>
             <td className="lbl">Report Date:</td>
             <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Project</td>
+            <td className="lbl">Project:</td>
             <td className="val">{v(jd.project) || "-"}</td>
             
-            <td className="lbl">Inspection Date</td>
+            <td className="lbl">Inspection Date:</td>
             <td className="val">
               {dateRange(jd.inspectionDate, jd.inspectionEndDate) || "-"}
             </td>
           </tr>
           <tr>
-            <td className="lbl">Reference standard</td>
+            <td className="lbl">Reference standard:</td>
             <td className="val">
               {standards.length > 0 ? standards.join(", ") : "Not specified"}
             </td>
            
-            <td className="lbl">Material</td>
+            <td className="lbl">Material:</td>
             <td className="val">{v(jd.material) || "-"}</td>
           </tr>
           <tr>
-             <td className="lbl">Acceptance Criteria</td>
+             <td className="lbl">Acceptance Criteria:</td>
             <td className="val">
               {acceptance.length > 0 ? acceptance.join(", ") : "Not specified"}
             </td>
            
-            <td className="lbl">Thickness</td>
+            <td className="lbl">Thickness:</td>
             <td className="val">{v(jd.thickness) || "-"}</td>
           </tr>
           <tr>
-             <td className="lbl">Stage of Inspection</td>
+             <td className="lbl">Stage of Inspection:</td>
             <td className="val">{v(jd.stageOfInspection) || "-"}</td>
             
-            <td className="lbl">Surface condition</td>
+            <td className="lbl">Surface condition:</td>
             <td className="val">{v(jd.surfaceCondition) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Extent of Examination</td>
+            <td className="lbl">Extent of Examination:</td>
             <td className="val">{v(jd.extentOfExamination) || "-"}</td>
             
-            <td className="lbl">Welding Process</td>
+            <td className="lbl">Welding Process:</td>
             <td className="val">{v(jd.weldingProcess) || "-"}</td>
           </tr>
           <tr>
-            <td className="lbl">Type of Joint</td>
+            <td className="lbl">Type of Joint:</td>
             <td className="val">{v(jd.typeOfJoint) || "-"}</td>
-            <td className="lbl">Surface Temperature</td>
+            <td className="lbl">Surface Temperature:</td>
             <td className="val">{v(jd.surfaceTemperature) || "-"}</td>
           </tr>
         </tbody>
@@ -624,7 +624,7 @@ export const PTReportPrintPage: React.FC = () => {
           </tr>
           <tr>
             <td className="lbl" style={{ width: "22%" }}>
-              Penetrant Method
+              Penetrant Method:
             </td>
             <td className="val" colSpan={3}>
               {v(md.penetrantMethod)}
@@ -633,7 +633,7 @@ export const PTReportPrintPage: React.FC = () => {
           <tr>
             <td className="lbl">
               Excess Penetrant <br />
-              Removal method
+              Removal method:
             </td>
             <td className="val" colSpan={3}>
               {v(md.excessPenetrantRemovalMethod)}
@@ -663,9 +663,9 @@ export const PTReportPrintPage: React.FC = () => {
             <td className="col-hdr">Expiry Date</td>
           </tr>
           {[
-            { label: "Penetrant", data: cons.penetrant },
-            { label: "Developer", data: cons.developer },
-            { label: "Cleaner", data: cons.cleaner },
+            { label: "Penetrant:", data: cons.penetrant },
+            { label: "Developer:", data: cons.developer },
+            { label: "Cleaner:", data: cons.cleaner },
           ].map((row) => (
             <tr key={row.label}>
               <td className="lbl">{row.label}</td>
@@ -694,19 +694,19 @@ export const PTReportPrintPage: React.FC = () => {
             </td>
           </tr>
           <tr>
-            <td className="lbl">Dwell Time</td>
+            <td className="lbl">Dwell Time:</td>
             <td className="val">{v(desc.dwellTime)}</td>
-            <td className="lbl">Developing Time</td>
+            <td className="lbl">Developing Time:</td>
             <td className="val">{v(desc.developingTime)}</td>
-            <td className="lbl">Post Cleaning</td>
+            <td className="lbl">Post Cleaning:</td>
             <td className="val">{v(desc.postCleaning)}</td>
           </tr>
           <tr>
-            <td className="lbl">Light Intensity</td>
+            <td className="lbl">Light Intensity:</td>
             <td className="val">{v(desc.lightIntensity)}</td>
-            <td className="lbl">Light Equip. Used</td>
+            <td className="lbl">Light Equip. Used:</td>
             <td className="val">{v(desc.lightEquipmentUsed)}</td>
-            <td className="lbl">Drying Time</td>
+            <td className="lbl">Drying Time:</td>
             <td className="val">{v(desc.dryingTime)}</td>
           </tr>
         </tbody>

@@ -295,14 +295,14 @@ export const UTReportPrintPage: React.FC = () => {
             <td>Designation: {v((jd as any).clientDesignation) || "-"}</td>
           </tr>
           <tr>
-            <td style={{ height: "60px" }}>Signature:</td>
-            <td style={{ height: "60px" }}>Signature:</td>
-            <td style={{ height: "60px" }}>Signature:</td>
+            <td style={{ height: "60px" }}>Signature:-</td>
+            <td style={{ height: "60px" }}>Signature:-</td>
+            <td style={{ height: "60px" }}>Signature:-</td>
           </tr>
           <tr>
-            <td>Date: {fmtDate(jd.reportDate)}</td>
-            <td>Date: {fmtDate(jd.reportDate)}</td>
-            <td>Date: {fmtDate(jd.reportDate)}</td>
+            <td>Date:- {fmtDate(jd.reportDate)}</td>
+            <td>Date:- {fmtDate(jd.reportDate)}</td>
+            <td>Date:- {fmtDate(jd.reportDate)}</td>
           </tr>
         </tbody>
       </table>
@@ -475,21 +475,21 @@ const renderJobSection = () => (
           </td>
         </tr>
         <tr>
-          <td className="lbl">Customer</td>
+          <td className="lbl">Customer:</td>
           <td className="val">{v(jd.customer)}</td>
-          <td className="lbl">Report No.</td>
+          <td className="lbl">Report No.:</td>
           <td className="val">{v(report.reportNo)}</td>
         </tr>
         <tr>
-          <td className="lbl">Client</td>
+          <td className="lbl">Client:</td>
           <td className="val">{v(jd.client)}</td>
-          <td className="lbl">Report Date</td>
+          <td className="lbl">Report Date:</td>
           <td className="val">{fmtDate(jd.reportDate)}</td>
         </tr>
         <tr>
-          <td className="lbl">Project</td>
+          <td className="lbl">Project:</td>
           <td className="val">{v(jd.project)}</td>
-          <td className="lbl">Inspection Date</td>
+          <td className="lbl">Inspection Date:</td>
           <td className="val">
             {fmtDate(jd.inspectionDate)}
             {jd.inspectionEndDate
@@ -498,31 +498,31 @@ const renderJobSection = () => (
           </td>
         </tr>
         <tr>
-          <td className="lbl">Reference Std.</td>
+          <td className="lbl">Reference Std.:</td>
           <td className="val">{v(jd.referenceStd)}</td>
-          <td className="lbl">Material</td>
+          <td className="lbl">Material:</td>
           <td className="val">{v(jd.material)}</td>
         </tr>
         <tr>
-          <td className="lbl">Acceptance Criteria</td>
+          <td className="lbl">Acceptance Criteria:</td>
           <td className="val">{v(jd.acceptanceCriteria)}</td>
-          <td className="lbl">Thickness</td>
+          <td className="lbl">Thickness:</td>
           <td className="val">{v(jd.thickness)}</td>
         </tr>
         <tr>
-          <td className="lbl">Stage of Inspection</td>
+          <td className="lbl">Stage of Inspection:</td>
           <td className="val">{v(jd.stageOfInspection)}</td>
-          <td className="lbl">Surface Condition</td>
+          <td className="lbl">Surface Condition:</td>
           <td className="val">{v(jd.surfaceCondition)}</td>
         </tr>
         <tr>
-          <td className="lbl">Extent of Examination</td>
+          <td className="lbl">Extent of Examination:</td>
           <td className="val">{v(jd.extentOfExamination)}</td>
-          <td className="lbl">Surface Temperature</td>
+          <td className="lbl">Surface Temperature:</td>
           <td className="val">{v(jd.surfaceTemperature)}</td>
         </tr>
         <tr>
-          <td className="lbl">Type of Joint</td>
+          <td className="lbl">Type of Joint:</td>
           <td colSpan={3} className="val">
             {v(jd.typeOfJoint)}
           </td>
@@ -549,19 +549,19 @@ const renderEquipmentSection = () => (
         </td>
       </tr>
       <tr>
-        <td className="lbl">Equip. Type</td>
+        <td className="lbl">Equip. Type:</td>
         <td className="val">{v(eq.equipmentType)}</td>
-        <td className="lbl">Sr. no.</td>
+        <td className="lbl">Sr. No.:</td>
         <td className="val">{v(eq.srNo)}</td>
-        <td className="lbl">Make</td>
+        <td className="lbl">Make:</td>
         <td className="val">{v(eq.make)}</td>
       </tr>
       <tr>
-        <td className="lbl">Calibration Due</td>
+        <td className="lbl">Calibration Due:</td>
         <td className="val">{fmtDate(eq.calibrationDue)}</td>
-        <td className="lbl">Couplant</td>
+        <td className="lbl">Couplant:</td>
         <td className="val">{v(eq.couplant)}</td>
-        <td className="lbl">Basic Calibration Block</td>
+        <td className="lbl">Basic Calibration Block:</td>
         <td className="val">{v(eq.basicCalibrationBlock)}</td>
       </tr>
     </tbody>
@@ -625,19 +625,19 @@ const renderTechniqueSection = () => (
         </td>
       </tr>
       <tr>
-        <td className="lbl">UT Method</td>
+        <td className="lbl">UT Method:</td>
         <td className="val">{v(td.utMethod)}</td>
-        <td className="lbl">Reference Calibration Block</td>
+        <td className="lbl">Reference Calibration Block:</td>
         <td className="val">{v(td.referenceCalibrationBlock)}</td>
       </tr>
       <tr>
-        <td className="lbl">UT Calibration Method</td>
+        <td className="lbl">UT Calibration Method:</td>
         <td className="val">{v(td.utCalibrationMethod)}</td>
-        <td className="lbl">Scanning dB</td>
+        <td className="lbl">Scanning dB:</td>
         <td className="val">{v(td.scanningDb)}</td>
       </tr>
       <tr>
-        <td className="lbl">Scanning Sensitivity</td>
+        <td className="lbl">Scanning Sensitivity:</td>
         <td className="val" colSpan={3}>
           {v(td.scanningSensitivity)}
         </td>
