@@ -345,7 +345,7 @@ export const QuotationPrintPage: React.FC = () => {
                           <strong>Address:</strong> {customer?.address || "-"}
                         </div>
                         <div>
-                          <strong>GST No:</strong> {customer?.gstNo || "-"}
+                          <strong>GST No.:</strong> {customer?.gstNo || "-"}
                         </div>
                         <div>
                           <strong>Contact Name:</strong>{" "}
