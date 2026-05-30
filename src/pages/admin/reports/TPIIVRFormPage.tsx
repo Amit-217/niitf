@@ -130,6 +130,7 @@ export const TPIIVRFormPage: React.FC = () => {
   const state = location.state as {
     customerId?: string;
     customerName?: string;
+    from?: string;
   } | null;
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
   const [customerName, setCustomerName] = useState(state?.customerName ?? "");
@@ -423,9 +424,13 @@ export const TPIIVRFormPage: React.FC = () => {
         await createTPIIVRReport(payload);
       }
       toast.success(`IVR saved as ${status}.`);
-      navigate(`/admin/customers/${customerId}`, {
-        state: { activeTab: "reports", reportSubType: "tpi-ivr" },
-      });
+      if (state?.from === "reports-list") {
+        navigate("/admin/reports");
+      } else {
+        navigate(`/admin/customers/${customerId}`, {
+          state: { activeTab: "reports", reportSubType: "tpi-ivr" },
+        });
+      }
     } catch {
       toast.error("Failed to save report. Please try again.");
     } finally {
@@ -603,21 +608,14 @@ export const TPIIVRFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Inspection Stage</label>
-            <SelectWithOther
-              value={inspectionStage}
-              onChange={setInspectionStage}
-              otherValue={inspectionStageOther}
-              onOtherChange={setInspectionStageOther}
-              options={[
-                "UT IN P/M CONDITION",
-                "STAGE",
-                "FINAL",
-                "STAGE & FINAL",
-                "INCOMING",
-                "IN-PROCESS",
-                "DISPATCH",
-                "Other",
-              ]}
+            <input
+              type="text"
+              value={inspectionStage === "Other" ? inspectionStageOther : ""}
+              onChange={(e) => {
+                setInspectionStage("Other");
+                setInspectionStageOther(e.target.value);
+              }}
+              className={inputClass}
             />
           </div>
         </div>
@@ -901,8 +899,6 @@ export const TPIIVRFormPage: React.FC = () => {
                       <option value="">Select...</option>
                       <option>STAGE</option>
                       <option>FINAL</option>
-                      <option>STAGE / FINAL</option>
-                      <option>INCOMING</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1 text-center">

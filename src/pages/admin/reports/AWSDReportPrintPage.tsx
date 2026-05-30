@@ -14,78 +14,115 @@ const PRINT_STYLES = `
   @page { size: A4 portrait; margin: 0; }
   #root { padding: 0 !important; max-width: none !important; text-align: left !important; }
 
-  @media screen {
-    body.autoprint-mode { background: #fff !important; }
-    body.autoprint-mode > #root > *:not(.print-fixed-footer) { opacity: 0 !important; visibility: hidden !important; }
-    .print-fixed-footer { display: none; }
-    .print-sign-table { display: none; }
-  }
-
   @media print {
-    html, body { height: auto; }
-    body {
-      margin: 0;
-      background: #fff;
-      padding-bottom: 35mm !important;
-    }
-    #report-root {
-      background: #fff !important;
-      padding-bottom: 35mm !important;
-      display: block !important;
-    }
-    #report-root > div {
-      width: 210mm !important;
-      margin: 0 !important;
-      padding: 0mm 5mm 0 5mm !important;
-      box-sizing: border-box !important;
-      page-break-after: auto !important;
-      box-shadow: none !important;
-    }
-    .report { margin: 0 !important; box-shadow: none !important; width: 100% !important; }
+    body.autoprint-mode { opacity: 1; }
     .no-print { display: none !important; }
-    .screen-sign-table { display: none !important; }
-
-    thead { display: table-header-group; }
-    tfoot { display: table-footer-group; break-inside: avoid; page-break-inside: avoid; }
-    table { page-break-inside: auto; }
-    tr { page-break-inside: avoid; }
-    tfoot { display: table-footer-group !important; }
-
-    .print-fixed-footer {
-      position: fixed !important;
-      bottom: 0 !important;
-      left: 5mm !important;
-      right: 5mm !important;
-      height: 30mm !important;
-      background: #fff !important;
-      z-index: 9999 !important;
-      box-sizing: border-box !important;
-      overflow: hidden !important;
-      pointer-events: none !important;
-    }
-
-    .report { overflow: visible !important; }
+    body { margin: 0; background: #fff; }
+    #report-root { background: #fff !important; padding: 0 !important; }
+    .print-page { min-height: 296mm; height: 296mm; margin: 0 !important; box-shadow: none !important; break-after: page; page-break-after: always; }
+    .print-page:last-child { break-after: auto; page-break-after: auto; }
     .report-body { overflow: visible !important; }
-    .report-footer-wrap { break-inside: avoid !important; page-break-inside: avoid !important; }
-    .print-only { display: block !important; }
-  }
-
-  @media screen {
-    .print-only { display: none !important; }
   }
 
   body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
-  .report { background: #fff; border: none; border-radius: 0; overflow: hidden; }
-  .rpt-header { padding: 2px 8px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
-  .logo-box { width: 160px; height: 110px; background: #fff; border-radius: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 2px; transform: translateY(-4px); }
-  .logo-box img { width: 100%; height: 100%; object-fit: contain; }
-  .hdr-center { flex: 1; text-align: center; color: #0C447C; }
-  .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
-  .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
-  .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
-  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
-  .footer-meta span { color: #fff; font-weight: 700; }
+
+  /* Each page is a self-contained A4 block: header at the top, content in a
+     flex region (flex:1), and the footer in NORMAL document flow at the bottom.
+     No position:fixed, so the footer can never be dropped by the print
+     compositor and always sits at the bottom of every page, including the
+     last one. The same blocks are used on screen and in print. */
+  .print-page {
+    width: 210mm;
+    height: 297mm;
+    background: #fff;
+    box-sizing: border-box;
+    padding: 0 5mm 5mm 5mm;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .print-page-content { flex: 1 1 auto; }
+  .print-page-foot { margin-top: auto; }
+
+  /* Unified Header & Footer Styles */
+  .rpt-header { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    padding: 2px 8px; 
+    margin-bottom: 0; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    background: #fff !important;
+  }
+  .logo-box { 
+    width: 160px; 
+    height: 100px; 
+    background: #fff; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    flex-shrink: 0; 
+    overflow: hidden; 
+    transform: translateY(-4px); 
+    margin-top: 2px; 
+  }
+  .logo-box img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: contain; 
+  }
+  .hdr-center { 
+    flex: 1; 
+    text-align: center; 
+    color: #0C447C !important; 
+  }
+  .hdr-center .org { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    font-size: 22px !important; 
+    font-weight: 700 !important; 
+    letter-spacing: 0.2px; 
+    text-transform: uppercase; 
+    color: #0C447C !important;
+  }
+  .hdr-center .sub { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    font-size: 10px !important; 
+    color: #374151 !important; 
+    margin-top: 2px; 
+    line-height: 1.4; 
+  }
+  .hdr-center .iso { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    font-size: 10px !important; 
+    color: #0C447C !important; 
+    font-weight: 700 !important; 
+    margin-top: 2px; 
+  }
+  .inv-foot, .footer { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    background: #f8fafc !important; 
+    padding: 6px 10px !important; 
+    font-size: 10px !important; 
+    color: #4b5563 !important; 
+    margin-top: 8px; 
+    border-top: 3px solid #185FA5 !important; 
+    line-height: 1.4 !important; 
+    text-align: center !important; 
+  }
+  .footer-meta { 
+    font-family: Arial, Helvetica, sans-serif !important; 
+    background: #185FA5 !important; 
+    color: #d7e8fb !important; 
+    font-size: 9px !important; 
+    text-align: center !important; 
+    padding: 3px 8px !important; 
+    border: none !important;
+  }
+  .footer-meta span { 
+    color: #fff !important; 
+    font-weight: 700 !important; 
+  }
   /* B&W mode */
   .bw .rpt-header { background: #fff !important; }
   .bw .hdr-center { color: #000 !important; }
@@ -222,7 +259,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       const trigger = async () => {
         try {
           await document.fonts.ready;
-        } catch (_) { }
+        } catch (_) {}
         requestAnimationFrame(() => {
           setTimeout(() => {
             window.print();
@@ -276,20 +313,79 @@ export const AWSDReportPrintPage: React.FC = () => {
   const obs = report.observations ?? [];
   const cert = report.certification ?? {};
 
-  // Pagination logic
-  const FIRST_PAGE_SIZE = 17;
-  const SUBSEQUENT_PAGE_SIZE = 25;
-  const chunks: any[][] = [];
+  // Dynamic pagination block layout engine
+  const PAGE_HEIGHT_LIMIT = 288; // mm
+  const HEADER_HEIGHT = 28; // mm
+  const FOOTER_HEIGHT = 22; // mm
+  const FIXED_SECTIONS_HEIGHT = 125; // mm (Title + Job info form block + Sketch)
+  const OBS_HEADER_HEIGHT = 40; // mm (vertical text three-level header)
 
-  if (obs.length === 0) {
-    chunks.push([]);
-  } else {
-    // First chunk
-    chunks.push(obs.slice(0, FIRST_PAGE_SIZE));
-    // Subsequent chunks
-    for (let i = FIRST_PAGE_SIZE; i < obs.length; i += SUBSEQUENT_PAGE_SIZE) {
-      chunks.push(obs.slice(i, i + SUBSEQUENT_PAGE_SIZE));
+  type ContentBlock =
+    | { type: "obs-row"; item: any; height: number }
+    | { type: "signatures"; height: number };
+
+  const blocks: ContentBlock[] = [];
+  obs.forEach((o) => {
+    blocks.push({
+      type: "obs-row",
+      item: o,
+      height: 8.2, // mm per observation row (including borders)
+    });
+  });
+  blocks.push({
+    type: "signatures",
+    height: 48,
+  });
+
+  type PageDescriptor = {
+    isFirstPage: boolean;
+    pageBlocks: ContentBlock[];
+  };
+
+  const pages: PageDescriptor[] = [];
+  let currentBlockIndex = 0;
+
+  while (currentBlockIndex < blocks.length) {
+    const isFirstPage = pages.length === 0;
+    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT;
+    if (isFirstPage) {
+      availableHeight -= FIXED_SECTIONS_HEIGHT;
     }
+
+    const pageBlocks: ContentBlock[] = [];
+    let accumulatedHeight = 0;
+    let hasObsTable = false;
+
+    while (currentBlockIndex < blocks.length) {
+      const block = blocks[currentBlockIndex];
+      let blockHeight = block.height;
+
+      // Add table header height if starting observations table on this page
+      if (block.type === "obs-row" && !hasObsTable) {
+        blockHeight += OBS_HEADER_HEIGHT;
+      }
+
+      if (accumulatedHeight + blockHeight <= availableHeight) {
+        pageBlocks.push(block);
+        accumulatedHeight += blockHeight;
+        if (block.type === "obs-row") {
+          hasObsTable = true;
+        }
+        currentBlockIndex++;
+      } else {
+        break;
+      }
+    }
+
+    if (pageBlocks.length === 0 && currentBlockIndex < blocks.length) {
+      pageBlocks.push(blocks[currentBlockIndex]);
+      currentBlockIndex++;
+    }
+
+    pages.push({
+      isFirstPage,
+      pageBlocks,
+    });
   }
 
   const ObsTableHeader = () => (
@@ -496,7 +592,13 @@ export const AWSDReportPrintPage: React.FC = () => {
                   padding: "4px 6px",
                 }}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "8px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: "8px",
+                  }}
+                >
                   <span>
                     Authorized by&nbsp;
                     <span
@@ -569,6 +671,195 @@ export const AWSDReportPrintPage: React.FC = () => {
     </>
   );
 
+  const renderHeader = () => (
+    <div className="rpt-header">
+      <div className="logo-box">
+        <img src="/logo.jpeg" alt="NIIT Logo" />
+      </div>
+      <div className="hdr-center">
+        <div className="org">
+          National Industrial Inspection and Training
+        </div>
+        <div className="sub">
+          THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING | NDT
+          CONSULTANCY
+          <br />
+          FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
+        </div>
+        <div className="iso">(AN ISO 9001:2015 CERTIFIED ORGANIZATION)</div>
+      </div>
+    </div>
+  );
+
+  // ───── AWSD fixed content: title + job-information form block ─────
+  const fixedSections = (
+    <>
+      <div className="rpt-title">Report of UT of Welds (AWS D1.1)</div>
+      {/* ───── JOB INFORMATION (form-line style) ───── */}
+      <div className="form-block">
+        {/* Row 1: Project + Report No */}
+        <div
+          style={{
+            display: "flex",
+            gap: "12px",
+            marginBottom: "4px",
+          }}
+        >
+          <div className="form-row" style={{ flex: 2, marginBottom: 0 }}>
+            <span className="form-label">Project</span>
+            <span className="form-val">{v(report.project)}</span>
+          </div>
+          <div className="form-row" style={{ flex: 1, marginBottom: 0 }}>
+            <span className="form-label">Report no.</span>
+            <span className="form-val">{v(report.reportNo || report.id)}</span>
+          </div>
+        </div>
+        {/* Row 2: Diagram + Fields */}
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            alignItems: "flex-start",
+          }}
+        >
+          {/* Weld reference diagram */}
+          <div
+            style={{
+              width: "200px",
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              paddingTop: "4px",
+            }}
+          >
+            <img
+              src="/image.png"
+              alt="Weld reference sketch"
+              style={{
+                width: "200px",
+                height: "auto",
+                display: "block",
+              }}
+            />
+          </div>
+          {/* Right: Form fields */}
+          <div style={{ flex: 1 }}>
+            <div className="form-row">
+              <span className="form-label">Weld identification :</span>
+              <span className="form-val">{v(report.weldIdentification)}</span>
+            </div>
+            <div className="form-row">
+              <span className="form-label">Material thickness :</span>
+              <span className="form-val">{v(report.materialThickness)}</span>
+            </div>
+            <div className="form-row">
+              <span className="form-label">Weld joint AWS :</span>
+              <span className="form-val">{v(report.weldJointAWS)}</span>
+            </div>
+            <div className="form-row">
+              <span className="form-label">Welding process :</span>
+              <span className="form-val">{v(report.weldingProcess)}</span>
+            </div>
+            <div className="form-row">
+              <span className="form-label">
+                Quality requirements—section no. :
+              </span>
+              <span className="form-val">
+                {v(report.qualityRequirementsSection)}
+              </span>
+            </div>
+            <div className="form-row">
+              <span className="form-label">Remarks :</span>
+              <span className="form-val">
+                {v(report.evaluation || report.remarks)}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
+  // ───── Observation table for a single chunk (page) ─────
+  const renderObsTable = (
+    chunk: any[],
+    chunkIdx: number,
+    isLastChunk: boolean,
+  ) => (
+    <table
+      className="obs-table"
+      style={{
+        borderTop: chunkIdx > 0 ? "1.2px solid #000" : "none",
+      }}
+    >
+      <ObsTableHeader />
+      <tbody>
+        {chunk.map((o: any, i: number) => {
+          const globalIdx =
+            chunkIdx === 0
+              ? i
+              : FIRST_PAGE_SIZE + (chunkIdx - 1) * SUBSEQUENT_PAGE_SIZE + i;
+          return (
+            <tr key={i} style={{ height: "24px" }}>
+              <td>{v(o.lineNo || globalIdx + 1)}</td>
+              <td>{v(o.indicationNo)}</td>
+              <td>{v(o.transducerAngle)}</td>
+              <td>{v(o.fromFace)}</td>
+              <td>{v(o.leg)}</td>
+              <td>{v(o.decibels?.indicationLevel)}</td>
+              <td>{v(o.decibels?.referenceLevel)}</td>
+              <td>{v(o.decibels?.attenuationFactor)}</td>
+              <td>{v(o.decibels?.indicationRating)}</td>
+              <td>{v(o.discontinuity?.length)}</td>
+              <td>{v(o.discontinuity?.angularDistance)}</td>
+              <td>{v(o.discontinuity?.depthFromA)}</td>
+              <td>{v(o.discontinuity?.distanceFromX)}</td>
+              <td>{v(o.discontinuity?.distanceFromY)}</td>
+              <td>{v(o.interpretation)}</td>
+              <td>{v(o.evaluation)}</td>
+            </tr>
+          );
+        })}
+        {/* Empty rows: fill first page to full size */}
+        {chunkIdx === 0 &&
+          chunk.length < FIRST_PAGE_SIZE &&
+          Array.from({
+            length: FIRST_PAGE_SIZE - chunk.length,
+          }).map((_, i) => (
+            <tr key={`empty-p1-${i}`} style={{ height: "24px" }}>
+              <td>{chunk.length + i + 1}</td>
+              {Array.from({ length: 15 }).map((__, j) => (
+                <td key={j}></td>
+              ))}
+            </tr>
+          ))}
+        {/* Empty rows: pad short last (continuation) page to min 3 rows */}
+        {chunkIdx > 0 &&
+          isLastChunk &&
+          chunk.length < 3 &&
+          Array.from({
+            length: Math.max(0, 3 - chunk.length),
+          }).map((_, i) => (
+            <tr key={`empty-last-${i}`} style={{ height: "24px" }}>
+              <td>
+                {FIRST_PAGE_SIZE +
+                  (chunkIdx - 1) * SUBSEQUENT_PAGE_SIZE +
+                  chunk.length +
+                  i +
+                  1}
+              </td>
+              {Array.from({ length: 15 }).map((__, j) => (
+                <td key={j}></td>
+              ))}
+            </tr>
+          ))}
+      </tbody>
+    </table>
+  );
+
+  // Pages are now built dynamically by the layout engine
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
@@ -619,357 +910,41 @@ export const AWSDReportPrintPage: React.FC = () => {
       {/* ───── Report Content ───── */}
       <div
         id="report-root"
-        className={bwMode ? "bw" : ""}
         style={{
           background: "#e9eef5",
           minHeight: "100vh",
           padding: "16px",
         }}
       >
-        <div
-          style={{
-            width: "210mm",
-            minHeight: "297mm",
-            background: "#fff",
-            margin: "0 auto",
-            padding: "0mm 5mm 35mm 5mm",
-            boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-            boxSizing: "border-box",
-          }}
-        >
-          <div className={`report${bwMode ? " bw" : ""}`}>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                borderSpacing: 0,
-                margin: 0,
-                padding: 0,
-              }}
-            >
-              {/* ── THEAD: repeats on every page ── */}
-              <thead>
-                <tr>
-                  <td style={{ padding: "0" }}>
-                    <div className="rpt-header">
-                      <div className="logo-box">
-                        <img src="/logo.png" alt="NIIT Logo" />
-                      </div>
-                      <div className="hdr-center">
-                        <div className="org">
-                          National Industrial Inspection and Training
-                        </div>
-                        <div className="sub">
-                          THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING
-                          | NDT CONSULTANCY
-                          <br />
-                          FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
-                        </div>
-                        <div className="iso">
-                          (AN ISO 9001:2015 CERTIFIED ORGANIZATION)
-                        </div>
-                      </div>
+        {pages.map(({ isFirstPage, pageBlocks }, i) => {
+          const pageObs = pageBlocks
+            .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
+            .map((b) => b.item);
+          const hasObsTable = pageObs.length > 0;
+          const hasSignatures = pageBlocks.some((b) => b.type === "signatures");
+          
+          return (
+            <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
+              <div className="print-page-content">
+                {renderHeader()}
+                <div className="report-body">
+                  {isFirstPage ? (
+                    fixedSections
+                  ) : (
+                    <div className="rpt-title" style={{ borderTop: "none" }}>
+                      Report of UT of Welds (AWS D1.1) - Continued
                     </div>
-                  </td>
-                </tr>
-              </thead>
-
-              {/* ── TBODY: dynamic content ── */}
-              {(() => {
-                const renderTableContent = (
-                  tableChunks: any[][],
-                  isPrint: boolean
-                ) => (
-                  <tbody className={isPrint ? "print-only" : "no-print"}>
-                    {tableChunks.map((chunk, chunkIdx) => (
-                      <tr
-                        key={chunkIdx}
-                        style={{
-                          pageBreakBefore:
-                            isPrint && chunkIdx > 0 ? "always" : "auto",
-                        }}
-                      >
-                        <td style={{ padding: 0, verticalAlign: "top" }}>
-                          <div className="report-body">
-                            {chunkIdx === 0 ? (
-                              <>
-                                <div className="rpt-title">
-                                  Report of UT of Welds (AWS D1.1)
-                                </div>
-                                {/* ───── JOB INFORMATION (form-line style) ───── */}
-                                <div className="form-block">
-                                  {/* Row 1: Project + Report No */}
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      gap: "12px",
-                                      marginBottom: "4px",
-                                    }}
-                                  >
-                                    <div
-                                      className="form-row"
-                                      style={{ flex: 2, marginBottom: 0 }}
-                                    >
-                                      <span className="form-label">Project</span>
-                                      <span className="form-val">
-                                        {v(report.project)}
-                                      </span>
-                                    </div>
-                                    <div
-                                      className="form-row"
-                                      style={{ flex: 1, marginBottom: 0 }}
-                                    >
-                                      <span className="form-label">
-                                        Report no.
-                                      </span>
-                                      <span className="form-val">
-                                        {v(report.reportNo || report.id)}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  {/* Row 2: Diagram + Fields */}
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      gap: "10px",
-                                      alignItems: "flex-start",
-                                    }}
-                                  >
-                                    {/* Weld reference diagram */}
-                                    <div
-                                      style={{
-                                        width: "200px",
-                                        flexShrink: 0,
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        paddingTop: "4px",
-                                      }}
-                                    >
-                                      <img
-                                        src="/image.png"
-                                        alt="Weld reference sketch"
-                                        style={{
-                                          width: "200px",
-                                          height: "auto",
-                                          display: "block",
-                                        }}
-                                      />
-                                    </div>
-                                    {/* Right: Form fields */}
-                                    <div style={{ flex: 1 }}>
-                                      <div className="form-row">
-                                        <span className="form-label">
-                                          Weld identification :
-                                        </span>
-                                        <span className="form-val">
-                                          {v(report.weldIdentification)}
-                                        </span>
-                                      </div>
-                                      <div className="form-row">
-                                        <span className="form-label">
-                                          Material thickness :
-                                        </span>
-                                        <span className="form-val">
-                                          {v(report.materialThickness)}
-                                        </span>
-                                      </div>
-                                      <div className="form-row">
-                                        <span className="form-label">
-                                          Weld joint AWS :
-                                        </span>
-                                        <span className="form-val">
-                                          {v(report.weldJointAWS)}
-                                        </span>
-                                      </div>
-                                      <div className="form-row">
-                                        <span className="form-label">
-                                          Welding process :
-                                        </span>
-                                        <span className="form-val">
-                                          {v(report.weldingProcess)}
-                                        </span>
-                                      </div>
-                                      <div className="form-row">
-                                        <span className="form-label">
-                                          Quality requirements—section no. :
-                                        </span>
-                                        <span className="form-val">
-                                          {v(report.qualityRequirementsSection)}
-                                        </span>
-                                      </div>
-                                      <div className="form-row">
-                                        <span className="form-label">
-                                          Remarks :
-                                        </span>
-                                        <span className="form-val">
-                                          {v(
-                                            report.evaluation || report.remarks
-                                          )}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </>
-                            ) : (
-                              <div
-                                className="rpt-title"
-                                style={{ borderTop: "none" }}
-                              >
-                                Report of UT of Welds (AWS D1.1) - Continued
-                              </div>
-                            )}
-
-                            <table
-                              className="obs-table"
-                              style={{
-                                borderTop:
-                                  chunkIdx > 0 ? "1.2px solid #000" : "none",
-                              }}
-                            >
-                              <ObsTableHeader />
-                              <tbody>
-                                {chunk.map((o: any, i: number) => {
-                                  const globalIdx =
-                                    chunkIdx === 0
-                                      ? i
-                                      : FIRST_PAGE_SIZE +
-                                      (chunkIdx - 1) * SUBSEQUENT_PAGE_SIZE +
-                                      i;
-                                  return (
-                                    <tr key={i} style={{ height: "24px" }}>
-                                      <td>{v(o.lineNo || globalIdx + 1)}</td>
-                                      <td>{v(o.indicationNo)}</td>
-                                      <td>{v(o.transducerAngle)}</td>
-                                      <td>{v(o.fromFace)}</td>
-                                      <td>{v(o.leg)}</td>
-                                      <td>{v(o.decibels?.indicationLevel)}</td>
-                                      <td>{v(o.decibels?.referenceLevel)}</td>
-                                      <td>
-                                        {v(o.decibels?.attenuationFactor)}
-                                      </td>
-                                      <td>{v(o.decibels?.indicationRating)}</td>
-                                      <td>{v(o.discontinuity?.length)}</td>
-                                      <td>
-                                        {v(o.discontinuity?.angularDistance)}
-                                      </td>
-                                      <td>{v(o.discontinuity?.depthFromA)}</td>
-                                      <td>
-                                        {v(o.discontinuity?.distanceFromX)}
-                                      </td>
-                                      <td>
-                                        {v(o.discontinuity?.distanceFromY)}
-                                      </td>
-                                      <td>{v(o.interpretation)}</td>
-                                      <td>{v(o.evaluation)}</td>
-                                    </tr>
-                                  );
-                                })}
-                                {/* Empty rows logic for Print */}
-                                {isPrint &&
-                                  chunkIdx === 0 &&
-                                  chunk.length < FIRST_PAGE_SIZE &&
-                                  Array.from({
-                                    length: FIRST_PAGE_SIZE - chunk.length,
-                                  }).map((_, i) => (
-                                    <tr
-                                      key={`empty-p1-${i}`}
-                                      style={{ height: "24px" }}
-                                    >
-                                      <td>{chunk.length + i + 1}</td>
-                                      {Array.from({ length: 15 }).map(
-                                        (__, j) => (
-                                          <td key={j}></td>
-                                        )
-                                      )}
-                                    </tr>
-                                  ))}
-                                {isPrint &&
-                                  chunkIdx > 0 &&
-                                  chunkIdx === tableChunks.length - 1 &&
-                                  chunk.length < 3 &&
-                                  Array.from({
-                                    length: Math.max(0, 3 - chunk.length),
-                                  }).map((_, i) => (
-                                    <tr
-                                      key={`empty-last-${i}`}
-                                      style={{ height: "24px" }}
-                                    >
-                                      <td>
-                                        {FIRST_PAGE_SIZE +
-                                          (chunkIdx - 1) *
-                                          SUBSEQUENT_PAGE_SIZE +
-                                          chunk.length +
-                                          i +
-                                          1}
-                                      </td>
-                                      {Array.from({ length: 15 }).map(
-                                        (__, j) => (
-                                          <td key={j}></td>
-                                        )
-                                      )}
-                                    </tr>
-                                  ))}
-                                {/* Empty rows logic for Screen */}
-                                {!isPrint && chunk.length < 3 && (
-                                  Array.from({
-                                    length: Math.max(0, 3 - chunk.length),
-                                  }).map((_, i) => (
-                                    <tr
-                                      key={`empty-screen-${i}`}
-                                      style={{ height: "24px" }}
-                                    >
-                                      <td>{chunk.length + i + 1}</td>
-                                      {Array.from({ length: 15 }).map(
-                                        (__, j) => (
-                                          <td key={j}></td>
-                                        )
-                                      )}
-                                    </tr>
-                                  ))
-                                )}
-                              </tbody>
-                            </table>
-                            <ReportSignatures />
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                );
-
-                return (
-                  <>
-                    {renderTableContent([obs], false)}
-                    {renderTableContent(chunks, true)}
-                  </>
-                );
-              })()}
-
-              <tfoot style={{ display: "table-footer-group" }}>
-                <tr>
-                  <td style={{ padding: 0 }}>
-                    <div
-                      className="tfoot-spacer"
-                      style={{ height: "30mm" }}
-                    ></div>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-
-          {/* Screen-only footer preview (hidden in print) */}
-          <div className={`no-print${bwMode ? " bw" : ""}`} style={{ marginTop: "8px" }}>
-            <ReportFooter />
-          </div>
-        </div>
-      </div>
-
-      {/* Fixed footer — single source of truth for print, appears on every page */}
-      <div className={`print-fixed-footer${bwMode ? " bw" : ""}`}>
-        <ReportFooter />
+                  )}
+                  {hasObsTable && renderObsTable(pageObs, i, pages.length - 1 === i)}
+                  {hasSignatures && <ReportSignatures />}
+                </div>
+              </div>
+              <div className="print-page-foot">
+                <ReportFooter />
+              </div>
+            </div>
+          );
+        })}
       </div>
     </>
   );

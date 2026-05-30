@@ -739,15 +739,15 @@ export const CustomerDetailPage = () => {
               </div>
 
               {reportSubType ? (
-                <div>
-                  <div className="flex items-center justify-between px-5 py-3 bg-gray-50/50">
-                    <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <div className="mx-5 mb-5 mt-2 rounded-xl border border-gray-200 overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
+                    <p className="text-sm font-semibold text-gray-700">
                       {
                         REPORT_TYPES.find((r) => r.key === reportSubType)
                           ?.fullLabel
                       }{" "}
                       Reports
-                      <span className="ml-2 text-gray-400 font-normal normal-case">
+                      <span className="ml-2 text-gray-400 font-normal text-xs">
                         ({countsLoaded ? reportCountByType[reportSubType] : "-"}{" "}
                         records)
                       </span>
@@ -768,27 +768,29 @@ export const CustomerDetailPage = () => {
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50 border-b border-gray-100">
-                        <tr>
+                      <thead>
+                        <tr className="bg-gray-50 border-b border-gray-200">
                           {[
                             "Report No",
                             "Customer",
                             "Date",
-                            ...(reportSubType !== "awsd" ? ["Inspection Stage"] : []),
+                            ...(reportSubType !== "awsd"
+                              ? ["Inspection Stage"]
+                              : []),
                             "Status",
                             "Type",
                             "Actions",
                           ].map((h) => (
                             <th
                               key={h}
-                              className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                              className="px-4 py-3 text-left font-semibold text-gray-600"
                             >
                               {h}
                             </th>
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-50">
+                      <tbody className="divide-y divide-gray-100">
                         {reportDataLoading ? (
                           <tr>
                             <td
@@ -823,8 +825,14 @@ export const CustomerDetailPage = () => {
                               key={r._id}
                               className="hover:bg-gray-50 transition-colors"
                             >
-                              <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700">
-                                {r.reportNo || r.irNo}
+                              <td className="px-4 py-3 font-medium text-primary-700">
+                                <div className="flex items-center gap-2">
+                                  <FileText
+                                    size={14}
+                                    className="text-primary-400"
+                                  />
+                                  {r.reportNo || r.irNo}
+                                </div>
                               </td>
                               <td className="px-4 py-3 text-gray-700 truncate max-w-[150px]">
                                 {r.jobDetails?.customer || r.customer || "—"}
@@ -838,7 +846,7 @@ export const CustomerDetailPage = () => {
                               </td>
 
                               {reportSubType !== "awsd" && (
-                                <td className="px-4 py-3 text-gray-500 text-xs">
+                                <td className="px-4 py-3 text-gray-600">
                                   {r.jobDetails?.stageOfInspection ||
                                     r.inspectionStage ||
                                     "—"}
@@ -856,8 +864,8 @@ export const CustomerDetailPage = () => {
                                   {r.reportType || reportSubType?.toUpperCase()}
                                 </span>
                               </td>
-                              <td className=" py-3 text-center">
-                                <div className="flex items-center gap-1">
+                              <td className="px-1 py-3 text-center">
+                                <div className="flex items-center justify-start gap-2">
                                   <button
                                     onClick={() =>
                                       navigate(
@@ -870,9 +878,9 @@ export const CustomerDetailPage = () => {
                                         },
                                       )
                                     }
-                                    className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                                    className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                                   >
-                                    <Eye size={14} />
+                                    <Eye size={15} />
                                   </button>
                                   <button
                                     onClick={() =>
@@ -887,15 +895,15 @@ export const CustomerDetailPage = () => {
                                         },
                                       )
                                     }
-                                    className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                                    className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
                                   >
-                                    <Pencil size={14} />
+                                    <Pencil size={15} />
                                   </button>
                                   <button
                                     onClick={() => handleDeleteReport(r._id)}
-                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    className="p-1.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
                                   >
-                                    <Trash2 size={14} />
+                                    <Trash2 size={15} />
                                   </button>
                                 </div>
                               </td>
@@ -905,20 +913,22 @@ export const CustomerDetailPage = () => {
                       </tbody>
                     </table>
                   </div>
-                  <Pagination
-                    page={reportPage}
-                    totalPages={Math.max(
-                      1,
-                      Math.ceil(reportDataTotal / reportLimit),
-                    )}
-                    total={reportDataTotal}
-                    limit={reportLimit}
-                    onPageChange={setReportPage}
-                    onLimitChange={(l) => {
-                      setReportLimit(l);
-                      setReportPage(1);
-                    }}
-                  />
+                  <div className="px-4 py-3 border-t border-gray-100">
+                    <Pagination
+                      page={reportPage}
+                      totalPages={Math.max(
+                        1,
+                        Math.ceil(reportDataTotal / reportLimit),
+                      )}
+                      total={reportDataTotal}
+                      limit={reportLimit}
+                      onPageChange={setReportPage}
+                      onLimitChange={(l) => {
+                        setReportLimit(l);
+                        setReportPage(1);
+                      }}
+                    />
+                  </div>
                 </div>
               ) : (
                 <div className="px-5 py-16 text-center text-gray-400">
@@ -937,30 +947,30 @@ export const CustomerDetailPage = () => {
           )}
 
           {activeTab === "quotations" && (
-            <div>
+            <div className="mx-5 mb-5 mt-2 rounded-xl border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b border-gray-100">
-                    <tr>
+                  <thead>
+                    <tr className="bg-gray-50 border-b border-gray-200">
                       {[
                         "Quotation No",
                         "Date",
                         "Type",
-                        "Subject",
+                        // "Subject",
                         "Amount",
                         "Status",
                         "Actions",
                       ].map((h) => (
                         <th
                           key={h}
-                          className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                          className="px-4 py-3 text-left font-semibold text-gray-600"
                         >
                           {h}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-gray-100">
                     {quotationsLoading ? (
                       <tr>
                         <td
@@ -989,8 +999,14 @@ export const CustomerDetailPage = () => {
                           key={q._id}
                           className="hover:bg-gray-50 transition-colors"
                         >
-                          <td className="px-4 py-3 font-mono text-xs font-bold text-violet-700">
-                            {q.quotationNo}
+                          <td className="px-4 py-3 font-medium text-primary-700">
+                            <div className="flex items-center gap-2">
+                              <FileText
+                                size={14}
+                                className="text-primary-400"
+                              />
+                              {q.quotationNo}
+                            </div>
                           </td>
                           <td className="px-4 py-3 text-gray-600">
                             {fmt(q.date)}
@@ -1004,21 +1020,51 @@ export const CustomerDetailPage = () => {
                                 : "Service"}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-gray-700 truncate max-w-[200px]">
+                          {/* <td className="px-4 py-3 text-gray-700 truncate max-w-[200px]">
                             {q.subject || "—"}
-                          </td>
+                          </td> */}
                           <td className="px-4 py-3 font-semibold text-gray-900">
-                            ₹{(q.totalAmount || 0).toLocaleString("en-IN")}
+                            {(() => {
+                              const quot = q as Record<string, unknown>;
+                              const services = Array.isArray(quot.services)
+                                ? (quot.services as Record<string, unknown>[])
+                                : [];
+                              let sub = services.reduce(
+                                (s: number, sv: Record<string, unknown>) => {
+                                  const amt = Number(sv.amount);
+                                  if (!isNaN(amt) && amt > 0) return s + amt;
+                                  return (
+                                    s +
+                                    Number(sv.quantity || 1) *
+                                      Number(sv.price || 0)
+                                  );
+                                },
+                                0,
+                              );
+                              const extras = quot.extraCharges as
+                                | Record<string, unknown>
+                                | undefined;
+                              if (quot._type === "service" && extras) {
+                                sub += Number(extras.transportation || 0);
+                                sub += Number(extras.lodging || 0);
+                                sub += Number(extras.boarding || 0);
+                                sub += Number(extras.minimumVisit || 0);
+                              }
+                              const total =
+                                sub +
+                                (sub * Number(quot.gstPercentage ?? 18)) / 100;
+                              return `₹${total.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                            })()}
                           </td>
                           <td className="px-4 py-3">
                             <span
-                              className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[q.status] || "bg-gray-100 text-gray-600"}`}
+                              className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[q.status] || "bg-gray-300 text-gray-600"}`}
                             >
                               {q.status}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-right">
-                            <div className="flex items-center gap-2 justify-end">
+                          <td className="px-1 py-3 text-right">
+                            <div className="flex items-center gap-2 justify-start">
                               <button
                                 onClick={() =>
                                   navigate(
@@ -1026,9 +1072,9 @@ export const CustomerDetailPage = () => {
                                     { state: { customerId: id } },
                                   )
                                 }
-                                className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                               >
-                                <Eye size={13} />
+                                <Eye size={15} />
                               </button>
                               <button
                                 onClick={() =>
@@ -1036,15 +1082,15 @@ export const CustomerDetailPage = () => {
                                     `/admin/quotations/${((q as any)._type as string) || "service"}/${q._id}/edit`,
                                   )
                                 }
-                                className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
                               >
-                                <Pencil size={13} />
+                                <Pencil size={15} />
                               </button>
                               <button
                                 onClick={() => handleDelete(q)}
-                                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
                               >
-                                <Trash2 size={13} />
+                                <Trash2 size={15} />
                               </button>
                             </div>
                           </td>
@@ -1054,47 +1100,49 @@ export const CustomerDetailPage = () => {
                   </tbody>
                 </table>
               </div>
-              <Pagination
-                page={quotationPage}
-                totalPages={Math.max(
-                  1,
-                  Math.ceil(filteredQuotations.length / quotationLimit),
-                )}
-                total={filteredQuotations.length}
-                limit={quotationLimit}
-                onPageChange={setQuotationPage}
-                onLimitChange={(l) => {
-                  setQuotationLimit(l);
-                  setQuotationPage(1);
-                }}
-              />
+              <div className="px-4 py-3 border-t border-gray-100">
+                <Pagination
+                  page={quotationPage}
+                  totalPages={Math.max(
+                    1,
+                    Math.ceil(filteredQuotations.length / quotationLimit),
+                  )}
+                  total={filteredQuotations.length}
+                  limit={quotationLimit}
+                  onPageChange={setQuotationPage}
+                  onLimitChange={(l) => {
+                    setQuotationLimit(l);
+                    setQuotationPage(1);
+                  }}
+                />
+              </div>
             </div>
           )}
 
           {activeTab === "invoices" && (
-            <div>
+            <div className="mx-5 mb-5 mt-2 rounded-xl border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b border-gray-100">
-                    <tr>
+                  <thead>
+                    <tr className="bg-gray-50 border-b border-gray-200">
                       {[
                         "Invoice No",
                         "Date",
-                        "Due Date",
+                        // "Due Date",
                         "Grand Total",
                         "Status",
                         "Actions",
                       ].map((h) => (
                         <th
                           key={h}
-                          className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                          className="px-4 py-3 text-left font-semibold text-gray-600"
                         >
                           {h}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-gray-100">
                     {invoicesLoading ? (
                       <tr>
                         <td
@@ -1123,15 +1171,21 @@ export const CustomerDetailPage = () => {
                           key={inv._id}
                           className="hover:bg-gray-50 transition-colors"
                         >
-                          <td className="px-4 py-3 font-mono text-xs font-bold text-emerald-700">
-                            {inv.invoiceNo}
+                          <td className="px-4 py-3 font-medium text-primary-700">
+                            <div className="flex items-center gap-2">
+                              <FileText
+                                size={14}
+                                className="text-primary-400"
+                              />
+                              {inv.invoiceNo}
+                            </div>
                           </td>
                           <td className="px-4 py-3 text-gray-600">
                             {fmt(inv.date)}
                           </td>
-                          <td className="px-4 py-3 text-gray-500">
+                          {/* <td className="px-4 py-3 text-gray-500">
                             {fmt(inv.dueDate)}
-                          </td>
+                          </td> */}
                           <td className="px-4 py-3 font-semibold text-gray-900">
                             ₹{(inv.totalAmount || 0).toLocaleString("en-IN")}
                           </td>
@@ -1142,29 +1196,29 @@ export const CustomerDetailPage = () => {
                               {inv.status}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-right">
-                            <div className="flex items-center gap-2 justify-end">
+                          <td className="px-1 py-3 text-left">
+                            <div className="flex items-center gap-2 justify-start">
                               <button
                                 onClick={() =>
                                   navigate(`/admin/invoices/${inv._id}/print`)
                                 }
-                                className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                               >
-                                <Eye size={13} />
+                                <Eye size={15} />
                               </button>
                               <button
                                 onClick={() =>
                                   navigate(`/admin/invoices/${inv._id}/edit`)
                                 }
-                                className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
                               >
-                                <Pencil size={13} />
+                                <Pencil size={15} />
                               </button>
                               <button
                                 onClick={() => handleDelete(inv)}
-                                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
                               >
-                                <Trash2 size={13} />
+                                <Trash2 size={15} />
                               </button>
                             </div>
                           </td>
@@ -1174,20 +1228,22 @@ export const CustomerDetailPage = () => {
                   </tbody>
                 </table>
               </div>
-              <Pagination
-                page={invoicePage}
-                totalPages={Math.max(
-                  1,
-                  Math.ceil(invoicesPageTotal / invoiceLimit),
-                )}
-                total={invoicesPageTotal}
-                limit={invoiceLimit}
-                onPageChange={setInvoicePage}
-                onLimitChange={(l) => {
-                  setInvoiceLimit(l);
-                  setInvoicePage(1);
-                }}
-              />
+              <div className="px-4 py-3 border-t border-gray-100">
+                <Pagination
+                  page={invoicePage}
+                  totalPages={Math.max(
+                    1,
+                    Math.ceil(invoicesPageTotal / invoiceLimit),
+                  )}
+                  total={invoicesPageTotal}
+                  limit={invoiceLimit}
+                  onPageChange={setInvoicePage}
+                  onLimitChange={(l) => {
+                    setInvoiceLimit(l);
+                    setInvoicePage(1);
+                  }}
+                />
+              </div>
             </div>
           )}
         </div>

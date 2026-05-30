@@ -3,6 +3,11 @@ import publicApi from './publicApi';
 
 // â”€â”€â”€ Customer Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+export interface IndiaState {
+  name: string;
+  code: string;
+}
+
 export interface CustomerPayload {
   companyName: string;
   shortCode: string;
@@ -10,6 +15,8 @@ export interface CustomerPayload {
   mobile: string;
   email?: string | null;
   city?: string | null;
+  state?: string | null;
+  stateCode?: string | null;
   address?: string | null;
   gstNo?: string | null;
 }
@@ -22,6 +29,8 @@ export interface Customer {
   mobile: string;
   email?: string;
   city?: string;
+  state?: string;
+  stateCode?: string;
   address?: string;
   gstNo?: string;
   isActive: boolean;
@@ -118,6 +127,9 @@ export interface Invoice {
 
 // â”€â”€â”€ Customer API Functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+export const getIndianStates = () =>
+  api.get('/states');
+
 export const getCustomers = (params?: { page?: number; limit?: number; search?: string }) =>
   api.get('/customers', { params });
 
@@ -191,6 +203,7 @@ export interface MPTReportPayload {
   jobDetails?: {
     customer?: string;
     client?: string;
+    project?: string;
     reportDate?: string;
     inspectionDate?: string;
     inspectionEndDate?: string;
@@ -343,6 +356,7 @@ export interface UTSearchUnit {
   crystalSize: string;
   waveMode: string;
   frequency: string;
+  frequencyCustom?: string;
 }
 
 export interface UTCalibrationPoint {

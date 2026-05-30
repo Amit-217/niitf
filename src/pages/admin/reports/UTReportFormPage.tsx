@@ -97,6 +97,7 @@ const emptySearchUnit = (): UTSearchUnit => ({
   crystalSize: "",
   waveMode: "",
   frequency: "",
+  frequencyCustom: "",
 });
 
 interface CalibRow {
@@ -114,6 +115,24 @@ const emptyCalib = (): CalibRow => ({
   refDb: "",
 });
 
+interface InspRow {
+  name: string;
+  qualification: string;
+  designation: string;
+  signature: string;
+  idNo: string;
+  date: string;
+}
+
+const emptyInspector = (): InspRow => ({
+  name: "",
+  qualification: "UT NDE Level II",
+  designation: "",
+  signature: "",
+  idNo: "",
+  date: "",
+});
+
 // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Page Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 export const UTReportFormPage: React.FC = () => {
@@ -124,6 +143,7 @@ export const UTReportFormPage: React.FC = () => {
   const state = location.state as {
     customerId?: string;
     customerName?: string;
+    from?: string;
   } | null;
   const [saving, setSaving] = useState(false);
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
@@ -167,6 +187,7 @@ export const UTReportFormPage: React.FC = () => {
   ]);
 
   // Ã¢â€â‚¬Ã¢â€â‚¬ Technique Details Ã¢â€â‚¬Ã¢â€â‚¬
+  const [utMethodCustom, setUtMethodCustom] = useState("");
   const [utMethod, setUtMethod] = useState("");
   const [refCalibBlock, setRefCalibBlock] = useState("");
   const [refCalibBlockCustom, setRefCalibBlockCustom] = useState("");
@@ -198,16 +219,15 @@ export const UTReportFormPage: React.FC = () => {
   }, []);
 
   // Ã¢â€â‚¬Ã¢â€â‚¬ Final Section Ã¢â€â‚¬Ã¢â€â‚¬
-  const [inspectorName, setInspectorName] = useState("");
-  const [inspectorQual, setInspectorQual] = useState("UT NDE Level II");
-  const [inspectorIdNo, setInspectorIdNo] = useState("");
-  const [inspectorDate, setInspectorDate] = useState("");
+  const [inspectors, setInspectors] = useState<InspRow[]>([emptyInspector()]);
   const [custName, setCustName] = useState("");
   const [custDesig, setCustDesig] = useState("");
+  const [custSig, setCustSig] = useState("");
   const [custIdNo, setCustIdNo] = useState("");
   const [custDate, setCustDate] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientDesig, setClientDesig] = useState("");
+  const [clientSig, setClientSig] = useState("");
   const [clientIdNo, setClientIdNo] = useState("");
   const [clientDate, setClientDate] = useState("");
 
@@ -216,9 +236,23 @@ export const UTReportFormPage: React.FC = () => {
     val === "Other" && custom.trim() ? custom.trim() : val;
 
   const updateUnit = (idx: number, key: keyof UTSearchUnit, val: string) =>
-    setSearchUnits((prev) =>
-      prev.map((row, i) => (i === idx ? { ...row, [key]: val } : row)),
-    );
+  setSearchUnits((prev) =>
+    prev.map((row, i) => {
+      if (i !== idx) return row;
+
+      let updatedRow = { ...row, [key]: val };
+
+      // Angle change hone pe auto update
+      if (key === "angle") {
+        const crystalOptions = getCrystalSizeOptions(val);
+
+        updatedRow.crystalSize = crystalOptions[0];
+        updatedRow.waveMode = getWaveMode(val);
+      }
+
+      return updatedRow;
+    }),
+  );
 
   const addUnit = () => setSearchUnits((prev) => [...prev, emptySearchUnit()]);
   const removeUnit = (idx: number) =>
@@ -240,6 +274,16 @@ export const UTReportFormPage: React.FC = () => {
         .filter((_, i) => i !== idx)
         .map((row, i) => ({ ...row, srNo: i + 1 })),
     );
+
+  const updateInsp = (idx: number, key: keyof InspRow, value: string) => {
+    setInspectors((prev) =>
+      prev.map((row, i) => (i === idx ? { ...row, [key]: value } : row)),
+    );
+  };
+  const addInspector = () =>
+    setInspectors((prev) => [...prev, emptyInspector()]);
+  const removeInspector = (idx: number) =>
+    setInspectors((prev) => prev.filter((_, i) => i !== idx));
 
   const updateCalib = (
     setter: React.Dispatch<React.SetStateAction<CalibRow>>,
@@ -279,20 +323,20 @@ export const UTReportFormPage: React.FC = () => {
         setJobInspectionTime(jd.inspectionTime ?? "");
         const [refStd, refStdC] = fromOther(jd.referenceStd, [
           "ASME Sec V Article 4",
-          "ASTM SA 609",
-          "ASTM SA 435",
-          "ASTM 578",
-          "ASTM SA 388",
+          "ASTM A 609",
+          "ASTM A 435",
+          "ASTM A 578",
+          "ASTM A 388",
           "Other",
         ]);
         setJobRefStd(refStd);
         setJobRefStdCustom(refStdC);
         const [acc, accC] = fromOther(jd.acceptanceCriteria, [
           "ASME SEC VIII Div. 1 Appendix 12",
-          "ASTM SA 609",
-          "ASTM SA 435",
-          "ASTM 578",
-          "ASTM SA 388",
+          "ASTM A 609",
+          "ASTM A 435",
+          "ASTM A 578",
+          "ASTM A 388",
           "Other",
         ]);
         setJobAcceptance(acc);
@@ -390,19 +434,28 @@ export const UTReportFormPage: React.FC = () => {
         setConclusion(con);
         setConclusionCustom(conC);
         const fs = r.finalSection ?? {};
-        const insp = fs.inspector?.[0] ?? {};
-        setInspectorName(insp.name ?? "");
-        setInspectorQual(insp.qualification || "UT NDE Level II");
-        setInspectorIdNo(insp.idNo ?? "");
-        setInspectorDate(toDate(insp.date));
+        setInspectors(
+          fs.inspector?.length
+            ? fs.inspector.map((i: any) => ({
+                name: i.name ?? "",
+                qualification: i.qualification || "UT NDE Level II",
+                designation: i.designation ?? "",
+                signature: i.signature ?? "",
+                idNo: i.idNo ?? "",
+                date: toDate(i.date),
+              }))
+            : [emptyInspector()],
+        );
         const custRep = fs.customer ?? {};
         setCustName(custRep.name ?? "");
         setCustDesig(custRep.designation ?? "");
+        setCustSig(custRep.signature ?? "");
         setCustIdNo(custRep.idNo ?? "");
         setCustDate(toDate(custRep.date));
         const clientRep = fs.clientOrTPI ?? {};
         setClientName(clientRep.name ?? "");
         setClientDesig(clientRep.designation ?? "");
+        setClientSig(clientRep.signature ?? "");
         setClientIdNo(clientRep.idNo ?? "");
         setClientDate(toDate(clientRep.date));
       })
@@ -447,9 +500,15 @@ export const UTReportFormPage: React.FC = () => {
           couplant: eqCouplant,
           basicCalibrationBlock: eqBasicCalib,
         },
-        searchUnitDetails: searchUnits,
+        searchUnitDetails: searchUnits.map((u) => ({
+  ...u,
+  frequency:
+    u.frequency === "Other"
+      ? u.frequencyCustom || ""
+      : u.frequency,
+})),
         techniqueDetails: {
-          utMethod: utMethod || undefined,
+          utMethod: resolve(utMethod, utMethodCustom),
           referenceCalibrationBlock: resolve(
             refCalibBlock,
             refCalibBlockCustom,
@@ -478,23 +537,20 @@ export const UTReportFormPage: React.FC = () => {
         conclusion: resolve(conclusion, conclusionCustom) || undefined,
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
-          inspector: [
-            {
-              name: inspectorName,
-              qualification: inspectorQual,
-              idNo: inspectorIdNo,
-              date: inspectorDate || undefined,
-            },
-          ],
+          inspector: inspectors
+            .filter((i) => i.name.trim())
+            .map((i) => ({ ...i, date: i.date || undefined })),
           customer: {
             name: custName,
             designation: custDesig,
+            signature: custSig,
             idNo: custIdNo,
             date: custDate || undefined,
           },
           clientOrTPI: {
             name: clientName,
             designation: clientDesig,
+            signature: clientSig,
             idNo: clientIdNo,
             date: clientDate || undefined,
           },
@@ -507,9 +563,13 @@ export const UTReportFormPage: React.FC = () => {
       }
 
       toast.success(`UT Report saved as ${status}.`);
-      navigate(`/admin/customers/${customerId}`, {
-        state: { activeTab: "reports", reportSubType: "ut" },
-      });
+      if (state?.from === "reports-list") {
+        navigate("/admin/reports");
+      } else {
+        navigate(`/admin/customers/${customerId}`, {
+          state: { activeTab: "reports", reportSubType: "ut" },
+        });
+      }
     } catch (error) {
       toast.error(
         getApiErrorMessage(error, "Failed to save report. Please try again."),
@@ -518,7 +578,24 @@ export const UTReportFormPage: React.FC = () => {
       setSaving(false);
     }
   };
+ const angleProbeOptions = ["45°", "60°", "70°"];
+const normalProbeOptions = ["Normal", "TR"];
 
+const getCrystalSizeOptions = (angle: string) => {
+  if (angleProbeOptions.includes(angle)) {
+    return ["8x9 mm", "20x22 mm"];
+  }
+
+  return ["Ø10 mm", "Ø24 mm"];
+};
+
+const getWaveMode = (angle: string) => {
+  if (angleProbeOptions.includes(angle)) {
+    return "Shear";
+  }
+
+  return "Longitudinal";
+};
   const calibAngles = [
     { label: "0°", state: calib0, setter: setCalib0 },
     { label: "45°", state: calib45, setter: setCalib45 },
@@ -651,10 +728,10 @@ export const UTReportFormPage: React.FC = () => {
               onCustomChange={setJobRefStdCustom}
               options={[
                 "ASME Sec V Article 4",
-                "ASTM SA 609",
-                "ASTM SA 435",
-                "ASTM 578",
-                "ASTM SA 388",
+                "ASTM A 609",
+                "ASTM A 435",
+                "ASTM A 578",
+                "ASTM A 388",
                 "Other",
               ]}
             />
@@ -668,13 +745,27 @@ export const UTReportFormPage: React.FC = () => {
               onCustomChange={setJobAcceptanceCustom}
               options={[
                 "ASME SEC VIII Div. 1 Appendix 12",
-                "ASTM SA 609",
-                "ASTM SA 435",
-                "ASTM 578",
-                "ASTM SA 388",
+                "ASTM A 609",
+                "ASTM A 435",
+                "ASTM A 578",
+                "ASTM A 388",
                 "Other",
               ]}
             />
+          </div>
+          <div>
+            <label className={labelClass}>Stage of Inspection</label>
+            <select
+              value={jobStage}
+              onChange={(e) => setJobStage(e.target.value)}
+              className={inputClass}
+            >
+             <option value="">Select...</option>
+              <option>After Welding</option>
+              <option>After Casting</option>
+              <option>After Machining</option>
+              <option>After Forging</option>
+            </select>
           </div>
           <div>
             <label className={labelClass}>Material</label>
@@ -686,31 +777,7 @@ export const UTReportFormPage: React.FC = () => {
               placeholder="e.g. IS 2062 E-250 BR"
             />
           </div>
-          <div>
-            <label className={labelClass}>Stage of Inspection</label>
-            <select
-              value={jobStage}
-              onChange={(e) => setJobStage(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>After welding</option>
-              <option>As Casting</option>
-              <option>As Rolled</option>
-              <option>As Forged</option>
-            </select>
-          </div>
-          <div>
-            <label className={labelClass}>Thickness</label>
-            <input
-              type="text"
-              value={jobThickness}
-              onChange={(e) => setJobThickness(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 6,12 & 16 MM"
-            />
-          </div>
-          <div>
+            <div>
             <label className={labelClass}>Extent of Examination</label>
             <SelectWithCustom
               value={jobExtent}
@@ -726,17 +793,14 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Surface Condition</label>
-            <select
-              value={jobSurface}
-              onChange={(e) => setJobSurface(e.target.value)}
+            <label className={labelClass}>Thickness</label>
+            <input
+              type="text"
+              value={jobThickness}
+              onChange={(e) => setJobThickness(e.target.value)}
               className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>Smooth</option>
-              <option>Rough</option>
-              <option>Ground and polished</option>
-            </select>
+              placeholder="e.g. 6,12 & 16 MM"
+            />
           </div>
           <div>
             <label className={labelClass}>Type of Joint</label>
@@ -752,6 +816,20 @@ export const UTReportFormPage: React.FC = () => {
               <option>NA</option>
             </select>
           </div>
+          <div>
+            <label className={labelClass}>Surface Condition</label>
+            <select
+              value={jobSurface}
+              onChange={(e) => setJobSurface(e.target.value)}
+              className={inputClass}
+            >
+              <option value="">Select...</option>
+              <option>Smooth</option>
+              <option>Rough</option>
+              <option>Ground and polished</option>
+            </select>
+          </div>
+          
           <div>
             <label className={labelClass}>Surface Temperature</label>
             <select
@@ -826,6 +904,8 @@ export const UTReportFormPage: React.FC = () => {
             >
               <option value="">Select...</option>
               <option>Water</option>
+              <option>Oil</option>
+              <option>Grease</option>
               <option>Oil+ Grease</option>
               <option>Starch</option>
             </select>
@@ -907,6 +987,7 @@ export const UTReportFormPage: React.FC = () => {
                       onChange={(e) => updateUnit(idx, "angle", e.target.value)}
                       className={inputClass}
                     >
+                      <option value="">Select...</option>
                       <option>45°</option>
                       <option>60°</option>
                       <option>70°</option>
@@ -923,20 +1004,21 @@ export const UTReportFormPage: React.FC = () => {
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={unit.crystalSize}
-                      onChange={(e) =>
-                        updateUnit(idx, "crystalSize", e.target.value)
-                      }
-                      className={inputClass}
-                    >
-                      <option>8x9 mm / 20x22mm</option>
-                      <option>Ø10 mm / Ø24 mm</option>
-                      <option>8x9 mm</option>
-                      <option>20x22mm</option>
-                      <option>Ø10 mm/ Ø24 mm</option>
-                      <option>Ø24 mm</option>
-                    </select>
+                   <select
+                    value={unit.crystalSize}
+                    onChange={(e) =>
+                      updateUnit(idx, "crystalSize", e.target.value)
+                    }
+                    className={inputClass}
+                  >
+                    <option value="">Select...</option>
+
+                    {getCrystalSizeOptions(unit.angle).map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
                     <select
@@ -946,23 +1028,37 @@ export const UTReportFormPage: React.FC = () => {
                       }
                       className={inputClass}
                     >
-                      <option>Shear</option>
-                      <option>Longitudinal</option>
+                      <option value={getWaveMode(unit.angle)}>
+                        {getWaveMode(unit.angle)}
+                      </option>
                     </select>
                   </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={unit.frequency}
-                      onChange={(e) =>
-                        updateUnit(idx, "frequency", e.target.value)
-                      }
-                      className={inputClass}
-                    >
-                      <option>2 / 4 MHz</option>
-                      <option>2 MHz</option>
-                      <option>4 MHz</option>
-                    </select>
-                  </td>
+                  <td className="border border-gray-200 px-1 py-1 w-[140px]">
+  <td className="border border-gray-200 px-1 py-1 w-[150px]">
+  <SelectWithCustom
+    value={unit.frequency}
+    onChange={(val) =>
+      updateUnit(idx, "frequency", val)
+    }
+    customValue={unit.frequencyCustom || ""}
+    onCustomChange={(val) =>
+      setSearchUnits((prev) =>
+        prev.map((row, i) =>
+          i === idx
+            ? { ...row, frequencyCustom: val }
+            : row
+        )
+      )
+    }
+    options={[
+      "1 MHz",
+      "2 MHz",
+      "4 MHz",
+      "Other",
+    ]}
+  />
+</td>
+</td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
                     {searchUnits.length > 1 && (
                       <button
@@ -985,19 +1081,20 @@ export const UTReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Technique Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>UT Method</label>
-            <select
-              value={utMethod}
-              onChange={(e) => setUtMethod(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Select...</option>
-              <option>Pulse Echo</option>
-              <option>Through Transmission</option>
-              <option>TOFD</option>
-            </select>
-          </div>
+        <div>
+  <label className={labelClass}>UT Method</label>
+
+  <SelectWithCustom
+    value={utMethod}
+    onChange={setUtMethod}
+    customValue={utMethodCustom}
+    onCustomChange={setUtMethodCustom}
+    options={[
+      "Pulse Echo",
+      "Other",
+    ]}
+  />
+</div>
           <div>
             <label className={labelClass}>Reference Calibration Block</label>
             <SelectWithCustom
@@ -1041,7 +1138,7 @@ export const UTReportFormPage: React.FC = () => {
               options={[
                 "Ø 2.5 mm SDH",
                 "Ø 3mm SDH",
-                '1" BWE set @ 80% of FSH on Job',
+                '1ˢᵗ BWE set @ 80% of FSH on Job',
                 "Other",
               ]}
             />
@@ -1131,22 +1228,22 @@ export const UTReportFormPage: React.FC = () => {
                 <th className="border border-gray-200 px-2 py-2 text-center w-10">
                   Sr.
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
+                <th className="border border-gray-200 px-2 py-2 text-center">
                   Job Description
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
+                <th className="border border-gray-200 px-2 py-2 text-center">
                   Drg No. / Joint No.
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
+                <th className="border border-gray-200 px-2 py-2 text-center">
                   Size
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-center w-16">
-                  Qty
+                  Qty(Nos)
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
+                <th className="border border-gray-200 px-2 py-2 text-center">
                   Interpretation
                 </th>
-                <th className="border border-gray-200 px-2 py-2 text-left">
+                <th className="border border-gray-200 px-2 py-2 text-center">
                   Evaluation
                 </th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
@@ -1243,47 +1340,96 @@ export const UTReportFormPage: React.FC = () => {
 
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {/* NIIT Inspector(s) */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
               Examined By
             </p>
-            <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              National Ind. Insp. & Training
-            </p>
-            <div className="space-y-2">
-              <div>
-                <label className={labelClass}>Inspector Name</label>
-                <select
-                  value={inspectorName}
-                  onChange={(e) => setInspectorName(e.target.value)}
-                  className={`${inputClass} bg-white`}
-                >
-                  <option value="">Select....</option>
-                  {users.map((u) => (
-                    <option key={u._id} value={u.name}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className={labelClass}>Qualification</label>
-                <input
-                  type="text"
-                  value={inspectorQual}
-                  onChange={(e) => setInspectorQual(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>Date</label>
-                <input
-                  type="date"
-                  value={inspectorDate}
-                  onChange={(e) => setInspectorDate(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-semibold text-gray-700 uppercase">
+                National Ind. Insp. &amp; Training
+              </p>
+              <button
+                type="button"
+                onClick={addInspector}
+                className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 rounded-lg px-2 py-1 hover:bg-indigo-50 transition-colors"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              {inspectors.map((insp, idx) => (
+                <div key={idx} className="relative">
+                  {inspectors.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => removeInspector(idx)}
+                        className="absolute top-0 right-0 text-red-400 hover:text-red-600"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                      <p className="text-xs text-gray-400 mb-2">
+                        Inspector {idx + 1}
+                      </p>
+                    </>
+                  )}
+                  <div className="space-y-2">
+                    <div>
+                      <label className={labelClass}>Name</label>
+                      <select
+                        value={insp.name}
+                        onChange={(e) => updateInsp(idx, "name", e.target.value)}
+                        className={`${inputClass} bg-white`}
+                      >
+                        <option value="">Select....</option>
+                        {users.map((u) => (
+                          <option key={u._id} value={u.name}>
+                            {u.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className={labelClass}>Qualification</label>
+                      <input
+                        type="text"
+                        value={insp.qualification}
+                        onChange={(e) => updateInsp(idx, "qualification", e.target.value)}
+                        className={inputClass}
+                        placeholder="e.g. UT NDE Level II"
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Designation</label>
+                      <input
+                        type="text"
+                        value={insp.designation}
+                        onChange={(e) => updateInsp(idx, "designation", e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Signature</label>
+                      <input
+                        type="text"
+                        value={insp.signature}
+                        onChange={(e) => updateInsp(idx, "signature", e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Date</label>
+                      <input
+                        type="date"
+                        value={insp.date}
+                        onChange={(e) => updateInsp(idx, "date", e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
@@ -1309,6 +1455,15 @@ export const UTReportFormPage: React.FC = () => {
                   type="text"
                   value={custDesig}
                   onChange={(e) => setCustDesig(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Signature</label>
+                <input
+                  type="text"
+                  value={custSig}
+                  onChange={(e) => setCustSig(e.target.value)}
                   className={inputClass}
                 />
               </div>
@@ -1346,6 +1501,15 @@ export const UTReportFormPage: React.FC = () => {
                   type="text"
                   value={clientDesig}
                   onChange={(e) => setClientDesig(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Signature</label>
+                <input
+                  type="text"
+                  value={clientSig}
+                  onChange={(e) => setClientSig(e.target.value)}
                   className={inputClass}
                 />
               </div>

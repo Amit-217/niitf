@@ -106,6 +106,24 @@ const emptyObs = (): ObsRow => ({
   evaluation: "",
 });
 
+interface InspRow {
+  name: string;
+  qualification: string;
+  designation: string;
+  signature: string;
+  idNo: string;
+  date: string;
+}
+
+const emptyInspector = (): InspRow => ({
+  name: "",
+  qualification: "UT NDE Level II",
+  designation: "",
+  signature: "",
+  idNo: "",
+  date: "",
+});
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export const UTGReportFormPage: React.FC = () => {
@@ -116,6 +134,7 @@ export const UTGReportFormPage: React.FC = () => {
   const state = location.state as {
     customerId?: string;
     customerName?: string;
+    from?: string;
   } | null;
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
   const [customerName, setCustomerName] = useState(state?.customerName ?? "");
@@ -134,8 +153,6 @@ export const UTGReportFormPage: React.FC = () => {
   const [jobRefStdOther, setJobRefStdOther] = useState("");
   const [jobInspectionTime, setJobInspectionTime] = useState("");
   const [jobAcceptanceCriteria, setJobAcceptanceCriteria] = useState("");
-  const [jobAcceptanceCriteriaOther, setJobAcceptanceCriteriaOther] =
-    useState("");
   const [jobMaterial, setJobMaterial] = useState("");
   const [jobStage, setJobStage] = useState("");
   const [jobStageOther, setJobStageOther] = useState("");
@@ -177,15 +194,11 @@ export const UTGReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   // ── Examined By ──
-  const [inspectorName, setInspectorName] = useState("");
-  const [inspectorQual, setInspectorQual] = useState("UTG NDE Level II");
-  const [inspectorSig, setInspectorSig] = useState("");
-  const [inspectorIdNo, setInspectorIdNo] = useState("");
-  const [inspectorDate, setInspectorDate] = useState("");
+  const [inspectors, setInspectors] = useState<InspRow[]>([emptyInspector()]);
   const [custName, setCustName] = useState("");
   const [custDesig, setCustDesig] = useState("");
   const [custSig, setCustSig] = useState("");
@@ -228,6 +241,16 @@ export const UTGReportFormPage: React.FC = () => {
       prev.filter((_, i) => i !== idx).map((r, i) => ({ ...r, srNo: i + 1 })),
     );
 
+  const updateInsp = (idx: number, key: keyof InspRow, value: string) => {
+    setInspectors((prev) =>
+      prev.map((row, i) => (i === idx ? { ...row, [key]: value } : row)),
+    );
+  };
+  const addInspector = () =>
+    setInspectors((prev) => [...prev, emptyInspector()]);
+  const removeInspector = (idx: number) =>
+    setInspectors((prev) => prev.filter((_, i) => i !== idx));
+
   // ── Load in edit mode ──
   useEffect(() => {
     if (!id) return;
@@ -267,14 +290,7 @@ export const UTGReportFormPage: React.FC = () => {
         setJobRefStd(refStd);
         setJobRefStdOther(refStdO);
         setJobInspectionTime(jd.inspectionTime ?? "");
-        const [acc, accO] = fromOther(jd.acceptanceCriteria, [
-          "ASME SEC VIII Appendix 4",
-          "ASME SEC VIII Appendix 12",
-          "ASME B 31.3",
-          "Other",
-        ]);
-        setJobAcceptanceCriteria(acc);
-        setJobAcceptanceCriteriaOther(accO);
+        setJobAcceptanceCriteria(jd.acceptanceCriteria ?? "");
         setJobMaterial(jd.material ?? "");
         const [stage, stageO] = fromOther(jd.stageOfInspection, [
           "After welding",
@@ -393,12 +409,18 @@ export const UTGReportFormPage: React.FC = () => {
           );
         }
         const fs = r.finalSection ?? {};
-        const insp = fs.inspector?.[0] ?? {};
-        setInspectorName(insp.name ?? "");
-        setInspectorQual(insp.qualification || "UT NDE Level II");
-        setInspectorSig(insp.signature ?? "");
-        setInspectorIdNo(insp.idNo ?? "");
-        setInspectorDate(toDate(insp.date));
+        setInspectors(
+          fs.inspector?.length
+            ? fs.inspector.map((i: any) => ({
+                name: i.name ?? "",
+                qualification: i.qualification || "UT NDE Level II",
+                designation: i.designation ?? "",
+                signature: i.signature ?? "",
+                idNo: i.idNo ?? "",
+                date: toDate(i.date),
+              }))
+            : [emptyInspector()],
+        );
         const cust = fs.customer ?? {};
         setCustName(cust.name ?? "");
         setCustDesig(cust.designation ?? "");
@@ -437,10 +459,7 @@ export const UTGReportFormPage: React.FC = () => {
           inspectionEndDate: jobInspectionEndDate || undefined,
           referenceStd: resolve(jobRefStd, jobRefStdOther),
           inspectionTime: jobInspectionTime,
-          acceptanceCriteria: resolve(
-            jobAcceptanceCriteria,
-            jobAcceptanceCriteriaOther,
-          ),
+          acceptanceCriteria: jobAcceptanceCriteria,
           material: jobMaterial,
           stageOfInspection: resolve(jobStage, jobStageOther),
           surfaceCondition: resolve(
@@ -481,15 +500,9 @@ export const UTGReportFormPage: React.FC = () => {
           })),
         finalSection: {
           examinedBy: "National Industrial Inspection And Training",
-          inspector: [
-            {
-              name: inspectorName,
-              qualification: inspectorQual,
-              signature: inspectorSig,
-              idNo: inspectorIdNo,
-              date: inspectorDate || undefined,
-            },
-          ],
+          inspector: inspectors
+            .filter((i) => i.name.trim())
+            .map((i) => ({ ...i, date: i.date || undefined })),
           customer: {
             name: custName,
             designation: custDesig,
@@ -512,9 +525,13 @@ export const UTGReportFormPage: React.FC = () => {
         await createUTGReport(payload);
       }
       toast.success(`UTG Report saved as ${status}.`);
-      navigate(`/admin/customers/${customerId}`, {
-        state: { activeTab: "reports", reportSubType: "utg" },
-      });
+      if (state?.from === "reports-list") {
+        navigate("/admin/reports");
+      } else {
+        navigate(`/admin/customers/${customerId}`, {
+          state: { activeTab: "reports", reportSubType: "utg" },
+        });
+      }
     } catch {
       toast.error("Failed to save report. Please try again.");
     } finally {
@@ -655,18 +672,12 @@ export const UTGReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Acceptance Criteria</label>
-            <SelectWithOther
+            <input
+              type="text"
               value={jobAcceptanceCriteria}
-              onChange={setJobAcceptanceCriteria}
-              otherValue={jobAcceptanceCriteriaOther}
-              onOtherChange={setJobAcceptanceCriteriaOther}
-              options={[
-                "ASME SEC VIII Appendix 4",
-                "ASME SEC VIII Appendix 12",
-                "ASME B 31.3",
-                "Other",
-              ]}
-              placeholder="Select Acceptance Criteria"
+              onChange={(e) => setJobAcceptanceCriteria(e.target.value)}
+              className={inputClass}
+              placeholder="Acceptance criteria"
             />
           </div>
           <div>
@@ -859,9 +870,6 @@ export const UTGReportFormPage: React.FC = () => {
                       <option value="">Select...</option>
                       <option>T/R</option>
                       <option>Normal (0°)</option>
-                      <option>45°</option>
-                      <option>60°</option>
-                      <option>70°</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -882,7 +890,7 @@ export const UTGReportFormPage: React.FC = () => {
                       onOtherChange={(v) =>
                         updateSearchUnit(idx, "crystalSizeOther", v)
                       }
-                      options={["Ø5mm", "Ø10mm", "8x9 mm", "20x22 mm", "Other"]}
+                      options={["Ø5mm", "Ø10mm", "Other"]}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -895,7 +903,6 @@ export const UTGReportFormPage: React.FC = () => {
                     >
                       <option value="">Select...</option>
                       <option>Longitudinal</option>
-                      <option>Shear</option>
                     </select>
                   </td>
                   <td className="border border-gray-200 px-1 py-1 min-w-[130px]">
@@ -1042,58 +1049,106 @@ export const UTGReportFormPage: React.FC = () => {
       {/* ── Examined By ── */}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {/* NIIT Inspector */}
+          {/* NIIT Inspector(s) */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
               Examined By
             </p>
-            <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              National Ind. Insp. &amp; Training
-            </p>
-            <div className="space-y-2">
-              <div>
-                <label className={labelClass}>Name</label>
-                <select
-                  value={inspectorName}
-                  onChange={(e) => setInspectorName(e.target.value)}
-                  className={`${inputClass} bg-white`}
-                >
-                  <option value="">Select....</option>
-                  {users.map((u) => (
-                    <option key={u._id} value={u.name}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className={labelClass}>Qualification</label>
-                <input
-                  type="text"
-                  value={inspectorQual}
-                  onChange={(e) => setInspectorQual(e.target.value)}
-                  className={inputClass}
-                  placeholder="e.g. UT NDE Level II"
-                />
-              </div>
-              <div>
-                <label className={labelClass}>Signature</label>
-                <input
-                  type="text"
-                  value={inspectorSig}
-                  onChange={(e) => setInspectorSig(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>Date</label>
-                <input
-                  type="date"
-                  value={inspectorDate}
-                  onChange={(e) => setInspectorDate(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-semibold text-gray-700 uppercase">
+                National Ind. Insp. &amp; Training
+              </p>
+              <button
+                type="button"
+                onClick={addInspector}
+                className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 rounded-lg px-2 py-1 hover:bg-indigo-50 transition-colors"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              {inspectors.map((insp, idx) => (
+                <div key={idx} className="relative">
+                  {inspectors.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => removeInspector(idx)}
+                        className="absolute top-0 right-0 text-red-400 hover:text-red-600"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                      <p className="text-xs text-gray-400 mb-2">
+                        Inspector {idx + 1}
+                      </p>
+                    </>
+                  )}
+                  <div className="space-y-2">
+                    <div>
+                      <label className={labelClass}>Name</label>
+                      <select
+                        value={insp.name}
+                        onChange={(e) =>
+                          updateInsp(idx, "name", e.target.value)
+                        }
+                        className={`${inputClass} bg-white`}
+                      >
+                        <option value="">Select....</option>
+                        {users.map((u) => (
+                          <option key={u._id} value={u.name}>
+                            {u.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className={labelClass}>Qualification</label>
+                      <input
+                        type="text"
+                        value={insp.qualification}
+                        onChange={(e) =>
+                          updateInsp(idx, "qualification", e.target.value)
+                        }
+                        className={inputClass}
+                        placeholder="e.g. UT NDE Level II"
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Designation</label>
+                      <input
+                        type="text"
+                        value={insp.designation}
+                        onChange={(e) =>
+                          updateInsp(idx, "designation", e.target.value)
+                        }
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Signature</label>
+                      <input
+                        type="text"
+                        value={insp.signature}
+                        onChange={(e) =>
+                          updateInsp(idx, "signature", e.target.value)
+                        }
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Date</label>
+                      <input
+                        type="date"
+                        value={insp.date}
+                        onChange={(e) =>
+                          updateInsp(idx, "date", e.target.value)
+                        }
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
           {/* Customer */}

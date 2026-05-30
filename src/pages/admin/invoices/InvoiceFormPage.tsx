@@ -9,7 +9,7 @@ import {
 } from "../../../api/invoiceApi";
 import { getCustomers } from "../../../api/customerApi";
 
-const UNITS = ["Nos", "Lump Sum", "Kg", "Meter", "Set", "Hours", "Days"];
+const UNITS = ["Nos", "No"];
 const PAYMENT_MODES = [
   "Immediate after submission bill",
   "30 Days",
@@ -36,8 +36,10 @@ const defaultForm = {
   dueDate: "",
   subject: "",
   deliveryNote: "",
+  deliveryNoteDate: "",
   supplierRef: "",
   buyerOrderNo: "",
+  buyerOrderDate: "",
   documentNo: "",
   dispatchedThrough: "",
   destination: "",
@@ -46,7 +48,7 @@ const defaultForm = {
   paymentModeCustom: "",
   items: [emptyItem()],
   subtotal: 0,
-  discount: 0,
+  // discount: 0,
   cgst: { rate: 9, amount: 0 },
   sgst: { rate: 9, amount: 0 },
   igst: { rate: 0, amount: 0 },
@@ -61,10 +63,11 @@ const defaultForm = {
   bankDetails: {
     bankName: "State Bank of India",
     accountNumber: "35005963456",
-    ifscCode: "SBIN0001234",
+    ifscCode: "SBIN0014727",
     branch: "Baramati MIDC",
   },
-  notes: "",
+  notes:
+    "We declare that this invoice shows the actual price of the testing work described and that all particulars are true and correct.",
   showTotalAmounts: true,
   taxMode: "cgst_sgst" as "cgst_sgst" | "igst",
 };
@@ -75,22 +78,12 @@ function calcTotals(form: typeof defaultForm) {
     amount: Number((it.quantity * it.unitPrice).toFixed(2)),
   }));
   const subtotal = items.reduce((s, it) => s + it.amount, 0);
-  const afterDiscount = subtotal - (form.discount || 0);
-  const cgstAmt = Number(
-    ((afterDiscount * (form.cgst.rate || 0)) / 100).toFixed(2),
-  );
-  const sgstAmt = Number(
-    ((afterDiscount * (form.sgst.rate || 0)) / 100).toFixed(2),
-  );
-  const igstAmt = Number(
-    ((afterDiscount * (form.igst.rate || 0)) / 100).toFixed(2),
-  );
+  // const afterDiscount = subtotal - (form.discount || 0);
+  const cgstAmt = Number(((subtotal * (form.cgst.rate || 0)) / 100).toFixed(2));
+  const sgstAmt = Number(((subtotal * (form.sgst.rate || 0)) / 100).toFixed(2));
+  const igstAmt = Number(((subtotal * (form.igst.rate || 0)) / 100).toFixed(2));
   const totalBeforeRound =
-    afterDiscount +
-    cgstAmt +
-    sgstAmt +
-    igstAmt +
-    (form.transportationCharges || 0);
+    subtotal + cgstAmt + sgstAmt + igstAmt + (form.transportationCharges || 0);
   const grandTotal = Math.round(totalBeforeRound);
   const roundedOff = Number((grandTotal - totalBeforeRound).toFixed(2));
   return {
@@ -99,7 +92,7 @@ function calcTotals(form: typeof defaultForm) {
     cgst: { rate: form.cgst.rate, amount: cgstAmt },
     sgst: { rate: form.sgst.rate, amount: sgstAmt },
     igst: { rate: form.igst.rate, amount: igstAmt },
-    totalAmount: Number(afterDiscount.toFixed(2)),
+    totalAmount: Number(subtotal.toFixed(2)),
     roundedOff,
     grandTotal,
   };
@@ -240,6 +233,12 @@ export const InvoiceFormPage: React.FC = () => {
           dueDate: inv.dueDate
             ? new Date(inv.dueDate).toISOString().slice(0, 10)
             : "",
+          buyerOrderDate: inv.buyerOrderDate
+            ? new Date(inv.buyerOrderDate).toISOString().slice(0, 10)
+            : "",
+          deliveryNoteDate: inv.deliveryNoteDate
+            ? new Date(inv.deliveryNoteDate).toISOString().slice(0, 10)
+            : "",
           cgst: inv.cgst || { rate: 9, amount: 0 },
           sgst: inv.sgst || { rate: 9, amount: 0 },
           igst: inv.igst || { rate: 0, amount: 0 },
@@ -283,7 +282,6 @@ export const InvoiceFormPage: React.FC = () => {
     form.cgst.rate,
     form.sgst.rate,
     form.igst.rate,
-    form.discount,
     form.transportationCharges,
   ]);
 
@@ -425,7 +423,7 @@ export const InvoiceFormPage: React.FC = () => {
               onChange={(e) => setField("date", e.target.value)}
             />
           </div>
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Due Date
             </label>
@@ -435,7 +433,7 @@ export const InvoiceFormPage: React.FC = () => {
               value={form.dueDate}
               onChange={(e) => setField("dueDate", e.target.value)}
             />
-          </div>
+          </div> */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Customer <span className="text-red-500">*</span>
@@ -448,7 +446,7 @@ export const InvoiceFormPage: React.FC = () => {
                 setForm((prev) => ({
                   ...prev,
                   customerId: e.target.value,
-                  customerName: match ? (match.companyName || match.name) : "",
+                  customerName: match ? match.companyName || match.name : "",
                 }));
               }}
             >
@@ -504,7 +502,7 @@ export const InvoiceFormPage: React.FC = () => {
               )}
             </div>
           </div>
-          <div className="md:col-span-2 lg:col-span-3">
+          {/* <div className="md:col-span-2 lg:col-span-3">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Subject
             </label>
@@ -514,7 +512,7 @@ export const InvoiceFormPage: React.FC = () => {
               onChange={(e) => setField("subject", e.target.value)}
               placeholder="Invoice subject"
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -524,13 +522,67 @@ export const InvoiceFormPage: React.FC = () => {
           Reference Information
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Delivery Note
+            </label>
+            <input
+              className="input-field w-full"
+              value={form.deliveryNote}
+              onChange={(e) => setField("deliveryNote", e.target.value)}
+              placeholder="Delivery Note"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Delivery Note Date
+            </label>
+            <input
+              type="date"
+              className="input-field w-full"
+              value={form.deliveryNoteDate}
+              onChange={(e) => setField("deliveryNoteDate", e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Supplier's Ref
+            </label>
+            <input
+              className="input-field w-full"
+              value={form.supplierRef}
+              onChange={(e) => setField("supplierRef", e.target.value)}
+              placeholder="Supplier's Ref"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Buyer's Order No
+            </label>
+            <input
+              className="input-field w-full"
+              value={form.buyerOrderNo}
+              onChange={(e) => setField("buyerOrderNo", e.target.value)}
+              placeholder="Buyer's Order No"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Buyer's Order Date
+            </label>
+            <input
+              type="date"
+              className="input-field w-full"
+              value={form.buyerOrderDate}
+              onChange={(e) => setField("buyerOrderDate", e.target.value)}
+            />
+          </div>
           {[
-            { label: "Delivery Note", key: "deliveryNote" },
-            { label: "Supplier's Ref", key: "supplierRef" },
-            { label: "Buyer's Order No", key: "buyerOrderNo" },
             { label: "Document No", key: "documentNo" },
             { label: "Dispatched Through", key: "dispatchedThrough" },
             { label: "Destination", key: "destination" },
+            { label: "Other References", key: "otherReferences" },
+            { label: "Terms of Delivery", key: "termsOfDelivery" },
           ].map(({ label, key }) => (
             <div key={key}>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -544,7 +596,7 @@ export const InvoiceFormPage: React.FC = () => {
               />
             </div>
           ))}
-          <div className="md:col-span-2">
+          {/* <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Terms of Delivery
             </label>
@@ -554,7 +606,7 @@ export const InvoiceFormPage: React.FC = () => {
               onChange={(e) => setField("termsOfDelivery", e.target.value)}
               placeholder="Terms of delivery"
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -576,7 +628,7 @@ export const InvoiceFormPage: React.FC = () => {
                 <th className="px-3 py-2 text-left text-gray-600 font-semibold w-28">
                   HSN/SAC
                 </th>
-                <th className="px-3 py-2 text-left text-gray-600 font-semibold w-20">
+                <th className="px-3 py-2 text-left text-gray-600 font-semibold w-28">
                   Qty
                 </th>
                 <th className="px-3 py-2 text-left text-gray-600 font-semibold w-24">
@@ -607,7 +659,7 @@ export const InvoiceFormPage: React.FC = () => {
                       placeholder="Description of work"
                     />
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-1 py-2">
                     <input
                       className="input-field w-full"
                       value={it.hsnSac}
@@ -617,7 +669,7 @@ export const InvoiceFormPage: React.FC = () => {
                       placeholder="HSN/SAC"
                     />
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-1 py-2 w-28">
                     <input
                       type="number"
                       min="1"
@@ -628,7 +680,7 @@ export const InvoiceFormPage: React.FC = () => {
                       }
                     />
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-1 py-2">
                     <select
                       className="input-field w-full"
                       value={it.unit}
@@ -641,7 +693,7 @@ export const InvoiceFormPage: React.FC = () => {
                       ))}
                     </select>
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-1 py-2">
                     <input
                       type="number"
                       min="0"
@@ -673,12 +725,14 @@ export const InvoiceFormPage: React.FC = () => {
             </tbody>
           </table>
         </div>
-        <button
-          onClick={addItem}
-          className="inline-flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"
-        >
-          <Plus size={15} /> Add Line Item
-        </button>
+        <div className="flex justify-end pr-5">
+          <button
+            onClick={addItem}
+            className="inline-flex items-end gap-1.5 text-sm text-primary-600 hover:text-primary-700 font-medium"
+          >
+            <Plus size={15} /> Add Item
+          </button>
+        </div>
       </div>
 
       {/* GST & Totals */}
@@ -774,7 +828,7 @@ export const InvoiceFormPage: React.FC = () => {
                 ₹ {form.igst.amount.toFixed(2)}
               </span>
             </div>
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               <label className="w-36 text-sm font-medium text-gray-700">
                 Discount (₹)
               </label>
@@ -786,7 +840,7 @@ export const InvoiceFormPage: React.FC = () => {
                 value={form.discount}
                 onChange={(e) => setField("discount", Number(e.target.value))}
               />
-            </div>
+            </div> */}
             <div className="flex items-center gap-3">
               <label className="w-36 text-sm font-medium text-gray-700">
                 Transport Charges
@@ -808,14 +862,14 @@ export const InvoiceFormPage: React.FC = () => {
               <span className="text-gray-600">Subtotal</span>
               <span className="font-medium">₹ {form.subtotal.toFixed(2)}</span>
             </div>
-            {form.discount > 0 && (
+            {/* {form.discount > 0 && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Discount</span>
                 <span className="font-medium text-red-600">
                   - ₹ {form.discount.toFixed(2)}
                 </span>
               </div>
-            )}
+            )} */}
             {form.cgst.rate > 0 && (
               <div className="flex justify-between">
                 <span className="text-gray-600">CGST ({form.cgst.rate}%)</span>
@@ -857,7 +911,7 @@ export const InvoiceFormPage: React.FC = () => {
             </p>
             {/* Print option — placed here so it's next to what it controls */}
             <div className="border-t pt-3 mt-1">
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-2 cursor-pointer ">
                 <input
                   type="checkbox"
                   checked={form.showTotalAmounts}
@@ -866,8 +920,8 @@ export const InvoiceFormPage: React.FC = () => {
                   }
                   className="w-4 h-4 accent-primary-600 cursor-pointer"
                 />
-                <span className="text-xs font-medium text-gray-600">
-                  Show "Total Amounts" row on printed invoice
+                <span className="text-sm font-medium text-gray-600">
+                  Show "Total Amount" row on printed invoice
                 </span>
               </label>
             </div>
@@ -905,7 +959,7 @@ export const InvoiceFormPage: React.FC = () => {
       {/* Notes */}
       <div className="glass-card p-6 space-y-4">
         <h2 className="font-semibold text-gray-800 text-base border-b pb-2">
-          Notes
+          Declaration
         </h2>
         <textarea
           className="input-field w-full h-24 resize-none"

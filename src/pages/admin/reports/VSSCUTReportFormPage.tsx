@@ -11,6 +11,7 @@ import {
 } from "../../../api/customerApi";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 import api from "../../../api/axios";
+import { AssignTestPage } from "../assignedTests/AssignTestPage";
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 const inputClass =
@@ -117,6 +118,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
   const state = location.state as {
     customerId?: string;
     customerName?: string;
+    from?: string;
   } | null;
   const [saving, setSaving] = useState(false);
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
@@ -126,13 +128,14 @@ export const VSSCUTReportFormPage: React.FC = () => {
   const [reportNo, setReportNo] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [reportDate, setReportDate] = useState("");
-  const [weldJointNo, setWeldJointNo] = useState("");
+  const [weldJointNo, setWeldJointNo] = useState("As per Annexure I");
   const [thicknessOfJob, setThicknessOfJob] = useState("");
+  const [thicknessOfJobCustom, setThicknessOfJobCustom] = useState("");
   const [surfaceCondition, setSurfaceCondition] = useState("");
   const [surfaceConditionCustom, setSurfaceConditionCustom] = useState("");
   const [periodFrom, setPeriodFrom] = useState("");
   const [periodTo, setPeriodTo] = useState("");
-  const [material, setMaterial] = useState("");
+  const [material, setMaterial] = useState("MDN 250");
   const [scanningTechnique, setScanningTechnique] = useState("");
   const [scanningTechniqueCustom, setScanningTechniqueCustom] = useState("");
   const [stageOfInspection, setStageOfInspection] = useState("");
@@ -149,12 +152,13 @@ export const VSSCUTReportFormPage: React.FC = () => {
   const [referenceDatumCustom, setReferenceDatumCustom] = useState("");
 
   // ── Test Setup ──
-  const [tsAngleRange, setTsAngleRange] = useState("");
-  const [tsNormalRange, setTsNormalRange] = useState("");
-  const [tsCalBlockAngle, setTsCalBlockAngle] = useState("");
-  const [tsCalBlockNormal, setTsCalBlockNormal] = useState("");
+  const [tsAngleRange, setTsAngleRange] = useState("0-100 mm");
+  const [tsNormalRange, setTsNormalRange] = useState("0-10 mm");
+  const [tsCalBlockAngle, setTsCalBlockAngle] = useState("V-2 Block (MDN-250)");
+  const [tsCalBlockNormal, setTsCalBlockNormal] = useState("Step Block (MDN 250)");
   const [tsRefBlockAngle, setTsRefBlockAngle] = useState("");
   const [tsRefBlockNormal, setTsRefBlockNormal] = useState("");
+  const [tsRefBlockAngleCustom, setTsRefBlockAngleCustom] = useState("");
   const [tsRefBlockNormalCustom, setTsRefBlockNormalCustom] = useState("");
 
   // ── Angle Probe Calibration ──
@@ -197,12 +201,15 @@ export const VSSCUTReportFormPage: React.FC = () => {
   // ── Final Section ──
   const [inspectorName, setInspectorName] = useState("");
   const [inspectorIdNo, setInspectorIdNo] = useState("");
+  const [inspectorSignature, setInspectorSignature] = useState("");
   const [inspectorDate, setInspectorDate] = useState("");
   const [qcName, setQcName] = useState("");
   const [qcIdNo, setQcIdNo] = useState("");
+  const [qcSignature, setQcSignature] = useState("");
   const [qcDate, setQcDate] = useState("");
   const [rqsName, setRqsName] = useState("");
   const [rqsIdNo, setRqsIdNo] = useState("");
+  const [rqsSignature, setRqsSignature] = useState("");
   const [rqsDate, setRqsDate] = useState("");
 
   // ── Load in edit mode ──
@@ -285,7 +292,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
         setAreaScannedCustom(asC);
         const [acc, accC] = fromOther(r.acceptanceStandard, [
           "MME/QC-HTW/M250/001 REV.0",
-          "CUSTOMER",
+          
           "Other",
         ]);
         setAcceptanceStandard(acc);
@@ -298,10 +305,17 @@ export const VSSCUTReportFormPage: React.FC = () => {
         setTsNormalRange(ts.normalRange ?? "");
         setTsCalBlockAngle(ts.standardCalBlock?.angle ?? "");
         setTsCalBlockNormal(ts.standardCalBlock?.normal ?? "");
-        setTsRefBlockAngle(ts.identificationNoOfRefBlock?.angle ?? "");
+        const [rba, rbaC] = fromOther(
+        ts.identificationNoOfRefBlock?.angle,
+        [
+          "'G' Notch (LSP 34 A side only)",
+          "Other",
+        ]
+        );
+        setTsRefBlockAngle(rba);
+        setTsRefBlockAngleCustom(rbaC);
         const [rbn, rbnC] = fromOther(ts.identificationNoOfRefBlock?.normal, [
           "2mmFBH (PJS-01-2007/4)",
-          "CUSTOM",
           "Other",
         ]);
         setTsRefBlockNormal(rbn);
@@ -356,14 +370,17 @@ export const VSSCUTReportFormPage: React.FC = () => {
         const insp = fs.inspector?.[0] ?? {};
         setInspectorName(insp.name ?? "");
         setInspectorIdNo(insp.idNo ?? "");
+        setInspectorSignature(insp.signature ?? "");
         setInspectorDate(toDate(insp.date));
         const qc = fs.qc ?? {};
         setQcName(qc.name ?? "");
         setQcIdNo(qc.idNo ?? "");
+        setQcSignature(qc.signature ?? "");
         setQcDate(toDate(qc.date));
         const rqs = fs.rqs ?? {};
         setRqsName(rqs.name ?? "");
         setRqsIdNo(rqs.idNo ?? "");
+        setRqsSignature(rqs.signature ?? "");
         setRqsDate(toDate(rqs.date));
       })
       .catch(() => toast.error("Failed to load report."));
@@ -414,7 +431,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
         jobDescription,
         reportDate: reportDate || undefined,
         weldJointNo,
-        thicknessOfJob,
+        thicknessOfJob: resolve(thicknessOfJob, thicknessOfJobCustom),
         surfaceCondition: resolve(surfaceCondition, surfaceConditionCustom),
         customer: customerName,
         periodOfInspection:
@@ -440,7 +457,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
             normal: tsCalBlockNormal,
           },
           identificationNoOfRefBlock: {
-            angle: tsRefBlockAngle,
+            angle: resolve(tsRefBlockAngle,tsRefBlockAngleCustom),
             normal: resolve(tsRefBlockNormal, tsRefBlockNormalCustom),
           },
         },
@@ -469,11 +486,12 @@ export const VSSCUTReportFormPage: React.FC = () => {
             {
               name: inspectorName,
               idNo: inspectorIdNo,
+              signature: inspectorSignature,
               date: inspectorDate || undefined,
             },
           ],
-          qc: { name: qcName, idNo: qcIdNo, date: qcDate || undefined },
-          rqs: { name: rqsName, idNo: rqsIdNo, date: rqsDate || undefined },
+          qc: { name: qcName, idNo: qcIdNo, signature: qcSignature, date: qcDate || undefined },
+          rqs: { name: rqsName, idNo: rqsIdNo, signature: rqsSignature, date: rqsDate || undefined },
         },
       };
       if (id) {
@@ -482,9 +500,13 @@ export const VSSCUTReportFormPage: React.FC = () => {
         await createVSSCUTReport(payload);
       }
       toast.success(`VSSC-UT Report saved as ${status}.`);
-      navigate(`/admin/customers/${customerId}`, {
-        state: { activeTab: "reports", reportSubType: "vssc-ut" },
-      });
+      if (state?.from === "reports-list") {
+        navigate("/admin/reports");
+      } else {
+        navigate(`/admin/customers/${customerId}`, {
+          state: { activeTab: "reports", reportSubType: "vssc-ut" },
+        });
+      }
     } catch {
       toast.error("Failed to save report. Please try again.");
     } finally {
@@ -587,19 +609,24 @@ export const VSSCUTReportFormPage: React.FC = () => {
               value={weldJointNo}
               onChange={(e) => setWeldJointNo(e.target.value)}
               className={inputClass}
-              placeholder="e.g. As per Annexure I"
             />
           </div>
-          <div>
-            <label className={labelClass}>Thickness of Job</label>
-            <input
-              type="text"
-              value={thicknessOfJob}
-              onChange={(e) => setThicknessOfJob(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 7.8MM / 7.7MM / 12MM / 18MM"
-            />
-          </div>
+         <div>
+  <label className={labelClass}>Thickness of Job</label>
+  <SelectWithCustom
+    value={thicknessOfJob}
+    onChange={setThicknessOfJob}
+    customValue={thicknessOfJobCustom}
+    onCustomChange={setThicknessOfJobCustom}
+    options={[
+      "7.8MM",
+      "7.7MM",
+      "12MM",
+      "18MM",
+      "Other",
+    ]}
+  />
+</div>
           <div>
             <label className={labelClass}>Surface Condition</label>
             <SelectWithCustom
@@ -617,7 +644,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
               value={material}
               onChange={(e) => setMaterial(e.target.value)}
               className={inputClass}
-              placeholder="e.g. MDN 250"
+              
             />
           </div>
           <div>
@@ -705,7 +732,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
               onChange={setAcceptanceStandard}
               customValue={acceptanceStandardCustom}
               onCustomChange={setAcceptanceStandardCustom}
-              options={["MME/QC-HTW/M250/001 REV.0", "CUSTOMER", "Other"]}
+              options={["MME/QC-HTW/M250/001 REV.0", "Other"]}
             />
           </div>
           <div>
@@ -732,7 +759,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
               value={tsAngleRange}
               onChange={(e) => setTsAngleRange(e.target.value)}
               className={inputClass}
-              placeholder="e.g. 0-100 mm"
             />
           </div>
           <div>
@@ -742,7 +768,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
               value={tsNormalRange}
               onChange={(e) => setTsNormalRange(e.target.value)}
               className={inputClass}
-              placeholder="e.g. 0-10 mm"
             />
           </div>
           <div>
@@ -752,7 +777,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
               value={tsCalBlockAngle}
               onChange={(e) => setTsCalBlockAngle(e.target.value)}
               className={inputClass}
-              placeholder="e.g. V-2 Block (MDN-250)"
             />
           </div>
           <div>
@@ -764,21 +788,24 @@ export const VSSCUTReportFormPage: React.FC = () => {
               value={tsCalBlockNormal}
               onChange={(e) => setTsCalBlockNormal(e.target.value)}
               className={inputClass}
-              placeholder="e.g. Step Block (MDN 250)"
             />
           </div>
-          <div>
-            <label className={labelClass}>
-              Idtn. No of Ref Block — For Angle
-            </label>
-            <input
-              type="text"
-              value={tsRefBlockAngle}
-              onChange={(e) => setTsRefBlockAngle(e.target.value)}
-              className={inputClass}
-              placeholder="e.g. 'G' Notch (LSP 34 A side only)"
-            />
-          </div>
+         <div>
+  <label className={labelClass}>
+    Idtn. No of Ref Block — For Angle
+  </label>
+
+  <SelectWithCustom
+    value={tsRefBlockAngle}
+    onChange={setTsRefBlockAngle}
+    customValue={tsRefBlockAngleCustom}
+    onCustomChange={setTsRefBlockAngleCustom}
+    options={[
+      "'G' Notch (LSP 34 A side only)",
+      "Other",
+    ]}
+  />
+</div>
           <div>
             <label className={labelClass}>
               Idtn. No of Ref Block — For Normal
@@ -788,7 +815,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
               onChange={setTsRefBlockNormal}
               customValue={tsRefBlockNormalCustom}
               onCustomChange={setTsRefBlockNormalCustom}
-              options={["2mmFBH (PJS-01-2007/4)", "CUSTOM", "Other"]}
+              options={["2mmFBH (PJS-01-2007/4)", "Other"]}
             />
           </div>
         </div>
@@ -866,77 +893,78 @@ export const VSSCUTReportFormPage: React.FC = () => {
         <div className="overflow-x-auto mt-4">
           <table className="w-full text-xs border-collapse min-w-[1000px]">
             <thead>
-              <tr className="bg-gray-100 text-gray-700">
-                <th
-                  className="border border-gray-300 px-2 py-2 text-left"
-                  rowSpan={2}
-                >
-                  Sr. Nos. of probes
-                </th>
-                <th
-                  className="border border-gray-300 p-0 text-center font-bold"
-                  colSpan={4}
-                >
-                  <input
-                    type="text"
-                    value={probe45Sr}
-                    onChange={(e) => setProbe45Sr(e.target.value)}
-                    className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
-                    placeholder="e.g. 45 - 63230"
-                  />
-                </th>
-                <th
-                  className="border border-gray-300 p-0 text-center font-bold"
-                  colSpan={4}
-                >
-                  <input
-                    type="text"
-                    value={probe60Sr}
-                    onChange={(e) => setProbe60Sr(e.target.value)}
-                    className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
-                    placeholder="e.g. 60 - 63285"
-                  />
-                </th>
-                <th
-                  className="border border-gray-300 p-0 text-center font-bold"
-                  colSpan={4}
-                >
-                  <input
-                    type="text"
-                    value={probe70Sr}
-                    onChange={(e) => setProbe70Sr(e.target.value)}
-                    className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
-                    placeholder="e.g. 70 - 63309"
-                  />
-                </th>
-              </tr>
-              <tr className="bg-gray-50 text-gray-700">
-                {PROBE_MODES.map((pm) => (
-                  <th
-                    key={pm}
-                    className="border border-gray-300 px-2 py-1 text-center font-bold"
-                    colSpan={2}
-                  >
-                    {pm.replace("L", " L").replace("T", " T")}
-                  </th>
-                ))}
-              </tr>
-              <tr className="bg-white text-gray-600">
-                <th className="border border-gray-300 px-2 py-1 text-center font-bold">
-                  Scanning
-                </th>
-                {PROBE_MODES.map((pm) => (
-                  <React.Fragment key={pm + "_sh"}>
-                    <th className="border border-gray-300 px-1 py-1 text-center">
-                      BP mm
-                    </th>
-                    <th className="border border-gray-300 px-1 py-1 text-center">
-                      %FSH
-                    </th>
-                  </React.Fragment>
-                ))}
-              </tr>
-            </thead>
+  <tr>
+    <th
+      className="border border-gray-300 px-2 py-2 text-center"
+    >
+      Sr. No.
+    </th>
+
+    <th className="border border-gray-300 p-0 text-center font-bold" colSpan={4}>
+      <input
+        type="text"
+        value={probe45Sr}
+        onChange={(e) => setProbe45Sr(e.target.value)}
+        className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
+        placeholder="e.g. 45 - 63230"
+      />
+    </th>
+
+    <th className="border border-gray-300 p-0 text-center font-bold" colSpan={4}>
+      <input
+        type="text"
+        value={probe60Sr}
+        onChange={(e) => setProbe60Sr(e.target.value)}
+        className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
+        placeholder="e.g. 60 - 63285"
+      />
+    </th>
+
+    <th className="border border-gray-300 p-0 text-center font-bold" colSpan={4}>
+      <input
+        type="text"
+        value={probe70Sr}
+        onChange={(e) => setProbe70Sr(e.target.value)}
+        className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
+        placeholder="e.g. 70 - 63309"
+      />
+    </th>
+  </tr>
+
+  <tr>
+    <th className="border border-gray-300 px-2 py-1 text-center font-bold">
+      Scanning
+    </th>
+
+    {PROBE_MODES.map((pm) => (
+      <th
+        key={pm}
+        className="border border-gray-300 px-2 py-1 text-center font-bold"
+        colSpan={2}
+      >
+        {pm.replace("L", " L").replace("T", " T")}
+      </th>
+    ))}
+  </tr>
+
+  <tr>
+    <th className="border border-gray-300 px-2 py-1 text-center font-bold">
+      Skips
+    </th>
+
+    {PROBE_MODES.map((pm) => (
+      <React.Fragment key={pm + "_sh"}>
+        <th className="border border-gray-300 px-1 py-1 text-center">
+          BP mm
+        </th>
+
+        <th className="border border-gray-300 px-1 py-1 text-center">
+          %FSH
+        </th>
+      </React.Fragment>
+    ))}
+  </tr>
+</thead>
             <tbody>
               {SKIPS.map(({ key, label }) => (
                 <tr key={key} className="hover:bg-gray-50">
@@ -1125,11 +1153,8 @@ export const VSSCUTReportFormPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* Inspector */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
-              Examined By
-            </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              National Ind. Insp. & Training
+              National Ind. Insp. &amp; Training
             </p>
             <div className="space-y-2">
               <div>
@@ -1148,6 +1173,15 @@ export const VSSCUTReportFormPage: React.FC = () => {
                 </select>
               </div>
               <div>
+                <label className={labelClass}>Signature</label>
+                <input
+                  type="text"
+                  value={inspectorSignature}
+                  onChange={(e) => setInspectorSignature(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
                 <label className={labelClass}>Date</label>
                 <input
                   type="date"
@@ -1160,9 +1194,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
           </div>
           {/* QC */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
-              Customer
-            </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               QC / WIL
             </p>
@@ -1173,6 +1204,15 @@ export const VSSCUTReportFormPage: React.FC = () => {
                   type="text"
                   value={qcName}
                   onChange={(e) => setQcName(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Signature</label>
+                <input
+                  type="text"
+                  value={qcSignature}
+                  onChange={(e) => setQcSignature(e.target.value)}
                   className={inputClass}
                 />
               </div>
@@ -1189,9 +1229,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
           </div>
           {/* RQS */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
-              Client
-            </p>
             <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
               RQS / VSSC
             </p>
@@ -1202,6 +1239,15 @@ export const VSSCUTReportFormPage: React.FC = () => {
                   type="text"
                   value={rqsName}
                   onChange={(e) => setRqsName(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Signature</label>
+                <input
+                  type="text"
+                  value={rqsSignature}
+                  onChange={(e) => setRqsSignature(e.target.value)}
                   className={inputClass}
                 />
               </div>

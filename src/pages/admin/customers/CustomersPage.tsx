@@ -17,8 +17,10 @@ import {
   createCustomer,
   updateCustomer,
   deleteCustomer,
+  getIndianStates,
   Customer,
   CustomerPayload,
+  IndiaState,
 } from "../../../api/customerApi";
 import { Pagination } from "../../../components/Pagination";
 
@@ -29,6 +31,8 @@ const INITIAL_FORM: CustomerPayload = {
   mobile: "",
   email: "",
   city: "",
+  state: "",
+  stateCode: "",
   address: "",
   gstNo: "",
 };
@@ -51,6 +55,15 @@ export const CustomersPage = () => {
   const navigate = useNavigate();
 
   const [limit, setLimit] = useState(10);
+  const [indiaStates, setIndiaStates] = useState<IndiaState[]>([]);
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getIndianStates().then((res: any) => {
+      const data = res?.data?.data || res?.data || [];
+      setIndiaStates(data);
+    }).catch(() => {});
+  }, []);
 
   const fetchCustomers = useCallback(async () => {
     setIsLoading(true);
@@ -104,6 +117,8 @@ export const CustomersPage = () => {
       mobile: c.mobile,
       email: c.email || "",
       city: c.city || "",
+      state: c.state || "",
+      stateCode: c.stateCode || "",
       address: c.address || "",
       gstNo: c.gstNo || "",
     });
@@ -151,6 +166,8 @@ export const CustomersPage = () => {
         mobile: form.mobile.trim(),
         email: form.email?.trim() || null,
         city: form.city?.trim() || null,
+        state: form.state?.trim() || null,
+        stateCode: form.stateCode?.trim() || null,
         address: form.address?.trim() || null,
         gstNo: form.gstNo?.trim() || null,
       };
@@ -430,6 +447,41 @@ export const CustomersPage = () => {
                         }
                         className={inputClass}
                         placeholder="e.g. Mumbai"
+                      />
+                    </div>
+                    <div className="col-span-2 sm:col-span-1">
+                      <label className={labelClass}>State</label>
+                      <select
+                        value={form.state || ""}
+                        onChange={(e) => {
+                          const selected = indiaStates.find(
+                            (s) => s.name === e.target.value
+                          );
+                          setForm((f) => ({
+                            ...f,
+                            state: e.target.value,
+                            stateCode: selected?.code || "",
+                          }));
+                        }}
+                        className={inputClass}
+                      >
+                        <option value="">Select state</option>
+                        {indiaStates.map((s) => (
+                          <option key={s.code} value={s.name}>
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="col-span-2 sm:col-span-1">
+                      <label className={labelClass}>State Code</label>
+                      <input
+                        value={form.stateCode || ""}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, stateCode: e.target.value }))
+                        }
+                        className={inputClass}
+                        placeholder="Auto-filled or enter manually"
                       />
                     </div>
                     <div className="col-span-2">
