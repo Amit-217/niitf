@@ -197,7 +197,51 @@ export const MPTReportFormPage: React.FC = () => {
   const [inspectors, setInspectors] = useState<InspRow[]>([emptyInspector()]);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
 
-  const fc = (key: string) => (errors[key] ? inputErrorClass : inputClass);
+  const getFieldValue = (key: string): string => {
+    const map: Record<string, string> = {
+      jobClient,
+      jobProject,
+      jobReportDate,
+      jobInspectionDate,
+      jobInspectionEndDate,
+      jobStageOfInspection,
+      jobThickness,
+      jobMaterial,
+      jobTypeOfJoint,
+      jobSurfaceCondition,
+      jobWeldingProcess,
+      eqType,
+      eqSrNo,
+      eqCalibrationDue,
+      eqYokeSpacing,
+      eqPieGauge,
+      biBatchNo,
+      biExpiryDate,
+      wcBatchNo,
+      wcExpiryDate,
+      method,
+      lightIntensity,
+      magnetizationType,
+      lightEquipUsed,
+      magnetizingMethod,
+      demagnetization,
+      magFieldVerifiedBy,
+      gaussMeterReading,
+      current,
+      postCleaning,
+      jobReferenceStd: jobReferenceStd === "Other" ? jobReferenceStdOther : jobReferenceStd,
+      jobAcceptanceCriteria: jobAcceptanceCriteria === "Other" ? jobAcceptanceCriteriaOther : jobAcceptanceCriteria,
+      jobExtentOfExamination: jobExtentOfExamination === "Other" ? jobExtentOfExaminationOther : jobExtentOfExamination,
+      eqMake: eqMake === "Other" ? eqMakeOther : eqMake,
+      biManufacturer: biManufacturer === "Other" ? biManufacturerOther : biManufacturer,
+      wcManufacturer: wcManufacturer === "Other" ? wcManufacturerOther : wcManufacturer,
+      bathConcentration: bathConcentration === "Other" ? bathConcentrationOther : bathConcentration,
+      currentType: currentType === "Other" ? currentTypeOther : currentType,
+    };
+    return map[key] ?? "";
+  };
+  const hasError = (key: string) => !!errors[key] && !getFieldValue(key);
+  const fc = (key: string) => (hasError(key) ? inputErrorClass : inputClass);
 
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
   useEffect(() => {
@@ -765,7 +809,7 @@ export const MPTReportFormPage: React.FC = () => {
               onOtherChange={setJobReferenceStdOther}
               options={["ASME SEC V Article 7", "ASTM E 709", "Other"]}
               placeholder="Select...."
-              error={!!errors.jobReferenceStd}
+              error={hasError("jobReferenceStd")}
             />
           </div>
           <div>
@@ -785,7 +829,7 @@ export const MPTReportFormPage: React.FC = () => {
                 "Other",
               ]}
               placeholder="Select...."
-              error={!!errors.jobAcceptanceCriteria}
+              error={hasError("jobAcceptanceCriteria")}
             />
           </div>
 
@@ -823,7 +867,7 @@ export const MPTReportFormPage: React.FC = () => {
                 "Other",
               ]}
               placeholder="Select Extent..."
-              error={!!errors.jobExtentOfExamination}
+              error={hasError("jobExtentOfExamination")}
             />
           </div>
           <div>
@@ -952,7 +996,7 @@ export const MPTReportFormPage: React.FC = () => {
               otherValue={eqMakeOther}
               onOtherChange={setEqMakeOther}
               options={["EECI", "Ferrochem", "Other"]}
-              error={!!errors.eqMake}
+              error={hasError("eqMake")}
             />
           </div>
           <div>
@@ -1031,7 +1075,7 @@ export const MPTReportFormPage: React.FC = () => {
                     otherValue={biManufacturerOther}
                     onOtherChange={setBiManufacturerOther}
                     options={manufacturerOptions}
-                    error={!!errors.biManufacturer}
+                    error={hasError("biManufacturer")}
                   />
                 </td>
                 <td className="border border-gray-200 px-2 py-1">
@@ -1065,7 +1109,7 @@ export const MPTReportFormPage: React.FC = () => {
                     otherValue={wcManufacturerOther}
                     onOtherChange={setWcManufacturerOther}
                     options={manufacturerOptions}
-                    error={!!errors.wcManufacturer}
+                    error={hasError("wcManufacturer")}
                   />
                 </td>
                 <td className="border border-gray-200 px-2 py-1">
@@ -1183,7 +1227,7 @@ export const MPTReportFormPage: React.FC = () => {
               otherValue={bathConcentrationOther}
               onOtherChange={setBathConcentrationOther}
               options={["Ready Bath", "Other"]}
-              error={!!errors.bathConcentration}
+              error={hasError("bathConcentration")}
             />
           </div>
           <div>
@@ -1253,7 +1297,7 @@ export const MPTReportFormPage: React.FC = () => {
               otherValue={currentTypeOther}
               onOtherChange={setCurrentTypeOther}
               options={["AC", "DC", "HWDC", "Other"]}
-              error={!!errors.currentType}
+              error={hasError("currentType")}
             />
           </div>
           <div>
@@ -1274,10 +1318,10 @@ export const MPTReportFormPage: React.FC = () => {
       </div>
 
       {/* Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬ */}
-      <div className={`${sectionClass}${errors.observations ? " ring-2 ring-red-400" : ""}`}>
+      <div className={`${sectionClass}${errors.observations && !observations.some(o => o.jobDescription.trim()) ? " ring-2 ring-red-400" : ""}`}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
-            Observations{errors.observations && <span className="ml-2 text-red-500 text-xs font-normal normal-case">At least one observation row is required</span>}
+            Observations{errors.observations && !observations.some(o => o.jobDescription.trim()) && <span className="ml-2 text-red-500 text-xs font-normal normal-case">At least one observation row is required</span>}
           </h2>
           <button
             type="button"
@@ -1450,7 +1494,7 @@ export const MPTReportFormPage: React.FC = () => {
                         onChange={(e) =>
                           updateInsp(idx, "name", e.target.value)
                         }
-                        className={`${idx === 0 && errors.inspectorName_0 ? inputErrorClass : inputClass} bg-white`}
+                        className={`${idx === 0 && errors.inspectorName_0 && !insp.name ? inputErrorClass : inputClass} bg-white`}
                       >
                         <option value="">Select....</option>
                         {users.map((u) => (
