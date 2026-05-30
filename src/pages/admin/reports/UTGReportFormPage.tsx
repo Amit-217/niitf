@@ -14,6 +14,8 @@ import api from "../../../api/axios";
 
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
+const inputErrorClass =
+  "w-full border-2 border-red-400 bg-red-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400";
 const labelClass = "block text-xs font-medium text-gray-700 mb-1";
 const sectionClass = "bg-white rounded-xl border border-gray-200 p-5 mb-5";
 const sectionTitleClass =
@@ -29,6 +31,7 @@ interface SelectWithOtherProps {
   onOtherChange: (val: string) => void;
   options: string[];
   placeholder?: string;
+  error?: boolean;
 }
 
 const SelectWithOther: React.FC<SelectWithOtherProps> = ({
@@ -39,13 +42,14 @@ const SelectWithOther: React.FC<SelectWithOtherProps> = ({
   onOtherChange,
   options,
   placeholder = "Select...",
+  error = false,
 }) => (
   <div className="space-y-1">
     <select
       id={id}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={inputClass}
+      className={error ? inputErrorClass : inputClass}
     >
       <option value="">{placeholder}</option>
       {options.map((opt) => (
@@ -60,7 +64,7 @@ const SelectWithOther: React.FC<SelectWithOtherProps> = ({
         value={otherValue}
         onChange={(e) => onOtherChange(e.target.value)}
         placeholder="Specify other value..."
-        className={inputClass}
+        className={error && !otherValue.trim() ? inputErrorClass : inputClass}
       />
     )}
   </div>
@@ -188,6 +192,8 @@ export const UTGReportFormPage: React.FC = () => {
   // ── Observations ──
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
+
   // ── Users for inspector dropdown ──
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
   useEffect(() => {
@@ -250,6 +256,32 @@ export const UTGReportFormPage: React.FC = () => {
     setInspectors((prev) => [...prev, emptyInspector()]);
   const removeInspector = (idx: number) =>
     setInspectors((prev) => prev.filter((_, i) => i !== idx));
+
+  const getFieldValue = (key: string): string => {
+    const map: Record<string, string> = {
+      jobClient,
+      jobProject,
+      jobReportDate,
+      jobInspectionDate,
+      jobInspectionEndDate,
+      eqSrNo,
+      jobRefStd: jobRefStd === "Other" ? jobRefStdOther : jobRefStd,
+      jobAcceptanceCriteria,
+      jobMaterial,
+      jobStage: jobStage === "Other" ? jobStageOther : jobStage,
+      jobSurfaceCondition: jobSurfaceCondition === "Other" ? jobSurfaceConditionOther : jobSurfaceCondition,
+      jobExtent: jobExtent === "Other" ? jobExtentOther : jobExtent,
+      jobSurfaceTemp: jobSurfaceTemp === "Other" ? jobSurfaceTempOther : jobSurfaceTemp,
+      eqType: eqType === "Other" ? eqTypeOther : eqType,
+      eqMake: eqMake === "Other" ? eqMakeOther : eqMake,
+      eqCouplant: eqCouplant === "Other" ? eqCouplantOther : eqCouplant,
+      eqCalibBlock: eqCalibBlock === "Other" ? eqCalibBlockOther : eqCalibBlock,
+      utMethod: utMethod === "Other" ? utMethodOther : utMethod,
+    };
+    return map[key] ?? "";
+  };
+  const hasError = (key: string) => !!errors[key] && !getFieldValue(key);
+  const fc = (key: string) => (hasError(key) ? inputErrorClass : inputClass);
 
   // ── Load in edit mode ──
   useEffect(() => {
@@ -444,6 +476,69 @@ export const UTGReportFormPage: React.FC = () => {
       return;
     }
 
+    if (status === "final") {
+      const e: Record<string, boolean> = {};
+      const mt = (v: string) => !v.trim();
+      const sel = (v: string) => !v;
+      const oth = (v: string, o: string) => !v || (v === "Other" && !o.trim());
+
+      // Job Details
+      if (mt(jobClient)) e.jobClient = true;
+      if (mt(jobProject)) e.jobProject = true;
+      if (!jobReportDate) e.jobReportDate = true;
+      if (!jobInspectionDate) e.jobInspectionDate = true;
+      if (!jobInspectionEndDate) e.jobInspectionEndDate = true;
+      if (oth(jobRefStd, jobRefStdOther)) e.jobRefStd = true;
+      if (sel(jobAcceptanceCriteria)) e.jobAcceptanceCriteria = true;
+      if (mt(jobMaterial)) e.jobMaterial = true;
+      if (oth(jobStage, jobStageOther)) e.jobStage = true;
+      if (oth(jobSurfaceCondition, jobSurfaceConditionOther)) e.jobSurfaceCondition = true;
+      if (oth(jobExtent, jobExtentOther)) e.jobExtent = true;
+      if (oth(jobSurfaceTemp, jobSurfaceTempOther)) e.jobSurfaceTemp = true;
+      // Equipment
+      if (oth(eqType, eqTypeOther)) e.eqType = true;
+      if (mt(eqSrNo)) e.eqSrNo = true;
+      if (oth(eqMake, eqMakeOther)) e.eqMake = true;
+      if (!eqCalibrationDue) e.eqCalibrationDue = true;
+      if (oth(eqCouplant, eqCouplantOther)) e.eqCouplant = true;
+      if (oth(eqCalibBlock, eqCalibBlockOther)) e.eqCalibBlock = true;
+      // Technique
+      if (oth(utMethod, utMethodOther)) e.utMethod = true;
+      // Inspector (first inspector – all fields required)
+      if (!inspectors[0]?.name?.trim()) e.inspectorName_0 = true;
+      if (!inspectors[0]?.qualification?.trim()) e.inspectorQualification_0 = true;
+      if (!inspectors[0]?.designation?.trim()) e.inspectorDesignation_0 = true;
+      if (!inspectors[0]?.date) e.inspectorDate_0 = true;
+      // Customer section
+      if (!custName.trim()) e.custName = true;
+      if (!custDesig.trim()) e.custDesig = true;
+      if (!custDate) e.custDate = true;
+      // Client / TPI section
+      if (!clientName.trim()) e.clientName = true;
+      if (!clientDesig.trim()) e.clientDesig = true;
+      if (!clientDate) e.clientDate = true;
+      // Search Unit – at least one row must be fully filled
+      const hasCompleteSearchUnit = searchUnits.some(
+        (u) =>
+          u.searchUnit.trim() &&
+          u.angle &&
+          u.srNo.trim() &&
+          (u.crystalSize && u.crystalSize !== "Other" ? true : u.crystalSizeOther.trim()) &&
+          u.waveMode &&
+          (u.frequency && u.frequency !== "Other" ? true : u.frequencyOther.trim()),
+      );
+      if (!hasCompleteSearchUnit) e.searchUnits = true;
+      // Observations
+      if (!observations.some((o: any) => o.itemName?.trim())) e.observations = true;
+
+      if (Object.keys(e).length > 0) {
+        setErrors(e);
+        toast.error("Please fill all required fields before saving as Final.");
+        return;
+      }
+      setErrors({});
+    }
+
     setSaving(true);
     try {
       const payload = {
@@ -615,7 +710,7 @@ export const UTGReportFormPage: React.FC = () => {
               type="text"
               value={jobClient}
               onChange={(e) => setJobClient(e.target.value)}
-              className={inputClass}
+              className={fc("jobClient")}
               placeholder="e.g. MTA AUTOMOTIVE"
             />
           </div>
@@ -625,7 +720,7 @@ export const UTGReportFormPage: React.FC = () => {
               type="date"
               value={jobReportDate}
               onChange={(e) => setJobReportDate(e.target.value)}
-              className={inputClass}
+              className={fc("jobReportDate")}
             />
           </div>
           <div>
@@ -634,7 +729,7 @@ export const UTGReportFormPage: React.FC = () => {
               type="text"
               value={jobProject}
               onChange={(e) => setJobProject(e.target.value)}
-              className={inputClass}
+              className={fc("jobProject")}
               placeholder="e.g. VC-200412"
             />
           </div>
@@ -644,7 +739,7 @@ export const UTGReportFormPage: React.FC = () => {
               type="date"
               value={jobInspectionDate}
               onChange={(e) => setJobInspectionDate(e.target.value)}
-              className={inputClass}
+              className={fc("jobInspectionDate")}
             />
           </div>
           <div>
@@ -653,7 +748,7 @@ export const UTGReportFormPage: React.FC = () => {
               type="date"
               value={jobInspectionEndDate}
               onChange={(e) => setJobInspectionEndDate(e.target.value)}
-              className={inputClass}
+              className={fc("jobInspectionEndDate")}
             />
           </div>
           <div>
@@ -668,6 +763,7 @@ export const UTGReportFormPage: React.FC = () => {
                 "ASME Sec V Article 5",
                 "Other",
               ]}
+              error={hasError("jobRefStd")}
             />
           </div>
           <div>
@@ -676,7 +772,7 @@ export const UTGReportFormPage: React.FC = () => {
               type="text"
               value={jobAcceptanceCriteria}
               onChange={(e) => setJobAcceptanceCriteria(e.target.value)}
-              className={inputClass}
+              className={fc("jobAcceptanceCriteria")}
               placeholder="Acceptance criteria"
             />
           </div>
@@ -686,7 +782,7 @@ export const UTGReportFormPage: React.FC = () => {
               type="text"
               value={jobMaterial}
               onChange={(e) => setJobMaterial(e.target.value)}
-              className={inputClass}
+              className={fc("jobMaterial")}
               placeholder="e.g. IS 2062 E-250 BR"
             />
           </div>
@@ -705,6 +801,7 @@ export const UTGReportFormPage: React.FC = () => {
                 "In-service",
                 "Other",
               ]}
+              error={hasError("jobStage")}
             />
           </div>
           <div>
@@ -715,6 +812,7 @@ export const UTGReportFormPage: React.FC = () => {
               otherValue={jobSurfaceConditionOther}
               onOtherChange={setJobSurfaceConditionOther}
               options={["Smooth", "Rough", "Ground and polished", "Other"]}
+              error={hasError("jobSurfaceCondition")}
             />
           </div>
           <div>
@@ -725,6 +823,7 @@ export const UTGReportFormPage: React.FC = () => {
               otherValue={jobExtentOther}
               onOtherChange={setJobExtentOther}
               options={["10%", "100%", "Random", "Other"]}
+              error={hasError("jobExtent")}
             />
           </div>
           <div>
@@ -735,6 +834,7 @@ export const UTGReportFormPage: React.FC = () => {
               otherValue={jobSurfaceTempOther}
               onOtherChange={setJobSurfaceTempOther}
               options={["Room Temperature", "Other"]}
+              error={hasError("jobSurfaceTemp")}
             />
           </div>
         </div>
@@ -752,6 +852,7 @@ export const UTGReportFormPage: React.FC = () => {
               otherValue={eqTypeOther}
               onOtherChange={setEqTypeOther}
               options={["Modsonic", "EEC", "Waygate", "Other"]}
+              error={hasError("eqType")}
             />
           </div>
           <div>
@@ -760,7 +861,7 @@ export const UTGReportFormPage: React.FC = () => {
               type="text"
               value={eqSrNo}
               onChange={(e) => setEqSrNo(e.target.value)}
-              className={inputClass}
+              className={fc("eqSrNo")}
               placeholder="e.g. E4238-0215"
             />
           </div>
@@ -772,6 +873,7 @@ export const UTGReportFormPage: React.FC = () => {
               otherValue={eqMakeOther}
               onOtherChange={setEqMakeOther}
               options={["Modsonic", "Waygate", "Kappawave", "Other"]}
+              error={hasError("eqMake")}
             />
           </div>
           <div>
@@ -780,7 +882,7 @@ export const UTGReportFormPage: React.FC = () => {
               type="date"
               value={eqCalibrationDue}
               onChange={(e) => setEqCalibrationDue(e.target.value)}
-              className={inputClass}
+              className={fc("eqCalibrationDue")}
             />
           </div>
           <div>
@@ -791,6 +893,7 @@ export const UTGReportFormPage: React.FC = () => {
               otherValue={eqCouplantOther}
               onOtherChange={setEqCouplantOther}
               options={["Oil", "Oil + Grease", "Grease", "Other"]}
+              error={hasError("eqCouplant")}
             />
           </div>
           <div>
@@ -801,16 +904,22 @@ export const UTGReportFormPage: React.FC = () => {
               otherValue={eqCalibBlockOther}
               onOtherChange={setEqCalibBlockOther}
               options={["Step Block", "IIW V1", "IIW V2", "Other"]}
+              error={hasError("eqCalibBlock")}
             />
           </div>
         </div>
       </div>
 
       {/* ── Search Unit Details ── */}
-      <div className={sectionClass}>
+      <div className={`${sectionClass}${errors.searchUnits && !searchUnits.some((u) => u.searchUnit.trim() && u.angle && u.srNo.trim() && (u.crystalSize && u.crystalSize !== "Other" ? true : u.crystalSizeOther.trim()) && u.waveMode && (u.frequency && u.frequency !== "Other" ? true : u.frequencyOther.trim())) ? " ring-2 ring-red-400" : ""}`}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
             Search Unit Details
+            {errors.searchUnits && !searchUnits.some((u) => u.searchUnit.trim() && u.angle && u.srNo.trim() && (u.crystalSize && u.crystalSize !== "Other" ? true : u.crystalSizeOther.trim()) && u.waveMode && (u.frequency && u.frequency !== "Other" ? true : u.frequencyOther.trim())) && (
+              <span className="ml-2 text-xs font-normal text-red-500 normal-case">
+                At least one complete search unit row is required
+              </span>
+            )}
           </h2>
           <button
             type="button"
@@ -855,7 +964,7 @@ export const UTGReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateSearchUnit(idx, "searchUnit", e.target.value)
                       }
-                      className={inputClass}
+                      className={errors.searchUnits && idx === 0 && !u.searchUnit.trim() ? inputErrorClass : inputClass}
                       placeholder="e.g. Modsonic / Normal"
                     />
                   </td>
@@ -865,7 +974,7 @@ export const UTGReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateSearchUnit(idx, "angle", e.target.value)
                       }
-                      className={inputClass}
+                      className={errors.searchUnits && idx === 0 && !u.angle ? inputErrorClass : inputClass}
                     >
                       <option value="">Select...</option>
                       <option>T/R</option>
@@ -879,7 +988,7 @@ export const UTGReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateSearchUnit(idx, "srNo", e.target.value)
                       }
-                      className={inputClass}
+                      className={errors.searchUnits && idx === 0 && !u.srNo.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 min-w-[140px]">
@@ -891,6 +1000,7 @@ export const UTGReportFormPage: React.FC = () => {
                         updateSearchUnit(idx, "crystalSizeOther", v)
                       }
                       options={["Ø5mm", "Ø10mm", "Other"]}
+                      error={errors.searchUnits && idx === 0 && !(u.crystalSize && (u.crystalSize !== "Other" || u.crystalSizeOther.trim()))}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -899,7 +1009,7 @@ export const UTGReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateSearchUnit(idx, "waveMode", e.target.value)
                       }
-                      className={inputClass}
+                      className={errors.searchUnits && idx === 0 && !u.waveMode ? inputErrorClass : inputClass}
                     >
                       <option value="">Select...</option>
                       <option>Longitudinal</option>
@@ -914,6 +1024,7 @@ export const UTGReportFormPage: React.FC = () => {
                         updateSearchUnit(idx, "frequencyOther", v)
                       }
                       options={["2 MHz", "4 MHz", "5 MHz", "Other"]}
+                      error={errors.searchUnits && idx === 0 && !(u.frequency && (u.frequency !== "Other" || u.frequencyOther.trim()))}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
@@ -950,15 +1061,21 @@ export const UTGReportFormPage: React.FC = () => {
               "Immersion",
               "Other",
             ]}
+            error={hasError("utMethod")}
           />
         </div>
       </div>
 
       {/* ── Observations ── */}
-      <div className={sectionClass}>
+      <div className={`${sectionClass}${errors.observations && !observations.some((o: any) => o.itemName?.trim()) ? " ring-2 ring-red-400" : ""}`}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
             Observations
+            {errors.observations && !observations.some((o: any) => o.itemName?.trim()) && (
+              <span className="ml-2 text-xs font-normal text-red-500 normal-case">
+                At least one observation is required
+              </span>
+            )}
           </h2>
           <button
             type="button"
@@ -1091,7 +1208,7 @@ export const UTGReportFormPage: React.FC = () => {
                         onChange={(e) =>
                           updateInsp(idx, "name", e.target.value)
                         }
-                        className={`${inputClass} bg-white`}
+                        className={`${idx === 0 && errors.inspectorName_0 && !insp.name ? inputErrorClass : inputClass} bg-white`}
                       >
                         <option value="">Select....</option>
                         {users.map((u) => (
@@ -1109,7 +1226,7 @@ export const UTGReportFormPage: React.FC = () => {
                         onChange={(e) =>
                           updateInsp(idx, "qualification", e.target.value)
                         }
-                        className={inputClass}
+                        className={idx === 0 && errors.inspectorQualification_0 && !insp.qualification.trim() ? inputErrorClass : inputClass}
                         placeholder="e.g. UT NDE Level II"
                       />
                     </div>
@@ -1121,7 +1238,7 @@ export const UTGReportFormPage: React.FC = () => {
                         onChange={(e) =>
                           updateInsp(idx, "designation", e.target.value)
                         }
-                        className={inputClass}
+                        className={idx === 0 && errors.inspectorDesignation_0 && !insp.designation.trim() ? inputErrorClass : inputClass}
                       />
                     </div>
                     <div>
@@ -1143,7 +1260,7 @@ export const UTGReportFormPage: React.FC = () => {
                         onChange={(e) =>
                           updateInsp(idx, "date", e.target.value)
                         }
-                        className={inputClass}
+                        className={idx === 0 && errors.inspectorDate_0 && !insp.date ? inputErrorClass : inputClass}
                       />
                     </div>
                   </div>
@@ -1166,7 +1283,7 @@ export const UTGReportFormPage: React.FC = () => {
                   type="text"
                   value={custName}
                   onChange={(e) => setCustName(e.target.value)}
-                  className={inputClass}
+                  className={errors.custName && !custName.trim() ? inputErrorClass : inputClass}
                 />
               </div>
               <div>
@@ -1175,7 +1292,7 @@ export const UTGReportFormPage: React.FC = () => {
                   type="text"
                   value={custDesig}
                   onChange={(e) => setCustDesig(e.target.value)}
-                  className={inputClass}
+                  className={errors.custDesig && !custDesig.trim() ? inputErrorClass : inputClass}
                 />
               </div>
               <div>
@@ -1193,7 +1310,7 @@ export const UTGReportFormPage: React.FC = () => {
                   type="date"
                   value={custDate}
                   onChange={(e) => setCustDate(e.target.value)}
-                  className={inputClass}
+                  className={errors.custDate && !custDate ? inputErrorClass : inputClass}
                 />
               </div>
             </div>
@@ -1213,7 +1330,7 @@ export const UTGReportFormPage: React.FC = () => {
                   type="text"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
-                  className={inputClass}
+                  className={errors.clientName && !clientName.trim() ? inputErrorClass : inputClass}
                 />
               </div>
               <div>
@@ -1222,7 +1339,7 @@ export const UTGReportFormPage: React.FC = () => {
                   type="text"
                   value={clientDesig}
                   onChange={(e) => setClientDesig(e.target.value)}
-                  className={inputClass}
+                  className={errors.clientDesig && !clientDesig.trim() ? inputErrorClass : inputClass}
                 />
               </div>
               <div>
@@ -1240,7 +1357,7 @@ export const UTGReportFormPage: React.FC = () => {
                   type="date"
                   value={clientDate}
                   onChange={(e) => setClientDate(e.target.value)}
-                  className={inputClass}
+                  className={errors.clientDate && !clientDate ? inputErrorClass : inputClass}
                 />
               </div>
             </div>

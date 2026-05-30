@@ -14,6 +14,8 @@ import api from "../../../api/axios";
 
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
+const inputErrorClass =
+  "w-full border-2 border-red-400 bg-red-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400";
 const labelClass = "block text-xs font-medium text-gray-700 mb-1";
 const sectionClass = "bg-white rounded-xl border border-gray-200 p-5 mb-5";
 const sectionTitleClass =
@@ -29,6 +31,7 @@ interface SelectWithOtherProps {
   onOtherChange: (val: string) => void;
   options: string[];
   placeholder?: string;
+  error?: boolean;
 }
 
 const SelectWithOther: React.FC<SelectWithOtherProps> = ({
@@ -39,13 +42,14 @@ const SelectWithOther: React.FC<SelectWithOtherProps> = ({
   onOtherChange,
   options,
   placeholder = "Select...",
+  error = false,
 }) => (
   <div className="space-y-1">
     <select
       id={id}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={inputClass}
+      className={error ? inputErrorClass : inputClass}
     >
       <option value="">{placeholder}</option>
       {options.map((opt) => (
@@ -60,7 +64,7 @@ const SelectWithOther: React.FC<SelectWithOtherProps> = ({
         value={otherValue}
         onChange={(e) => onOtherChange(e.target.value)}
         placeholder="Specify other value..."
-        className={inputClass}
+        className={error && !otherValue.trim() ? inputErrorClass : inputClass}
       />
     )}
   </div>
@@ -199,6 +203,9 @@ export const TPIIVRFormPage: React.FC = () => {
   const [niitSignName, setNiitSignName] = useState("");
   const [niitSignDate, setNiitSignDate] = useState("");
 
+  // ── Validation errors ──
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
+
   // ── Load in edit mode ──
   useEffect(() => {
     if (!id) return;
@@ -319,6 +326,42 @@ export const TPIIVRFormPage: React.FC = () => {
   const resolve = (val: string, other: string) =>
     val === "Other" && other.trim() ? other.trim() : val;
 
+  const getFieldValue = (key: string): string => {
+    const map: Record<string, string> = {
+      client,
+      project,
+      dtOfInspection,
+      inspectionLocation,
+      appdQapNo,
+      vendor,
+      clientRef: clientRef === "Other" ? clientRefOther : clientRef,
+      conclusion: conclusion === "Other" ? conclusionOther : conclusion,
+      // newly required scalar fields
+      irRev,
+      clientPoNo,
+      appdQapDt,
+      poAmedNo,
+      partName,
+      poDate,
+      inspectionStage:
+        inspectionStage === "Other" ? inspectionStageOther : inspectionStage,
+      vendorContact,
+      vendorPhone,
+      subVendor,
+      callDate,
+      inspAttDt,
+      clientContact,
+    };
+    return map[key] ?? "";
+  };
+  const hasError = (key: string) => !!errors[key] && !getFieldValue(key);
+  const fc = (key: string) => (hasError(key) ? inputErrorClass : inputClass);
+
+  // helper: true when at least one items row has a non-empty description
+  const hasAnyItem = () => items.some((i) => i.description.trim() !== "");
+  // helper: true when at least one refDoc row has a non-empty document field
+  const hasAnyRefDoc = () => refDocs.some((d) => d.document.trim() !== "");
+
   const updateItem = (idx: number, key: keyof InspectionItemRow, val: string) =>
     setItems((prev) =>
       prev.map((r, i) => (i === idx ? { ...r, [key]: val } : r)),
@@ -348,6 +391,50 @@ export const TPIIVRFormPage: React.FC = () => {
     if (!isEditMode && !customerId) {
       toast.error("Please select a customer first.");
       return;
+    }
+
+    if (status === "final") {
+      const e: Record<string, boolean> = {};
+      const mt = (v: string) => !v.trim();
+      const oth = (v: string, o: string) => !v || (v === "Other" && !o.trim());
+
+      // ── previously validated ──
+      if (mt(client)) e.client = true;
+      if (mt(project)) e.project = true;
+      if (!dtOfInspection) e.dtOfInspection = true;
+      if (mt(inspectionLocation)) e.inspectionLocation = true;
+      if (mt(appdQapNo)) e.appdQapNo = true;
+      if (mt(vendor)) e.vendor = true;
+      if (oth(clientRef, clientRefOther)) e.clientRef = true;
+      if (oth(conclusion, conclusionOther)) e.conclusion = true;
+
+      // ── newly required header fields ──
+      if (mt(irRev)) e.irRev = true;
+      if (mt(clientPoNo)) e.clientPoNo = true;
+      if (!appdQapDt) e.appdQapDt = true;
+      if (mt(poAmedNo)) e.poAmedNo = true;
+      if (mt(partName)) e.partName = true;
+      if (!poDate) e.poDate = true;
+      if (oth(inspectionStage, inspectionStageOther)) e.inspectionStage = true;
+
+      // ── newly required client / vendor scalar fields ──
+      if (mt(vendorContact)) e.vendorContact = true;
+      if (mt(vendorPhone)) e.vendorPhone = true;
+      if (mt(subVendor)) e.subVendor = true;
+      if (!callDate) e.callDate = true;
+      if (!inspAttDt) e.inspAttDt = true;
+      if (mt(clientContact)) e.clientContact = true;
+
+      // ── table-level checks ──
+      if (!hasAnyItem()) e.items = true;
+      if (!hasAnyRefDoc()) e.refDocs = true;
+
+      if (Object.keys(e).length > 0) {
+        setErrors(e);
+        toast.error("Please fill all required fields before saving as Final.");
+        return;
+      }
+      setErrors({});
     }
 
     setSaving(true);
@@ -484,22 +571,22 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>IR Rev.</label>
+            <label className={labelClass}>IR Rev. *</label>
             <input
               type="text"
               value={irRev}
               onChange={(e) => setIrRev(e.target.value)}
-              className={inputClass}
+              className={fc("irRev")}
               placeholder="e.g. Rev.00"
             />
           </div>
           <div>
-            <label className={labelClass}>Date of Inspection</label>
+            <label className={labelClass}>Date of Inspection *</label>
             <input
               type="date"
               value={dtOfInspection}
               onChange={(e) => setDtOfInspection(e.target.value)}
-              className={inputClass}
+              className={fc("dtOfInspection")}
             />
           </div>
           <div>
@@ -519,103 +606,112 @@ export const TPIIVRFormPage: React.FC = () => {
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Client</label>
+            <label className={labelClass}>Client *</label>
             <input
               type="text"
               value={client}
               onChange={(e) => setClient(e.target.value)}
-              className={inputClass}
+              className={fc("client")}
               placeholder="e.g. Metso Minerals (I) Pvt. Ltd."
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection Location</label>
+            <label className={labelClass}>Inspection Location *</label>
             <input
               type="text"
               value={inspectionLocation}
               onChange={(e) => setInspectionLocation(e.target.value)}
-              className={inputClass}
+              className={fc("inspectionLocation")}
               placeholder="e.g. M/s Bharat Forge Ltd. Pune."
             />
           </div>
           <div>
-            <label className={labelClass}>Project</label>
+            <label className={labelClass}>Project *</label>
             <input
               type="text"
               value={project}
               onChange={(e) => setProject(e.target.value)}
-              className={inputClass}
+              className={fc("project")}
               placeholder="e.g. --"
             />
           </div>
           <div>
-            <label className={labelClass}>Appd. QAP No.</label>
+            <label className={labelClass}>Appd. QAP No. *</label>
             <input
               type="text"
               value={appdQapNo}
               onChange={(e) => setAppdQapNo(e.target.value)}
-              className={inputClass}
+              className={fc("appdQapNo")}
               placeholder="e.g. QAP/METSO/D56263 Rev.00"
             />
           </div>
           <div>
-            <label className={labelClass}>Client PO No.</label>
+            <label className={labelClass}>Client PO No. *</label>
             <input
               type="text"
               value={clientPoNo}
               onChange={(e) => setClientPoNo(e.target.value)}
-              className={inputClass}
+              className={fc("clientPoNo")}
               placeholder="e.g. 7500188455"
             />
           </div>
           <div>
-            <label className={labelClass}>Appd. QAP Date</label>
+            <label className={labelClass}>Appd. QAP Date *</label>
             <input
               type="date"
               value={appdQapDt}
               onChange={(e) => setAppdQapDt(e.target.value)}
-              className={inputClass}
+              className={fc("appdQapDt")}
             />
           </div>
           <div>
-            <label className={labelClass}>PO Amed. No.</label>
+            <label className={labelClass}>PO Amed. No. *</label>
             <input
               type="text"
               value={poAmedNo}
               onChange={(e) => setPoAmedNo(e.target.value)}
-              className={inputClass}
+              className={fc("poAmedNo")}
               placeholder="e.g. ---"
             />
           </div>
           <div>
-            <label className={labelClass}>Part Name</label>
+            <label className={labelClass}>Part Name *</label>
             <input
               type="text"
               value={partName}
               onChange={(e) => setPartName(e.target.value)}
-              className={inputClass}
+              className={fc("partName")}
               placeholder="e.g. SHAFT STEDIMENT"
             />
           </div>
           <div>
-            <label className={labelClass}>PO Date</label>
+            <label className={labelClass}>PO Date *</label>
             <input
               type="date"
               value={poDate}
               onChange={(e) => setPoDate(e.target.value)}
-              className={inputClass}
+              className={fc("poDate")}
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection Stage</label>
-            <input
-              type="text"
-              value={inspectionStage === "Other" ? inspectionStageOther : ""}
-              onChange={(e) => {
-                setInspectionStage("Other");
-                setInspectionStageOther(e.target.value);
-              }}
-              className={inputClass}
+            <label className={labelClass}>Inspection Stage *</label>
+            <SelectWithOther
+              value={inspectionStage}
+              onChange={setInspectionStage}
+              otherValue={inspectionStageOther}
+              onOtherChange={setInspectionStageOther}
+              options={[
+                "UT IN P/M CONDITION",
+                "STAGE",
+                "FINAL",
+                "STAGE & FINAL",
+                "INCOMING",
+                "IN-PROCESS",
+                "DISPATCH",
+                "Other",
+              ]}
+              placeholder="Select stage..."
+              error={hasError("inspectionStage")}
             />
           </div>
         </div>
@@ -632,7 +728,7 @@ export const TPIIVRFormPage: React.FC = () => {
             </p>
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Ref</label>
+                <label className={labelClass}>Ref *</label>
                 <SelectWithOther
                   value={clientRef}
                   onChange={setClientRef}
@@ -645,34 +741,35 @@ export const TPIIVRFormPage: React.FC = () => {
                     "By Fax",
                     "Other",
                   ]}
+                  error={hasError("clientRef")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Contact</label>
+                <label className={labelClass}>Contact *</label>
                 <input
                   type="text"
                   value={clientContact}
                   onChange={(e) => setClientContact(e.target.value)}
-                  className={inputClass}
+                  className={fc("clientContact")}
                   placeholder="e.g. Mr. Abdul Najmi"
                 />
               </div>
               <div>
-                <label className={labelClass}>Call Date</label>
+                <label className={labelClass}>Call Date *</label>
                 <input
                   type="date"
                   value={callDate}
                   onChange={(e) => setCallDate(e.target.value)}
-                  className={inputClass}
+                  className={fc("callDate")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Inspection Att. Date</label>
+                <label className={labelClass}>Inspection Att. Date *</label>
                 <input
                   type="date"
                   value={inspAttDt}
                   onChange={(e) => setInspAttDt(e.target.value)}
-                  className={inputClass}
+                  className={fc("inspAttDt")}
                 />
               </div>
             </div>
@@ -684,42 +781,42 @@ export const TPIIVRFormPage: React.FC = () => {
             </p>
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Vendor</label>
+                <label className={labelClass}>Vendor *</label>
                 <input
                   type="text"
                   value={vendor}
                   onChange={(e) => setVendor(e.target.value)}
-                  className={inputClass}
+                  className={fc("vendor")}
                   placeholder="e.g. Bharat Forge Ltd. Mundhwa, Pune."
                 />
               </div>
               <div>
-                <label className={labelClass}>Sub Vendor</label>
+                <label className={labelClass}>Sub Vendor *</label>
                 <input
                   type="text"
                   value={subVendor}
                   onChange={(e) => setSubVendor(e.target.value)}
-                  className={inputClass}
+                  className={fc("subVendor")}
                   placeholder="e.g. --"
                 />
               </div>
               <div>
-                <label className={labelClass}>Contact</label>
+                <label className={labelClass}>Contact *</label>
                 <input
                   type="text"
                   value={vendorContact}
                   onChange={(e) => setVendorContact(e.target.value)}
-                  className={inputClass}
+                  className={fc("vendorContact")}
                   placeholder="e.g. Mr. Sanskar Karav"
                 />
               </div>
               <div>
-                <label className={labelClass}>Phone</label>
+                <label className={labelClass}>Phone *</label>
                 <input
                   type="text"
                   value={vendorPhone}
                   onChange={(e) => setVendorPhone(e.target.value)}
-                  className={inputClass}
+                  className={fc("vendorPhone")}
                   placeholder="e.g. +91 8483024812"
                 />
               </div>
@@ -752,10 +849,18 @@ export const TPIIVRFormPage: React.FC = () => {
       </div>
 
       {/* ── Inspection Items ── */}
-      <div className={sectionClass}>
+      <div
+        className={`${sectionClass}${errors.items && !hasAnyItem() ? " ring-2 ring-red-400" : ""}`}
+      >
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
-            Inspection Items
+            Inspection Items{" "}
+            <span className="text-red-500 font-bold">*</span>
+            {errors.items && !hasAnyItem() && (
+              <span className="ml-2 text-xs font-normal text-red-500 normal-case">
+                At least one item row is required
+              </span>
+            )}
           </h2>
           <button
             type="button"
@@ -936,7 +1041,7 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Conclusion</label>
+            <label className={labelClass}>Conclusion *</label>
             <SelectWithOther
               value={conclusion}
               onChange={setConclusion}
@@ -949,16 +1054,25 @@ export const TPIIVRFormPage: React.FC = () => {
                 "Examination completed as per applicable process. Rejectable indications observed in inspected items",
                 "Other",
               ]}
+              error={hasError("conclusion")}
             />
           </div>
         </div>
       </div>
 
       {/* ── Reference Documents ── */}
-      <div className={sectionClass}>
+      <div
+        className={`${sectionClass}${errors.refDocs && !hasAnyRefDoc() ? " ring-2 ring-red-400" : ""}`}
+      >
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
-            Reference Documents for Inspection
+            Reference Documents for Inspection{" "}
+            <span className="text-red-500 font-bold">*</span>
+            {errors.refDocs && !hasAnyRefDoc() && (
+              <span className="ml-2 text-xs font-normal text-red-500 normal-case">
+                At least one reference document is required
+              </span>
+            )}
           </h2>
           <button
             type="button"
@@ -1159,7 +1273,7 @@ export const TPIIVRFormPage: React.FC = () => {
             </p>
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Vendor Name</label>
+                <label className={labelClass}>Vendor Name *</label>
                 <input
                   type="text"
                   value={vendorSignName}
@@ -1169,7 +1283,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Date</label>
+                <label className={labelClass}>Date *</label>
                 <input
                   type="date"
                   value={vendorSignDate}
@@ -1186,7 +1300,7 @@ export const TPIIVRFormPage: React.FC = () => {
             </p>
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Name</label>
+                <label className={labelClass}>Name *</label>
                 <select
                   value={niitSignName}
                   onChange={(e) => setNiitSignName(e.target.value)}
@@ -1201,7 +1315,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className={labelClass}>Date</label>
+                <label className={labelClass}>Date *</label>
                 <input
                   type="date"
                   value={niitSignDate}

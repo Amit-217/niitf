@@ -237,6 +237,13 @@ export const MPTReportFormPage: React.FC = () => {
       wcManufacturer: wcManufacturer === "Other" ? wcManufacturerOther : wcManufacturer,
       bathConcentration: bathConcentration === "Other" ? bathConcentrationOther : bathConcentration,
       currentType: currentType === "Other" ? currentTypeOther : currentType,
+      conclusion: conclusion === "Other" ? conclusionOther : conclusion,
+      custName,
+      custDesig,
+      custDate,
+      clientName,
+      clientDesig,
+      clientDate,
     };
     return map[key] ?? "";
   };
@@ -519,8 +526,21 @@ export const MPTReportFormPage: React.FC = () => {
       if (sel(postCleaning)) e.postCleaning = true;
       // Observations — at least one row with job description
       if (!observations.some(o => o.jobDescription.trim())) e.observations = true;
-      // Inspector — first inspector must have a name
+      // Conclusion
+      if (oth(conclusion, conclusionOther)) e.conclusion = true;
+      // Inspector — first inspector must have name, qualification, designation, date
       if (!inspectors[0]?.name?.trim()) e.inspectorName_0 = true;
+      if (!inspectors[0]?.qualification?.trim()) e.inspectorQual_0 = true;
+      if (!inspectors[0]?.designation?.trim()) e.inspectorDesig_0 = true;
+      if (!inspectors[0]?.date) e.inspectorDate_0 = true;
+      // Customer section
+      if (mt(custName)) e.custName = true;
+      if (mt(custDesig)) e.custDesig = true;
+      if (!custDate) e.custDate = true;
+      // Client / TPI section
+      if (mt(clientName)) e.clientName = true;
+      if (mt(clientDesig)) e.clientDesig = true;
+      if (!clientDate) e.clientDate = true;
 
       if (Object.keys(e).length > 0) {
         setErrors(e);
@@ -1449,7 +1469,31 @@ export const MPTReportFormPage: React.FC = () => {
       </div>
 
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Examined By Ã¢"â‚¬Ã¢"â‚¬ */}
+      {/* ── Conclusion ── */}
+      <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>Conclusion</h2>
+        <div className="max-w-2xl">
+          <label className={labelClass} htmlFor="conclusion">Conclusion</label>
+          <SelectWithOther
+            id="conclusion"
+            value={conclusion}
+            onChange={setConclusion}
+            otherValue={conclusionOther}
+            onOtherChange={setConclusionOther}
+            options={[
+              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+              "Other",
+            ]}
+            placeholder="Select conclusion..."
+            error={hasError("conclusion")}
+          />
+        </div>
+      </div>
+
+      {/* ── Examined By ── */}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* NIIT Inspector(s) */}
@@ -1512,7 +1556,7 @@ export const MPTReportFormPage: React.FC = () => {
                         onChange={(e) =>
                           updateInsp(idx, "qualification", e.target.value)
                         }
-                        className={inputClass}
+                        className={`${idx === 0 && errors.inspectorQual_0 && !insp.qualification.trim() ? inputErrorClass : inputClass}`}
                         placeholder="e.g. MT NDE Level II"
                       />
                     </div>
@@ -1524,7 +1568,7 @@ export const MPTReportFormPage: React.FC = () => {
                         onChange={(e) =>
                           updateInsp(idx, "designation", e.target.value)
                         }
-                        className={inputClass}
+                        className={`${idx === 0 && errors.inspectorDesig_0 && !insp.designation.trim() ? inputErrorClass : inputClass}`}
                       />
                     </div>
                     <div>
@@ -1546,7 +1590,7 @@ export const MPTReportFormPage: React.FC = () => {
                         onChange={(e) =>
                           updateInsp(idx, "date", e.target.value)
                         }
-                        className={inputClass}
+                        className={`${idx === 0 && errors.inspectorDate_0 && !insp.date ? inputErrorClass : inputClass}`}
                       />
                     </div>
                   </div>
@@ -1570,7 +1614,7 @@ export const MPTReportFormPage: React.FC = () => {
                   type="text"
                   value={custName}
                   onChange={(e) => setCustName(e.target.value)}
-                  className={inputClass}
+                  className={fc("custName")}
                 />
               </div>
               <div>
@@ -1579,7 +1623,7 @@ export const MPTReportFormPage: React.FC = () => {
                   type="text"
                   value={custDesig}
                   onChange={(e) => setCustDesig(e.target.value)}
-                  className={inputClass}
+                  className={fc("custDesig")}
                 />
               </div>
               <div>
@@ -1597,7 +1641,7 @@ export const MPTReportFormPage: React.FC = () => {
                   type="date"
                   value={custDate}
                   onChange={(e) => setCustDate(e.target.value)}
-                  className={inputClass}
+                  className={fc("custDate")}
                 />
               </div>
             </div>
@@ -1618,7 +1662,7 @@ export const MPTReportFormPage: React.FC = () => {
                   type="text"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
-                  className={inputClass}
+                  className={fc("clientName")}
                 />
               </div>
               <div>
@@ -1627,7 +1671,7 @@ export const MPTReportFormPage: React.FC = () => {
                   type="text"
                   value={clientDesig}
                   onChange={(e) => setClientDesig(e.target.value)}
-                  className={inputClass}
+                  className={fc("clientDesig")}
                 />
               </div>
               <div>
@@ -1645,7 +1689,7 @@ export const MPTReportFormPage: React.FC = () => {
                   type="date"
                   value={clientDate}
                   onChange={(e) => setClientDate(e.target.value)}
-                  className={inputClass}
+                  className={fc("clientDate")}
                 />
               </div>
             </div>
