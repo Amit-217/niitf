@@ -12,16 +12,18 @@ import { getApiErrorMessage } from "../../../api/error";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 import api from "../../../api/axios";
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Styles Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// --- Styles ---
 
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
+const inputErrorClass =
+  "w-full border-2 border-red-400 bg-red-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400";
 const labelClass = "block text-xs font-medium text-gray-700 mb-1";
 const sectionClass = "bg-white rounded-xl border border-gray-200 p-5 mb-5";
 const sectionTitleClass =
   "text-sm font-semibold text-indigo-700 uppercase tracking-wide mb-4 pb-2 border-b border-gray-100";
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ SelectWithCustom Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// --- SelectWithCustom ---
 
 interface SelectWithCustomProps {
   id?: string;
@@ -31,6 +33,7 @@ interface SelectWithCustomProps {
   onCustomChange: (val: string) => void;
   options: string[];
   placeholder?: string;
+  error?: boolean;
 }
 
 const SelectWithCustom: React.FC<SelectWithCustomProps> = ({
@@ -41,13 +44,14 @@ const SelectWithCustom: React.FC<SelectWithCustomProps> = ({
   onCustomChange,
   options,
   placeholder = "Select...",
+  error = false,
 }) => (
   <div className="space-y-1">
     <select
       id={id}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={inputClass}
+      className={error ? inputErrorClass : inputClass}
     >
       <option value="">{placeholder}</option>
       {options.map((opt) => (
@@ -62,13 +66,13 @@ const SelectWithCustom: React.FC<SelectWithCustomProps> = ({
         value={customValue}
         onChange={(e) => onCustomChange(e.target.value)}
         placeholder="Specify other value..."
-        className={inputClass}
+        className={error && !customValue.trim() ? inputErrorClass : inputClass}
       />
     )}
   </div>
 );
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Types Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// --- Types ---
 
 interface ObsRow {
   srNo: number;
@@ -133,7 +137,7 @@ const emptyInspector = (): InspRow => ({
   date: "",
 });
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Page Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// --- Page ---
 
 export const UTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
@@ -171,7 +175,7 @@ export const UTReportFormPage: React.FC = () => {
   const [jobJointType, setJobJointType] = useState("");
   const [jobSurfaceTemp, setJobSurfaceTemp] = useState("");
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Equipment Details Ã¢â€â‚¬Ã¢â€â‚¬
+  // -- Equipment Details --
   const [eqType, setEqType] = useState("");
   const [eqTypeCustom, setEqTypeCustom] = useState("");
   const [eqSrNo, setEqSrNo] = useState("");
@@ -181,12 +185,12 @@ export const UTReportFormPage: React.FC = () => {
   const [eqCouplant, setEqCouplant] = useState("");
   const [eqBasicCalib, setEqBasicCalib] = useState("");
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Search Units Ã¢â€â‚¬Ã¢â€â‚¬
+  // -- Search Units --
   const [searchUnits, setSearchUnits] = useState<UTSearchUnit[]>([
     emptySearchUnit(),
   ]);
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Technique Details Ã¢â€â‚¬Ã¢â€â‚¬
+  // -- Technique Details --
   const [utMethodCustom, setUtMethodCustom] = useState("");
   const [utMethod, setUtMethod] = useState("");
   const [refCalibBlock, setRefCalibBlock] = useState("");
@@ -196,20 +200,20 @@ export const UTReportFormPage: React.FC = () => {
   const [scanningSens, setScanningSens] = useState("");
   const [scanningSensCustom, setScanningSensCustom] = useState("");
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Angle Probe Calibration Ã¢â€â‚¬Ã¢â€â‚¬
+  // -- Angle Probe Calibration --
   const [calib0, setCalib0] = useState<CalibRow>(emptyCalib());
   const [calib45, setCalib45] = useState<CalibRow>(emptyCalib());
   const [calib60, setCalib60] = useState<CalibRow>(emptyCalib());
   const [calib70, setCalib70] = useState<CalibRow>(emptyCalib());
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Observations Ã¢â€â‚¬Ã¢â€â‚¬
+  // -- Observations --
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
   // -- Conclusion --
   const [conclusion, setConclusion] = useState("");
   const [conclusionCustom, setConclusionCustom] = useState("");
 
-  // â"€â"€ Users for inspector dropdown â"€â"€
+  // -- Users for inspector dropdown --
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
   useEffect(() => {
     api
@@ -218,7 +222,7 @@ export const UTReportFormPage: React.FC = () => {
       .catch(() => { });
   }, []);
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Final Section Ã¢â€â‚¬Ã¢â€â‚¬
+  // -- Final Section --
   const [inspectors, setInspectors] = useState<InspRow[]>([emptyInspector()]);
   const [custName, setCustName] = useState("");
   const [custDesig, setCustDesig] = useState("");
@@ -231,28 +235,93 @@ export const UTReportFormPage: React.FC = () => {
   const [clientIdNo, setClientIdNo] = useState("");
   const [clientDate, setClientDate] = useState("");
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Helpers Ã¢â€â‚¬Ã¢â€â‚¬
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
+
+  // -- Helpers --
   const resolve = (val: string, custom: string) =>
     val === "Other" && custom.trim() ? custom.trim() : val;
 
+  const getFieldValue = (key: string): string => {
+    const map: Record<string, string> = {
+      jobClient,
+      jobProject,
+      jobReportDate,
+      jobInspectionDate,
+      jobInspectionEndDate,
+      jobMaterial,
+      jobThickness,
+      jobStage,
+      jobSurface,
+      jobJointType,
+      jobSurfaceTemp,
+      eqSrNo,
+      eqCalibDue,
+      eqCouplant,
+      eqBasicCalib,
+      utCalibMethod,
+      scanningDb,
+      // search unit row 0
+      searchUnit0_model: searchUnits[0]?.model ?? "",
+      searchUnit0_angle: searchUnits[0]?.angle ?? "",
+      searchUnit0_srNo: searchUnits[0]?.srNo ?? "",
+      searchUnit0_crystalSize: searchUnits[0]?.crystalSize ?? "",
+      searchUnit0_frequency:
+        (searchUnits[0]?.frequency === "Other"
+          ? searchUnits[0]?.frequencyCustom
+          : searchUnits[0]?.frequency) ?? "",
+      // calib table rows
+      calib0_range: calib0.range,
+      calib0_refDb: calib0.refDb,
+      calib45_range: calib45.range,
+      calib45_refDb: calib45.refDb,
+      calib60_range: calib60.range,
+      calib60_refDb: calib60.refDb,
+      calib70_range: calib70.range,
+      calib70_refDb: calib70.refDb,
+      // inspector 0
+      inspectorQual_0: inspectors[0]?.qualification ?? "",
+      inspectorDesig_0: inspectors[0]?.designation ?? "",
+      inspectorDate_0: inspectors[0]?.date ?? "",
+      // customer rep
+      custName,
+      custDesig,
+      custDate,
+      // client rep
+      clientName,
+      clientDesig,
+      clientDate,
+      // SelectWithCustom fields
+      jobRefStd: jobRefStd === "Other" ? jobRefStdCustom : jobRefStd,
+      jobAcceptance: jobAcceptance === "Other" ? jobAcceptanceCustom : jobAcceptance,
+      jobExtent: jobExtent === "Other" ? jobExtentCustom : jobExtent,
+      eqType: eqType === "Other" ? eqTypeCustom : eqType,
+      eqMake: eqMake === "Other" ? eqMakeCustom : eqMake,
+      utMethod: utMethod === "Other" ? utMethodCustom : utMethod,
+      refCalibBlock: refCalibBlock === "Other" ? refCalibBlockCustom : refCalibBlock,
+      scanningSens: scanningSens === "Other" ? scanningSensCustom : scanningSens,
+      conclusion: conclusion === "Other" ? conclusionCustom : conclusion,
+    };
+    return map[key] ?? "";
+  };
+  const hasError = (key: string) => !!errors[key] && !getFieldValue(key);
+  const fc = (key: string) => (hasError(key) ? inputErrorClass : inputClass);
+
   const updateUnit = (idx: number, key: keyof UTSearchUnit, val: string) =>
-  setSearchUnits((prev) =>
-    prev.map((row, i) => {
-      if (i !== idx) return row;
+    setSearchUnits((prev) =>
+      prev.map((row, i) => {
+        if (i !== idx) return row;
 
-      let updatedRow = { ...row, [key]: val };
+        let updatedRow = { ...row, [key]: val };
 
-      // Angle change hone pe auto update
-      if (key === "angle") {
-        const crystalOptions = getCrystalSizeOptions(val);
+        if (key === "angle") {
+          const crystalOptions = getCrystalSizeOptions(val);
+          updatedRow.crystalSize = crystalOptions[0];
+          updatedRow.waveMode = getWaveMode(val);
+        }
 
-        updatedRow.crystalSize = crystalOptions[0];
-        updatedRow.waveMode = getWaveMode(val);
-      }
-
-      return updatedRow;
-    }),
-  );
+        return updatedRow;
+      }),
+    );
 
   const addUnit = () => setSearchUnits((prev) => [...prev, emptySearchUnit()]);
   const removeUnit = (idx: number) =>
@@ -291,7 +360,7 @@ export const UTReportFormPage: React.FC = () => {
     val: string,
   ) => setter((prev) => ({ ...prev, [key]: val }));
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Load existing report in edit mode Ã¢â€â‚¬Ã¢â€â‚¬
+  // -- Load existing report in edit mode --
   useEffect(() => {
     if (!id) return;
     const toDate = (d?: string | null) => (d ? d.split("T")[0] : "");
@@ -433,6 +502,7 @@ export const UTReportFormPage: React.FC = () => {
         const [con, conC] = fromOther(r.conclusion ?? "", conclusionOpts);
         setConclusion(con);
         setConclusionCustom(conC);
+
         const fs = r.finalSection ?? {};
         setInspectors(
           fs.inspector?.length
@@ -468,6 +538,90 @@ export const UTReportFormPage: React.FC = () => {
       toast.error("Please select a customer first.");
       return;
     }
+    if (status === "final") {
+      const e: Record<string, boolean> = {};
+      const mt = (v: string) => !v.trim();
+      const sel = (v: string) => !v;
+      const oth = (v: string, o: string) => !v || (v === "Other" && !o.trim());
+
+      // Job Details
+      if (mt(jobClient)) e.jobClient = true;
+      if (mt(jobProject)) e.jobProject = true;
+      if (!jobReportDate) e.jobReportDate = true;
+      if (!jobInspectionDate) e.jobInspectionDate = true;
+      if (!jobInspectionEndDate) e.jobInspectionEndDate = true;
+      if (oth(jobRefStd, jobRefStdCustom)) e.jobRefStd = true;
+      if (oth(jobAcceptance, jobAcceptanceCustom)) e.jobAcceptance = true;
+      if (mt(jobMaterial)) e.jobMaterial = true;
+      if (sel(jobStage)) e.jobStage = true;
+      if (mt(jobThickness)) e.jobThickness = true;
+      if (oth(jobExtent, jobExtentCustom)) e.jobExtent = true;
+      if (sel(jobSurface)) e.jobSurface = true;
+      if (sel(jobJointType)) e.jobJointType = true;
+      if (sel(jobSurfaceTemp)) e.jobSurfaceTemp = true;
+
+      // Equipment
+      if (oth(eqType, eqTypeCustom)) e.eqType = true;
+      if (mt(eqSrNo)) e.eqSrNo = true;
+      if (oth(eqMake, eqMakeCustom)) e.eqMake = true;
+      if (mt(eqCalibDue)) e.eqCalibDue = true;
+      if (sel(eqCouplant)) e.eqCouplant = true;
+      if (sel(eqBasicCalib)) e.eqBasicCalib = true;
+
+      // Search Unit — require first row to be fully filled
+      const su0 = searchUnits[0];
+      if (!su0 || mt(su0.model)) e.searchUnit0_model = true;
+      if (!su0 || sel(su0.angle)) e.searchUnit0_angle = true;
+      if (!su0 || mt(su0.srNo)) e.searchUnit0_srNo = true;
+      if (!su0 || sel(su0.crystalSize)) e.searchUnit0_crystalSize = true;
+      if (!su0 || oth(su0.frequency, su0.frequencyCustom ?? "")) e.searchUnit0_frequency = true;
+
+      // Technique
+      if (oth(utMethod, utMethodCustom)) e.utMethod = true;
+      if (oth(refCalibBlock, refCalibBlockCustom)) e.refCalibBlock = true;
+      if (sel(utCalibMethod)) e.utCalibMethod = true;
+      if (oth(scanningSens, scanningSensCustom)) e.scanningSens = true;
+      if (mt(scanningDb)) e.scanningDb = true;
+
+      // Angle Probe Calibration — require range and refDb for every angle
+      if (mt(calib0.range)) e.calib0_range = true;
+      if (mt(calib0.refDb)) e.calib0_refDb = true;
+      if (mt(calib45.range)) e.calib45_range = true;
+      if (mt(calib45.refDb)) e.calib45_refDb = true;
+      if (mt(calib60.range)) e.calib60_range = true;
+      if (mt(calib60.refDb)) e.calib60_refDb = true;
+      if (mt(calib70.range)) e.calib70_range = true;
+      if (mt(calib70.refDb)) e.calib70_refDb = true;
+
+      // Observations
+      if (!observations.some((o: any) => o.jobDescription?.trim())) e.observations = true;
+
+      // Conclusion
+      if (oth(conclusion, conclusionCustom)) e.conclusion = true;
+
+      // Inspector 0 — all fields required
+      if (!inspectors[0]?.name?.trim()) e.inspectorName_0 = true;
+      if (!inspectors[0]?.qualification?.trim()) e.inspectorQual_0 = true;
+      if (!inspectors[0]?.designation?.trim()) e.inspectorDesig_0 = true;
+      if (!inspectors[0]?.date) e.inspectorDate_0 = true;
+
+      // Customer representative
+      if (mt(custName)) e.custName = true;
+      if (mt(custDesig)) e.custDesig = true;
+      if (!custDate) e.custDate = true;
+
+      // Client / TPI representative
+      if (mt(clientName)) e.clientName = true;
+      if (mt(clientDesig)) e.clientDesig = true;
+      if (!clientDate) e.clientDate = true;
+
+      if (Object.keys(e).length > 0) {
+        setErrors(e);
+        toast.error("Please fill all required fields before saving as Final.");
+        return;
+      }
+      setErrors({});
+    }
     setSaving(true);
     try {
       const payload = {
@@ -501,12 +655,12 @@ export const UTReportFormPage: React.FC = () => {
           basicCalibrationBlock: eqBasicCalib,
         },
         searchUnitDetails: searchUnits.map((u) => ({
-  ...u,
-  frequency:
-    u.frequency === "Other"
-      ? u.frequencyCustom || ""
-      : u.frequency,
-})),
+          ...u,
+          frequency:
+            u.frequency === "Other"
+              ? u.frequencyCustom || ""
+              : u.frequency,
+        })),
         techniqueDetails: {
           utMethod: resolve(utMethod, utMethodCustom),
           referenceCalibrationBlock: resolve(
@@ -578,29 +732,36 @@ export const UTReportFormPage: React.FC = () => {
       setSaving(false);
     }
   };
- const angleProbeOptions = ["45°", "60°", "70°"];
-const normalProbeOptions = ["Normal", "TR"];
 
-const getCrystalSizeOptions = (angle: string) => {
-  if (angleProbeOptions.includes(angle)) {
-    return ["8x9 mm", "20x22 mm"];
-  }
+  const angleProbeOptions = ["45°", "60°", "70°"];
 
-  return ["Ø10 mm", "Ø24 mm"];
-};
+  const getCrystalSizeOptions = (angle: string) => {
+    if (angleProbeOptions.includes(angle)) {
+      return ["8x9 mm", "20x22 mm"];
+    }
+    return ["Ø10 mm", "Ø24 mm"];
+  };
 
-const getWaveMode = (angle: string) => {
-  if (angleProbeOptions.includes(angle)) {
-    return "Shear";
-  }
+  const getWaveMode = (angle: string) => {
+    if (angleProbeOptions.includes(angle)) {
+      return "Shear";
+    }
+    return "Longitudinal";
+  };
 
-  return "Longitudinal";
-};
   const calibAngles = [
-    { label: "0°", state: calib0, setter: setCalib0 },
-    { label: "45°", state: calib45, setter: setCalib45 },
-    { label: "60°", state: calib60, setter: setCalib60 },
-    { label: "70°", state: calib70, setter: setCalib70 },
+    { label: "0°", state: calib0, setter: setCalib0, prefix: "calib0" },
+    { label: "45°", state: calib45, setter: setCalib45, prefix: "calib45" },
+    { label: "60°", state: calib60, setter: setCalib60, prefix: "calib60" },
+    { label: "70°", state: calib70, setter: setCalib70, prefix: "calib70" },
+  ];
+
+  const conclusionOptions = [
+    "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+    "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+    "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+    "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+    "Other",
   ];
 
   return (
@@ -674,58 +835,59 @@ const getWaveMode = (angle: string) => {
             />
           </div>
           <div>
-            <label className={labelClass}>Client</label>
+            <label className={labelClass}>Client *</label>
             <input
               type="text"
               value={jobClient}
               onChange={(e) => setJobClient(e.target.value)}
-              className={inputClass}
+              className={fc("jobClient")}
             />
           </div>
           <div>
-            <label className={labelClass}>Report Date</label>
+            <label className={labelClass}>Report Date *</label>
             <input
               type="date"
               value={jobReportDate}
               onChange={(e) => setJobReportDate(e.target.value)}
-              className={inputClass}
+              className={fc("jobReportDate")}
             />
           </div>
           <div>
-            <label className={labelClass}>Project</label>
+            <label className={labelClass}>Project *</label>
             <input
               type="text"
               value={jobProject}
               onChange={(e) => setJobProject(e.target.value)}
-              className={inputClass}
+              className={fc("jobProject")}
               placeholder="e.g. VC-200412"
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection Start Date</label>
+            <label className={labelClass}>Inspection Start Date *</label>
             <input
               type="date"
               value={jobInspectionDate}
               onChange={(e) => setJobInspectionDate(e.target.value)}
-              className={inputClass}
+              className={fc("jobInspectionDate")}
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection End Date</label>
+            <label className={labelClass}>Inspection End Date *</label>
             <input
               type="date"
               value={jobInspectionEndDate}
               onChange={(e) => setJobInspectionEndDate(e.target.value)}
-              className={inputClass}
+              className={fc("jobInspectionEndDate")}
             />
           </div>
           <div>
-            <label className={labelClass}>Reference Std.</label>
+            <label className={labelClass}>Reference Std. *</label>
             <SelectWithCustom
               value={jobRefStd}
               onChange={setJobRefStd}
               customValue={jobRefStdCustom}
               onCustomChange={setJobRefStdCustom}
+              error={hasError("jobRefStd")}
               options={[
                 "ASME Sec V Article 4",
                 "ASTM A 609",
@@ -737,12 +899,13 @@ const getWaveMode = (angle: string) => {
             />
           </div>
           <div>
-            <label className={labelClass}>Acceptance Criteria</label>
+            <label className={labelClass}>Acceptance Criteria *</label>
             <SelectWithCustom
               value={jobAcceptance}
               onChange={setJobAcceptance}
               customValue={jobAcceptanceCustom}
               onCustomChange={setJobAcceptanceCustom}
+              error={hasError("jobAcceptance")}
               options={[
                 "ASME SEC VIII Div. 1 Appendix 12",
                 "ASTM A 609",
@@ -754,13 +917,13 @@ const getWaveMode = (angle: string) => {
             />
           </div>
           <div>
-            <label className={labelClass}>Stage of Inspection</label>
+            <label className={labelClass}>Stage of Inspection *</label>
             <select
               value={jobStage}
               onChange={(e) => setJobStage(e.target.value)}
-              className={inputClass}
+              className={fc("jobStage")}
             >
-             <option value="">Select...</option>
+              <option value="">Select...</option>
               <option>After Welding</option>
               <option>After Casting</option>
               <option>After Machining</option>
@@ -768,22 +931,23 @@ const getWaveMode = (angle: string) => {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Material</label>
+            <label className={labelClass}>Material *</label>
             <input
               type="text"
               value={jobMaterial}
               onChange={(e) => setJobMaterial(e.target.value)}
-              className={inputClass}
+              className={fc("jobMaterial")}
               placeholder="e.g. IS 2062 E-250 BR"
             />
           </div>
-            <div>
-            <label className={labelClass}>Extent of Examination</label>
+          <div>
+            <label className={labelClass}>Extent of Examination *</label>
             <SelectWithCustom
               value={jobExtent}
               onChange={setJobExtent}
               customValue={jobExtentCustom}
               onCustomChange={setJobExtentCustom}
+              error={hasError("jobExtent")}
               options={[
                 "10%",
                 "100%",
@@ -793,21 +957,21 @@ const getWaveMode = (angle: string) => {
             />
           </div>
           <div>
-            <label className={labelClass}>Thickness</label>
+            <label className={labelClass}>Thickness *</label>
             <input
               type="text"
               value={jobThickness}
               onChange={(e) => setJobThickness(e.target.value)}
-              className={inputClass}
+              className={fc("jobThickness")}
               placeholder="e.g. 6,12 & 16 MM"
             />
           </div>
           <div>
-            <label className={labelClass}>Type of Joint</label>
+            <label className={labelClass}>Type of Joint *</label>
             <select
               value={jobJointType}
               onChange={(e) => setJobJointType(e.target.value)}
-              className={inputClass}
+              className={fc("jobJointType")}
             >
               <option value="">Select...</option>
               <option>Butt</option>
@@ -817,11 +981,11 @@ const getWaveMode = (angle: string) => {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Surface Condition</label>
+            <label className={labelClass}>Surface Condition *</label>
             <select
               value={jobSurface}
               onChange={(e) => setJobSurface(e.target.value)}
-              className={inputClass}
+              className={fc("jobSurface")}
             >
               <option value="">Select...</option>
               <option>Smooth</option>
@@ -829,13 +993,12 @@ const getWaveMode = (angle: string) => {
               <option>Ground and polished</option>
             </select>
           </div>
-          
           <div>
-            <label className={labelClass}>Surface Temperature</label>
+            <label className={labelClass}>Surface Temperature *</label>
             <select
               value={jobSurfaceTemp}
               onChange={(e) => setJobSurfaceTemp(e.target.value)}
-              className={inputClass}
+              className={fc("jobSurfaceTemp")}
             >
               <option value="">Select...</option>
               <option>Room Temperature</option>
@@ -845,17 +1008,18 @@ const getWaveMode = (angle: string) => {
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Equipment Details Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* -- Equipment Details -- */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Equipment Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Equipment Type</label>
+            <label className={labelClass}>Equipment Type *</label>
             <SelectWithCustom
               value={eqType}
               onChange={setEqType}
               customValue={eqTypeCustom}
               onCustomChange={setEqTypeCustom}
+              error={hasError("eqType")}
               options={[
                 "Einstein-II DGS",
                 "USM 36",
@@ -866,41 +1030,42 @@ const getWaveMode = (angle: string) => {
             />
           </div>
           <div>
-            <label className={labelClass}>Sr. No.</label>
+            <label className={labelClass}>Sr. No. *</label>
             <input
               type="text"
               value={eqSrNo}
               onChange={(e) => setEqSrNo(e.target.value)}
-              className={inputClass}
+              className={fc("eqSrNo")}
               placeholder="e.g. E4238-0215"
             />
           </div>
           <div>
-            <label className={labelClass}>Make</label>
+            <label className={labelClass}>Make *</label>
             <SelectWithCustom
               value={eqMake}
               onChange={setEqMake}
               customValue={eqMakeCustom}
               onCustomChange={setEqMakeCustom}
+              error={hasError("eqMake")}
               options={["Modsonic", "Waygate", "Kappawave", "Other"]}
             />
           </div>
           <div>
-            <label className={labelClass}>Calibration Due</label>
+            <label className={labelClass}>Calibration Due *</label>
             <input
               type="text"
               value={eqCalibDue}
               onChange={(e) => setEqCalibDue(e.target.value)}
-              className={inputClass}
+              className={fc("eqCalibDue")}
               placeholder="e.g. 18-12-2025"
             />
           </div>
           <div>
-            <label className={labelClass}>Couplant</label>
+            <label className={labelClass}>Couplant *</label>
             <select
               value={eqCouplant}
               onChange={(e) => setEqCouplant(e.target.value)}
-              className={inputClass}
+              className={fc("eqCouplant")}
             >
               <option value="">Select...</option>
               <option>Water</option>
@@ -911,11 +1076,11 @@ const getWaveMode = (angle: string) => {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Basic Calibration Block</label>
+            <label className={labelClass}>Basic Calibration Block *</label>
             <select
               value={eqBasicCalib}
               onChange={(e) => setEqBasicCalib(e.target.value)}
-              className={inputClass}
+              className={fc("eqBasicCalib")}
             >
               <option value="">Select...</option>
               <option>IIW V1</option>
@@ -925,7 +1090,7 @@ const getWaveMode = (angle: string) => {
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Search Unit Details Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* -- Search Unit Details -- */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4">
           <h2
@@ -949,168 +1114,166 @@ const getWaveMode = (angle: string) => {
             <thead>
               <tr className="bg-gray-50 text-xs text-gray-600 uppercase">
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Model
+                  Model *
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Angle
+                  Angle *
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Sr. No.
+                  Sr. No. *
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Crystal Size
+                  Crystal Size *
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
                   Wave Mode
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Frequency
+                  Frequency *
                 </th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
             </thead>
             <tbody>
-              {searchUnits.map((unit, idx) => (
-                <tr key={idx} className="hover:bg-gray-50">
-                  <td className="border border-gray-200 px-1 py-1">
-                    <input
-                      type="text"
-                      value={unit.model}
-                      onChange={(e) => updateUnit(idx, "model", e.target.value)}
-                      className={inputClass}
-                      placeholder="e.g. Modsonic"
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={unit.angle}
-                      onChange={(e) => updateUnit(idx, "angle", e.target.value)}
-                      className={inputClass}
-                    >
-                      <option value="">Select...</option>
-                      <option>45°</option>
-                      <option>60°</option>
-                      <option>70°</option>
-                      <option>Normal</option>
-                      <option>TR</option>
-                    </select>
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <input
-                      type="text"
-                      value={unit.srNo}
-                      onChange={(e) => updateUnit(idx, "srNo", e.target.value)}
-                      className={inputClass}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                   <select
-                    value={unit.crystalSize}
-                    onChange={(e) =>
-                      updateUnit(idx, "crystalSize", e.target.value)
-                    }
-                    className={inputClass}
-                  >
-                    <option value="">Select...</option>
-
-                    {getCrystalSizeOptions(unit.angle).map((size) => (
-                      <option key={size} value={size}>
-                        {size}
-                      </option>
-                    ))}
-                  </select>
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={unit.waveMode}
-                      onChange={(e) =>
-                        updateUnit(idx, "waveMode", e.target.value)
-                      }
-                      className={inputClass}
-                    >
-                      <option value={getWaveMode(unit.angle)}>
-                        {getWaveMode(unit.angle)}
-                      </option>
-                    </select>
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 w-[140px]">
-  <td className="border border-gray-200 px-1 py-1 w-[150px]">
-  <SelectWithCustom
-    value={unit.frequency}
-    onChange={(val) =>
-      updateUnit(idx, "frequency", val)
-    }
-    customValue={unit.frequencyCustom || ""}
-    onCustomChange={(val) =>
-      setSearchUnits((prev) =>
-        prev.map((row, i) =>
-          i === idx
-            ? { ...row, frequencyCustom: val }
-            : row
-        )
-      )
-    }
-    options={[
-      "1 MHz",
-      "2 MHz",
-      "4 MHz",
-      "Other",
-    ]}
-  />
-</td>
-</td>
-                  <td className="border border-gray-200 px-1 py-1 text-center">
-                    {searchUnits.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeUnit(idx)}
-                        className="text-red-400 hover:text-red-600"
+              {searchUnits.map((unit, idx) => {
+                const isFirst = idx === 0;
+                const modelErr = isFirst && !!errors.searchUnit0_model && !unit.model.trim();
+                const angleErr = isFirst && !!errors.searchUnit0_angle && !unit.angle;
+                const srNoErr = isFirst && !!errors.searchUnit0_srNo && !unit.srNo.trim();
+                const crystalErr = isFirst && !!errors.searchUnit0_crystalSize && !unit.crystalSize;
+                const freqVal = unit.frequency === "Other" ? unit.frequencyCustom ?? "" : unit.frequency;
+                const freqErr = isFirst && !!errors.searchUnit0_frequency && !freqVal.trim();
+                return (
+                  <tr key={idx} className="hover:bg-gray-50">
+                    <td className="border border-gray-200 px-1 py-1">
+                      <input
+                        type="text"
+                        value={unit.model}
+                        onChange={(e) => updateUnit(idx, "model", e.target.value)}
+                        className={modelErr ? inputErrorClass : inputClass}
+                        placeholder="e.g. Modsonic"
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-1 py-1">
+                      <select
+                        value={unit.angle}
+                        onChange={(e) => updateUnit(idx, "angle", e.target.value)}
+                        className={angleErr ? inputErrorClass : inputClass}
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
+                        <option value="">Select...</option>
+                        <option>45°</option>
+                        <option>60°</option>
+                        <option>70°</option>
+                        <option>Normal</option>
+                        <option>TR</option>
+                      </select>
+                    </td>
+                    <td className="border border-gray-200 px-1 py-1">
+                      <input
+                        type="text"
+                        value={unit.srNo}
+                        onChange={(e) => updateUnit(idx, "srNo", e.target.value)}
+                        className={srNoErr ? inputErrorClass : inputClass}
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-1 py-1">
+                      <select
+                        value={unit.crystalSize}
+                        onChange={(e) =>
+                          updateUnit(idx, "crystalSize", e.target.value)
+                        }
+                        className={crystalErr ? inputErrorClass : inputClass}
+                      >
+                        <option value="">Select...</option>
+                        {getCrystalSizeOptions(unit.angle).map((size) => (
+                          <option key={size} value={size}>
+                            {size}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="border border-gray-200 px-1 py-1">
+                      <select
+                        value={unit.waveMode}
+                        onChange={(e) =>
+                          updateUnit(idx, "waveMode", e.target.value)
+                        }
+                        className={inputClass}
+                      >
+                        <option value={getWaveMode(unit.angle)}>
+                          {getWaveMode(unit.angle)}
+                        </option>
+                      </select>
+                    </td>
+                    <td className="border border-gray-200 px-1 py-1 w-[150px]">
+                      <SelectWithCustom
+                        value={unit.frequency}
+                        onChange={(val) => updateUnit(idx, "frequency", val)}
+                        customValue={unit.frequencyCustom || ""}
+                        onCustomChange={(val) =>
+                          setSearchUnits((prev) =>
+                            prev.map((row, i) =>
+                              i === idx
+                                ? { ...row, frequencyCustom: val }
+                                : row
+                            )
+                          )
+                        }
+                        error={freqErr}
+                        options={["1 MHz", "2 MHz", "4 MHz", "Other"]}
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-1 py-1 text-center">
+                      {searchUnits.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeUnit(idx)}
+                          className="text-red-400 hover:text-red-600"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Technique Details Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* -- Technique Details -- */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Technique Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-  <label className={labelClass}>UT Method</label>
-
-  <SelectWithCustom
-    value={utMethod}
-    onChange={setUtMethod}
-    customValue={utMethodCustom}
-    onCustomChange={setUtMethodCustom}
-    options={[
-      "Pulse Echo",
-      "Other",
-    ]}
-  />
-</div>
           <div>
-            <label className={labelClass}>Reference Calibration Block</label>
+            <label className={labelClass}>UT Method *</label>
+            <SelectWithCustom
+              value={utMethod}
+              onChange={setUtMethod}
+              customValue={utMethodCustom}
+              onCustomChange={setUtMethodCustom}
+              error={hasError("utMethod")}
+              options={["Pulse Echo", "Other"]}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Reference Calibration Block *</label>
             <SelectWithCustom
               value={refCalibBlock}
               onChange={setRefCalibBlock}
               customValue={refCalibBlockCustom}
               onCustomChange={setRefCalibBlockCustom}
+              error={hasError("refCalibBlock")}
               options={["19 mm", "38 mm", "Job itself", "Other"]}
             />
           </div>
           <div>
-            <label className={labelClass}>UT Calibration Method</label>
+            <label className={labelClass}>UT Calibration Method *</label>
             <select
               value={utCalibMethod}
               onChange={(e) => setUtCalibMethod(e.target.value)}
-              className={inputClass}
+              className={fc("utCalibMethod")}
             >
               <option value="">Select...</option>
               <option>By DAC Method</option>
@@ -1119,22 +1282,23 @@ const getWaveMode = (angle: string) => {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Scanning dB</label>
+            <label className={labelClass}>Scanning dB *</label>
             <input
               type="text"
               value={scanningDb}
               onChange={(e) => setScanningDb(e.target.value)}
-              className={inputClass}
+              className={fc("scanningDb")}
               placeholder="e.g. Ref dB+6dB"
             />
           </div>
           <div className="sm:col-span-2">
-            <label className={labelClass}>Scanning Sensitivity</label>
+            <label className={labelClass}>Scanning Sensitivity *</label>
             <SelectWithCustom
               value={scanningSens}
               onChange={setScanningSens}
               customValue={scanningSensCustom}
               onCustomChange={setScanningSensCustom}
+              error={hasError("scanningSens")}
               options={[
                 "Ø 2.5 mm SDH",
                 "Ø 3mm SDH",
@@ -1146,7 +1310,7 @@ const getWaveMode = (angle: string) => {
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Angle Probe Calibration Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* -- Angle Probe Calibration -- */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Angle Probe Calibration Detail</h2>
         <div className="overflow-x-auto">
@@ -1169,32 +1333,37 @@ const getWaveMode = (angle: string) => {
             <tbody>
               {(
                 [
-                  { key: "range", label: "Range" },
+                  { key: "range", label: "Range *" },
                   { key: "point1", label: "1st Point" },
                   { key: "point2", label: "2nd Point" },
                   { key: "point3", label: "3rd Point" },
-                  { key: "refDb", label: "Ref dB" },
+                  { key: "refDb", label: "Ref dB *" },
                 ] as { key: keyof CalibRow; label: string }[]
               ).map((row) => (
                 <tr key={row.key} className="hover:bg-gray-50">
                   <td className="border border-gray-200 px-3 py-2 font-medium text-gray-600 bg-gray-50">
                     {row.label}
                   </td>
-                  {calibAngles.map((a) => (
-                    <td
-                      key={a.label}
-                      className="border border-gray-200 px-1 py-1"
-                    >
-                      <input
-                        type="text"
-                        value={a.state[row.key]}
-                        onChange={(e) =>
-                          updateCalib(a.setter, row.key, e.target.value)
-                        }
-                        className={inputClass}
-                      />
-                    </td>
-                  ))}
+                  {calibAngles.map((a) => {
+                    const errKey = `${a.prefix}_${row.key}`;
+                    const isRequired = row.key === "range" || row.key === "refDb";
+                    const cellErr = isRequired && !!errors[errKey] && !a.state[row.key].trim();
+                    return (
+                      <td
+                        key={a.label}
+                        className="border border-gray-200 px-1 py-1"
+                      >
+                        <input
+                          type="text"
+                          value={a.state[row.key]}
+                          onChange={(e) =>
+                            updateCalib(a.setter, row.key, e.target.value)
+                          }
+                          className={cellErr ? inputErrorClass : inputClass}
+                        />
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
             </tbody>
@@ -1202,8 +1371,8 @@ const getWaveMode = (angle: string) => {
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Observations Ã¢â€â‚¬Ã¢â€â‚¬ */}
-      <div className={sectionClass}>
+      {/* -- Observations -- */}
+      <div className={`${sectionClass}${errors.observations ? " ring-2 ring-red-400" : ""}`}>
         <div className="flex items-center justify-between mb-4">
           <h2
             className={sectionTitleClass.replace(
@@ -1211,7 +1380,7 @@ const getWaveMode = (angle: string) => {
               "",
             )}
           >
-            Observations
+            Observations *
           </h2>
           <button
             type="button"
@@ -1338,6 +1507,24 @@ const getWaveMode = (angle: string) => {
         </div>
       </div>
 
+      {/* -- Conclusion -- */}
+      <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>Conclusion</h2>
+        <div>
+          <label className={labelClass}>Conclusion *</label>
+          <SelectWithCustom
+            value={conclusion}
+            onChange={setConclusion}
+            customValue={conclusionCustom}
+            onCustomChange={setConclusionCustom}
+            error={hasError("conclusion")}
+            options={conclusionOptions}
+            placeholder="Select conclusion..."
+          />
+        </div>
+      </div>
+
+      {/* -- Final Section -- */}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* NIIT Inspector(s) */}
@@ -1376,11 +1563,11 @@ const getWaveMode = (angle: string) => {
                   )}
                   <div className="space-y-2">
                     <div>
-                      <label className={labelClass}>Name</label>
+                      <label className={labelClass}>Name{idx === 0 ? " *" : ""}</label>
                       <select
                         value={insp.name}
                         onChange={(e) => updateInsp(idx, "name", e.target.value)}
-                        className={`${inputClass} bg-white`}
+                        className={`${idx === 0 && errors.inspectorName_0 && !insp.name.trim() ? inputErrorClass : inputClass} bg-white`}
                       >
                         <option value="">Select....</option>
                         {users.map((u) => (
@@ -1391,22 +1578,22 @@ const getWaveMode = (angle: string) => {
                       </select>
                     </div>
                     <div>
-                      <label className={labelClass}>Qualification</label>
+                      <label className={labelClass}>Qualification{idx === 0 ? " *" : ""}</label>
                       <input
                         type="text"
                         value={insp.qualification}
                         onChange={(e) => updateInsp(idx, "qualification", e.target.value)}
-                        className={inputClass}
+                        className={idx === 0 && !!errors.inspectorQual_0 && !insp.qualification.trim() ? inputErrorClass : inputClass}
                         placeholder="e.g. UT NDE Level II"
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>Designation</label>
+                      <label className={labelClass}>Designation{idx === 0 ? " *" : ""}</label>
                       <input
                         type="text"
                         value={insp.designation}
                         onChange={(e) => updateInsp(idx, "designation", e.target.value)}
-                        className={inputClass}
+                        className={idx === 0 && !!errors.inspectorDesig_0 && !insp.designation.trim() ? inputErrorClass : inputClass}
                       />
                     </div>
                     <div>
@@ -1419,12 +1606,12 @@ const getWaveMode = (angle: string) => {
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>Date</label>
+                      <label className={labelClass}>Date{idx === 0 ? " *" : ""}</label>
                       <input
                         type="date"
                         value={insp.date}
                         onChange={(e) => updateInsp(idx, "date", e.target.value)}
-                        className={inputClass}
+                        className={idx === 0 && !!errors.inspectorDate_0 && !insp.date ? inputErrorClass : inputClass}
                       />
                     </div>
                   </div>
@@ -1432,6 +1619,8 @@ const getWaveMode = (angle: string) => {
               ))}
             </div>
           </div>
+
+          {/* Customer representative */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
               Customer
@@ -1441,21 +1630,21 @@ const getWaveMode = (angle: string) => {
             </p>
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Name</label>
+                <label className={labelClass}>Name *</label>
                 <input
                   type="text"
                   value={custName}
                   onChange={(e) => setCustName(e.target.value)}
-                  className={inputClass}
+                  className={fc("custName")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Designation</label>
+                <label className={labelClass}>Designation *</label>
                 <input
                   type="text"
                   value={custDesig}
                   onChange={(e) => setCustDesig(e.target.value)}
-                  className={inputClass}
+                  className={fc("custDesig")}
                 />
               </div>
               <div>
@@ -1468,16 +1657,18 @@ const getWaveMode = (angle: string) => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Date</label>
+                <label className={labelClass}>Date *</label>
                 <input
                   type="date"
                   value={custDate}
                   onChange={(e) => setCustDate(e.target.value)}
-                  className={inputClass}
+                  className={fc("custDate")}
                 />
               </div>
             </div>
           </div>
+
+          {/* Client / TPI representative */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-0.5">
               Client
@@ -1487,21 +1678,21 @@ const getWaveMode = (angle: string) => {
             </p>
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Name</label>
+                <label className={labelClass}>Name *</label>
                 <input
                   type="text"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
-                  className={inputClass}
+                  className={fc("clientName")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Designation</label>
+                <label className={labelClass}>Designation *</label>
                 <input
                   type="text"
                   value={clientDesig}
                   onChange={(e) => setClientDesig(e.target.value)}
-                  className={inputClass}
+                  className={fc("clientDesig")}
                 />
               </div>
               <div>
@@ -1514,12 +1705,12 @@ const getWaveMode = (angle: string) => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Date</label>
+                <label className={labelClass}>Date *</label>
                 <input
                   type="date"
                   value={clientDate}
                   onChange={(e) => setClientDate(e.target.value)}
-                  className={inputClass}
+                  className={fc("clientDate")}
                 />
               </div>
             </div>
@@ -1527,7 +1718,7 @@ const getWaveMode = (angle: string) => {
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Action Buttons Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* -- Action Buttons -- */}
       <div className="flex items-center justify-end gap-3 pb-8">
         <button
           type="button"

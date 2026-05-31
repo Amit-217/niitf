@@ -735,8 +735,9 @@ export const SalaryRecordsPage = () => {
                           ₹{Math.round(dynamicNet).toLocaleString()}
                         </span>
                       </div>
-                      <div className="flex flex-wrap gap-2 text-[10px] font-bold">
+                      <div className="flex flex-wrap gap-3 mt-1 text-xs font-bold">
                         <span className="text-emerald-600">+ Gross: ₹{Math.round(dynamicGross).toLocaleString()}</span>
+                        {Number(bonusAmount) > 0 && <span className="text-emerald-600">+ Bonus: ₹{Math.round(Number(bonusAmount)).toLocaleString()}</span>}
                         <span className="text-red-600">- Absent/Leave: ₹{Math.round(previewData.deductionAmount).toLocaleString()}</span>
                         {Number(standardDeduction) > 0 && <span className="text-blue-600">- Std Ded: ₹{Math.round(Number(standardDeduction)).toLocaleString()}</span>}
                         {Number(advanceDeduction) > 0 && <span className="text-amber-600">- Advance: ₹{Math.round(Number(advanceDeduction)).toLocaleString()}</span>}

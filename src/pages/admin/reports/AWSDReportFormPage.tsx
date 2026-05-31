@@ -8,11 +8,14 @@ import {
   getAWSDReportById,
 } from "../../../api/customerApi";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
+import { getApiErrorMessage } from "../../../api/error";
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
+const inputErrorClass =
+  "w-full border-2 border-red-400 bg-red-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400";
 const labelClass = "block text-xs font-medium text-gray-700 mb-1";
 const sectionClass = "bg-white rounded-xl border border-gray-200 p-5 mb-5";
 const sectionTitleClass =
@@ -28,6 +31,7 @@ interface SelectWithOtherProps {
   onOtherChange: (val: string) => void;
   options: string[];
   placeholder?: string;
+  error?: boolean;
 }
 
 const SelectWithOther: React.FC<SelectWithOtherProps> = ({
@@ -38,13 +42,14 @@ const SelectWithOther: React.FC<SelectWithOtherProps> = ({
   onOtherChange,
   options,
   placeholder = "Select...",
+  error = false,
 }) => (
   <div className="space-y-1">
     <select
       id={id}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={inputClass}
+      className={error ? inputErrorClass : inputClass}
     >
       <option value="">{placeholder}</option>
       {options.map((opt) => (
@@ -59,7 +64,7 @@ const SelectWithOther: React.FC<SelectWithOtherProps> = ({
         value={otherValue}
         onChange={(e) => onOtherChange(e.target.value)}
         placeholder="Specify other value..."
-        className={inputClass}
+        className={error && !otherValue.trim() ? inputErrorClass : inputClass}
       />
     )}
   </div>
@@ -130,7 +135,7 @@ export const AWSDReportFormPage: React.FC = () => {
   const [reportNo, setReportNo] = useState("");
   const [project, setProject] = useState("");
   const [dateOfInspection, setDateOfInspection] = useState("");
-  
+
   // ── Job Info ──
   const [jobDescription, setJobDescription] = useState("");
   const [drawingNo, setDrawingNo] = useState("");
@@ -170,6 +175,8 @@ export const AWSDReportFormPage: React.FC = () => {
   const [authorizedBy, setAuthorizedBy] = useState("");
   const [footerDate, setFooterDate] = useState("");
 
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
+
   // ── Load in edit mode ──
   useEffect(() => {
     if (!id) return;
@@ -195,7 +202,7 @@ export const AWSDReportFormPage: React.FC = () => {
         setReportNo(r.reportNo ?? "");
         setProject(r.project ?? "");
         setDateOfInspection(toDate(r.dateOfInspection));
-        
+
         setJobDescription(r.jobDescription ?? "");
         setDrawingNo(r.drawingNo ?? "");
         setCalibrationBlock(r.calibrationBlock ?? "");
@@ -262,6 +269,42 @@ export const AWSDReportFormPage: React.FC = () => {
   const resolve = (val: string, other: string) =>
     val === "Other" && other.trim() ? other.trim() : val;
 
+  const getFieldValue = (key: string): string => {
+    const map: Record<string, string> = {
+      project,
+      dateOfInspection,
+      jobDescription,
+      drawingNo,
+      calibrationBlock,
+      qtyOfJts,
+      flawDetectorSrNo,
+      machineCalibration,
+      surfaceCondition,
+      poNo,
+      couplant,
+      material,
+      stageOfInspection,
+      qapNo,
+      accStandard,
+      probe,
+      overallProbeAngle,
+      frequency,
+      range,
+      scanningSensitivity,
+      referenceDb,
+      scanningDb,
+      testDate,
+      inspectedBy,
+      certYear,
+      manufacturerOrContractor,
+      authorizedBy,
+      weldingProcess: weldingProcess === "Other" ? weldingProcessOther : weldingProcess,
+    };
+    return map[key] ?? "";
+  };
+  const hasError = (key: string) => !!errors[key] && !getFieldValue(key);
+  const fc = (key: string) => (hasError(key) ? inputErrorClass : inputClass);
+
   const updateObs = (idx: number, key: keyof ObsRow, val: string) =>
     setObservations((prev) =>
       prev.map((r, i) => (i === idx ? { ...r, [key]: val } : r)),
@@ -280,6 +323,50 @@ export const AWSDReportFormPage: React.FC = () => {
     if (!isEditMode && !customerId) {
       toast.error("Please select a customer first.");
       return;
+    }
+
+    if (status === "final") {
+      const e: Record<string, boolean> = {};
+      const mt = (v: string) => !v.trim();
+      const oth = (v: string, o: string) => !v || (v === "Other" && !o.trim());
+
+      if (!dateOfInspection) e.dateOfInspection = true;
+      if (mt(project)) e.project = true;
+      if (mt(jobDescription)) e.jobDescription = true;
+      if (mt(drawingNo)) e.drawingNo = true;
+      if (mt(calibrationBlock)) e.calibrationBlock = true;
+      if (mt(qtyOfJts)) e.qtyOfJts = true;
+      if (mt(flawDetectorSrNo)) e.flawDetectorSrNo = true;
+      if (oth(weldingProcess, weldingProcessOther)) e.weldingProcess = true;
+      if (mt(machineCalibration)) e.machineCalibration = true;
+      if (mt(surfaceCondition)) e.surfaceCondition = true;
+      if (mt(poNo)) e.poNo = true;
+      if (mt(couplant)) e.couplant = true;
+      if (mt(stageOfInspection)) e.stageOfInspection = true;
+      if (mt(material)) e.material = true;
+      if (mt(qapNo)) e.qapNo = true;
+      if (mt(accStandard)) e.accStandard = true;
+      if (mt(probe)) e.probe = true;
+      if (mt(overallProbeAngle)) e.overallProbeAngle = true;
+      if (mt(frequency)) e.frequency = true;
+      if (mt(range)) e.range = true;
+      if (mt(scanningSensitivity)) e.scanningSensitivity = true;
+      if (mt(referenceDb)) e.referenceDb = true;
+      if (mt(scanningDb)) e.scanningDb = true;
+      if (!observations.some((o) => o.jointDetails.trim())) e.observations = true;
+      if (!testDate) e.testDate = true;
+      if (mt(inspectedBy)) e.inspectedBy = true;
+      if (mt(certYear)) e.certYear = true;
+      if (mt(manufacturerOrContractor)) e.manufacturerOrContractor = true;
+      if (mt(authorizedBy)) e.authorizedBy = true;
+      if (!footerDate) e.footerDate = true;
+
+      if (Object.keys(e).length > 0) {
+        setErrors(e);
+        toast.error("Please fill all required fields before saving as Final.");
+        return;
+      }
+      setErrors({});
     }
 
     setSaving(true);
@@ -362,8 +449,8 @@ export const AWSDReportFormPage: React.FC = () => {
           state: { activeTab: "reports", reportSubType: "awsd" },
         });
       }
-    } catch {
-      toast.error("Failed to save report. Please try again.");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Failed to save report. Please try again."));
     } finally {
       setSaving(false);
     }
@@ -411,31 +498,31 @@ export const AWSDReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Date of Inspection</label>
-            <input type="date" value={dateOfInspection} onChange={(e) => setDateOfInspection(e.target.value)} className={inputClass} />
+            <input type="date" value={dateOfInspection} onChange={(e) => setDateOfInspection(e.target.value)} className={fc("dateOfInspection")} />
           </div>
           <div>
             <label className={labelClass}>Project</label>
-            <input type="text" value={project} onChange={(e) => setProject(e.target.value)} className={inputClass} />
+            <input type="text" value={project} onChange={(e) => setProject(e.target.value)} className={fc("project")} />
           </div>
           <div>
             <label className={labelClass}>Job Description</label>
-            <input type="text" value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} className={inputClass} />
+            <input type="text" value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} className={fc("jobDescription")} />
           </div>
           <div>
             <label className={labelClass}>Drawing No</label>
-            <input type="text" value={drawingNo} onChange={(e) => setDrawingNo(e.target.value)} className={inputClass} />
+            <input type="text" value={drawingNo} onChange={(e) => setDrawingNo(e.target.value)} className={fc("drawingNo")} />
           </div>
           <div>
             <label className={labelClass}>Calibration. Block</label>
-            <input type="text" value={calibrationBlock} onChange={(e) => setCalibrationBlock(e.target.value)} className={inputClass} />
+            <input type="text" value={calibrationBlock} onChange={(e) => setCalibrationBlock(e.target.value)} className={fc("calibrationBlock")} />
           </div>
           <div>
             <label className={labelClass}>QTY of Jts.</label>
-            <input type="text" value={qtyOfJts} onChange={(e) => setQtyOfJts(e.target.value)} className={inputClass} />
+            <input type="text" value={qtyOfJts} onChange={(e) => setQtyOfJts(e.target.value)} className={fc("qtyOfJts")} />
           </div>
           <div>
             <label className={labelClass}>Flaw Detector/Sr. No.</label>
-            <input type="text" value={flawDetectorSrNo} onChange={(e) => setFlawDetectorSrNo(e.target.value)} className={inputClass} />
+            <input type="text" value={flawDetectorSrNo} onChange={(e) => setFlawDetectorSrNo(e.target.value)} className={fc("flawDetectorSrNo")} />
           </div>
           <div>
             <label className={labelClass}>Welding Process</label>
@@ -445,39 +532,40 @@ export const AWSDReportFormPage: React.FC = () => {
               otherValue={weldingProcessOther}
               onOtherChange={setWeldingProcessOther}
               options={["SMAW", "GMAW", "FCAW", "SAW", "GTAW", "MAG", "Other"]}
+              error={hasError("weldingProcess")}
             />
           </div>
           <div>
             <label className={labelClass}>Machine Calibration</label>
-            <input type="text" value={machineCalibration} onChange={(e) => setMachineCalibration(e.target.value)} className={inputClass} />
+            <input type="text" value={machineCalibration} onChange={(e) => setMachineCalibration(e.target.value)} className={fc("machineCalibration")} />
           </div>
           <div>
             <label className={labelClass}>Surface Condition</label>
-            <input type="text" value={surfaceCondition} onChange={(e) => setSurfaceCondition(e.target.value)} className={inputClass} />
+            <input type="text" value={surfaceCondition} onChange={(e) => setSurfaceCondition(e.target.value)} className={fc("surfaceCondition")} />
           </div>
           <div>
             <label className={labelClass}>P.O. No.</label>
-            <input type="text" value={poNo} onChange={(e) => setPoNo(e.target.value)} className={inputClass} />
+            <input type="text" value={poNo} onChange={(e) => setPoNo(e.target.value)} className={fc("poNo")} />
           </div>
           <div>
             <label className={labelClass}>Couplant</label>
-            <input type="text" value={couplant} onChange={(e) => setCouplant(e.target.value)} className={inputClass} />
+            <input type="text" value={couplant} onChange={(e) => setCouplant(e.target.value)} className={fc("couplant")} />
           </div>
           <div>
             <label className={labelClass}>Stage of inspection</label>
-            <input type="text" value={stageOfInspection} onChange={(e) => setStageOfInspection(e.target.value)} className={inputClass} />
+            <input type="text" value={stageOfInspection} onChange={(e) => setStageOfInspection(e.target.value)} className={fc("stageOfInspection")} />
           </div>
           <div>
             <label className={labelClass}>Material</label>
-            <input type="text" value={material} onChange={(e) => setMaterial(e.target.value)} className={inputClass} />
+            <input type="text" value={material} onChange={(e) => setMaterial(e.target.value)} className={fc("material")} />
           </div>
           <div>
             <label className={labelClass}>QAP NO.</label>
-            <input type="text" value={qapNo} onChange={(e) => setQapNo(e.target.value)} className={inputClass} />
+            <input type="text" value={qapNo} onChange={(e) => setQapNo(e.target.value)} className={fc("qapNo")} />
           </div>
           <div>
             <label className={labelClass}>Acc. Standard</label>
-            <input type="text" value={accStandard} onChange={(e) => setAccStandard(e.target.value)} className={inputClass} />
+            <input type="text" value={accStandard} onChange={(e) => setAccStandard(e.target.value)} className={fc("accStandard")} />
           </div>
         </div>
       </div>
@@ -488,41 +576,55 @@ export const AWSDReportFormPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
           <div>
             <label className={labelClass}>Probe</label>
-            <input type="text" value={probe} onChange={(e) => setProbe(e.target.value)} className={inputClass} />
+            <input type="text" value={probe} onChange={(e) => setProbe(e.target.value)} className={fc("probe")} />
           </div>
           <div>
             <label className={labelClass}>Probe Angle</label>
-            <input type="text" value={overallProbeAngle} onChange={(e) => setOverallProbeAngle(e.target.value)} className={inputClass} />
+            <input type="text" value={overallProbeAngle} onChange={(e) => setOverallProbeAngle(e.target.value)} className={fc("overallProbeAngle")} />
           </div>
           <div>
             <label className={labelClass}>Frequency</label>
-            <input type="text" value={frequency} onChange={(e) => setFrequency(e.target.value)} className={inputClass} />
+            <input type="text" value={frequency} onChange={(e) => setFrequency(e.target.value)} className={fc("frequency")} />
           </div>
           <div>
             <label className={labelClass}>Range</label>
-            <input type="text" value={range} onChange={(e) => setRange(e.target.value)} className={inputClass} />
+            <input type="text" value={range} onChange={(e) => setRange(e.target.value)} className={fc("range")} />
           </div>
           <div>
             <label className={labelClass}>Scanning Sensitivity</label>
-            <input type="text" value={scanningSensitivity} onChange={(e) => setScanningSensitivity(e.target.value)} className={inputClass} />
+            <input type="text" value={scanningSensitivity} onChange={(e) => setScanningSensitivity(e.target.value)} className={fc("scanningSensitivity")} />
           </div>
           <div>
             <label className={labelClass}>Reference dB</label>
-            <input type="text" value={referenceDb} onChange={(e) => setReferenceDb(e.target.value)} className={inputClass} />
+            <input type="text" value={referenceDb} onChange={(e) => setReferenceDb(e.target.value)} className={fc("referenceDb")} />
           </div>
           <div>
             <label className={labelClass}>Scanning dB</label>
-            <input type="text" value={scanningDb} onChange={(e) => setScanningDb(e.target.value)} className={inputClass} />
+            <input type="text" value={scanningDb} onChange={(e) => setScanningDb(e.target.value)} className={fc("scanningDb")} />
           </div>
         </div>
       </div>
 
       {/* ── Observations Table ── */}
-      <div className={sectionClass}>
+      <div
+        className={
+          sectionClass +
+          (errors.observations && !observations.some((o) => o.jointDetails.trim())
+            ? " ring-2 ring-red-400"
+            : "")
+        }
+      >
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
-            Observations
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
+              Observations
+            </h2>
+            {errors.observations && !observations.some((o) => o.jointDetails.trim()) && (
+              <span className="text-xs font-medium text-red-500">
+                At least one row must have Joint Details filled.
+              </span>
+            )}
+          </div>
           <button
             type="button"
             onClick={addObs}
@@ -604,32 +706,37 @@ export const AWSDReportFormPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className={labelClass}>Year (for certification)</label>
-            <input type="text" value={certYear} onChange={(e) => setCertYear(e.target.value)} className={inputClass} placeholder="e.g. 2025" />
+            <input type="text" value={certYear} onChange={(e) => setCertYear(e.target.value)} className={fc("certYear")} placeholder="e.g. 2025" />
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="space-y-3">
             <div>
               <label className={labelClass}>Test Date</label>
-              <input type="date" value={testDate} onChange={(e) => setTestDate(e.target.value)} className={inputClass} />
+              <input type="date" value={testDate} onChange={(e) => setTestDate(e.target.value)} className={fc("testDate")} />
             </div>
             <div>
               <label className={labelClass}>Inspected By</label>
-              <input type="text" value={inspectedBy} onChange={(e) => setInspectedBy(e.target.value)} className={inputClass} />
+              <input type="text" value={inspectedBy} onChange={(e) => setInspectedBy(e.target.value)} className={fc("inspectedBy")} />
             </div>
           </div>
           <div className="space-y-3">
             <div>
               <label className={labelClass}>Manufacturer or Contractor</label>
-              <input type="text" value={manufacturerOrContractor} onChange={(e) => setManufacturerOrContractor(e.target.value)} className={inputClass} />
+              <input type="text" value={manufacturerOrContractor} onChange={(e) => setManufacturerOrContractor(e.target.value)} className={fc("manufacturerOrContractor")} />
             </div>
             <div>
               <label className={labelClass}>Authorized By</label>
-              <input type="text" value={authorizedBy} onChange={(e) => setAuthorizedBy(e.target.value)} className={inputClass} />
+              <input type="text" value={authorizedBy} onChange={(e) => setAuthorizedBy(e.target.value)} className={fc("authorizedBy")} />
             </div>
             <div>
               <label className={labelClass}>Date</label>
-              <input type="date" value={footerDate} onChange={(e) => setFooterDate(e.target.value)} className={inputClass} />
+              <input
+                type="date"
+                value={footerDate}
+                onChange={(e) => setFooterDate(e.target.value)}
+                className={errors.footerDate && !footerDate ? inputErrorClass : inputClass}
+              />
             </div>
           </div>
         </div>

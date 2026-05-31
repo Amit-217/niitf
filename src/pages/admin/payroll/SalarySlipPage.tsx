@@ -219,7 +219,7 @@ export const SalarySlipPage = () => {
 
                 {/* Salary formula */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                    <h4 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em]">Salary Formula</h4>
+                    <h4 className="text-sm font-black text-gray-900 uppercase tracking-[0.2em]">Salary</h4>
                     <div className="mt-4 space-y-3 text-sm">
                         <div className="flex justify-between gap-4">
                             <span className="text-gray-500">Base Salary</span>
