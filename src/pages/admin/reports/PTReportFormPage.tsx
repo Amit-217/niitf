@@ -13,12 +13,14 @@ import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
+const inputErrorClass =
+  "w-full border-2 border-red-400 bg-red-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400";
 const labelClass = "block text-xs font-medium text-gray-700 mb-1";
 const sectionClass = "bg-white rounded-xl border border-gray-200 p-5 mb-5";
 const sectionTitleClass =
   "text-sm font-semibold text-indigo-700 uppercase tracking-wide mb-4 pb-2 border-b border-gray-100";
 
-// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ SelectWithCustom Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
+// ─── SelectWithCustom ─────────────────────────────────────────────────────────
 
 interface SelectWithCustomProps {
   id?: string;
@@ -28,6 +30,7 @@ interface SelectWithCustomProps {
   onCustomChange: (val: string) => void;
   options: string[];
   placeholder?: string;
+  error?: boolean;
 }
 
 const SelectWithCustom: React.FC<SelectWithCustomProps> = ({
@@ -38,13 +41,14 @@ const SelectWithCustom: React.FC<SelectWithCustomProps> = ({
   onCustomChange,
   options,
   placeholder = "Select...",
+  error = false,
 }) => (
   <div className="space-y-1">
     <select
       id={id}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={inputClass}
+      className={error ? inputErrorClass : inputClass}
     >
       <option value="">{placeholder}</option>
       {options.map((opt) => (
@@ -59,13 +63,13 @@ const SelectWithCustom: React.FC<SelectWithCustomProps> = ({
         value={customValue}
         onChange={(e) => onCustomChange(e.target.value)}
         placeholder="Specify other value..."
-        className={inputClass}
+        className={error && !customValue.trim() ? inputErrorClass : inputClass}
       />
     )}
   </div>
 );
 
-// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Types Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface ObsRow {
   srNo: number;
@@ -105,7 +109,7 @@ const emptyInspector = (): InspRow => ({
   date: "",
 });
 
-// Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ Page Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export const PTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
@@ -121,7 +125,7 @@ export const PTReportFormPage: React.FC = () => {
   const [customerId, setCustomerId] = useState(state?.customerId ?? "");
   const [customerName, setCustomerName] = useState(state?.customerName ?? "");
 
-  // Ã¢"â‚¬Ã¢"â‚¬ Job Details Ã¢"â‚¬Ã¢"â‚¬
+  // ── Job Details ──
   const [reportNo, setReportNo] = useState("");
   const jobCustomer = customerName;
   const [jobClient, setJobClient] = useState("");
@@ -144,11 +148,11 @@ export const PTReportFormPage: React.FC = () => {
   const [jobSurfaceTemp, setJobSurfaceTemp] = useState("");
   const [jobWeldingProcess, setJobWeldingProcess] = useState("");
 
-  // Ã¢"â‚¬Ã¢"â‚¬ Method Details Ã¢"â‚¬Ã¢"â‚¬
+  // ── Method Details ──
   const [penetrantMethod, setPenetrantMethod] = useState("");
   const [removalMethod, setRemovalMethod] = useState("");
 
-  // Ã¢"â‚¬Ã¢"â‚¬ Consumables Ã¢"â‚¬Ã¢"â‚¬
+  // ── Consumables ──
   const [penMfr, setPenMfr] = useState("");
   const [penMfrCustom, setPenMfrCustom] = useState("");
   const [penBatch, setPenBatch] = useState("");
@@ -164,7 +168,7 @@ export const PTReportFormPage: React.FC = () => {
   const [cleanBatch, setCleanBatch] = useState("");
   const [cleanExpiry, setCleanExpiry] = useState("");
 
-  // Ã¢"â‚¬Ã¢"â‚¬ Method Description Ã¢"â‚¬Ã¢"â‚¬
+  // ── Method Description ──
   const [dwellTime, setDwellTime] = useState("");
   const [lightIntensity, setLightIntensity] = useState("");
   const [developingTime, setDevelopingTime] = useState("");
@@ -174,14 +178,14 @@ export const PTReportFormPage: React.FC = () => {
   const [dryingTime, setDryingTime] = useState("");
   const [dryingTimeCustom, setDryingTimeCustom] = useState("");
 
-  // Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬
+  // ── Observations ──
   const [observations, setObservations] = useState<ObsRow[]>([emptyObs()]);
 
   // -- Conclusion --
   const [conclusion, setConclusion] = useState("");
   const [conclusionCustom, setConclusionCustom] = useState("");
 
-  // â”€â”€ Users for inspector dropdown â”€â”€
+  // ── Users for inspector dropdown ──
   const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
   useEffect(() => {
     api
@@ -190,7 +194,7 @@ export const PTReportFormPage: React.FC = () => {
       .catch(() => { });
   }, []);
 
-  // Ã¢"â‚¬Ã¢"â‚¬ Final Section Ã¢"â‚¬Ã¢"â‚¬
+  // ── Final Section ──
   const [inspectors, setInspectors] = useState<InspRow[]>([emptyInspector()]);
   const [custName, setCustName] = useState("");
   const [custDesig, setCustDesig] = useState("");
@@ -202,6 +206,7 @@ export const PTReportFormPage: React.FC = () => {
   const [clientSig, setClientSig] = useState("");
   const [clientIdNo, setClientIdNo] = useState("");
   const [clientDate, setClientDate] = useState("");
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (!id) return;
@@ -236,7 +241,7 @@ export const PTReportFormPage: React.FC = () => {
         setJobRefStdCustom(rsC);
         const accOpts = [
           "ASME Sec. VIII Div. 1, Appendix 7",
-          "Appendix 8",
+          "ASME Sec. VIII Div. 1, Appendix 8",
           "Other",
         ];
         const [acc, accC] = fromOther(jd.acceptanceCriteria, accOpts);
@@ -357,6 +362,56 @@ export const PTReportFormPage: React.FC = () => {
   const resolve = (val: string, custom: string) =>
     val === "Other" && custom.trim() ? custom.trim() : val;
 
+  const getFieldValue = (key: string): string => {
+    const map: Record<string, string> = {
+      jobClient,
+      jobProject,
+      jobReportDate,
+      jobInspectionDate,
+      jobInspectionEndDate,
+      jobMaterial,
+      jobThickness,
+      dwellTime,
+      lightIntensity,
+      developingTime,
+      penBatch,
+      penExpiry,
+      devBatch,
+      devExpiry,
+      cleanBatch,
+      cleanExpiry,
+      jobStage,
+      jobJointType,
+      jobSurface,
+      jobWeldingProcess,
+      jobSurfaceTemp,
+      penetrantMethod,
+      removalMethod,
+      postCleaning,
+      jobRefStd: jobRefStd === "Other" ? jobRefStdCustom : jobRefStd,
+      jobAcceptance: jobAcceptance === "Other" ? jobAcceptanceCustom : jobAcceptance,
+      jobExtent: jobExtent === "Other" ? jobExtentCustom : jobExtent,
+      penMfr: penMfr === "Other" ? penMfrCustom : penMfr,
+      devMfr: devMfr === "Other" ? devMfrCustom : devMfr,
+      cleanMfr: cleanMfr === "Other" ? cleanMfrCustom : cleanMfr,
+      lightEquip: lightEquip === "Other" ? lightEquipCustom : lightEquip,
+      dryingTime: dryingTime === "Other" ? dryingTimeCustom : dryingTime,
+      conclusion: conclusion === "Other" ? conclusionCustom : conclusion,
+      inspectorQualification_0: inspectors[0]?.qualification ?? "",
+      inspectorDesignation_0: inspectors[0]?.designation ?? "",
+      inspectorDate_0: inspectors[0]?.date ?? "",
+      custName,
+      custDesig,
+      custDate,
+      clientName,
+      clientDesig,
+      clientDate,
+    };
+    return map[key] ?? "";
+  };
+  const hasError = (key: string) => !!errors[key] && !getFieldValue(key);
+  const fc = (key: string) => (hasError(key) ? inputErrorClass : inputClass);
+
   const updateObs = (idx: number, key: keyof ObsRow, val: string) =>
     setObservations((prev) =>
       prev.map((row, i) => (i === idx ? { ...row, [key]: val } : row)),
@@ -385,7 +440,7 @@ export const PTReportFormPage: React.FC = () => {
   const removeInspector = (idx: number) =>
     setInspectors((prev) => prev.filter((_, i) => i !== idx));
 
-  // Ã¢"â‚¬Ã¢"â‚¬ Submit Ã¢"â‚¬Ã¢"â‚¬
+  // ── Submit ──
   const handleSubmit = async (status: "draft" | "final") => {
     if (!customerId) {
       toast.error("Customer ID is missing.");
@@ -395,6 +450,75 @@ export const PTReportFormPage: React.FC = () => {
       toast.error("Please select a customer first.");
       return;
     }
+
+    if (status === "final") {
+      const e: Record<string, boolean> = {};
+      const mt = (v: string) => !v.trim();
+      const sel = (v: string) => !v;
+      const oth = (v: string, o: string) => !v || (v === "Other" && !o.trim());
+
+      // Job Details
+      if (mt(jobClient)) e.jobClient = true;
+      if (mt(jobProject)) e.jobProject = true;
+      if (!jobReportDate) e.jobReportDate = true;
+      if (!jobInspectionDate) e.jobInspectionDate = true;
+      if (!jobInspectionEndDate) e.jobInspectionEndDate = true;
+      if (oth(jobRefStd, jobRefStdCustom)) e.jobRefStd = true;
+      if (oth(jobAcceptance, jobAcceptanceCustom)) e.jobAcceptance = true;
+      if (sel(jobStage)) e.jobStage = true;
+      if (mt(jobMaterial)) e.jobMaterial = true;
+      if (oth(jobExtent, jobExtentCustom)) e.jobExtent = true;
+      if (mt(jobThickness)) e.jobThickness = true;
+      if (sel(jobJointType)) e.jobJointType = true;
+      if (sel(jobSurface)) e.jobSurface = true;
+      if (sel(jobWeldingProcess)) e.jobWeldingProcess = true;
+      if (sel(jobSurfaceTemp)) e.jobSurfaceTemp = true;
+      // Method Details
+      if (sel(penetrantMethod)) e.penetrantMethod = true;
+      if (sel(removalMethod)) e.removalMethod = true;
+      // Consumables
+      if (oth(penMfr, penMfrCustom)) e.penMfr = true;
+      if (mt(penBatch)) e.penBatch = true;
+      if (mt(penExpiry)) e.penExpiry = true;
+      if (oth(devMfr, devMfrCustom)) e.devMfr = true;
+      if (mt(devBatch)) e.devBatch = true;
+      if (mt(devExpiry)) e.devExpiry = true;
+      if (oth(cleanMfr, cleanMfrCustom)) e.cleanMfr = true;
+      if (mt(cleanBatch)) e.cleanBatch = true;
+      if (mt(cleanExpiry)) e.cleanExpiry = true;
+      // Method Description
+      if (mt(dwellTime)) e.dwellTime = true;
+      if (mt(lightIntensity)) e.lightIntensity = true;
+      if (mt(developingTime)) e.developingTime = true;
+      if (oth(lightEquip, lightEquipCustom)) e.lightEquip = true;
+      if (sel(postCleaning)) e.postCleaning = true;
+      if (oth(dryingTime, dryingTimeCustom)) e.dryingTime = true;
+      // Observations — at least one row with job description
+      if (!observations.some(o => o.jobDescription.trim())) e.observations = true;
+      // Conclusion
+      if (oth(conclusion, conclusionCustom)) e.conclusion = true;
+      // Inspector — first inspector required fields
+      if (!inspectors[0]?.name?.trim()) e.inspectorName_0 = true;
+      if (!inspectors[0]?.qualification?.trim()) e.inspectorQualification_0 = true;
+      if (!inspectors[0]?.designation?.trim()) e.inspectorDesignation_0 = true;
+      if (!inspectors[0]?.date) e.inspectorDate_0 = true;
+      // Customer section
+      if (mt(custName)) e.custName = true;
+      if (mt(custDesig)) e.custDesig = true;
+      if (!custDate) e.custDate = true;
+      // Client / TPI section
+      if (mt(clientName)) e.clientName = true;
+      if (mt(clientDesig)) e.clientDesig = true;
+      if (!clientDate) e.clientDate = true;
+
+      if (Object.keys(e).length > 0) {
+        setErrors(e);
+        toast.error("Please fill all required fields before saving as Final.");
+        return;
+      }
+      setErrors({});
+    }
+
     setSaving(true);
     try {
       const payload = {
@@ -532,7 +656,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Missing Customer Banner â”€â”€ */}
+      {/* ── Missing Customer Banner ── */}
       {!customerId && (
         <CustomerPickerBanner
           onCustomerSelected={(id, name) => {
@@ -571,7 +695,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Job Details Ã¢"â‚¬Ã¢"â‚¬ */}
+      {/* ── Job Details ── */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -590,16 +714,16 @@ export const PTReportFormPage: React.FC = () => {
               type="text"
               value={jobClient}
               onChange={(e) => setJobClient(e.target.value)}
-              className={inputClass}
+              className={fc("jobClient")}
             />
           </div>
-           <div>
+          <div>
             <label className={labelClass}>Project</label>
             <input
               type="text"
               value={jobProject}
               onChange={(e) => setJobProject(e.target.value)}
-              className={inputClass}
+              className={fc("jobProject")}
               placeholder="e.g. OIL COOLER FOR GEAR BOX"
             />
           </div>
@@ -609,17 +733,16 @@ export const PTReportFormPage: React.FC = () => {
               type="date"
               value={jobReportDate}
               onChange={(e) => setJobReportDate(e.target.value)}
-              className={inputClass}
+              className={fc("jobReportDate")}
             />
           </div>
-         
           <div>
             <label className={labelClass}>Inspection Start Date</label>
             <input
               type="date"
               value={jobInspectionDate}
               onChange={(e) => setJobInspectionDate(e.target.value)}
-              className={inputClass}
+              className={fc("jobInspectionDate")}
             />
           </div>
           <div>
@@ -628,7 +751,7 @@ export const PTReportFormPage: React.FC = () => {
               type="date"
               value={jobInspectionEndDate}
               onChange={(e) => setJobInspectionEndDate(e.target.value)}
-              className={inputClass}
+              className={fc("jobInspectionEndDate")}
             />
           </div>
           <div>
@@ -639,6 +762,7 @@ export const PTReportFormPage: React.FC = () => {
               customValue={jobRefStdCustom}
               onCustomChange={setJobRefStdCustom}
               options={["ASME Sec. V, Article VI", "ASTM E 165", "Other"]}
+              error={hasError("jobRefStd")}
             />
           </div>
           <div>
@@ -653,16 +777,17 @@ export const PTReportFormPage: React.FC = () => {
                 "ASME Sec. VIII Div. 1, Appendix 8",
                 "Other",
               ]}
+              error={hasError("jobAcceptance")}
             />
           </div>
-           <div>
+          <div>
             <label className={labelClass}>Stage of Inspection</label>
             <select
               value={jobStage}
               onChange={(e) => setJobStage(e.target.value)}
-              className={inputClass}
+              className={fc("jobStage")}
             >
-               <option value="">Select...</option>
+              <option value="">Select...</option>
               <option>After Welding</option>
               <option>After Casting</option>
               <option>After Machining</option>
@@ -675,11 +800,11 @@ export const PTReportFormPage: React.FC = () => {
               type="text"
               value={jobMaterial}
               onChange={(e) => setJobMaterial(e.target.value)}
-              className={inputClass}
+              className={fc("jobMaterial")}
               placeholder="e.g. IS 2062 E250 BR"
             />
           </div>
-                   <div>
+          <div>
             <label className={labelClass}>Extent of Examination</label>
             <SelectWithCustom
               value={jobExtent}
@@ -692,6 +817,7 @@ export const PTReportFormPage: React.FC = () => {
                 "To the maximum extent possible",
                 "Other",
               ]}
+              error={hasError("jobExtent")}
             />
           </div>
           <div>
@@ -700,16 +826,16 @@ export const PTReportFormPage: React.FC = () => {
               type="text"
               value={jobThickness}
               onChange={(e) => setJobThickness(e.target.value)}
-              className={inputClass}
+              className={fc("jobThickness")}
               placeholder="e.g. 6, 12 & 16 MM"
             />
           </div>
-                    <div>
+          <div>
             <label className={labelClass}>Type of Joint</label>
             <select
               value={jobJointType}
               onChange={(e) => setJobJointType(e.target.value)}
-              className={inputClass}
+              className={fc("jobJointType")}
             >
               <option value="">Select...</option>
               <option>Butt</option>
@@ -723,7 +849,7 @@ export const PTReportFormPage: React.FC = () => {
             <select
               value={jobSurface}
               onChange={(e) => setJobSurface(e.target.value)}
-              className={inputClass}
+              className={fc("jobSurface")}
             >
               <option value="">Select...</option>
               <option>Smooth</option>
@@ -731,12 +857,12 @@ export const PTReportFormPage: React.FC = () => {
               <option>Ground and polished</option>
             </select>
           </div>
-           <div>
+          <div>
             <label className={labelClass}>Welding Process</label>
             <select
               value={jobWeldingProcess}
               onChange={(e) => setJobWeldingProcess(e.target.value)}
-              className={inputClass}
+              className={fc("jobWeldingProcess")}
             >
               <option value="">Select...</option>
               <option>SMAW</option>
@@ -753,18 +879,17 @@ export const PTReportFormPage: React.FC = () => {
             <select
               value={jobSurfaceTemp}
               onChange={(e) => setJobSurfaceTemp(e.target.value)}
-              className={inputClass}
+              className={fc("jobSurfaceTemp")}
             >
               <option value="">Select...</option>
               <option>Room Temperature</option>
               <option>Other</option>
             </select>
           </div>
-         
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Method Details Ã¢"â‚¬Ã¢"â‚¬ */}
+      {/* ── Method Details ── */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -773,7 +898,7 @@ export const PTReportFormPage: React.FC = () => {
             <select
               value={penetrantMethod}
               onChange={(e) => setPenetrantMethod(e.target.value)}
-              className={inputClass}
+              className={fc("penetrantMethod")}
             >
               <option value="">Select...</option>
               <option>Visible Method</option>
@@ -788,7 +913,7 @@ export const PTReportFormPage: React.FC = () => {
             <select
               value={removalMethod}
               onChange={(e) => setRemovalMethod(e.target.value)}
-              className={inputClass}
+              className={fc("removalMethod")}
             >
               <option value="">Select...</option>
               <option>Solvent Removal</option>
@@ -799,7 +924,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Consumables Details Ã¢"â‚¬Ã¢"â‚¬ */}
+      {/* ── Consumables Details ── */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Consumables Details</h2>
         <div className="overflow-x-auto">
@@ -832,6 +957,9 @@ export const PTReportFormPage: React.FC = () => {
                   setBatch: setPenBatch,
                   expiry: penExpiry,
                   setExpiry: setPenExpiry,
+                  mfrKey: "penMfr",
+                  batchKey: "penBatch",
+                  expiryKey: "penExpiry",
                 },
                 {
                   label: "Developer",
@@ -843,6 +971,9 @@ export const PTReportFormPage: React.FC = () => {
                   setBatch: setDevBatch,
                   expiry: devExpiry,
                   setExpiry: setDevExpiry,
+                  mfrKey: "devMfr",
+                  batchKey: "devBatch",
+                  expiryKey: "devExpiry",
                 },
                 {
                   label: "Cleaner",
@@ -854,6 +985,9 @@ export const PTReportFormPage: React.FC = () => {
                   setBatch: setCleanBatch,
                   expiry: cleanExpiry,
                   setExpiry: setCleanExpiry,
+                  mfrKey: "cleanMfr",
+                  batchKey: "cleanBatch",
+                  expiryKey: "cleanExpiry",
                 },
               ].map((row) => (
                 <tr key={row.label}>
@@ -867,6 +1001,7 @@ export const PTReportFormPage: React.FC = () => {
                       customValue={row.mfrC}
                       onCustomChange={row.setMfrC}
                       options={mfrOptions}
+                      error={hasError(row.mfrKey)}
                     />
                   </td>
                   <td className="border border-gray-200 px-2 py-1">
@@ -874,7 +1009,7 @@ export const PTReportFormPage: React.FC = () => {
                       type="text"
                       value={row.batch}
                       onChange={(e) => row.setBatch(e.target.value)}
-                      className={inputClass}
+                      className={fc(row.batchKey)}
                       placeholder="Batch No."
                     />
                   </td>
@@ -883,7 +1018,7 @@ export const PTReportFormPage: React.FC = () => {
                       type="text"
                       value={row.expiry}
                       onChange={(e) => row.setExpiry(e.target.value)}
-                      className={inputClass}
+                      className={fc(row.expiryKey)}
                       placeholder="e.g. 08/26"
                     />
                   </td>
@@ -894,7 +1029,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Method Description Ã¢"â‚¬Ã¢"â‚¬ */}
+      {/* ── Method Description ── */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Description</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -904,7 +1039,7 @@ export const PTReportFormPage: React.FC = () => {
               type="text"
               value={dwellTime}
               onChange={(e) => setDwellTime(e.target.value)}
-              className={inputClass}
+              className={fc("dwellTime")}
               placeholder="e.g. 7 to 10 Min"
             />
           </div>
@@ -914,7 +1049,7 @@ export const PTReportFormPage: React.FC = () => {
               type="text"
               value={lightIntensity}
               onChange={(e) => setLightIntensity(e.target.value)}
-              className={inputClass}
+              className={fc("lightIntensity")}
               placeholder="e.g. 1250 lux"
             />
           </div>
@@ -924,7 +1059,7 @@ export const PTReportFormPage: React.FC = () => {
               type="text"
               value={developingTime}
               onChange={(e) => setDevelopingTime(e.target.value)}
-              className={inputClass}
+              className={fc("developingTime")}
               placeholder="e.g. 15-20 Min"
             />
           </div>
@@ -936,6 +1071,7 @@ export const PTReportFormPage: React.FC = () => {
               customValue={lightEquipCustom}
               onCustomChange={setLightEquipCustom}
               options={["60 W Bulb", "NA", "Other"]}
+              error={hasError("lightEquip")}
             />
           </div>
           <div>
@@ -943,7 +1079,7 @@ export const PTReportFormPage: React.FC = () => {
             <select
               value={postCleaning}
               onChange={(e) => setPostCleaning(e.target.value)}
-              className={inputClass}
+              className={fc("postCleaning")}
             >
               <option value="">Select...</option>
               <option>Done</option>
@@ -958,21 +1094,19 @@ export const PTReportFormPage: React.FC = () => {
               customValue={dryingTimeCustom}
               onCustomChange={setDryingTimeCustom}
               options={["10 Min", "NA", "Other"]}
+              error={hasError("dryingTime")}
             />
           </div>
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬ */}
-      <div className={sectionClass}>
+      {/* ── Observations ── */}
+      <div className={`${sectionClass}${errors.observations && !observations.some(o => o.jobDescription.trim()) ? " ring-2 ring-red-400" : ""}`}>
         <div className="flex items-center justify-between mb-4">
-          <h2
-            className={sectionTitleClass.replace(
-              " mb-4 pb-2 border-b border-gray-100",
-              "",
+          <h2 className={sectionTitleClass.replace(" mb-4 pb-2 border-b border-gray-100", "")}>
+            Observations{errors.observations && !observations.some(o => o.jobDescription.trim()) && (
+              <span className="ml-2 text-red-500 text-xs font-normal normal-case">At least one observation row is required</span>
             )}
-          >
-            Observations
           </h2>
           <button
             type="button"
@@ -1099,7 +1233,29 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Examined By Ã¢"â‚¬Ã¢"â‚¬ */}
+      {/* ── Conclusion ── */}
+      <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>Conclusion</h2>
+        <div>
+          <label className={labelClass}>Conclusion</label>
+          <SelectWithCustom
+            value={conclusion}
+            onChange={setConclusion}
+            customValue={conclusionCustom}
+            onCustomChange={setConclusionCustom}
+            options={[
+              "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+              "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+              "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+              "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+              "Other",
+            ]}
+            error={hasError("conclusion")}
+          />
+        </div>
+      </div>
+
+      {/* ── Examined By ── */}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* NIIT Inspector(s) */}
@@ -1142,7 +1298,7 @@ export const PTReportFormPage: React.FC = () => {
                       <select
                         value={insp.name}
                         onChange={(e) => updateInsp(idx, "name", e.target.value)}
-                        className={`${inputClass} bg-white`}
+                        className={`${idx === 0 && errors.inspectorName_0 && !insp.name ? inputErrorClass : inputClass} bg-white`}
                       >
                         <option value="">Select....</option>
                         {users.map((u) => (
@@ -1158,7 +1314,7 @@ export const PTReportFormPage: React.FC = () => {
                         type="text"
                         value={insp.qualification}
                         onChange={(e) => updateInsp(idx, "qualification", e.target.value)}
-                        className={inputClass}
+                        className={idx === 0 && errors.inspectorQualification_0 && !insp.qualification.trim() ? inputErrorClass : inputClass}
                         placeholder="e.g. PT NDE Level II"
                       />
                     </div>
@@ -1168,7 +1324,7 @@ export const PTReportFormPage: React.FC = () => {
                         type="text"
                         value={insp.designation}
                         onChange={(e) => updateInsp(idx, "designation", e.target.value)}
-                        className={inputClass}
+                        className={idx === 0 && errors.inspectorDesignation_0 && !insp.designation.trim() ? inputErrorClass : inputClass}
                       />
                     </div>
                     <div>
@@ -1186,7 +1342,7 @@ export const PTReportFormPage: React.FC = () => {
                         type="date"
                         value={insp.date}
                         onChange={(e) => updateInsp(idx, "date", e.target.value)}
-                        className={inputClass}
+                        className={idx === 0 && errors.inspectorDate_0 && !insp.date ? inputErrorClass : inputClass}
                       />
                     </div>
                   </div>
@@ -1209,7 +1365,7 @@ export const PTReportFormPage: React.FC = () => {
                   type="text"
                   value={custName}
                   onChange={(e) => setCustName(e.target.value)}
-                  className={inputClass}
+                  className={fc("custName")}
                 />
               </div>
               <div>
@@ -1218,7 +1374,7 @@ export const PTReportFormPage: React.FC = () => {
                   type="text"
                   value={custDesig}
                   onChange={(e) => setCustDesig(e.target.value)}
-                  className={inputClass}
+                  className={fc("custDesig")}
                 />
               </div>
               <div>
@@ -1236,7 +1392,7 @@ export const PTReportFormPage: React.FC = () => {
                   type="date"
                   value={custDate}
                   onChange={(e) => setCustDate(e.target.value)}
-                  className={inputClass}
+                  className={fc("custDate")}
                 />
               </div>
             </div>
@@ -1256,7 +1412,7 @@ export const PTReportFormPage: React.FC = () => {
                   type="text"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
-                  className={inputClass}
+                  className={fc("clientName")}
                 />
               </div>
               <div>
@@ -1265,7 +1421,7 @@ export const PTReportFormPage: React.FC = () => {
                   type="text"
                   value={clientDesig}
                   onChange={(e) => setClientDesig(e.target.value)}
-                  className={inputClass}
+                  className={fc("clientDesig")}
                 />
               </div>
               <div>
@@ -1283,7 +1439,7 @@ export const PTReportFormPage: React.FC = () => {
                   type="date"
                   value={clientDate}
                   onChange={(e) => setClientDate(e.target.value)}
-                  className={inputClass}
+                  className={fc("clientDate")}
                 />
               </div>
             </div>
@@ -1291,7 +1447,7 @@ export const PTReportFormPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ã¢"â‚¬Ã¢"â‚¬ Action Buttons Ã¢"â‚¬Ã¢"â‚¬ */}
+      {/* ── Action Buttons ── */}
       <div className="flex items-center justify-end gap-3 pb-8">
         <button
           type="button"
