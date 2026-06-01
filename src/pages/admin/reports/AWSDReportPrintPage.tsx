@@ -32,7 +32,7 @@ const PRINT_STYLES = `
     height: 210mm;
     background: #fff;
     box-sizing: border-box;
-    padding: 3mm 4mm;
+    padding: 3mm 5mm;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -168,7 +168,8 @@ const PRINT_STYLES = `
     display: inline-block;
     white-space: nowrap;
     text-align: center;
-    line-height: 1.2;
+    line-height: 1;
+    padding: 0px;
   }
   
 
@@ -246,7 +247,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       const trigger = async () => {
         try {
           await document.fonts.ready;
-        } catch (_) {}
+        } catch (_) { }
         requestAnimationFrame(() => {
           setTimeout(() => {
             window.print();
@@ -366,10 +367,10 @@ export const AWSDReportPrintPage: React.FC = () => {
             <td className="val">{v(report.project)}</td>
           </tr>
           <tr>
-            
+
             <td className="lbl">Date of Inspection</td>
             <td className="val">{fmtDate(report.dateOfInspection)}</td>
-        
+
             <td className="lbl">Job Description</td>
             <td className="val">{v(report.jobDescription)}</td>
             <td className="lbl">Drawing.no</td>
@@ -384,10 +385,10 @@ export const AWSDReportPrintPage: React.FC = () => {
             <td className="val">{v(report.flawDetectorSrNo)}</td>
           </tr>
           <tr>
-            
+
             <td className="lbl">Welding Process</td>
             <td className="val">{v(report.weldingProcess)}</td>
-        
+
             <td className="lbl">Machine Calibration</td>
             <td className="val">{v(report.machineCalibration)}</td>
             <td className="lbl">Surface Condition</td>
@@ -402,10 +403,10 @@ export const AWSDReportPrintPage: React.FC = () => {
             <td className="val">{v(report.stageOfInspection)}</td>
           </tr>
           <tr>
-            
+
             <td className="lbl">Material</td>
             <td className="val">{v(report.material)}</td>
-        
+
             <td className="lbl">QAP NO.</td>
             <td className="val">{v(report.qapNo)}</td>
             <td className="lbl">Acc. Standard</td>
@@ -444,56 +445,86 @@ export const AWSDReportPrintPage: React.FC = () => {
     <table className="obs-table" style={{ marginTop: chunkIdx === 0 ? "-1px" : "0" }}>
       <thead>
         <tr>
-          <th rowSpan={3} style={{ width: "3%" }}>Sr.<br/>No.</th>
+          <th rowSpan={3} style={{ width: "3%" }}>Sr.<br />No.</th>
           <th rowSpan={3} style={{ width: "9%" }}>Joint Details</th>
-          <th rowSpan={3} style={{ width: "9%" }}>Drawing No. /<br/>Part No.</th>
-          <th rowSpan={3} style={{ width: "7%" }}>Job Thickness<br/>(mm)</th>
+          <th rowSpan={3} style={{ width: "9%" }}>Drawing No. /<br />Part No.</th>
+          <th rowSpan={3} style={{ width: "7%" }}>Job Thickness<br />(mm)</th>
           <th rowSpan={3} style={{ width: "8%" }}>Part Number</th>
-          <th rowSpan={3} style={{ width: "6%" }}>Transducer<br/>Angle</th>
+          <th rowSpan={3} style={{ width: "6%" }}>Transducer<br />Angle</th>
           <th rowSpan={3} style={{ width: "8%" }}>Joint No</th>
           <th colSpan={4}>Decibels</th>
           <th colSpan={5}>Discontinuity</th>
-          <th rowSpan={3} style={{ width: "8%" }}>Discontinuity<br/>Evaluation</th>
+          <th rowSpan={3} style={{ width: "8%" }}>Discontinuity<br />Evaluation</th>
           <th rowSpan={3} style={{ width: "7%" }}>Remarks</th>
         </tr>
-       <tr>
-  <th style={{ width: "4.5%", padding: "4px" }}>
-    <div className="vertical-text">Indication <br/>Level</div>
-  </th>
-  <th style={{ width: "4.5%", padding: "4px" }}>
-    <div className="vertical-text">Reference <br/>Level</div>
-  </th>
-  <th style={{ width: "4.5%", padding: "4px" }}>
-    <div className="vertical-text">Attenuation <br/>Factor</div>
-  </th>
-  <th style={{ width: "4.5%", padding: "4px" }}>
-    <div className="vertical-text">Indication <br/>Rating</div>
-  </th>
-  <th style={{ width: "4.5%", padding: "4px" }} rowSpan={2}>
-    <div className="vertical-text">Length (mm)</div>
-  </th>
-  <th style={{ width: "4.5%", padding: "4px" }} rowSpan={2}>
-    <div className="vertical-text">Angular<br/> Distance</div>
-  </th>
-  <th style={{ width: "4.5%", padding: "4px" }} rowSpan={2}>
-    <div className="vertical-text">Depth from <br/> "A" Surface</div>
-  </th>
-  <th style={{ width: "9%", padding: "4px" }} colSpan={2}>
-    Distance MM
-  </th>
-</tr>
-<tr>
-  <th style={{ width: "4.5%" }}>a</th>
-  <th style={{ width: "4.5%" }}>b</th>
-  <th style={{ width: "4.5%" }}>c</th>
-  <th style={{ width: "4.5%" }}>d</th>
-  <th style={{ width: "4.5%", padding: "4px" }}>
-    <div className="vertical-text">From X</div>
-  </th>
-  <th style={{ width: "4.5%", padding: "4px" }}>
-    <div className="vertical-text">From Y</div>
-  </th>
-  </tr>
+        <tr>
+          <th style={{ width: "4.5%", padding: "4px" }}>
+            <div className="vertical-text">Indication <br />Level</div>
+          </th>
+          <th style={{ width: "4.5%", padding: "4px" }}>
+            <div className="vertical-text">Reference <br />Level</div>
+          </th>
+          <th style={{ width: "4.5%", padding: "4px" }}>
+            <div className="vertical-text">Attenuation <br />Factor</div>
+          </th>
+          <th style={{ width: "4.5%", padding: "4px" }}>
+            <div className="vertical-text">Indication <br />Rating</div>
+          </th>
+          <th style={{ width: "4.5%", padding: "4px" }} rowSpan={2}>
+            <div className="vertical-text">Length (mm)</div>
+          </th>
+          <th style={{ width: "4.5%", padding: "4px" }} rowSpan={2}>
+            <div className="vertical-text">Angular<br /> Distance</div>
+          </th>
+          <th style={{ width: "4.5%", padding: "4px" }} rowSpan={2}>
+            <div className="vertical-text">Depth from <br /> "A" Surface</div>
+          </th>
+          <th style={{ width: "4.5%", padding: 0 }} colSpan={2} rowSpan={2}>
+            <div style={{ fontWeight: 700 }}>Distance MM</div>
+
+            <div style={{
+              display: "flex",
+              borderTop: "1.2px solid #000",
+              marginTop: "2px"
+            }}>
+
+
+
+              <div className="vertical-text" style={{
+                width: "50%",
+                height: "70px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                paddingLeft: "6px",
+                paddingRight: "6px",
+                borderLeft: "1.2px solid #000",
+              }}>
+                From X
+              </div>
+
+              <div className="vertical-text" style={{
+                width: "50%",
+                height: "70px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                paddingLeft: "6px",
+                paddingRight: "6px",
+
+              }}>
+                From Y
+              </div>
+            </div>
+          </th>
+        </tr>
+        <tr>
+          <th style={{ width: "4.5%" }}>a</th>
+          <th style={{ width: "4.5%" }}>b</th>
+          <th style={{ width: "4.5%" }}>c</th>
+          <th style={{ width: "4.5%" }}>d</th>
+
+        </tr>
       </thead>
       <tbody>
         {chunk.map((o: any, i: number) => (
@@ -533,18 +564,18 @@ export const AWSDReportPrintPage: React.FC = () => {
         <tr>
           <td>
             <span className="lbl-text">For</span>
-            <span className="val-text">Signature : </span><br/><br/>
-            <span className="val-text">Name : {v(cert.inspectedBy)}</span><br/><br/>
+            <span className="val-text">Signature : </span><br /><br />
+            <span className="val-text">Name : {v(cert.inspectedBy)}</span><br /><br />
             <span className="val-text">ASNT NDT Level-II - UT</span>
           </td>
           <td>
-            <span className="lbl-text" style={{visibility: "hidden"}}>Space</span>
-            <br/><br/>
+            <span className="lbl-text" style={{ visibility: "hidden" }}>Space</span>
+            <br /><br />
             <span className="val-text">Verified By</span>
           </td>
           <td>
             <span className="lbl-text">Reviewed / Witnessed</span>
-            <br/><br/>
+            <br /><br />
             <span className="val-text">for Customer</span>
           </td>
         </tr>
@@ -598,7 +629,7 @@ export const AWSDReportPrintPage: React.FC = () => {
             .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
             .map((b) => b.item);
           const hasObsTable = pageObs.length > 0;
-          
+
           return (
             <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
               <div className="print-page-content">
