@@ -55,3 +55,9 @@ export const updateAssignedTest = (id: string, data: Partial<AssignedTestPayload
 
 export const deleteAssignedTest = (id: string) =>
   api.delete(`/assigned-tests/${id}`);
+
+export const getTestResultsForAdmin = (testId: string) =>
+  api.get(`/assigned-tests/${testId}/results`);
+
+export const getSubmissionDetail = (testId: string, submissionId: string) =>
+  api.get(`/assigned-tests/${testId}/submissions/${submissionId}`);
