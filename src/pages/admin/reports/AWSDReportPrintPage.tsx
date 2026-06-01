@@ -162,41 +162,30 @@ const PRINT_STYLES = `
   .bw .sign-table td { border-color: #000 !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
-.vertical-head {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  text-align: center;
-  vertical-align: middle;
-  white-space: nowrap;
-  line-height: 1;
-  padding: 4px 2px !important;
-  background: #E6F1FB;
-}
-   .vertical-head2{
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  text-align: center;
-  white-space: nowrap;
-  padding: 2px 2px !important;
-  line-height: 1;
-  
-}
+  .vertical-text {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    display: inline-block;
+    white-space: nowrap;
+    text-align: center;
+    line-height: 1.2;
+  }
   
 
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 4px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; border: 1.2px solid #000; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 4px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; border: 1px solid #000; }
   
-  .grid-table { width: 100%; border-collapse: collapse; border: 1.2px solid #000; border-top: none; font-size: 10.5px; }
-  .grid-table td { border: 1.2px solid #000; padding: 1.5px 5px; vertical-align: middle; }
+  .grid-table { width: 100%; border-collapse: collapse; border: 1px solid #000; border-top: none; font-size: 10.5px; }
+  .grid-table td { border: 1px solid #000; padding: 1.5px 5px; vertical-align: middle; }
   .grid-table .lbl { font-weight: 600; width: 13%; background: #f7fafc; }
   .grid-table .val { width: 20%; }
   
-  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1.2px solid #000; border-top: none; border-spacing: 0; }
-  .obs-table td, .obs-table th { border: 1.2px solid #000; padding: 2px; font-size: 10px; vertical-align: middle; text-align: center; word-break: break-word; }
+  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #000; border-top: none; border-spacing: 0; }
+  .obs-table td, .obs-table th { border: 1px solid #000; padding: 2px; font-size: 10px; vertical-align: middle; text-align: center; word-break: break-word; }
   .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; border-collapse: collapse; }
 
-  .sign-table { width: 100%; border-collapse: collapse; border: 1.2px solid #000; border-top: none; font-size: 12px; }
+  .sign-table { width: 100%; border-collapse: collapse; border: 1px solid #000; border-top: none; font-size: 12px; }
  
-  .sign-table td { padding: 4px; border: 1.2px solid #000; vertical-align: top; }
+  .sign-table td { padding: 4px; border: 1px solid #000; vertical-align: top; }
   .sign-table .lbl-text { font-weight: 600; margin-bottom: 10px; display: block; }
   .sign-table .val-text { font-weight: 700; }
 `;
@@ -424,7 +413,7 @@ export const AWSDReportPrintPage: React.FC = () => {
           </tr>
         </tbody>
       </table>
-      <table className="obs-table" style={{ marginTop: "-1.2px" }}>
+      <table className="obs-table" style={{ marginTop: "-1px" }}>
         <thead>
           <tr>
             <th>Probe</th>
@@ -452,7 +441,7 @@ export const AWSDReportPrintPage: React.FC = () => {
   );
 
   const renderObsTable = (chunk: any[], chunkIdx: number) => (
-    <table className="obs-table" style={{ marginTop: chunkIdx === 0 ? "-1.2px" : "0" }}>
+    <table className="obs-table" style={{ marginTop: chunkIdx === 0 ? "-1px" : "0" }}>
       <thead>
         <tr>
           <th rowSpan={3} style={{ width: "3%" }}>Sr.<br/>No.</th>
@@ -468,71 +457,29 @@ export const AWSDReportPrintPage: React.FC = () => {
           <th rowSpan={3} style={{ width: "7%" }}>Remarks</th>
         </tr>
        <tr>
-  <th className="vertical-head" style={{ width: "4.5%" }}>
-    
-    Indication <br/>Level
+  <th style={{ width: "4.5%", padding: "4px" }}>
+    <div className="vertical-text">Indication <br/>Level</div>
   </th>
-
-  <th className="vertical-head" style={{ width: "4.5%" }}>
-    Reference <br/>Level
+  <th style={{ width: "4.5%", padding: "4px" }}>
+    <div className="vertical-text">Reference <br/>Level</div>
   </th>
-
-  <th className="vertical-head" style={{ width: "4.5%" }}>
-    Attenuation <br/>Factor
+  <th style={{ width: "4.5%", padding: "4px" }}>
+    <div className="vertical-text">Attenuation <br/>Factor</div>
   </th>
-
-  <th className="vertical-head" style={{ width: "4.5%" }}>
-    Indication <br/>Rating
+  <th style={{ width: "4.5%", padding: "4px" }}>
+    <div className="vertical-text">Indication <br/>Rating</div>
   </th>
-
-  <th className="vertical-head" style={{ width: "4.5%" }} rowSpan={2}>
-    Length (mm)
+  <th style={{ width: "4.5%", padding: "4px" }} rowSpan={2}>
+    <div className="vertical-text">Length (mm)</div>
   </th>
-
-  <th className="vertical-head" style={{ width: "4.5%" }} rowSpan={2}>
-    Angular<br/> Distance
+  <th style={{ width: "4.5%", padding: "4px" }} rowSpan={2}>
+    <div className="vertical-text">Angular<br/> Distance</div>
   </th>
-
-  <th className="vertical-head" style={{ width: "4.5%" }}rowSpan={2}>
-    Depth from <br/> "A" Surface
+  <th style={{ width: "4.5%", padding: "4px" }} rowSpan={2}>
+    <div className="vertical-text">Depth from <br/> "A" Surface</div>
   </th>
-
-  <th style={{ width: "4.5%", padding: 0 }} colSpan={2} rowSpan={2}>
-    <div style={{fontWeight: 700}}>Distance MM</div>
-   
-    <div style={{
-      display: "flex",
-      borderTop: "1.2px solid #000",
-      marginTop: "2px"
-    }}>
-
-
-      
-      <div className="vertical-head2" style={{
-  width: "50%",
-  height: "55px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  paddingLeft: "6px",
-  paddingRight: "6px"
-}}>
-        From X
-      </div>
-
-      <div className="vertical-head2" style={{
-       width: "50%",
-  height: "55px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  paddingLeft: "6px",
-  paddingRight: "6px",
-        borderRight: "1.2px solid #000",
-      }}>
-        From Y
-      </div>
-    </div>
+  <th style={{ width: "9%", padding: "4px" }} colSpan={2}>
+    Distance MM
   </th>
 </tr>
 <tr>
@@ -540,6 +487,12 @@ export const AWSDReportPrintPage: React.FC = () => {
   <th style={{ width: "4.5%" }}>b</th>
   <th style={{ width: "4.5%" }}>c</th>
   <th style={{ width: "4.5%" }}>d</th>
+  <th style={{ width: "4.5%", padding: "4px" }}>
+    <div className="vertical-text">From X</div>
+  </th>
+  <th style={{ width: "4.5%", padding: "4px" }}>
+    <div className="vertical-text">From Y</div>
+  </th>
   </tr>
       </thead>
       <tbody>
