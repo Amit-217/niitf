@@ -32,24 +32,51 @@ const PRINT_STYLES = `
     height: 210mm;
     background: #fff;
     box-sizing: border-box;
-    padding: 5mm;
+    padding: 3mm 4mm;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     margin: 0 auto 20px auto;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
-  .print-page-content { flex: 1 1 auto; }
-  .print-page-foot { margin-top: auto; }
+  .print-page-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .report-body {
+    display: flex;
+    flex-direction: column;
+  }
+  .obs-wrapper {
+    flex: 1;
+  }
+    .obs-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.obs-table td,
+.obs-table th {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+  .print-page-foot { margin-top: auto; 
+  flex-shrink: 0;}
 
   .rpt-header { 
     font-family: Arial, Helvetica, sans-serif !important; 
-    padding: 2px 8px; 
-    margin-bottom: 0; 
+    padding: 0px 160px 2px 170px;
+    min-height: 90px;
+    align-items: flex-start;
+    margin-top: -15px;
+    margin-bottom: -2px; 
     display: flex; 
     align-items: center; 
     gap: 8px; 
     background: #fff !important;
+    height: 80px;
+   flex-shrink: 0;
   }
   .logo-box { 
     width: 140px; 
@@ -73,7 +100,7 @@ const PRINT_STYLES = `
   }
   .hdr-center .org { 
     font-family: Arial, Helvetica, sans-serif !important; 
-    font-size: 18px !important; 
+    font-size: 22px !important; 
     font-weight: 700 !important; 
     letter-spacing: 0.2px; 
     text-transform: uppercase; 
@@ -81,14 +108,14 @@ const PRINT_STYLES = `
   }
   .hdr-center .sub { 
     font-family: Arial, Helvetica, sans-serif !important; 
-    font-size: 9px !important; 
+    font-size: 10px !important; 
     color: #374151 !important; 
-    margin-top: 2px; 
-    line-height: 1.4; 
+    margin-top: 0px; 
+    line-height: 1.2; 
   }
   .hdr-center .iso { 
     font-family: Arial, Helvetica, sans-serif !important; 
-    font-size: 9px !important; 
+    font-size: 10px !important; 
     color: #0C447C !important; 
     font-weight: 700 !important; 
     margin-top: 2px; 
@@ -97,7 +124,7 @@ const PRINT_STYLES = `
     font-family: Arial, Helvetica, sans-serif !important; 
     background: #f8fafc !important; 
     padding: 4px 10px !important; 
-    font-size: 9px !important; 
+    font-size: 12px !important; 
     color: #4b5563 !important; 
     margin-top: 8px; 
     border-top: 3px solid #185FA5 !important; 
@@ -135,21 +162,42 @@ const PRINT_STYLES = `
   .bw .sign-table td { border-color: #000 !important; }
   .bw .lbl { color: #000 !important; background: #fff !important; }
   .bw .footer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
-
-  .rpt-title { background: #E6F1FB; text-align: center; padding: 4px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; border: 1.2px solid #000; border-top: none; }
+.vertical-head {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  line-height: 1;
+  padding: 4px 2px !important;
+  background: #E6F1FB;
+}
+   .vertical-head2{
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-align: center;
+  white-space: nowrap;
+  padding: 2px 2px !important;
+  line-height: 1;
   
-  .grid-table { width: 100%; border-collapse: collapse; border: 1.2px solid #000; border-top: none; font-size: 10px; }
-  .grid-table td { border: 1.2px solid #000; padding: 3px 5px; vertical-align: middle; }
-  .grid-table .lbl { font-weight: 600; width: 15%; background: #f7fafc; }
-  .grid-table .val { width: 35%; }
+}
   
-  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1.2px solid #000; border-top: none; }
-  .obs-table td, .obs-table th { border: 1.2px solid #000; padding: 2px; font-size: 9px; vertical-align: middle; text-align: center; word-break: break-word; }
-  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 9px; font-weight: 700; }
 
-  .sign-table { width: 100%; border-collapse: collapse; border: 1.2px solid #000; border-top: none; font-size: 10px; }
+  .rpt-title { background: #E6F1FB; text-align: center; padding: 4px; font-size: 14px; font-weight: 700; color: #0C447C; text-transform: uppercase; border: 1.2px solid #000; }
+  
+  .grid-table { width: 100%; border-collapse: collapse; border: 1.2px solid #000; border-top: none; font-size: 10.5px; }
+  .grid-table td { border: 1.2px solid #000; padding: 1.5px 5px; vertical-align: middle; }
+  .grid-table .lbl { font-weight: 600; width: 13%; background: #f7fafc; }
+  .grid-table .val { width: 20%; }
+  
+  .obs-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1.2px solid #000; border-top: none; border-spacing: 0; }
+  .obs-table td, .obs-table th { border: 1.2px solid #000; padding: 2px; font-size: 10px; vertical-align: middle; text-align: center; word-break: break-word; }
+  .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; border-collapse: collapse; }
+
+  .sign-table { width: 100%; border-collapse: collapse; border: 1.2px solid #000; border-top: none; font-size: 12px; }
+ 
   .sign-table td { padding: 4px; border: 1.2px solid #000; vertical-align: top; }
-  .sign-table .lbl-text { font-weight: 600; margin-bottom: 25px; display: block; }
+  .sign-table .lbl-text { font-weight: 600; margin-bottom: 10px; display: block; }
   .sign-table .val-text { font-weight: 700; }
 `;
 
@@ -232,12 +280,12 @@ export const AWSDReportPrintPage: React.FC = () => {
   const PAGE_HEIGHT_LIMIT = 200; // mm
   const HEADER_HEIGHT = 28; // mm
   const FOOTER_HEIGHT = 18; // mm
-  const FIXED_SECTIONS_HEIGHT = 80; // mm
+  const FIXED_SECTIONS_HEIGHT = 52; // mm
   const OBS_HEADER_HEIGHT = 18; // mm
+  const SIGNATURES_HEIGHT = 25; // mm
 
   type ContentBlock =
-    | { type: "obs-row"; item: any; height: number }
-    | { type: "signatures"; height: number };
+    | { type: "obs-row"; item: any; height: number };
 
   const blocks: ContentBlock[] = [];
   obs.forEach((o: any) => {
@@ -246,10 +294,6 @@ export const AWSDReportPrintPage: React.FC = () => {
       item: o,
       height: 6, // mm
     });
-  });
-  blocks.push({
-    type: "signatures",
-    height: 25,
   });
 
   type PageDescriptor = {
@@ -262,7 +306,7 @@ export const AWSDReportPrintPage: React.FC = () => {
 
   while (currentBlockIndex < blocks.length) {
     const isFirstPage = pages.length === 0;
-    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT;
+    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT;
     if (isFirstPage) {
       availableHeight -= FIXED_SECTIONS_HEIGHT;
     }
@@ -301,7 +345,7 @@ export const AWSDReportPrintPage: React.FC = () => {
   }
 
   const renderHeader = () => (
-    <div className="rpt-header" style={{ border: "1.2px solid #000", borderBottom: "none" }}>
+    <div className="rpt-header">
       <div className="logo-box">
         <img src="/logo.jpeg" alt="NIIT Logo" />
       </div>
@@ -329,14 +373,14 @@ export const AWSDReportPrintPage: React.FC = () => {
             <td className="val">{v(report.customerId?.companyName)}</td>
             <td className="lbl">Report No.</td>
             <td className="val">{v(report.reportNo || report.id)}</td>
-          </tr>
-          <tr>
             <td className="lbl">Project</td>
             <td className="val">{v(report.project)}</td>
-            <td className="lbl">Date of Inspection</td>
-            <td className="val">{fmtDate(report.dateOfInspection)}</td>
           </tr>
           <tr>
+            
+            <td className="lbl">Date of Inspection</td>
+            <td className="val">{fmtDate(report.dateOfInspection)}</td>
+        
             <td className="lbl">Job Description</td>
             <td className="val">{v(report.jobDescription)}</td>
             <td className="lbl">Drawing.no</td>
@@ -347,14 +391,14 @@ export const AWSDReportPrintPage: React.FC = () => {
             <td className="val">{v(report.calibrationBlock)}</td>
             <td className="lbl">QTY of Jts.</td>
             <td className="val">{v(report.qtyOfJts)}</td>
-          </tr>
-          <tr>
             <td className="lbl">Flaw Detector/Sr. No.</td>
             <td className="val">{v(report.flawDetectorSrNo)}</td>
-            <td className="lbl">Welding Process</td>
-            <td className="val">{v(report.weldingProcess)}</td>
           </tr>
           <tr>
+            
+            <td className="lbl">Welding Process</td>
+            <td className="val">{v(report.weldingProcess)}</td>
+        
             <td className="lbl">Machine Calibration</td>
             <td className="val">{v(report.machineCalibration)}</td>
             <td className="lbl">Surface Condition</td>
@@ -365,14 +409,14 @@ export const AWSDReportPrintPage: React.FC = () => {
             <td className="val">{v(report.poNo)}</td>
             <td className="lbl">Couplant</td>
             <td className="val">{v(report.couplant)}</td>
-          </tr>
-          <tr>
             <td className="lbl">Stage of inspection</td>
             <td className="val">{v(report.stageOfInspection)}</td>
-            <td className="lbl">Material</td>
-            <td className="val">{v(report.material)}</td>
           </tr>
           <tr>
+            
+            <td className="lbl">Material</td>
+            <td className="val">{v(report.material)}</td>
+        
             <td className="lbl">QAP NO.</td>
             <td className="val">{v(report.qapNo)}</td>
             <td className="lbl">Acc. Standard</td>
@@ -411,29 +455,92 @@ export const AWSDReportPrintPage: React.FC = () => {
     <table className="obs-table" style={{ marginTop: chunkIdx === 0 ? "-1.2px" : "0" }}>
       <thead>
         <tr>
-          <th rowSpan={2} style={{ width: "4%" }}>Serial<br/>Number</th>
-          <th rowSpan={2} style={{ width: "9%" }}>Joint Details</th>
-          <th rowSpan={2} style={{ width: "9%" }}>Drawing No. /<br/>Part No.</th>
-          <th rowSpan={2} style={{ width: "7%" }}>Job Thickness<br/>(mm)</th>
-          <th rowSpan={2} style={{ width: "8%" }}>Part Number</th>
-          <th rowSpan={2} style={{ width: "6%" }}>Transducer<br/>Angle</th>
-          <th rowSpan={2} style={{ width: "8%" }}>Joint No</th>
+          <th rowSpan={3} style={{ width: "3%" }}>Sr.<br/>No.</th>
+          <th rowSpan={3} style={{ width: "9%" }}>Joint Details</th>
+          <th rowSpan={3} style={{ width: "9%" }}>Drawing No. /<br/>Part No.</th>
+          <th rowSpan={3} style={{ width: "7%" }}>Job Thickness<br/>(mm)</th>
+          <th rowSpan={3} style={{ width: "8%" }}>Part Number</th>
+          <th rowSpan={3} style={{ width: "6%" }}>Transducer<br/>Angle</th>
+          <th rowSpan={3} style={{ width: "8%" }}>Joint No</th>
           <th colSpan={4}>Decibels</th>
           <th colSpan={5}>Discontinuity</th>
-          <th rowSpan={2} style={{ width: "8%" }}>Discontinuity<br/>Evaluation</th>
-          <th rowSpan={2} style={{ width: "7%" }}>Remarks</th>
+          <th rowSpan={3} style={{ width: "8%" }}>Discontinuity<br/>Evaluation</th>
+          <th rowSpan={3} style={{ width: "7%" }}>Remarks</th>
         </tr>
-        <tr>
-          <th style={{ width: "4.5%" }}>Indication<br/>Level (a)</th>
-          <th style={{ width: "4.5%" }}>Reference<br/>Level (b)</th>
-          <th style={{ width: "4.5%" }}>Attenuation<br/>Factor (c)</th>
-          <th style={{ width: "4.5%" }}>Indication<br/>Rating (d)</th>
-          <th style={{ width: "4.5%" }}>Length<br/>(mm)</th>
-          <th style={{ width: "4.5%" }}>Angular<br/>Distance</th>
-          <th style={{ width: "4.5%" }}>Depth<br/>from "A"</th>
-          <th style={{ width: "4.5%" }}>Distance<br/>From X</th>
-          <th style={{ width: "4.5%" }}>Distance<br/>From Y</th>
-        </tr>
+       <tr>
+  <th className="vertical-head" style={{ width: "4.5%" }}>
+    
+    Indication <br/>Level
+  </th>
+
+  <th className="vertical-head" style={{ width: "4.5%" }}>
+    Reference <br/>Level
+  </th>
+
+  <th className="vertical-head" style={{ width: "4.5%" }}>
+    Attenuation <br/>Factor
+  </th>
+
+  <th className="vertical-head" style={{ width: "4.5%" }}>
+    Indication <br/>Rating
+  </th>
+
+  <th className="vertical-head" style={{ width: "4.5%" }} rowSpan={2}>
+    Length (mm)
+  </th>
+
+  <th className="vertical-head" style={{ width: "4.5%" }} rowSpan={2}>
+    Angular<br/> Distance
+  </th>
+
+  <th className="vertical-head" style={{ width: "4.5%" }}rowSpan={2}>
+    Depth from <br/> "A" Surface
+  </th>
+
+  <th style={{ width: "4.5%", padding: 0 }} colSpan={2} rowSpan={2}>
+    <div style={{fontWeight: 700}}>Distance MM</div>
+   
+    <div style={{
+      display: "flex",
+      borderTop: "1.2px solid #000",
+      marginTop: "2px"
+    }}>
+
+
+      
+      <div className="vertical-head2" style={{
+  width: "50%",
+  height: "55px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  paddingLeft: "6px",
+  paddingRight: "6px"
+}}>
+        From X
+      </div>
+
+      <div className="vertical-head2" style={{
+       width: "50%",
+  height: "55px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  paddingLeft: "6px",
+  paddingRight: "6px",
+        borderRight: "1.2px solid #000",
+      }}>
+        From Y
+      </div>
+    </div>
+  </th>
+</tr>
+<tr>
+  <th style={{ width: "4.5%" }}>a</th>
+  <th style={{ width: "4.5%" }}>b</th>
+  <th style={{ width: "4.5%" }}>c</th>
+  <th style={{ width: "4.5%" }}>d</th>
+  </tr>
       </thead>
       <tbody>
         {chunk.map((o: any, i: number) => (
@@ -463,7 +570,7 @@ export const AWSDReportPrintPage: React.FC = () => {
   );
 
   const ReportSignatures = () => (
-    <table className="sign-table" style={{ marginTop: "-1.2px" }}>
+    <table className="sign-table">
       <colgroup>
         <col style={{ width: "33.3%" }} />
         <col style={{ width: "33.3%" }} />
@@ -538,7 +645,6 @@ export const AWSDReportPrintPage: React.FC = () => {
             .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
             .map((b) => b.item);
           const hasObsTable = pageObs.length > 0;
-          const hasSignatures = pageBlocks.some((b) => b.type === "signatures");
           
           return (
             <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
@@ -546,8 +652,10 @@ export const AWSDReportPrintPage: React.FC = () => {
                 {renderHeader()}
                 <div className="report-body">
                   {isFirstPage && fixedSections}
-                  {hasObsTable && renderObsTable(pageObs, i)}
-                  {hasSignatures && <ReportSignatures />}
+                  <div className="obs-wrapper">
+                    {hasObsTable && renderObsTable(pageObs, i)}
+                  </div>
+                  <ReportSignatures />
                 </div>
               </div>
               <div className="print-page-foot">
