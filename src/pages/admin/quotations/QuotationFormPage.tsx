@@ -10,7 +10,7 @@ import {
   updateServiceQuotation,
 } from "../../../api/quotationApi";
 import { getCustomers } from "../../../api/customerApi";
-import { Save, Ban, Plus, Trash2, ArrowLeft } from "lucide-react";
+import { Save, Ban, Plus, Trash2, ArrowLeft, FileText, Loader2 } from "lucide-react";
 
 export const QuotationFormPage: React.FC = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -48,12 +48,19 @@ export const QuotationFormPage: React.FC = () => {
   ];
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [customers, setCustomers] = useState<any[]>([]);
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
+
+  const hasErr = (key: string) => !!errors[key];
+  const ic = (key: string) =>
+    `w-full px-3 py-2 border rounded-lg${hasErr(key) ? " border-red-400 bg-red-50" : ""}`;
 
   // Form State
   const [formData, setFormData] = useState<any>({
     quotationNo: "",
     customerId: "",
+    status: "Draft",
     enquiryReference: "By Call",
     date: new Date().toISOString().split("T")[0],
     contactPersons: [{ name: "", mobile: "" }],
@@ -308,17 +315,60 @@ export const QuotationFormPage: React.FC = () => {
     setFormData({ ...formData, services: renumbered });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Enforce customer selection
+  const handleSubmit = async (status: "Draft" | "Final") => {
+    // Always enforce customer selection
     if (!formData.customerId) {
       toast.error("Please select a customer before saving.");
       return;
     }
 
+    if (status === "Final") {
+      const e: Record<string, boolean> = {};
+      const mt = (v: string) => !v?.trim();
+
+      // Core Info
+      if (!formData.customerId) e.customerId = true;
+      if (!formData.date) e.date = true;
+      if (mt(formData.contactPersons?.[0]?.name)) e.contactName = true;
+
+      // Services — at least one non-fixed row with description and amount > 0
+      const validServices = (formData.services || []).filter(
+        (s: any) => !s._isFixed && s.description?.trim() && (parseFloat(s.amount) || 0) > 0,
+      );
+      if (validServices.length === 0) e.services = true;
+
+      // Terms & Settings
+      if (mt(formData.termsAndConditions?.paymentTerms)) e.paymentTerms = true;
+
+      if (type === "service") {
+        if (!formData.extraCharges?.minimumVisit?.toString().trim()) e.minimumVisit = true;
+        if (mt(formData.termsAndConditions?.materialHandling)) e.materialHandling = true;
+        if (mt(formData.termsAndConditions?.personnel)) e.personnel = true;
+        if (!formData.termsAndConditions?.machines) e.machines = true;
+        if (!formData.termsAndConditions?.consumables) e.consumables = true;
+      }
+
+      if (type === "training") {
+        if (!formData.trainingDetails?.minCandidates) e.minCandidates = true;
+        if (mt(formData.trainingDetails?.trainingMode)) e.trainingMode = true;
+      }
+
+      // Signature
+      if (mt(formData.preparedBy?.name)) e.preparedByName = true;
+      if (mt(formData.preparedBy?.designation)) e.preparedByDesig = true;
+
+      if (Object.keys(e).length > 0) {
+        setErrors(e);
+        toast.error("Please fill all required fields before saving as Final.");
+        return;
+      }
+      setErrors({});
+    } else {
+      setErrors({});
+    }
+
     try {
-      setIsLoading(true);
+      setIsSaving(true);
 
       // Calculate totals correctly
       let subtotal = formData.services.reduce(
@@ -335,6 +385,7 @@ export const QuotationFormPage: React.FC = () => {
 
       const payload = {
         ...formData,
+        status,
         services: formData.services.map((s: Record<string, unknown>) => {
           const copy = { ...s };
           delete copy["_isCustom"];
@@ -369,10 +420,14 @@ export const QuotationFormPage: React.FC = () => {
           navigate("/admin/quotations");
         }
       }
-    } catch (err) {
-      toast.error("Failed to save quotation");
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to save quotation";
+      toast.error(msg);
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
     }
   };
 
@@ -394,7 +449,7 @@ export const QuotationFormPage: React.FC = () => {
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+      <div className="mt-6 space-y-6">
         {/* Core Info */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-4 pb-2 border-b">
@@ -431,13 +486,12 @@ export const QuotationFormPage: React.FC = () => {
                 Date <span className="text-red-500">*</span>
               </label>
               <input
-                required
                 type="date"
                 value={formData.date}
                 onChange={(e) =>
                   setFormData({ ...formData, date: e.target.value })
                 }
-                className="w-full px-3 py-2 border rounded-lg"
+                className={ic("date")}
               />
             </div>
             <div>
@@ -445,7 +499,6 @@ export const QuotationFormPage: React.FC = () => {
                 Customer <span className="text-red-500">*</span>
               </label>
               <select
-                required
                 value={formData.customerId}
                 onChange={(e) => {
                   const custId = e.target.value;
@@ -463,7 +516,7 @@ export const QuotationFormPage: React.FC = () => {
                       : formData.contactPersons,
                   });
                 }}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                className={`${ic("customerId")} focus:ring-2 focus:ring-primary-500 outline-none`}
               >
                 <option value="">Select Customer</option>
                 {customers.map((c) => (
@@ -505,17 +558,22 @@ export const QuotationFormPage: React.FC = () => {
                   ],
                 })
               }
-              className="w-full px-3 py-2 border rounded-lg"
+              className={ic("contactName")}
               placeholder="Mr. Name / Mr. Other"
             />
           </div>
         </div>
 
         {/* Services Table */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100${errors.services ? " ring-2 ring-red-400" : ""}`}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest">
               Services / Items
+              {errors.services && (
+                <span className="ml-2 text-red-500 text-xs font-normal normal-case">
+                  At least one service row with description and amount &gt; 0 is required
+                </span>
+              )}
             </h2>
             <button
               type="button"
@@ -838,7 +896,7 @@ export const QuotationFormPage: React.FC = () => {
                       },
                     })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className={ic("minimumVisit")}
                 />
               </div>
             </div>
@@ -867,7 +925,7 @@ export const QuotationFormPage: React.FC = () => {
                       },
                     })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className={ic("minCandidates")}
                 />
               </div>
               <div>
@@ -886,7 +944,7 @@ export const QuotationFormPage: React.FC = () => {
                       },
                     })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className={ic("trainingMode")}
                 />
               </div>
             </div>
@@ -927,7 +985,7 @@ export const QuotationFormPage: React.FC = () => {
                 },
               })
             }
-            className="w-full px-3 py-2 border rounded-lg mb-4"
+            className={`${ic("paymentTerms")} mb-4`}
           />
 
           {type === "service" && (
@@ -948,7 +1006,7 @@ export const QuotationFormPage: React.FC = () => {
                       },
                     })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className={ic("materialHandling")}
                 />
               </div>
               <div>
@@ -967,7 +1025,7 @@ export const QuotationFormPage: React.FC = () => {
                       },
                     })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className={ic("personnel")}
                 />
               </div>
               <div>
@@ -985,7 +1043,7 @@ export const QuotationFormPage: React.FC = () => {
                       },
                     })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className={ic("machines")}
                 >
                   <option value="">Select...</option>
                   <option value="is in our scope.">is in our scope.</option>
@@ -1021,7 +1079,7 @@ export const QuotationFormPage: React.FC = () => {
                       },
                     })
                   }
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className={ic("consumables")}
                 >
                   <option value="">Select...</option>
                   <option value="is in our scope.">is in our scope.</option>
@@ -1068,7 +1126,7 @@ export const QuotationFormPage: React.FC = () => {
                     },
                   })
                 }
-                className="w-full px-3 py-2 border rounded-lg"
+                className={ic("preparedByName")}
               />
             </div>
             <div>
@@ -1087,7 +1145,7 @@ export const QuotationFormPage: React.FC = () => {
                     },
                   })
                 }
-                className="w-full px-3 py-2 border rounded-lg"
+                className={ic("preparedByDesig")}
               />
             </div>
           </div>
@@ -1129,14 +1187,33 @@ export const QuotationFormPage: React.FC = () => {
             <Ban size={18} /> Cancel
           </button>
           <button
-            type="submit"
-            disabled={isLoading}
+            type="button"
+            disabled={isSaving}
+            onClick={() => handleSubmit("Draft")}
+            className="px-6 py-2.5 rounded-xl border border-gray-300 bg-gray-100 text-gray-700 font-bold hover:bg-gray-200 flex items-center gap-2 disabled:opacity-50"
+          >
+            {isSaving ? (
+              <Loader2 size={18} className="animate-spin" />
+            ) : (
+              <FileText size={18} />
+            )}
+            Save as Draft
+          </button>
+          <button
+            type="button"
+            disabled={isSaving}
+            onClick={() => handleSubmit("Final")}
             className="px-8 py-2.5 rounded-xl bg-primary-600 text-white font-bold hover:bg-primary-700 flex items-center gap-2 disabled:opacity-50"
           >
-            <Save size={18} /> {isEditing ? "Save Changes" : "Create Quotation"}
+            {isSaving ? (
+              <Loader2 size={18} className="animate-spin" />
+            ) : (
+              <Save size={18} />
+            )}
+            {isEditing ? "Save as Final" : "Create as Final"}
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

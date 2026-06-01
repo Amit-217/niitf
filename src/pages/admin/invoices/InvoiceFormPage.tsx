@@ -16,7 +16,7 @@ const PAYMENT_MODES = [
   "45 Days",
   "Other",
 ];
-const STATUSES = ["Draft", "Sent", "Paid", "Partial", "Cancelled"];
+const STATUSES = ["Draft", "Final"];
 
 const emptyItem = () => ({
   description: "",
@@ -182,6 +182,11 @@ export const InvoiceFormPage: React.FC = () => {
   const [customers, setCustomers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
+
+  const hasErr = (key: string) => !!errors[key];
+  const ic = (key: string) =>
+    `input-field w-full${hasErr(key) ? " border-red-400 bg-red-50 focus:ring-red-400" : ""}`;
 
   const userStr = localStorage.getItem("user");
   const role = userStr ? JSON.parse(userStr)?.role : "EMPLOYEE";
@@ -338,6 +343,55 @@ export const InvoiceFormPage: React.FC = () => {
       toast.error("Add at least one line item");
       return;
     }
+
+    if (form.status === "Final") {
+      const e: Record<string, boolean> = {};
+      const mt = (v: string) => !v?.trim();
+
+      // Invoice Details
+      if (!form.customerId) e.customerId = true;
+      if (!form.date) e.date = true;
+      if (!form.paymentMode) e.paymentMode = true;
+      if (form.paymentMode === "Other" && mt(form.paymentModeCustom))
+        e.paymentModeCustom = true;
+
+      // Reference Information
+      if (mt(form.deliveryNote)) e.deliveryNote = true;
+      if (!form.deliveryNoteDate) e.deliveryNoteDate = true;
+      if (mt(form.supplierRef)) e.supplierRef = true;
+      if (mt(form.buyerOrderNo)) e.buyerOrderNo = true;
+      if (!form.buyerOrderDate) e.buyerOrderDate = true;
+      if (mt(form.documentNo)) e.documentNo = true;
+      if (mt(form.dispatchedThrough)) e.dispatchedThrough = true;
+      if (mt(form.destination)) e.destination = true;
+      if (mt(form.termsOfDelivery)) e.termsOfDelivery = true;
+
+      // Line items — at least one item with description and amount > 0
+      const validItems = form.items.filter(
+        (it) => it.description.trim() && it.amount > 0,
+      );
+      if (validItems.length === 0) e.items = true;
+
+      // Bank Details
+      if (mt(form.bankDetails.bankName)) e["bankDetails.bankName"] = true;
+      if (mt(form.bankDetails.accountNumber))
+        e["bankDetails.accountNumber"] = true;
+      if (mt(form.bankDetails.ifscCode)) e["bankDetails.ifscCode"] = true;
+      if (mt(form.bankDetails.branch)) e["bankDetails.branch"] = true;
+
+      // Declaration
+      if (mt(form.notes)) e.notes = true;
+
+      if (Object.keys(e).length > 0) {
+        setErrors(e);
+        toast.error("Please fill all required fields before saving as Final.");
+        return;
+      }
+      setErrors({});
+    } else {
+      setErrors({});
+    }
+
     setIsSaving(true);
     try {
       const payload = {
@@ -418,7 +472,7 @@ export const InvoiceFormPage: React.FC = () => {
             </label>
             <input
               type="date"
-              className="input-field w-full"
+              className={ic("date")}
               value={form.date}
               onChange={(e) => setField("date", e.target.value)}
             />
@@ -439,7 +493,7 @@ export const InvoiceFormPage: React.FC = () => {
               Customer <span className="text-red-500">*</span>
             </label>
             <select
-              className="input-field w-full"
+              className={ic("customerId")}
               value={form.customerId}
               onChange={(e) => {
                 const match = customers.find((c) => c._id === e.target.value);
@@ -480,7 +534,7 @@ export const InvoiceFormPage: React.FC = () => {
             </label>
             <div className="space-y-1">
               <select
-                className="input-field w-full"
+                className={ic("paymentMode")}
                 value={form.paymentMode}
                 onChange={(e) => setField("paymentMode", e.target.value)}
               >
@@ -492,7 +546,7 @@ export const InvoiceFormPage: React.FC = () => {
               </select>
               {form.paymentMode === "Other" && (
                 <input
-                  className="input-field w-full"
+                  className={ic("paymentModeCustom")}
                   value={form.paymentModeCustom}
                   onChange={(e) =>
                     setField("paymentModeCustom", e.target.value)
@@ -527,7 +581,7 @@ export const InvoiceFormPage: React.FC = () => {
               Delivery Note
             </label>
             <input
-              className="input-field w-full"
+              className={ic("deliveryNote")}
               value={form.deliveryNote}
               onChange={(e) => setField("deliveryNote", e.target.value)}
               placeholder="Delivery Note"
@@ -539,7 +593,7 @@ export const InvoiceFormPage: React.FC = () => {
             </label>
             <input
               type="date"
-              className="input-field w-full"
+              className={ic("deliveryNoteDate")}
               value={form.deliveryNoteDate}
               onChange={(e) => setField("deliveryNoteDate", e.target.value)}
             />
@@ -549,7 +603,7 @@ export const InvoiceFormPage: React.FC = () => {
               Supplier's Ref
             </label>
             <input
-              className="input-field w-full"
+              className={ic("supplierRef")}
               value={form.supplierRef}
               onChange={(e) => setField("supplierRef", e.target.value)}
               placeholder="Supplier's Ref"
@@ -560,7 +614,7 @@ export const InvoiceFormPage: React.FC = () => {
               Buyer's Order No
             </label>
             <input
-              className="input-field w-full"
+              className={ic("buyerOrderNo")}
               value={form.buyerOrderNo}
               onChange={(e) => setField("buyerOrderNo", e.target.value)}
               placeholder="Buyer's Order No"
@@ -572,7 +626,7 @@ export const InvoiceFormPage: React.FC = () => {
             </label>
             <input
               type="date"
-              className="input-field w-full"
+              className={ic("buyerOrderDate")}
               value={form.buyerOrderDate}
               onChange={(e) => setField("buyerOrderDate", e.target.value)}
             />
@@ -589,7 +643,7 @@ export const InvoiceFormPage: React.FC = () => {
                 {label}
               </label>
               <input
-                className="input-field w-full"
+                className={ic(key)}
                 value={(form as any)[key] || ""}
                 onChange={(e) => setField(key, e.target.value)}
                 placeholder={label}
@@ -611,9 +665,14 @@ export const InvoiceFormPage: React.FC = () => {
       </div>
 
       {/* Line Items */}
-      <div className="glass-card p-6 space-y-4">
+      <div className={`glass-card p-6 space-y-4${errors.items ? " ring-2 ring-red-400" : ""}`}>
         <h2 className="font-semibold text-gray-800 text-base border-b pb-2">
           Line Items
+          {errors.items && (
+            <span className="ml-2 text-red-500 text-xs font-normal normal-case">
+              At least one item with description and amount &gt; 0 is required
+            </span>
+          )}
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -946,7 +1005,7 @@ export const InvoiceFormPage: React.FC = () => {
                 {label}
               </label>
               <input
-                className="input-field w-full"
+                className={ic(key)}
                 value={(form.bankDetails as any)[key.split(".")[1]] || ""}
                 onChange={(e) => setField(key, e.target.value)}
                 placeholder={label}
@@ -962,7 +1021,7 @@ export const InvoiceFormPage: React.FC = () => {
           Declaration
         </h2>
         <textarea
-          className="input-field w-full h-24 resize-none"
+          className={`${ic("notes")} h-24 resize-none`}
           value={form.notes}
           onChange={(e) => setField("notes", e.target.value)}
           placeholder="Additional notes or declaration..."
