@@ -173,6 +173,7 @@ export const AWSDReportFormPage: React.FC = () => {
   const [certYear, setCertYear] = useState("");
   const [manufacturerOrContractor, setManufacturerOrContractor] = useState("");
   const [authorizedBy, setAuthorizedBy] = useState("");
+  const [verifiedBy, setVerifiedBy] = useState("");
   const [footerDate, setFooterDate] = useState("");
 
   const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -260,6 +261,7 @@ export const AWSDReportFormPage: React.FC = () => {
         setCertYear(cert.year ?? "");
         setManufacturerOrContractor(cert.manufacturerOrContractor ?? "");
         setAuthorizedBy(cert.authorizedBy ?? "");
+        setVerifiedBy(cert.verifiedBy ?? "");
         setFooterDate(toDate(cert.date));
       })
       .catch(() => toast.error("Failed to load report."));
@@ -298,6 +300,7 @@ export const AWSDReportFormPage: React.FC = () => {
       certYear,
       manufacturerOrContractor,
       authorizedBy,
+      verifiedBy,
       weldingProcess: weldingProcess === "Other" ? weldingProcessOther : weldingProcess,
     };
     return map[key] ?? "";
@@ -433,6 +436,7 @@ export const AWSDReportFormPage: React.FC = () => {
           year: certYear,
           manufacturerOrContractor,
           authorizedBy,
+          verifiedBy,
           date: footerDate || undefined,
         },
       };
@@ -703,41 +707,46 @@ export const AWSDReportFormPage: React.FC = () => {
       {/* ── Certification & Signatures ── */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Certification &amp; Signatures</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        {/* Row 1: date/reference fields */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
           <div>
             <label className={labelClass}>Year (for certification)</label>
             <input type="text" value={certYear} onChange={(e) => setCertYear(e.target.value)} className={fc("certYear")} placeholder="e.g. 2025" />
           </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <div>
-              <label className={labelClass}>Test Date</label>
-              <input type="date" value={testDate} onChange={(e) => setTestDate(e.target.value)} className={fc("testDate")} />
-            </div>
-            <div>
-              <label className={labelClass}>Inspected By</label>
-              <input type="text" value={inspectedBy} onChange={(e) => setInspectedBy(e.target.value)} className={fc("inspectedBy")} />
-            </div>
+          <div>
+            <label className={labelClass}>Test Date</label>
+            <input type="date" value={testDate} onChange={(e) => setTestDate(e.target.value)} className={fc("testDate")} />
           </div>
-          <div className="space-y-3">
-            <div>
-              <label className={labelClass}>Manufacturer or Contractor</label>
-              <input type="text" value={manufacturerOrContractor} onChange={(e) => setManufacturerOrContractor(e.target.value)} className={fc("manufacturerOrContractor")} />
-            </div>
-            <div>
-              <label className={labelClass}>Authorized By</label>
-              <input type="text" value={authorizedBy} onChange={(e) => setAuthorizedBy(e.target.value)} className={fc("authorizedBy")} />
-            </div>
-            <div>
-              <label className={labelClass}>Date</label>
-              <input
-                type="date"
-                value={footerDate}
-                onChange={(e) => setFooterDate(e.target.value)}
-                className={errors.footerDate && !footerDate ? inputErrorClass : inputClass}
-              />
-            </div>
+          <div>
+            <label className={labelClass}>Date</label>
+            <input
+              type="date"
+              value={footerDate}
+              onChange={(e) => setFooterDate(e.target.value)}
+              className={errors.footerDate && !footerDate ? inputErrorClass : inputClass}
+            />
+          </div>
+        </div>
+        {/* Row 2: personnel */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label className={labelClass}>Inspected By</label>
+            <input type="text" value={inspectedBy} onChange={(e) => setInspectedBy(e.target.value)} className={fc("inspectedBy")} />
+          </div>
+          <div>
+            <label className={labelClass}>Manufacturer or Contractor</label>
+            <input type="text" value={manufacturerOrContractor} onChange={(e) => setManufacturerOrContractor(e.target.value)} className={fc("manufacturerOrContractor")} />
+          </div>
+          <div>
+            <label className={labelClass}>Authorized By</label>
+            <input type="text" value={authorizedBy} onChange={(e) => setAuthorizedBy(e.target.value)} className={fc("authorizedBy")} />
+          </div>
+        </div>
+        {/* Row 3: verified by */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label className={labelClass}>Verified By</label>
+            <input type="text" value={verifiedBy} onChange={(e) => setVerifiedBy(e.target.value)} className={inputClass} />
           </div>
         </div>
       </div>

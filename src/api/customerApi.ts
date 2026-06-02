@@ -717,25 +717,27 @@ export const deleteTPIIVRReport = (id: string) =>
 // â”€â”€â”€ AWS D1.1 UT Report Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface AWSDObservation {
-  lineNo: number;
-  indicationNo?: string;
+  serialNo?: string;
+  jointDetails?: string;
+  drawingNoPartNo?: string;
+  jobThickness?: string;
+  partNo?: string;
   transducerAngle?: string;
-  fromFace?: string;
-  leg?: string;
+  jointNo?: string;
   decibels?: {
-    indicationLevel?: string;
-    referenceLevel?: string;
-    attenuationFactor?: string;
-    indicationRating?: string;
+    indicationLevelA?: string;
+    referenceLevelB?: string;
+    attenuationFactorC?: string;
+    indicationRatingD?: string;
   };
   discontinuity?: {
     length?: string;
     angularDistance?: string;
-    depthFromA?: string;
-    distanceFromX?: string;
-    distanceFromY?: string;
+    depthFromASurface?: string;
+    distanceX?: string;
+    distanceY?: string;
   };
-  interpretation?: string;
+  discontinuityEvaluation?: string;
   remarks?: string;
 }
 
@@ -744,12 +746,28 @@ export interface AWSDReportPayload {
   reportNo: string;
   status?: 'draft' | 'final';
   project?: string;
-  weldIdentification?: string;
-  materialThickness?: string;
-  weldJointAWS?: string;
+  dateOfInspection?: string;
+  jobDescription?: string;
+  drawingNo?: string;
+  calibrationBlock?: string;
+  qtyOfJts?: string;
+  flawDetectorSrNo?: string;
   weldingProcess?: string;
-  qualityRequirementsSection?: string;
-  remarks?: string;
+  machineCalibration?: string;
+  surfaceCondition?: string;
+  poNo?: string;
+  couplant?: string;
+  stageOfInspection?: string;
+  material?: string;
+  qapNo?: string;
+  accStandard?: string;
+  probe?: string;
+  probeAngle?: string;
+  frequency?: string;
+  range?: string;
+  scanningSensitivity?: string;
+  referenceDb?: string;
+  scanningDb?: string;
   observations?: AWSDObservation[];
   certification?: {
     testDate?: string;
@@ -757,6 +775,7 @@ export interface AWSDReportPayload {
     year?: string;
     manufacturerOrContractor?: string;
     authorizedBy?: string;
+    verifiedBy?: string;
     date?: string;
   };
 }

@@ -181,8 +181,8 @@ const PRINT_STYLES = `
   .obs-table td, .obs-table th { border: 1px solid #000; padding: 2px; font-size: 10px; vertical-align: middle; text-align: center; word-break: break-word; }
   .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; border-collapse: collapse; }
 
-  .sign-table { width: 100%; border-collapse: collapse; border: 1px solid #000; border-top: none; font-size: 12px; }
-  .sign-table td { padding: 4px; border: 1px solid #000; vertical-align: top; }
+  .sign-table { width: 100%; border-collapse: collapse; border: 1px solid #000; border-top: none; font-size: 11px; }
+  .sign-table td { padding: 3px 5px; border: 1px solid #000; vertical-align: middle; }
   .sign-table .lbl-text { font-weight: 600; margin-bottom: 10px; display: block; }
   .sign-table .val-text { font-weight: 700; }
 `;
@@ -257,15 +257,33 @@ export const AWSDReportPrintPage: React.FC = () => {
 
   if (loading)
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+        }}
+      >
         Loading...
       </div>
     );
   if (!report)
     return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", gap: 12 }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          gap: 12,
+        }}
+      >
         <p>Report not found.</p>
-        <button onClick={goBack} style={{ padding: "8px 16px" }}>Go Back</button>
+        <button onClick={goBack} style={{ padding: "8px 16px" }}>
+          Go Back
+        </button>
       </div>
     );
 
@@ -298,7 +316,8 @@ export const AWSDReportPrintPage: React.FC = () => {
 
   while (currentBlockIndex < blocks.length) {
     const isFirstPage = pages.length === 0;
-    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT;
+    let availableHeight =
+      PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT;
     if (isFirstPage) {
       availableHeight -= FIXED_SECTIONS_HEIGHT;
     }
@@ -343,7 +362,8 @@ export const AWSDReportPrintPage: React.FC = () => {
       <div className="hdr-center">
         <div className="org">National Industrial Inspection and Training</div>
         <div className="sub">
-          THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING | NDT CONSULTANCY
+          THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING | NDT
+          CONSULTANCY
           <br />
           FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
         </div>
@@ -435,67 +455,126 @@ export const AWSDReportPrintPage: React.FC = () => {
   );
 
   const renderObsTable = (chunk: any[], chunkIdx: number) => (
-    <table className="obs-table" style={{ marginTop: chunkIdx === 0 ? "-1px" : "0" }}>
+    <table
+      className="obs-table"
+      style={{ marginTop: chunkIdx === 0 ? "-1px" : "0" }}
+    >
       <thead>
         <tr>
-          <th rowSpan={3} style={{ width: "3%" }}>Sr.<br />No.</th>
-          <th rowSpan={3} style={{ width: "9%" }}>Joint Details</th>
-          <th rowSpan={3} style={{ width: "9%" }}>Drawing No. /<br />Part No.</th>
-          <th rowSpan={3} style={{ width: "7%" }}>Job Thickness<br />(mm)</th>
-          <th rowSpan={3} style={{ width: "8%" }}>Part Number</th>
-          <th rowSpan={3} style={{ width: "6%" }}>Transducer<br />Angle</th>
-          <th rowSpan={3} style={{ width: "8%" }}>Joint No</th>
+          <th rowSpan={3} style={{ width: "3%" }}>
+            Sr.
+            <br />
+            No.
+          </th>
+          <th rowSpan={3} style={{ width: "9%" }}>
+            Joint Details
+          </th>
+          <th rowSpan={3} style={{ width: "9%" }}>
+            Drawing No. /<br />
+            Part No.
+          </th>
+          <th rowSpan={3} style={{ width: "7%" }}>
+            Job Thickness
+            <br />
+            (mm)
+          </th>
+          <th rowSpan={3} style={{ width: "8%" }}>
+            Part Number
+          </th>
+          <th rowSpan={3} style={{ width: "6%" }}>
+            Transducer
+            <br />
+            Angle
+          </th>
+          <th rowSpan={3} style={{ width: "8%" }}>
+            Joint No
+          </th>
           <th colSpan={4}>Decibels</th>
           <th colSpan={5}>Discontinuity</th>
-          <th rowSpan={3} style={{ width: "8%" }}>Discontinuity<br />Evaluation</th>
-          <th rowSpan={3} style={{ width: "7%" }}>Remarks</th>
+          <th rowSpan={3} style={{ width: "8%" }}>
+            Discontinuity
+            <br />
+            Evaluation
+          </th>
+          <th rowSpan={3} style={{ width: "7%" }}>
+            Remarks
+          </th>
         </tr>
         <tr>
           <th style={{ width: "4.5%", padding: "4px" }}>
-            <div className="vertical-text">Indication <br />Level</div>
+            <div className="vertical-text">
+              Indication <br />
+              Level
+            </div>
           </th>
           <th style={{ width: "4.5%", padding: "4px" }}>
-            <div className="vertical-text">Reference <br />Level</div>
+            <div className="vertical-text">
+              Reference <br />
+              Level
+            </div>
           </th>
           <th style={{ width: "4.5%", padding: "4px" }}>
-            <div className="vertical-text">Attenuation <br />Factor</div>
+            <div className="vertical-text">
+              Attenuation <br />
+              Factor
+            </div>
           </th>
           <th style={{ width: "4.5%", padding: "4px" }}>
-            <div className="vertical-text">Indication <br />Rating</div>
+            <div className="vertical-text">
+              Indication <br />
+              Rating
+            </div>
           </th>
           <th style={{ width: "4.5%", padding: "4px" }} rowSpan={2}>
             <div className="vertical-text">Length (mm)</div>
           </th>
           <th style={{ width: "4.5%", padding: "4px" }} rowSpan={2}>
-            <div className="vertical-text">Angular<br /> Distance</div>
+            <div className="vertical-text">
+              Angular
+              <br /> Distance
+            </div>
           </th>
           <th style={{ width: "4.5%", padding: "4px" }} rowSpan={2}>
-            <div className="vertical-text">Depth from <br /> "A" Surface</div>
+            <div className="vertical-text">
+              Depth from <br /> "A" Surface
+            </div>
           </th>
           <th style={{ width: "4.5%", padding: 0 }} colSpan={2} rowSpan={2}>
             <div style={{ fontWeight: 700 }}>Distance MM</div>
-            <div style={{ display: "flex", borderTop: "1.2px solid #000", marginTop: "2px" }}>
-              <div className="vertical-text" style={{
-                width: "50%",
-                height: "70px",
+            <div
+              style={{
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                paddingLeft: "6px",
-                paddingRight: "6px",
-                borderLeft: "1.2px solid #000",
-              }}>
+                borderTop: "1.2px solid #000",
+                marginTop: "2px",
+              }}
+            >
+              <div
+                className="vertical-text"
+                style={{
+                  width: "50%",
+                  height: "70px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingLeft: "6px",
+                  paddingRight: "6px",
+                  borderLeft: "1.2px solid #000",
+                }}
+              >
                 From X
               </div>
-              <div className="vertical-text" style={{
-                width: "50%",
-                height: "70px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                paddingLeft: "6px",
-                paddingRight: "6px",
-              }}>
+              <div
+                className="vertical-text"
+                style={{
+                  width: "50%",
+                  height: "70px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingLeft: "6px",
+                  paddingRight: "6px",
+                }}
+              >
                 From Y
               </div>
             </div>
@@ -538,27 +617,70 @@ export const AWSDReportPrintPage: React.FC = () => {
   const ReportSignatures = () => (
     <table className="sign-table">
       <colgroup>
-        <col style={{ width: "33.3%" }} />
-        <col style={{ width: "33.3%" }} />
-        <col style={{ width: "33.3%" }} />
+        <col style={{ width: "30%" }} />
+        <col style={{ width: "40%" }} />
+        <col style={{ width: "15%" }} />
+        <col style={{ width: "15%" }} />
       </colgroup>
       <tbody>
         <tr>
-          <td>
-            <span className="lbl-text">For</span>
-            <span className="val-text">Signature : </span><br /><br />
-            <span className="val-text">Name : {v(cert.inspectedBy)}</span><br /><br />
-            <span className="val-text">ASNT NDT Level-II - UT</span>
+          <td style={{ fontWeight: 600 }}>
+            Test date :&nbsp;
+            <span style={{ fontWeight: 400 }}>{fmtDate(cert.testDate)}</span>
           </td>
-          <td>
-            <span className="lbl-text" style={{ visibility: "hidden" }}>Space</span>
-            <br /><br />
-            <span className="val-text">Verified By</span>
+          <td colSpan={3} style={{ fontWeight: 600 }}>
+            Manufacturer or Contractor :&nbsp;
+            <span style={{ fontWeight: 400 }}>
+              {v(cert.manufacturerOrContractor)}
+            </span>
           </td>
-          <td>
-            <span className="lbl-text">Reviewed / Witnessed</span>
-            <br /><br />
-            <span className="val-text">for Customer</span>
+        </tr>
+        <tr>
+          <td style={{ fontWeight: 600 }}>
+            Inspected by :&nbsp;
+            <span style={{ fontWeight: 400 }}>{v(cert.inspectedBy)}</span>
+            {cert.year && (
+              <span style={{ fontWeight: 400, fontSize: "9px", marginLeft: "4px", color: "#555" }}>
+                (Cert. Year: {v(cert.year)})
+              </span>
+            )}
+          </td>
+          <td style={{ height: "28px" }}>Signature :</td>
+          <td colSpan={2} style={{ fontWeight: 600 }}>
+            Date :&nbsp;
+            <span style={{ fontWeight: 400 }}>{fmtDate(cert.date)}</span>
+          </td>
+        </tr>
+        <tr>
+          <td style={{ fontWeight: 600 }}>
+            Authorized by :&nbsp;
+            <span style={{ fontWeight: 400 }}>{v(cert.authorizedBy)}</span>
+          </td>
+          <td style={{ height: "28px" }}>Signature :</td>
+          <td colSpan={2} style={{ fontWeight: 600 }}>
+            Date :&nbsp;
+            <span style={{ fontWeight: 400 }}>{fmtDate(cert.date)}</span>
+          </td>
+        </tr>
+        <tr>
+          <td style={{ fontWeight: 600 }}>
+            Verified by :&nbsp;
+            <span style={{ fontWeight: 400 }}>{v(cert.verifiedBy)}</span>
+          </td>
+          <td style={{ height: "28px" }}>Signature :</td>
+          <td colSpan={2} style={{ fontWeight: 600 }}>
+            Date :&nbsp;
+            <span style={{ fontWeight: 400 }}>{fmtDate(cert.date)}</span>
+          </td>
+        </tr>
+        <tr>
+          <td
+            colSpan={4}
+            style={{ fontSize: "9px", fontStyle: "italic", padding: "3px 5px" }}
+          >
+            <strong>Note :</strong> Welds that are unacceptable by the above
+            criteria shall be repaired or replaced. The repaired welds shall be
+            retested by UT and their re-inspection results also be recorded.
           </td>
         </tr>
       </tbody>
@@ -592,25 +714,59 @@ export const AWSDReportPrintPage: React.FC = () => {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
-      <div className="no-print" style={{ position: "fixed", top: 12, right: 16, zIndex: 100, display: "flex", gap: 8 }}>
+      <div
+        className="no-print"
+        style={{
+          position: "fixed",
+          top: 12,
+          right: 16,
+          zIndex: 100,
+          display: "flex",
+          gap: 8,
+        }}
+      >
         <button
           onClick={() => setBwMode((b) => !b)}
-          style={{ padding: "7px 16px", background: bwMode ? "#374151" : "#185FA5", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 600 }}
+          style={{
+            padding: "7px 16px",
+            background: bwMode ? "#374151" : "#185FA5",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13,
+            fontWeight: 600,
+          }}
         >
           {bwMode ? "Color Mode" : "B&W Mode"}
         </button>
         <button
           onClick={() => window.print()}
-          style={{ padding: "7px 16px", background: "#16a34a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 600 }}
+          style={{
+            padding: "7px 16px",
+            background: "#16a34a",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13,
+            fontWeight: 600,
+          }}
         >
           Print
         </button>
       </div>
 
-      <div id="report-root" style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}>
+      <div
+        id="report-root"
+        style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
+      >
         {pages.map(({ isFirstPage, pageBlocks }, i) => {
           const pageObs = pageBlocks
-            .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
+            .filter(
+              (b): b is Extract<ContentBlock, { type: "obs-row" }> =>
+                b.type === "obs-row",
+            )
             .map((b) => b.item);
           const hasObsTable = pageObs.length > 0;
 
