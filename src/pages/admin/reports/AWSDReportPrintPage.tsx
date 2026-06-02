@@ -181,10 +181,14 @@ const PRINT_STYLES = `
   .obs-table td, .obs-table th { border: 1px solid #000; padding: 2px; font-size: 10px; vertical-align: middle; text-align: center; word-break: break-word; }
   .obs-table th { background: #E6F1FB; color: #0C447C; font-size: 10px; font-weight: 700; border-collapse: collapse; }
 
-  .sign-table { width: 100%; border-collapse: collapse; border: 1px solid #000; border-top: none; font-size: 11px; }
-  .sign-table td { padding: 3px 5px; border: 1px solid #000; vertical-align: middle; }
-  .sign-table .lbl-text { font-weight: 600; margin-bottom: 10px; display: block; }
-  .sign-table .val-text { font-weight: 700; }
+  .sign-table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid; page-break-inside: avoid; }
+  .sign-table td { border: 1.2px solid #000; padding: 1px 5px; font-size: 10.5px; vertical-align: top; }
+  .sign-table td:first-child { border-left: none; }
+  .sign-table td:last-child { border-right: none; }
+  .mt-n1 { margin-top: -1px; }
+  .report-footer-wrap { border: 1.2px solid #000; border-top: none; border-radius: 0; overflow: hidden; margin-top: -1px; margin-bottom: 0; }
+  .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
+  .report-footer-wrap .sign-table tr:last-child td { border-bottom: none; }
 `;
 
 // ───────── Helpers ─────────────────────────────────────────────────────────────
@@ -615,76 +619,62 @@ export const AWSDReportPrintPage: React.FC = () => {
   );
 
   const ReportSignatures = () => (
-    <table className="sign-table">
-      <colgroup>
-        <col style={{ width: "30%" }} />
-        <col style={{ width: "40%" }} />
-        <col style={{ width: "15%" }} />
-        <col style={{ width: "15%" }} />
-      </colgroup>
-      <tbody>
-        <tr>
-          <td style={{ fontWeight: 600 }}>
-            Test date :&nbsp;
-            <span style={{ fontWeight: 400 }}>{fmtDate(cert.testDate)}</span>
-          </td>
-          <td colSpan={3} style={{ fontWeight: 600 }}>
-            Manufacturer or Contractor :&nbsp;
-            <span style={{ fontWeight: 400 }}>
-              {v(cert.manufacturerOrContractor)}
-            </span>
-          </td>
-        </tr>
-        <tr>
-          <td style={{ fontWeight: 600 }}>
-            Inspected by :&nbsp;
-            <span style={{ fontWeight: 400 }}>{v(cert.inspectedBy)}</span>
-            {cert.year && (
-              <span style={{ fontWeight: 400, fontSize: "9px", marginLeft: "4px", color: "#555" }}>
-                (Cert. Year: {v(cert.year)})
-              </span>
-            )}
-          </td>
-          <td style={{ height: "28px" }}>Signature :</td>
-          <td colSpan={2} style={{ fontWeight: 600 }}>
-            Date :&nbsp;
-            <span style={{ fontWeight: 400 }}>{fmtDate(cert.date)}</span>
-          </td>
-        </tr>
-        <tr>
-          <td style={{ fontWeight: 600 }}>
-            Authorized by :&nbsp;
-            <span style={{ fontWeight: 400 }}>{v(cert.authorizedBy)}</span>
-          </td>
-          <td style={{ height: "28px" }}>Signature :</td>
-          <td colSpan={2} style={{ fontWeight: 600 }}>
-            Date :&nbsp;
-            <span style={{ fontWeight: 400 }}>{fmtDate(cert.date)}</span>
-          </td>
-        </tr>
-        <tr>
-          <td style={{ fontWeight: 600 }}>
-            Verified by :&nbsp;
-            <span style={{ fontWeight: 400 }}>{v(cert.verifiedBy)}</span>
-          </td>
-          <td style={{ height: "28px" }}>Signature :</td>
-          <td colSpan={2} style={{ fontWeight: 600 }}>
-            Date :&nbsp;
-            <span style={{ fontWeight: 400 }}>{fmtDate(cert.date)}</span>
-          </td>
-        </tr>
-        <tr>
-          <td
-            colSpan={4}
-            style={{ fontSize: "9px", fontStyle: "italic", padding: "3px 5px" }}
-          >
-            <strong>Note :</strong> Welds that are unacceptable by the above
-            criteria shall be repaired or replaced. The repaired welds shall be
-            retested by UT and their re-inspection results also be recorded.
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div className="report-footer-wrap mt-n1">
+      <table className="sign-table mt-n1">
+        <colgroup>
+          <col style={{ width: "33.3%" }} />
+          <col style={{ width: "33.3%" }} />
+          <col style={{ width: "33.4%" }} />
+        </colgroup>
+        <tbody>
+          <tr>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>For :</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>For :</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>For :</td>
+          </tr>
+          <tr>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              National Industrial Inspection And Training
+            </td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}></td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}></td>
+          </tr>
+          <tr>
+            <td>Inspected By : {v(cert.inspectedBy) || "-"}</td>
+            <td>Verified By : </td>
+            <td>Reviewed By : </td>
+          </tr>
+          <tr>
+            <td>
+              ASNT NDT Level-II - UT
+              {cert.year ? ` (${v(cert.year)})` : ""}
+            </td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td style={{ height: "32px" }}>Signature:-</td>
+            <td>Signature :</td>
+            <td>Signature :</td>
+          </tr>
+          <tr>
+            <td>Date :</td>
+            <td>Date :</td>
+            <td>Date :</td>
+          </tr>
+          {/* <tr>
+            <td
+              colSpan={3}
+              style={{ fontSize: "9px", fontStyle: "italic", padding: "2px 5px" }}
+            >
+              <strong>Note :</strong> Welds that are unacceptable by the above
+              criteria shall be repaired or replaced. The repaired welds shall be
+              retested by UT and their re-inspection results also be recorded.
+            </td>
+          </tr> */}
+        </tbody>
+      </table>
+    </div>
   );
 
   const ReportFooter = () => (
