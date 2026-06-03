@@ -636,13 +636,17 @@ export const AWSDReportPrintPage: React.FC = () => {
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
               National Industrial Inspection And Training
             </td>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}></td>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}></td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              {v(cert.manufacturerOrContractor)}
+            </td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              {v(cert.verifiedBy)}
+            </td>
           </tr>
           <tr>
             <td>Inspected By : {v(cert.inspectedBy) || "-"}</td>
-            <td>Verified By : </td>
-            <td>Reviewed By : </td>
+            <td>Verified By : {v(cert.authorizedBy) || "-"}</td>
+            <td>Reviewed By : {v(cert.reviewedBy) || "-"}</td>
           </tr>
           <tr>
             <td>
@@ -658,9 +662,9 @@ export const AWSDReportPrintPage: React.FC = () => {
             <td>Signature :</td>
           </tr>
           <tr>
-            <td>Date :</td>
-            <td>Date :</td>
-            <td>Date :</td>
+            <td>Date : {fmtDate(cert.testDate)}</td>
+            <td>Date : {fmtDate(cert.date)}</td>
+            <td>Date : {fmtDate(cert.reviewedByDate)}</td>
           </tr>
           {/* <tr>
             <td

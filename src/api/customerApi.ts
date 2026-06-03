@@ -776,6 +776,8 @@ export interface AWSDReportPayload {
     manufacturerOrContractor?: string;
     authorizedBy?: string;
     verifiedBy?: string;
+    reviewedBy?: string;
+    reviewedByDate?: string;
     date?: string;
   };
 }
