@@ -308,13 +308,10 @@ export const AWSDReportPrintPage: React.FC = () => {
   const HEADER_HEIGHT = 28; // mm
   const FOOTER_HEIGHT = 18; // mm
   const FIXED_SECTIONS_HEIGHT = 52; // mm
-  const FIXED_SECTIONS_HEIGHT = 52; // mm
   const OBS_HEADER_HEIGHT = 18; // mm
-  const SIGNATURES_HEIGHT = 25; // mm
   const SIGNATURES_HEIGHT = 25; // mm
 
   type ContentBlock =
-    | { type: "obs-row"; item: any; height: number };
     | { type: "obs-row"; item: any; height: number };
 
   const blocks: ContentBlock[] = [];
@@ -336,7 +333,6 @@ export const AWSDReportPrintPage: React.FC = () => {
 
   while (currentBlockIndex < blocks.length) {
     const isFirstPage = pages.length === 0;
-    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT;
     let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT;
     if (isFirstPage) {
       availableHeight -= FIXED_SECTIONS_HEIGHT;
@@ -377,23 +373,22 @@ export const AWSDReportPrintPage: React.FC = () => {
 
   const renderHeader = () => (
     <div className="rpt-header">
-      <div className="rpt-header">
-        <div className="logo-box">
-          <img src="/logo.jpeg" alt="NIIT Logo" />
-        </div>
-        <div className="hdr-center">
-          <div className="org">
-            National Industrial Inspection and Training
-          </div>
-          <div className="sub">
-            THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING | NDT CONSULTANCY
-            <br />
-            FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
-          </div>
-          <div className="iso">(AN ISO 9001:2015 CERTIFIED ORGANIZATION)</div>
-        </div>
+      <div className="logo-box">
+        <img src="/logo.jpeg" alt="NIIT Logo" />
       </div>
-      );
+      <div className="hdr-center">
+        <div className="org">
+          National Industrial Inspection and Training
+        </div>
+        <div className="sub">
+          THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING | NDT CONSULTANCY
+          <br />
+          FACTORY INSPECTION UNDER MAHARASHTRA FACTORY ACT
+        </div>
+        <div className="iso">(AN ISO 9001:2015 CERTIFIED ORGANIZATION)</div>
+      </div>
+    </div>
+  );
 
       const fixedSections = (
       <>
@@ -596,35 +591,34 @@ export const AWSDReportPrintPage: React.FC = () => {
       );
 
   const ReportSignatures = () => (
-      <table className="sign-table">
-        <table className="sign-table">
-          <colgroup>
-            <col style={{ width: "33.3%" }} />
-            <col style={{ width: "33.3%" }} />
-            <col style={{ width: "33.3%" }} />
-          </colgroup>
-          <tbody>
-            <tr>
-              <td>
-                <span className="lbl-text">For</span>
-                <span className="val-text">Signature : </span><br /><br />
-                <span className="val-text">Name : {v(cert.inspectedBy)}</span><br /><br />
-                <span className="val-text">ASNT NDT Level-II - UT</span>
-              </td>
-              <td>
-                <span className="lbl-text" style={{ visibility: "hidden" }}>Space</span>
-                <br /><br />
-                <span className="val-text">Verified By</span>
-              </td>
-              <td>
-                <span className="lbl-text">Reviewed / Witnessed</span>
-                <br /><br />
-                <span className="val-text">for Customer</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        );
+    <table className="sign-table">
+      <colgroup>
+        <col style={{ width: "33.3%" }} />
+        <col style={{ width: "33.3%" }} />
+        <col style={{ width: "33.3%" }} />
+      </colgroup>
+      <tbody>
+        <tr>
+          <td>
+            <span className="lbl-text">For</span>
+            <span className="val-text">Signature : </span><br /><br />
+            <span className="val-text">Name : {v(cert.inspectedBy)}</span><br /><br />
+            <span className="val-text">ASNT NDT Level-II - UT</span>
+          </td>
+          <td>
+            <span className="lbl-text" style={{ visibility: "hidden" }}>Space</span>
+            <br /><br />
+            <span className="val-text">Verified By</span>
+          </td>
+          <td>
+            <span className="lbl-text">Reviewed / Witnessed</span>
+            <br /><br />
+            <span className="val-text">for Customer</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
 
   const ReportFooter = () => (
         <>
@@ -679,10 +673,6 @@ export const AWSDReportPrintPage: React.FC = () => {
                     {renderHeader()}
                     <div className="report-body">
                       {isFirstPage && fixedSections}
-                      <div className="obs-wrapper">
-                        {hasObsTable && renderObsTable(pageObs, i)}
-                      </div>
-                      <ReportSignatures />
                       <div className="obs-wrapper">
                         {hasObsTable && renderObsTable(pageObs, i)}
                       </div>
