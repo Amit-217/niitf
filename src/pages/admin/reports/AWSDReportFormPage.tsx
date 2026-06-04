@@ -370,8 +370,15 @@ export const AWSDReportFormPage: React.FC = () => {
       if (mt(scanningSensitivity)) e.scanningSensitivity = true;
       if (mt(referenceDb)) e.referenceDb = true;
       if (mt(scanningDb)) e.scanningDb = true;
-      if (!observations.some((o) => o.jointDetails.trim()))
-        e.observations = true;
+      // Observations — all fields in all rows required
+      observations.forEach((o, i) => {
+        if (!o.serialNo?.trim()) e[`obs${i}_serialNo`] = true;
+        if (!o.jointDetails?.trim()) e[`obs${i}_jointDetails`] = true;
+        if (!o.drawingNoPartNo?.trim()) e[`obs${i}_drawingNoPartNo`] = true;
+        if (!o.jobThickness?.trim()) e[`obs${i}_jobThickness`] = true;
+        if (!o.transducerAngle?.trim()) e[`obs${i}_transducerAngle`] = true;
+        if (!o.discontinuityEvaluation?.trim()) e[`obs${i}_discontinuityEvaluation`] = true;
+      });
       if (!testDate) e.testDate = true;
       if (mt(inspectedBy)) e.inspectedBy = true;
       if (mt(certYear)) e.certYear = true;
@@ -741,26 +748,12 @@ export const AWSDReportFormPage: React.FC = () => {
       </div>
 
       {/* ── Observations Table ── */}
-      <div
-        className={
-          sectionClass +
-          (errors.observations &&
-          !observations.some((o) => o.jointDetails.trim())
-            ? " ring-2 ring-red-400"
-            : "")
-        }
-      >
+      <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <div className="flex items-center gap-3">
             <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
               Observations
             </h2>
-            {errors.observations &&
-              !observations.some((o) => o.jointDetails.trim()) && (
-                <span className="text-xs font-medium text-red-500">
-                  At least one row must have Joint Details filled.
-                </span>
-              )}
           </div>
           <button
             type="button"
@@ -862,7 +855,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "serialNo", e.target.value)
                       }
-                      className={inputClass + " text-center"}
+                      className={(!!errors[`obs${idx}_serialNo`] && !row.serialNo?.trim() ? inputErrorClass : inputClass) + " text-center"}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -872,7 +865,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "jointDetails", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_jointDetails`] && !row.jointDetails?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -882,7 +875,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "drawingNoPartNo", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_drawingNoPartNo`] && !row.drawingNoPartNo?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -892,7 +885,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "jobThickness", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_jobThickness`] && !row.jobThickness?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -910,7 +903,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "transducerAngle", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_transducerAngle`] && !row.transducerAngle?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1022,7 +1015,7 @@ export const AWSDReportFormPage: React.FC = () => {
                           e.target.value,
                         )
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_discontinuityEvaluation`] && !row.discontinuityEvaluation?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">

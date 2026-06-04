@@ -524,15 +524,24 @@ export const MPTReportFormPage: React.FC = () => {
       if (mt(current)) e.current = true;
       if (oth(currentType, currentTypeOther)) e.currentType = true;
       if (sel(postCleaning)) e.postCleaning = true;
-      // Observations — at least one row with job description
-      if (!observations.some(o => o.jobDescription.trim())) e.observations = true;
+      // Observations — all fields in all rows required
+      observations.forEach((o, i) => {
+        if (!o.jobDescription?.trim()) e[`obs${i}_jobDescription`] = true;
+        if (!o.drawingOrJointNo?.trim()) e[`obs${i}_drawingOrJointNo`] = true;
+        if (!o.size?.trim()) e[`obs${i}_size`] = true;
+        if (!o.quantity?.toString().trim()) e[`obs${i}_quantity`] = true;
+        if (!o.interpretation) e[`obs${i}_interpretation`] = true;
+        if (!o.evaluation) e[`obs${i}_evaluation`] = true;
+      });
       // Conclusion
       if (oth(conclusion, conclusionOther)) e.conclusion = true;
-      // Inspector — first inspector must have name, qualification, designation, date
-      if (!inspectors[0]?.name?.trim()) e.inspectorName_0 = true;
-      if (!inspectors[0]?.qualification?.trim()) e.inspectorQual_0 = true;
-      if (!inspectors[0]?.designation?.trim()) e.inspectorDesig_0 = true;
-      if (!inspectors[0]?.date) e.inspectorDate_0 = true;
+      // Inspectors — all fields in all rows required
+      inspectors.forEach((insp, i) => {
+        if (!insp.name?.trim()) e[`inspectorName_${i}`] = true;
+        if (!insp.qualification?.trim()) e[`inspectorQual_${i}`] = true;
+        if (!insp.designation?.trim()) e[`inspectorDesig_${i}`] = true;
+        if (!insp.date) e[`inspectorDate_${i}`] = true;
+      });
       // Customer section
       if (mt(custName)) e.custName = true;
       if (mt(custDesig)) e.custDesig = true;
@@ -1338,10 +1347,10 @@ export const MPTReportFormPage: React.FC = () => {
       </div>
 
       {/* Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬ */}
-      <div className={`${sectionClass}${errors.observations && !observations.some(o => o.jobDescription.trim()) ? " ring-2 ring-red-400" : ""}`}>
+      <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
-            Observations{errors.observations && !observations.some(o => o.jobDescription.trim()) && <span className="ml-2 text-red-500 text-xs font-normal normal-case">At least one observation row is required</span>}
+            Observations
           </h2>
           <button
             type="button"
@@ -1392,7 +1401,7 @@ export const MPTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "jobDescription", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_jobDescription`] && !row.jobDescription?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1402,7 +1411,7 @@ export const MPTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "drawingOrJointNo", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_drawingOrJointNo`] && !row.drawingOrJointNo?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1410,7 +1419,7 @@ export const MPTReportFormPage: React.FC = () => {
                       type="text"
                       value={row.size}
                       onChange={(e) => updateObs(idx, "size", e.target.value)}
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_size`] && !row.size?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1420,7 +1429,7 @@ export const MPTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "quantity", e.target.value)
                       }
-                      className={inputClass + " w-16"}
+                      className={(!!errors[`obs${idx}_quantity`] && !row.quantity?.toString().trim() ? inputErrorClass : inputClass) + " w-16"}
                       min="0"
                     />
                   </td>
@@ -1430,7 +1439,7 @@ export const MPTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "interpretation", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_interpretation`] && !row.interpretation ? inputErrorClass : inputClass}
                     >
                       <option value="">Select...</option>
                       <option>No relevant Indication Found</option>
@@ -1443,7 +1452,7 @@ export const MPTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "evaluation", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_evaluation`] && !row.evaluation ? inputErrorClass : inputClass}
                     >
                       <option value="">Select...</option>
                       <option>Accepted</option>
@@ -1538,7 +1547,7 @@ export const MPTReportFormPage: React.FC = () => {
                         onChange={(e) =>
                           updateInsp(idx, "name", e.target.value)
                         }
-                        className={`${idx === 0 && errors.inspectorName_0 && !insp.name ? inputErrorClass : inputClass} bg-white`}
+                        className={`${errors[`inspectorName_${idx}`] && !insp.name ? inputErrorClass : inputClass} bg-white`}
                       >
                         <option value="">Select....</option>
                         {users.map((u) => (
@@ -1549,26 +1558,26 @@ export const MPTReportFormPage: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className={labelClass}>Qualification</label>
+                      <label className={labelClass}>Qualification *</label>
                       <input
                         type="text"
                         value={insp.qualification}
                         onChange={(e) =>
                           updateInsp(idx, "qualification", e.target.value)
                         }
-                        className={`${idx === 0 && errors.inspectorQual_0 && !insp.qualification.trim() ? inputErrorClass : inputClass}`}
+                        className={!!errors[`inspectorQual_${idx}`] && !insp.qualification.trim() ? inputErrorClass : inputClass}
                         placeholder="e.g. MT NDE Level II"
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>Designation</label>
+                      <label className={labelClass}>Designation *</label>
                       <input
                         type="text"
                         value={insp.designation}
                         onChange={(e) =>
                           updateInsp(idx, "designation", e.target.value)
                         }
-                        className={`${idx === 0 && errors.inspectorDesig_0 && !insp.designation.trim() ? inputErrorClass : inputClass}`}
+                        className={!!errors[`inspectorDesig_${idx}`] && !insp.designation.trim() ? inputErrorClass : inputClass}
                       />
                     </div>
                     <div>
@@ -1583,14 +1592,14 @@ export const MPTReportFormPage: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>Date</label>
+                      <label className={labelClass}>Date *</label>
                       <input
                         type="date"
                         value={insp.date}
                         onChange={(e) =>
                           updateInsp(idx, "date", e.target.value)
                         }
-                        className={`${idx === 0 && errors.inspectorDate_0 && !insp.date ? inputErrorClass : inputClass}`}
+                        className={!!errors[`inspectorDate_${idx}`] && !insp.date ? inputErrorClass : inputClass}
                       />
                     </div>
                   </div>

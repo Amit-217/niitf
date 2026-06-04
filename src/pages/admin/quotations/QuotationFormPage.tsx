@@ -10,7 +10,15 @@ import {
   updateServiceQuotation,
 } from "../../../api/quotationApi";
 import { getCustomers } from "../../../api/customerApi";
-import { Save, Ban, Plus, Trash2, ArrowLeft, FileText, Loader2 } from "lucide-react";
+import {
+  Save,
+  Ban,
+  Plus,
+  Trash2,
+  ArrowLeft,
+  FileText,
+  Loader2,
+} from "lucide-react";
 
 export const QuotationFormPage: React.FC = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -71,7 +79,7 @@ export const QuotationFormPage: React.FC = () => {
         level: "NA",
         sacCode: "",
         quantity: 0,
-        unit: "",
+        unit: 0,
         price: 0,
         amount: 0,
       },
@@ -82,7 +90,7 @@ export const QuotationFormPage: React.FC = () => {
         level: "NA",
         sacCode: "NA",
         quantity: 1,
-        unit: "Per",
+        unit: 0,
         price: 0,
         amount: 0,
       },
@@ -93,7 +101,7 @@ export const QuotationFormPage: React.FC = () => {
         level: "NA",
         sacCode: "NA",
         quantity: 1,
-        unit: "Per",
+        unit: 0,
         price: 0,
         amount: 0,
       },
@@ -104,7 +112,7 @@ export const QuotationFormPage: React.FC = () => {
         level: "NA",
         sacCode: "NA",
         quantity: 1,
-        unit: "Per",
+        unit: 0,
         price: 0,
         amount: 0,
       },
@@ -293,9 +301,9 @@ export const QuotationFormPage: React.FC = () => {
       description: "",
       _isCustom: false,
       level: "NA",
-      sacCode: "988393",
+      sacCode: "",
       quantity: 1,
-      unit: "Per",
+      unit: type === "service" ? "Per" : 0,
       price: 0,
       amount: 0,
     };
@@ -331,9 +339,30 @@ export const QuotationFormPage: React.FC = () => {
       if (!formData.date) e.date = true;
       if (mt(formData.contactPersons?.[0]?.name)) e.contactName = true;
 
-      // Services — at least one non-fixed row with description and amount > 0
+      // Services — for service type, each non-fixed row must have description
+      if (type === "service") {
+        (formData.services || []).forEach((s: any, i: number) => {
+          if (!s._isFixed && !s.description?.trim())
+            e[`service_${i}_description`] = true;
+          if (!s._isFixed && !s.sacCode?.trim())
+            e[`service_${i}_sacCode`] = true;
+        });
+      }
+      // Training — each non-fixed row must have description and SAC code
+      if (type === "training") {
+        (formData.services || []).forEach((s: any, i: number) => {
+          if (!s._isFixed && !s.description?.trim())
+            e[`service_${i}_description`] = true;
+          if (!s._isFixed && !s.sacCode?.trim())
+            e[`service_${i}_sacCode`] = true;
+        });
+      }
+      // At least one non-fixed row with description and amount > 0
       const validServices = (formData.services || []).filter(
-        (s: any) => !s._isFixed && s.description?.trim() && (parseFloat(s.amount) || 0) > 0,
+        (s: any) =>
+          !s._isFixed &&
+          s.description?.trim() &&
+          (parseFloat(s.amount) || 0) > 0,
       );
       if (validServices.length === 0) e.services = true;
 
@@ -341,8 +370,10 @@ export const QuotationFormPage: React.FC = () => {
       if (mt(formData.termsAndConditions?.paymentTerms)) e.paymentTerms = true;
 
       if (type === "service") {
-        if (!formData.extraCharges?.minimumVisit?.toString().trim()) e.minimumVisit = true;
-        if (mt(formData.termsAndConditions?.materialHandling)) e.materialHandling = true;
+        if (!formData.extraCharges?.minimumVisit?.toString().trim())
+          e.minimumVisit = true;
+        if (mt(formData.termsAndConditions?.materialHandling))
+          e.materialHandling = true;
         if (mt(formData.termsAndConditions?.personnel)) e.personnel = true;
         if (!formData.termsAndConditions?.machines) e.machines = true;
         if (!formData.termsAndConditions?.consumables) e.consumables = true;
@@ -565,13 +596,16 @@ export const QuotationFormPage: React.FC = () => {
         </div>
 
         {/* Services Table */}
-        <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100${errors.services ? " ring-2 ring-red-400" : ""}`}>
+        <div
+          className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100${errors.services ? " ring-2 ring-red-400" : ""}`}
+        >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest">
               Services / Items
               {errors.services && (
                 <span className="ml-2 text-red-500 text-xs font-normal normal-case">
-                  At least one service row with description and amount &gt; 0 is required
+                  At least one service row with description and amount &gt; 0 is
+                  required
                 </span>
               )}
             </h2>
@@ -679,7 +713,7 @@ export const QuotationFormPage: React.FC = () => {
                                     services: updated,
                                   });
                                 }}
-                                className="w-full px-3 py-2 border rounded-lg text-sm"
+                                className={`w-full px-3 py-2 border rounded-lg text-sm${errors[`service_${i}_description`] && !row.description?.trim() && !row._isCustom ? " border-red-400 bg-red-50" : ""}`}
                               >
                                 <option value="">Select description...</option>
 
@@ -703,7 +737,7 @@ export const QuotationFormPage: React.FC = () => {
                                       e.target.value,
                                     )
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                                  className={`w-full px-3 py-2 border rounded-lg text-sm${errors[`service_${i}_description`] && !row.description?.trim() ? " border-red-400 bg-red-50" : ""}`}
                                   placeholder="Enter custom description..."
                                   autoFocus
                                 />
@@ -738,7 +772,7 @@ export const QuotationFormPage: React.FC = () => {
                                     services: updated,
                                   });
                                 }}
-                                className="w-full min-w-[300px] px-3 py-2 border rounded-lg text-sm"
+                                className={`w-full min-w-[300px] px-3 py-2 border rounded-lg text-sm${errors[`service_${i}_description`] && !row.description?.trim() && !row._isCustom ? " border-red-400 bg-red-50" : ""}`}
                               >
                                 <option value="">Select description...</option>
 
@@ -762,7 +796,7 @@ export const QuotationFormPage: React.FC = () => {
                                       e.target.value,
                                     )
                                   }
-                                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                                  className={`w-full px-3 py-2 border rounded-lg text-sm${errors[`service_${i}_description`] && !row.description?.trim() ? " border-red-400 bg-red-50" : ""}`}
                                   placeholder="Enter custom description..."
                                   autoFocus
                                 />
@@ -796,7 +830,7 @@ export const QuotationFormPage: React.FC = () => {
                             onChange={(e) =>
                               handleServiceChange(i, "sacCode", e.target.value)
                             }
-                            className="w-full px-1 py-2 border rounded-lg text-sm"
+                            className={`w-24 px-3 py-2 border rounded-lg text-sm${errors[`service_${i}_sacCode`] && !row.sacCode?.trim() ? " border-red-400 bg-red-50" : ""}`}
                           />
                         </td>
                       </>
@@ -810,7 +844,7 @@ export const QuotationFormPage: React.FC = () => {
                         onChange={(e) =>
                           handleServiceChange(i, "quantity", e.target.value)
                         }
-                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                        className="w-24 px-3 py-2 border rounded-lg text-sm"
                       />
                     </td>
 
@@ -823,7 +857,7 @@ export const QuotationFormPage: React.FC = () => {
                         onChange={(e) =>
                           handleServiceChange(i, "unit", e.target.value)
                         }
-                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                        className="w-24 px-3 py-2 border rounded-lg text-sm"
                       />
                     </td>
 
@@ -835,7 +869,7 @@ export const QuotationFormPage: React.FC = () => {
                         onChange={(e) =>
                           handleServiceChange(i, "price", e.target.value)
                         }
-                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                        className="w-24 px-3 py-2 border rounded-lg text-sm"
                       />
                     </td>
 
@@ -845,7 +879,7 @@ export const QuotationFormPage: React.FC = () => {
                         readOnly
                         type="number"
                         value={row.amount}
-                        className="w-full px-3 py-2 border rounded-lg text-sm bg-gray-50 font-bold"
+                        className="w-24 px-3 py-2 border rounded-lg text-sm bg-gray-50 font-bold"
                       />
                     </td>
 
