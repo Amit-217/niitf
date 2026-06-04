@@ -568,13 +568,14 @@ export const UTReportFormPage: React.FC = () => {
       if (sel(eqCouplant)) e.eqCouplant = true;
       if (sel(eqBasicCalib)) e.eqBasicCalib = true;
 
-      // Search Unit — require first row to be fully filled
-      const su0 = searchUnits[0];
-      if (!su0 || mt(su0.model)) e.searchUnit0_model = true;
-      if (!su0 || sel(su0.angle)) e.searchUnit0_angle = true;
-      if (!su0 || mt(su0.srNo)) e.searchUnit0_srNo = true;
-      if (!su0 || sel(su0.crystalSize)) e.searchUnit0_crystalSize = true;
-      if (!su0 || oth(su0.frequency, su0.frequencyCustom ?? "")) e.searchUnit0_frequency = true;
+      // Search Unit — require all rows to be fully filled
+      searchUnits.forEach((su, i) => {
+        if (mt(su.model)) e[`searchUnit${i}_model`] = true;
+        if (sel(su.angle)) e[`searchUnit${i}_angle`] = true;
+        if (mt(su.srNo)) e[`searchUnit${i}_srNo`] = true;
+        if (sel(su.crystalSize)) e[`searchUnit${i}_crystalSize`] = true;
+        if (oth(su.frequency, su.frequencyCustom ?? "")) e[`searchUnit${i}_frequency`] = true;
+      });
 
       // Technique
       if (oth(utMethod, utMethodCustom)) e.utMethod = true;
@@ -593,17 +594,26 @@ export const UTReportFormPage: React.FC = () => {
       if (mt(calib70.range)) e.calib70_range = true;
       if (mt(calib70.refDb)) e.calib70_refDb = true;
 
-      // Observations
-      if (!observations.some((o: any) => o.jobDescription?.trim())) e.observations = true;
+      // Observations — all fields in all rows required
+      observations.forEach((o, i) => {
+        if (!o.jobDescription?.trim()) e[`obs${i}_jobDescription`] = true;
+        if (!o.drawingOrJointNo?.trim()) e[`obs${i}_drawingOrJointNo`] = true;
+        if (!o.size?.trim()) e[`obs${i}_size`] = true;
+        if (!o.quantity?.toString().trim()) e[`obs${i}_quantity`] = true;
+        if (!o.interpretation) e[`obs${i}_interpretation`] = true;
+        if (!o.evaluation) e[`obs${i}_evaluation`] = true;
+      });
 
       // Conclusion
       if (oth(conclusion, conclusionCustom)) e.conclusion = true;
 
-      // Inspector 0 — all fields required
-      if (!inspectors[0]?.name?.trim()) e.inspectorName_0 = true;
-      if (!inspectors[0]?.qualification?.trim()) e.inspectorQual_0 = true;
-      if (!inspectors[0]?.designation?.trim()) e.inspectorDesig_0 = true;
-      if (!inspectors[0]?.date) e.inspectorDate_0 = true;
+      // Inspectors — all fields in all rows required
+      inspectors.forEach((insp, i) => {
+        if (!insp.name?.trim()) e[`inspectorName_${i}`] = true;
+        if (!insp.qualification?.trim()) e[`inspectorQual_${i}`] = true;
+        if (!insp.designation?.trim()) e[`inspectorDesig_${i}`] = true;
+        if (!insp.date) e[`inspectorDate_${i}`] = true;
+      });
 
       // Customer representative
       if (mt(custName)) e.custName = true;
@@ -1136,13 +1146,12 @@ export const UTReportFormPage: React.FC = () => {
             </thead>
             <tbody>
               {searchUnits.map((unit, idx) => {
-                const isFirst = idx === 0;
-                const modelErr = isFirst && !!errors.searchUnit0_model && !unit.model.trim();
-                const angleErr = isFirst && !!errors.searchUnit0_angle && !unit.angle;
-                const srNoErr = isFirst && !!errors.searchUnit0_srNo && !unit.srNo.trim();
-                const crystalErr = isFirst && !!errors.searchUnit0_crystalSize && !unit.crystalSize;
+                const modelErr = !!errors[`searchUnit${idx}_model`] && !unit.model.trim();
+                const angleErr = !!errors[`searchUnit${idx}_angle`] && !unit.angle;
+                const srNoErr = !!errors[`searchUnit${idx}_srNo`] && !unit.srNo.trim();
+                const crystalErr = !!errors[`searchUnit${idx}_crystalSize`] && !unit.crystalSize;
                 const freqVal = unit.frequency === "Other" ? unit.frequencyCustom ?? "" : unit.frequency;
-                const freqErr = isFirst && !!errors.searchUnit0_frequency && !freqVal.trim();
+                const freqErr = !!errors[`searchUnit${idx}_frequency`] && !freqVal.trim();
                 return (
                   <tr key={idx} className="hover:bg-gray-50">
                     <td className="border border-gray-200 px-1 py-1">
@@ -1372,7 +1381,7 @@ export const UTReportFormPage: React.FC = () => {
       </div>
 
       {/* -- Observations -- */}
-      <div className={`${sectionClass}${errors.observations ? " ring-2 ring-red-400" : ""}`}>
+      <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4">
           <h2
             className={sectionTitleClass.replace(
@@ -1419,7 +1428,14 @@ export const UTReportFormPage: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {observations.map((row, idx) => (
+              {observations.map((row, idx) => {
+                const jobDescErr = !!errors[`obs${idx}_jobDescription`] && !row.jobDescription?.trim();
+                const drawingErr = !!errors[`obs${idx}_drawingOrJointNo`] && !row.drawingOrJointNo?.trim();
+                const sizeErr = !!errors[`obs${idx}_size`] && !row.size?.trim();
+                const quantityErr = !!errors[`obs${idx}_quantity`] && !row.quantity?.toString().trim();
+                const interpErr = !!errors[`obs${idx}_interpretation`] && !row.interpretation;
+                const evalErr = !!errors[`obs${idx}_evaluation`] && !row.evaluation;
+                return (
                 <tr key={idx} className="hover:bg-gray-50">
                   <td className="border border-gray-200 px-2 py-1 text-center text-gray-500">
                     {row.srNo}
@@ -1431,7 +1447,7 @@ export const UTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "jobDescription", e.target.value)
                       }
-                      className={inputClass}
+                      className={jobDescErr ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1441,7 +1457,7 @@ export const UTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "drawingOrJointNo", e.target.value)
                       }
-                      className={inputClass}
+                      className={drawingErr ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1449,7 +1465,7 @@ export const UTReportFormPage: React.FC = () => {
                       type="text"
                       value={row.size}
                       onChange={(e) => updateObs(idx, "size", e.target.value)}
-                      className={inputClass}
+                      className={sizeErr ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1459,7 +1475,7 @@ export const UTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "quantity", e.target.value)
                       }
-                      className={inputClass + " w-16"}
+                      className={(quantityErr ? inputErrorClass : inputClass) + " w-16"}
                       min="0"
                     />
                   </td>
@@ -1469,7 +1485,7 @@ export const UTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "interpretation", e.target.value)
                       }
-                      className={inputClass}
+                      className={interpErr ? inputErrorClass : inputClass}
                     >
                       <option value="">Select...</option>
                       <option>No relevant Indication Found</option>
@@ -1482,7 +1498,7 @@ export const UTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "evaluation", e.target.value)
                       }
-                      className={inputClass}
+                      className={evalErr ? inputErrorClass : inputClass}
                     >
                       <option value="">Select...</option>
                       <option>Accepted</option>
@@ -1501,7 +1517,8 @@ export const UTReportFormPage: React.FC = () => {
                     )}
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -1563,11 +1580,11 @@ export const UTReportFormPage: React.FC = () => {
                   )}
                   <div className="space-y-2">
                     <div>
-                      <label className={labelClass}>Name{idx === 0 ? " *" : ""}</label>
+                      <label className={labelClass}>Name *</label>
                       <select
                         value={insp.name}
                         onChange={(e) => updateInsp(idx, "name", e.target.value)}
-                        className={`${idx === 0 && errors.inspectorName_0 && !insp.name.trim() ? inputErrorClass : inputClass} bg-white`}
+                        className={`${errors[`inspectorName_${idx}`] && !insp.name.trim() ? inputErrorClass : inputClass} bg-white`}
                       >
                         <option value="">Select....</option>
                         {users.map((u) => (
@@ -1578,22 +1595,22 @@ export const UTReportFormPage: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className={labelClass}>Qualification{idx === 0 ? " *" : ""}</label>
+                      <label className={labelClass}>Qualification *</label>
                       <input
                         type="text"
                         value={insp.qualification}
                         onChange={(e) => updateInsp(idx, "qualification", e.target.value)}
-                        className={idx === 0 && !!errors.inspectorQual_0 && !insp.qualification.trim() ? inputErrorClass : inputClass}
+                        className={!!errors[`inspectorQual_${idx}`] && !insp.qualification.trim() ? inputErrorClass : inputClass}
                         placeholder="e.g. UT NDE Level II"
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>Designation{idx === 0 ? " *" : ""}</label>
+                      <label className={labelClass}>Designation *</label>
                       <input
                         type="text"
                         value={insp.designation}
                         onChange={(e) => updateInsp(idx, "designation", e.target.value)}
-                        className={idx === 0 && !!errors.inspectorDesig_0 && !insp.designation.trim() ? inputErrorClass : inputClass}
+                        className={!!errors[`inspectorDesig_${idx}`] && !insp.designation.trim() ? inputErrorClass : inputClass}
                       />
                     </div>
                     <div>
@@ -1606,12 +1623,12 @@ export const UTReportFormPage: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>Date{idx === 0 ? " *" : ""}</label>
+                      <label className={labelClass}>Date *</label>
                       <input
                         type="date"
                         value={insp.date}
                         onChange={(e) => updateInsp(idx, "date", e.target.value)}
-                        className={idx === 0 && !!errors.inspectorDate_0 && !insp.date ? inputErrorClass : inputClass}
+                        className={!!errors[`inspectorDate_${idx}`] && !insp.date ? inputErrorClass : inputClass}
                       />
                     </div>
                   </div>

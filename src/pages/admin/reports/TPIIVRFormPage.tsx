@@ -357,11 +357,6 @@ export const TPIIVRFormPage: React.FC = () => {
   const hasError = (key: string) => !!errors[key] && !getFieldValue(key);
   const fc = (key: string) => (hasError(key) ? inputErrorClass : inputClass);
 
-  // helper: true when at least one items row has a non-empty description
-  const hasAnyItem = () => items.some((i) => i.description.trim() !== "");
-  // helper: true when at least one refDoc row has a non-empty document field
-  const hasAnyRefDoc = () => refDocs.some((d) => d.document.trim() !== "");
-
   const updateItem = (idx: number, key: keyof InspectionItemRow, val: string) =>
     setItems((prev) =>
       prev.map((r, i) => (i === idx ? { ...r, [key]: val } : r)),
@@ -425,9 +420,21 @@ export const TPIIVRFormPage: React.FC = () => {
       if (!inspAttDt) e.inspAttDt = true;
       if (mt(clientContact)) e.clientContact = true;
 
-      // ── table-level checks ──
-      if (!hasAnyItem()) e.items = true;
-      if (!hasAnyRefDoc()) e.refDocs = true;
+      // Items — all key fields in all rows required
+      items.forEach((item, i) => {
+        if (!item.description?.trim()) e[`item${i}_description`] = true;
+        if (!item.poLineNo?.trim()) e[`item${i}_poLineNo`] = true;
+        if (!item.inspectionType) e[`item${i}_inspectionType`] = true;
+      });
+      // Ref Docs — document field required in all rows
+      refDocs.forEach((doc, i) => {
+        if (!doc.document?.trim()) e[`refDoc${i}_document`] = true;
+      });
+      // Signatures
+      if (!vendorSignName.trim()) e.vendorSignName = true;
+      if (!vendorSignDate) e.vendorSignDate = true;
+      if (!niitSignName.trim()) e.niitSignName = true;
+      if (!niitSignDate) e.niitSignDate = true;
 
       if (Object.keys(e).length > 0) {
         setErrors(e);
@@ -849,18 +856,11 @@ export const TPIIVRFormPage: React.FC = () => {
       </div>
 
       {/* ── Inspection Items ── */}
-      <div
-        className={`${sectionClass}${errors.items && !hasAnyItem() ? " ring-2 ring-red-400" : ""}`}
-      >
+      <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
             Inspection Items{" "}
             <span className="text-red-500 font-bold">*</span>
-            {errors.items && !hasAnyItem() && (
-              <span className="ml-2 text-xs font-normal text-red-500 normal-case">
-                At least one item row is required
-              </span>
-            )}
           </h2>
           <button
             type="button"
@@ -914,7 +914,7 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateItem(idx, "poLineNo", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`item${idx}_poLineNo`] && !row.poLineNo?.trim() ? inputErrorClass : inputClass}
                       placeholder="01"
                     />
                   </td>
@@ -925,7 +925,7 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateItem(idx, "description", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`item${idx}_description`] && !row.description?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -999,7 +999,7 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateItem(idx, "inspectionType", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`item${idx}_inspectionType`] && !row.inspectionType ? inputErrorClass : inputClass}
                     >
                       <option value="">Select...</option>
                       <option>STAGE</option>
@@ -1061,18 +1061,11 @@ export const TPIIVRFormPage: React.FC = () => {
       </div>
 
       {/* ── Reference Documents ── */}
-      <div
-        className={`${sectionClass}${errors.refDocs && !hasAnyRefDoc() ? " ring-2 ring-red-400" : ""}`}
-      >
+      <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
             Reference Documents for Inspection{" "}
             <span className="text-red-500 font-bold">*</span>
-            {errors.refDocs && !hasAnyRefDoc() && (
-              <span className="ml-2 text-xs font-normal text-red-500 normal-case">
-                At least one reference document is required
-              </span>
-            )}
           </h2>
           <button
             type="button"
@@ -1108,7 +1101,7 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateRefDoc(idx, "document", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`refDoc${idx}_document`] && !doc.document?.trim() ? inputErrorClass : inputClass}
                       placeholder="e.g. Drawing"
                     />
                   </td>
@@ -1278,7 +1271,7 @@ export const TPIIVRFormPage: React.FC = () => {
                   type="text"
                   value={vendorSignName}
                   onChange={(e) => setVendorSignName(e.target.value)}
-                  className={inputClass}
+                  className={!!errors.vendorSignName && !vendorSignName.trim() ? inputErrorClass : inputClass}
                   placeholder="e.g. Mr. Ravindra Naral"
                 />
               </div>
@@ -1288,7 +1281,7 @@ export const TPIIVRFormPage: React.FC = () => {
                   type="date"
                   value={vendorSignDate}
                   onChange={(e) => setVendorSignDate(e.target.value)}
-                  className={inputClass}
+                  className={!!errors.vendorSignDate && !vendorSignDate ? inputErrorClass : inputClass}
                 />
               </div>
             </div>
@@ -1304,7 +1297,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 <select
                   value={niitSignName}
                   onChange={(e) => setNiitSignName(e.target.value)}
-                  className={`${inputClass} bg-white`}
+                  className={`${!!errors.niitSignName && !niitSignName ? inputErrorClass : inputClass} bg-white`}
                 >
                   <option value="">Select....</option>
                   {users.map((u) => (
@@ -1320,7 +1313,7 @@ export const TPIIVRFormPage: React.FC = () => {
                   type="date"
                   value={niitSignDate}
                   onChange={(e) => setNiitSignDate(e.target.value)}
-                  className={inputClass}
+                  className={!!errors.niitSignDate && !niitSignDate ? inputErrorClass : inputClass}
                 />
               </div>
             </div>

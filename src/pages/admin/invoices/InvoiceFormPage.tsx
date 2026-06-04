@@ -43,6 +43,7 @@ const defaultForm = {
   documentNo: "",
   dispatchedThrough: "",
   destination: "",
+  otherReferences: "",
   termsOfDelivery: "",
   paymentMode: "Immediate after submission bill",
   paymentModeCustom: "",
@@ -364,13 +365,16 @@ export const InvoiceFormPage: React.FC = () => {
       if (mt(form.documentNo)) e.documentNo = true;
       if (mt(form.dispatchedThrough)) e.dispatchedThrough = true;
       if (mt(form.destination)) e.destination = true;
+      if (mt(form.otherReferences)) e.otherReferences = true;
       if (mt(form.termsOfDelivery)) e.termsOfDelivery = true;
 
-      // Line items — at least one item with description and amount > 0
-      const validItems = form.items.filter(
-        (it) => it.description.trim() && it.amount > 0,
-      );
-      if (validItems.length === 0) e.items = true;
+      // Line items — every row must have description and unitPrice > 0
+      form.items.forEach((it, i) => {
+        if (!it.description.trim()) e[`item_${i}_description`] = true;
+        if (!it.hsnSac.trim()) e[`item_${i}_hsnSac`] = true;
+        if (it.unitPrice <= 0) e[`item_${i}_unitPrice`] = true;
+      });
+      if (form.items.length === 0) e.items = true;
 
       // Bank Details
       if (mt(form.bankDetails.bankName)) e["bankDetails.bankName"] = true;
@@ -710,7 +714,7 @@ export const InvoiceFormPage: React.FC = () => {
                   </td>
                   <td className="px-3 py-2">
                     <input
-                      className="input-field w-full"
+                      className={`input-field w-full${errors[`item_${idx}_description`] && !it.description.trim() ? " border-red-400 bg-red-50 focus:ring-red-400" : ""}`}
                       value={it.description}
                       onChange={(e) =>
                         updateItem(idx, "description", e.target.value)
@@ -720,7 +724,7 @@ export const InvoiceFormPage: React.FC = () => {
                   </td>
                   <td className="px-1 py-2">
                     <input
-                      className="input-field w-full"
+                      className={`input-field w-full${errors[`item_${idx}_hsnSac`] && !it.hsnSac.trim() ? " border-red-400 bg-red-50 focus:ring-red-400" : ""}`}
                       value={it.hsnSac}
                       onChange={(e) =>
                         updateItem(idx, "hsnSac", e.target.value)
@@ -757,7 +761,7 @@ export const InvoiceFormPage: React.FC = () => {
                       type="number"
                       min="0"
                       step="0.01"
-                      className="input-field w-full"
+                      className={`input-field w-full${errors[`item_${idx}_unitPrice`] && it.unitPrice <= 0 ? " border-red-400 bg-red-50 focus:ring-red-400" : ""}`}
                       value={it.unitPrice}
                       onChange={(e) =>
                         updateItem(idx, "unitPrice", Number(e.target.value))

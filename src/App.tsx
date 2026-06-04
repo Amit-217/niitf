@@ -58,6 +58,9 @@ import { EmployeeSalaryDetailPage } from "./pages/admin/payroll/EmployeeSalaryDe
 import { QuestionPapersPage } from "./pages/admin/questionPapers/QuestionPapersPage";
 import { QuestionPaperFormPage } from "./pages/admin/questionPapers/QuestionPaperFormPage";
 import { AssignTestPage } from "./pages/admin/assignedTests/AssignTestPage";
+import { ResultsPage } from "./pages/admin/results/ResultsPage";
+import { ResultDetailPage } from "./pages/admin/results/ResultDetailPage";
+import { SubmissionReviewPage } from "./pages/admin/results/SubmissionReviewPage";
 import { StudentLogin } from "./pages/auth/StudentLogin";
 import StudentLayout from "./layouts/StudentLayout";
 import StudentDashboard from "./pages/student/dashboard/StudentDashboard";
@@ -247,6 +250,9 @@ function App() {
           <Route path="question-papers/new" element={<QuestionPaperFormPage />} />
           <Route path="question-papers/:id/edit" element={<QuestionPaperFormPage />} />
           <Route path="assign-tests" element={<AssignTestPage />} />
+          <Route path="results" element={<ResultsPage />} />
+          <Route path="results/:testId" element={<ResultDetailPage />} />
+          <Route path="results/:testId/:submissionId" element={<SubmissionReviewPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="customers/:id" element={<CustomerDetailPage />} />
 
