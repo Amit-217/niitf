@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Plus,
   Search,
@@ -69,11 +69,14 @@ const fmt = (d?: string | null) =>
 
 export const QuotationsListPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [allQuotations, setAllQuotations] = useState<any[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState<QuoteType>("service");
+  const [activeTab, setActiveTab] = useState<QuoteType>(
+    (location.state as any)?.activeTab || "service"
+  );
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
