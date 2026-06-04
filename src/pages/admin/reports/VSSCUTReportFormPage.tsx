@@ -11,7 +11,6 @@ import {
 } from "../../../api/customerApi";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 import api from "../../../api/axios";
-import { AssignTestPage } from "../assignedTests/AssignTestPage";
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 const inputClass =
@@ -107,11 +106,11 @@ const SKIPS: Array<{
   key: keyof Pick<ProbeModeFormData, "half" | "one" | "oneHalf" | "two">;
   label: string;
 }> = [
-    { key: "half", label: "½" },
-    { key: "one", label: "1" },
-    { key: "oneHalf", label: "1½" },
-    { key: "two", label: "2" },
-  ];
+  { key: "half", label: "½" },
+  { key: "one", label: "1" },
+  { key: "oneHalf", label: "1½" },
+  { key: "two", label: "2" },
+];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export const VSSCUTReportFormPage: React.FC = () => {
@@ -132,14 +131,14 @@ export const VSSCUTReportFormPage: React.FC = () => {
   const [reportNo, setReportNo] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [reportDate, setReportDate] = useState("");
-  const [weldJointNo, setWeldJointNo] = useState("As per Annexure I");
+  const [weldJointNo, setWeldJointNo] = useState("");
   const [thicknessOfJob, setThicknessOfJob] = useState("");
   const [thicknessOfJobCustom, setThicknessOfJobCustom] = useState("");
   const [surfaceCondition, setSurfaceCondition] = useState("");
   const [surfaceConditionCustom, setSurfaceConditionCustom] = useState("");
   const [periodFrom, setPeriodFrom] = useState("");
   const [periodTo, setPeriodTo] = useState("");
-  const [material, setMaterial] = useState("MDN 250");
+  const [material, setMaterial] = useState("");
   const [scanningTechnique, setScanningTechnique] = useState("");
   const [scanningTechniqueCustom, setScanningTechniqueCustom] = useState("");
   const [stageOfInspection, setStageOfInspection] = useState("");
@@ -156,10 +155,10 @@ export const VSSCUTReportFormPage: React.FC = () => {
   const [referenceDatumCustom, setReferenceDatumCustom] = useState("");
 
   // ── Test Setup ──
-  const [tsAngleRange, setTsAngleRange] = useState("0-100 mm");
-  const [tsNormalRange, setTsNormalRange] = useState("0-10 mm");
-  const [tsCalBlockAngle, setTsCalBlockAngle] = useState("V-2 Block (MDN-250)");
-  const [tsCalBlockNormal, setTsCalBlockNormal] = useState("Step Block (MDN 250)");
+  const [tsAngleRange, setTsAngleRange] = useState("");
+  const [tsNormalRange, setTsNormalRange] = useState("");
+  const [tsCalBlockAngle, setTsCalBlockAngle] = useState("");
+  const [tsCalBlockNormal, setTsCalBlockNormal] = useState("");
   const [tsRefBlockAngle, setTsRefBlockAngle] = useState("");
   const [tsRefBlockNormal, setTsRefBlockNormal] = useState("");
   const [tsRefBlockAngleCustom, setTsRefBlockAngleCustom] = useState("");
@@ -201,7 +200,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   // ── Final Section ──
@@ -298,7 +297,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
         setAreaScannedCustom(asC);
         const [acc, accC] = fromOther(r.acceptanceStandard, [
           "MME/QC-HTW/M250/001 REV.0",
-          
+
           "Other",
         ]);
         setAcceptanceStandard(acc);
@@ -311,13 +310,10 @@ export const VSSCUTReportFormPage: React.FC = () => {
         setTsNormalRange(ts.normalRange ?? "");
         setTsCalBlockAngle(ts.standardCalBlock?.angle ?? "");
         setTsCalBlockNormal(ts.standardCalBlock?.normal ?? "");
-        const [rba, rbaC] = fromOther(
-        ts.identificationNoOfRefBlock?.angle,
-        [
+        const [rba, rbaC] = fromOther(ts.identificationNoOfRefBlock?.angle, [
           "'G' Notch (LSP 34 A side only)",
           "Other",
-        ]
-        );
+        ]);
         setTsRefBlockAngle(rba);
         setTsRefBlockAngleCustom(rbaC);
         const [rbn, rbnC] = fromOther(ts.identificationNoOfRefBlock?.normal, [
@@ -427,26 +423,46 @@ export const VSSCUTReportFormPage: React.FC = () => {
       periodTo,
       inspectorName,
       disposition,
-      thicknessOfJob: thicknessOfJob === "Other" ? thicknessOfJobCustom : thicknessOfJob,
-      surfaceCondition: surfaceCondition === "Other" ? surfaceConditionCustom : surfaceCondition,
-      scanningTechnique: scanningTechnique === "Other" ? scanningTechniqueCustom : scanningTechnique,
-      stageOfInspection: stageOfInspection === "Other" ? stageOfInspectionCustom : stageOfInspection,
-      equipmentUsed: equipmentUsed === "Other" ? equipmentUsedCustom : equipmentUsed,
+      thicknessOfJob:
+        thicknessOfJob === "Other" ? thicknessOfJobCustom : thicknessOfJob,
+      surfaceCondition:
+        surfaceCondition === "Other"
+          ? surfaceConditionCustom
+          : surfaceCondition,
+      scanningTechnique:
+        scanningTechnique === "Other"
+          ? scanningTechniqueCustom
+          : scanningTechnique,
+      stageOfInspection:
+        stageOfInspection === "Other"
+          ? stageOfInspectionCustom
+          : stageOfInspection,
+      equipmentUsed:
+        equipmentUsed === "Other" ? equipmentUsedCustom : equipmentUsed,
       couplant: couplant === "Other" ? couplantCustom : couplant,
       areaScanned: areaScanned === "Other" ? areaScannedCustom : areaScanned,
-      acceptanceStandard: acceptanceStandard === "Other" ? acceptanceStandardCustom : acceptanceStandard,
+      acceptanceStandard:
+        acceptanceStandard === "Other"
+          ? acceptanceStandardCustom
+          : acceptanceStandard,
       evaluation: evaluation === "Other" ? evaluationCustom : evaluation,
       // Reference Datum
-      referenceDatum: referenceDatum === "Other" ? referenceDatumCustom : referenceDatum,
+      referenceDatum:
+        referenceDatum === "Other" ? referenceDatumCustom : referenceDatum,
       // Test Setup
       tsAngleRange,
       tsNormalRange,
       tsCalBlockAngle,
       tsCalBlockNormal,
-      tsRefBlockAngle: tsRefBlockAngle === "Other" ? tsRefBlockAngleCustom : tsRefBlockAngle,
-      tsRefBlockNormal: tsRefBlockNormal === "Other" ? tsRefBlockNormalCustom : tsRefBlockNormal,
+      tsRefBlockAngle:
+        tsRefBlockAngle === "Other" ? tsRefBlockAngleCustom : tsRefBlockAngle,
+      tsRefBlockNormal:
+        tsRefBlockNormal === "Other"
+          ? tsRefBlockNormalCustom
+          : tsRefBlockNormal,
       // Angle Probe Calibration
-      apcFrequency: apcFrequency === "Other" ? apcFrequencyCustom : apcFrequency,
+      apcFrequency:
+        apcFrequency === "Other" ? apcFrequencyCustom : apcFrequency,
       apcSize: apcSize === "Other" ? apcSizeCustom : apcSize,
       apcType: apcType === "Other" ? apcTypeCustom : apcType,
       probe45Sr,
@@ -494,16 +510,20 @@ export const VSSCUTReportFormPage: React.FC = () => {
       if (!reportDate) e.reportDate = true;
       if (mt(weldJointNo)) e.weldJointNo = true;
       if (oth(thicknessOfJob, thicknessOfJobCustom)) e.thicknessOfJob = true;
-      if (oth(surfaceCondition, surfaceConditionCustom)) e.surfaceCondition = true;
+      if (oth(surfaceCondition, surfaceConditionCustom))
+        e.surfaceCondition = true;
       if (!periodFrom) e.periodFrom = true;
       if (!periodTo) e.periodTo = true;
       if (mt(material)) e.material = true;
-      if (oth(scanningTechnique, scanningTechniqueCustom)) e.scanningTechnique = true;
-      if (oth(stageOfInspection, stageOfInspectionCustom)) e.stageOfInspection = true;
+      if (oth(scanningTechnique, scanningTechniqueCustom))
+        e.scanningTechnique = true;
+      if (oth(stageOfInspection, stageOfInspectionCustom))
+        e.stageOfInspection = true;
       if (oth(equipmentUsed, equipmentUsedCustom)) e.equipmentUsed = true;
       if (oth(couplant, couplantCustom)) e.couplant = true;
       if (oth(areaScanned, areaScannedCustom)) e.areaScanned = true;
-      if (oth(acceptanceStandard, acceptanceStandardCustom)) e.acceptanceStandard = true;
+      if (oth(acceptanceStandard, acceptanceStandardCustom))
+        e.acceptanceStandard = true;
       if (oth(referenceDatum, referenceDatumCustom)) e.referenceDatum = true;
 
       // Test Setup
@@ -512,7 +532,8 @@ export const VSSCUTReportFormPage: React.FC = () => {
       if (mt(tsCalBlockAngle)) e.tsCalBlockAngle = true;
       if (mt(tsCalBlockNormal)) e.tsCalBlockNormal = true;
       if (oth(tsRefBlockAngle, tsRefBlockAngleCustom)) e.tsRefBlockAngle = true;
-      if (oth(tsRefBlockNormal, tsRefBlockNormalCustom)) e.tsRefBlockNormal = true;
+      if (oth(tsRefBlockNormal, tsRefBlockNormalCustom))
+        e.tsRefBlockNormal = true;
 
       // Angle Probe Calibration
       if (oth(apcFrequency, apcFrequencyCustom)) e.apcFrequency = true;
@@ -522,10 +543,15 @@ export const VSSCUTReportFormPage: React.FC = () => {
       if (mt(probe60Sr)) e.probe60Sr = true;
       if (mt(probe70Sr)) e.probe70Sr = true;
 
-      // Calibration table — require dacDb and scanningDb for each probe mode
+      // Calibration table — require all skip fields and dacDb/scanningDb for each probe mode
       PROBE_MODES.forEach((pm) => {
+        SKIPS.forEach(({ key }) => {
+          if (mt(calibTable[pm][key].bp)) e[`calibTable_${pm}_${key}_bp`] = true;
+          if (mt(calibTable[pm][key].fsh)) e[`calibTable_${pm}_${key}_fsh`] = true;
+        });
         if (mt(calibTable[pm].dacDb)) e[`calibTable_${pm}_dacDb`] = true;
-        if (mt(calibTable[pm].scanningDb)) e[`calibTable_${pm}_scanningDb`] = true;
+        if (mt(calibTable[pm].scanningDb))
+          e[`calibTable_${pm}_scanningDb`] = true;
       });
 
       // Normal Probe Calibration
@@ -603,7 +629,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
             normal: tsCalBlockNormal,
           },
           identificationNoOfRefBlock: {
-            angle: resolve(tsRefBlockAngle,tsRefBlockAngleCustom),
+            angle: resolve(tsRefBlockAngle, tsRefBlockAngleCustom),
             normal: resolve(tsRefBlockNormal, tsRefBlockNormalCustom),
           },
         },
@@ -636,8 +662,18 @@ export const VSSCUTReportFormPage: React.FC = () => {
               date: inspectorDate || undefined,
             },
           ],
-          qc: { name: qcName, idNo: qcIdNo, signature: qcSignature, date: qcDate || undefined },
-          rqs: { name: rqsName, idNo: rqsIdNo, signature: rqsSignature, date: rqsDate || undefined },
+          qc: {
+            name: qcName,
+            idNo: qcIdNo,
+            signature: qcSignature,
+            date: qcDate || undefined,
+          },
+          rqs: {
+            name: rqsName,
+            idNo: rqsIdNo,
+            signature: rqsSignature,
+            date: rqsDate || undefined,
+          },
         },
       };
       if (id) {
@@ -753,27 +789,22 @@ export const VSSCUTReportFormPage: React.FC = () => {
             <input
               type="text"
               value={weldJointNo}
+              placeholder="e.g. WJ-01"
               onChange={(e) => setWeldJointNo(e.target.value)}
               className={fc("weldJointNo")}
             />
           </div>
-         <div>
-  <label className={labelClass}>Thickness of Job</label>
-  <SelectWithCustom
-    value={thicknessOfJob}
-    onChange={setThicknessOfJob}
-    customValue={thicknessOfJobCustom}
-    onCustomChange={setThicknessOfJobCustom}
-    options={[
-      "7.8MM",
-      "7.7MM",
-      "12MM",
-      "18MM",
-      "Other",
-    ]}
-    error={hasError("thicknessOfJob")}
-  />
-</div>
+          <div>
+            <label className={labelClass}>Thickness of Job</label>
+            <SelectWithCustom
+              value={thicknessOfJob}
+              onChange={setThicknessOfJob}
+              customValue={thicknessOfJobCustom}
+              onCustomChange={setThicknessOfJobCustom}
+              options={["7.8MM", "7.7MM", "12MM", "18MM", "Other"]}
+              error={hasError("thicknessOfJob")}
+            />
+          </div>
           <div>
             <label className={labelClass}>Surface Condition</label>
             <SelectWithCustom
@@ -790,6 +821,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
             <input
               type="text"
               value={material}
+              placeholder="e.g. SA-182 F316L"
               onChange={(e) => setMaterial(e.target.value)}
               className={fc("material")}
             />
@@ -911,6 +943,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
             <input
               type="text"
               value={tsAngleRange}
+              placeholder="e.g. 2.5mm to 15mm"
               onChange={(e) => setTsAngleRange(e.target.value)}
               className={fc("tsAngleRange")}
             />
@@ -920,6 +953,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
             <input
               type="text"
               value={tsNormalRange}
+              placeholder="e.g. 2.5mm to 20mm"
               onChange={(e) => setTsNormalRange(e.target.value)}
               className={fc("tsNormalRange")}
             />
@@ -929,6 +963,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
             <input
               type="text"
               value={tsCalBlockAngle}
+              placeholder="e.g. 2.5mm FBH (PJS-01-2007/4)"
               onChange={(e) => setTsCalBlockAngle(e.target.value)}
               className={fc("tsCalBlockAngle")}
             />
@@ -940,27 +975,25 @@ export const VSSCUTReportFormPage: React.FC = () => {
             <input
               type="text"
               value={tsCalBlockNormal}
+              placeholder="e.g. 2.5mm FBH (PJS-01-2007/4)"
               onChange={(e) => setTsCalBlockNormal(e.target.value)}
               className={fc("tsCalBlockNormal")}
             />
           </div>
-         <div>
-  <label className={labelClass}>
-    Idtn. No of Ref Block — For Angle
-  </label>
+          <div>
+            <label className={labelClass}>
+              Idtn. No of Ref Block — For Angle
+            </label>
 
-  <SelectWithCustom
-    value={tsRefBlockAngle}
-    onChange={setTsRefBlockAngle}
-    customValue={tsRefBlockAngleCustom}
-    onCustomChange={setTsRefBlockAngleCustom}
-    options={[
-      "'G' Notch (LSP 34 A side only)",
-      "Other",
-    ]}
-    error={hasError("tsRefBlockAngle")}
-  />
-</div>
+            <SelectWithCustom
+              value={tsRefBlockAngle}
+              onChange={setTsRefBlockAngle}
+              customValue={tsRefBlockAngleCustom}
+              onCustomChange={setTsRefBlockAngleCustom}
+              options={["'G' Notch (LSP 34 A side only)", "Other"]}
+              error={hasError("tsRefBlockAngle")}
+            />
+          </div>
           <div>
             <label className={labelClass}>
               Idtn. No of Ref Block — For Normal
@@ -1052,78 +1085,85 @@ export const VSSCUTReportFormPage: React.FC = () => {
         <div className="overflow-x-auto mt-4">
           <table className="w-full text-xs border-collapse min-w-[1000px]">
             <thead>
-  <tr>
-    <th
-      className="border border-gray-300 px-2 py-2 text-center"
-    >
-      Sr. No.
-    </th>
+              <tr>
+                <th className="border border-gray-300 px-2 py-2 text-center">
+                  Sr. No.
+                </th>
 
-    <th className="border border-gray-300 p-0 text-center font-bold" colSpan={4}>
-      <input
-        type="text"
-        value={probe45Sr}
-        onChange={(e) => setProbe45Sr(e.target.value)}
-        className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
-        placeholder="e.g. 45 - 63230"
-      />
-    </th>
+                <th
+                  className="border border-gray-300 p-0 text-center font-bold"
+                  colSpan={4}
+                >
+                  <input
+                    type="text"
+                    value={probe45Sr}
+                    onChange={(e) => setProbe45Sr(e.target.value)}
+                    className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
+                    placeholder="e.g. 45 - 63230"
+                  />
+                </th>
 
-    <th className="border border-gray-300 p-0 text-center font-bold" colSpan={4}>
-      <input
-        type="text"
-        value={probe60Sr}
-        onChange={(e) => setProbe60Sr(e.target.value)}
-        className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
-        placeholder="e.g. 60 - 63285"
-      />
-    </th>
+                <th
+                  className="border border-gray-300 p-0 text-center font-bold"
+                  colSpan={4}
+                >
+                  <input
+                    type="text"
+                    value={probe60Sr}
+                    onChange={(e) => setProbe60Sr(e.target.value)}
+                    className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
+                    placeholder="e.g. 60 - 63285"
+                  />
+                </th>
 
-    <th className="border border-gray-300 p-0 text-center font-bold" colSpan={4}>
-      <input
-        type="text"
-        value={probe70Sr}
-        onChange={(e) => setProbe70Sr(e.target.value)}
-        className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
-        placeholder="e.g. 70 - 63309"
-      />
-    </th>
-  </tr>
+                <th
+                  className="border border-gray-300 p-0 text-center font-bold"
+                  colSpan={4}
+                >
+                  <input
+                    type="text"
+                    value={probe70Sr}
+                    onChange={(e) => setProbe70Sr(e.target.value)}
+                    className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
+                    placeholder="e.g. 70 - 63309"
+                  />
+                </th>
+              </tr>
 
-  <tr>
-    <th className="border border-gray-300 px-2 py-1 text-center font-bold">
-      Scanning
-    </th>
+              <tr>
+                <th className="border border-gray-300 px-2 py-1 text-center font-bold">
+                  Scanning
+                </th>
 
-    {PROBE_MODES.map((pm) => (
-      <th
-        key={pm}
-        className="border border-gray-300 px-2 py-1 text-center font-bold"
-        colSpan={2}
-      >
-        {pm.replace("L", " L").replace("T", " T")}
-      </th>
-    ))}
-  </tr>
+                {PROBE_MODES.map((pm) => (
+                  <th
+                    key={pm}
+                    className="border border-gray-300 px-2 py-1 text-center font-bold"
+                    colSpan={2}
+                  >
+                    {pm.replace("L", " L").replace("T", " T")}
+                  </th>
+                ))}
+              </tr>
 
-  <tr>
-    <th className="border border-gray-300 px-2 py-1 text-center font-bold">
-      Skips
-    </th>
+              <tr>
+                <th className="border border-gray-300 px-2 py-1 text-center font-bold">
+                  Skips
+                </th>
 
-    {PROBE_MODES.map((pm) => (
-      <React.Fragment key={pm + "_sh"}>
-        <th className="border border-gray-300 px-1 py-1 text-center">
-          BP mm
-        </th>
+                {PROBE_MODES.map((pm) => (
+                  <React.Fragment key={pm + "_sh"}>
+                    <th className="border border-gray-300 px-1 py-1 text-center">
+                      BP mm
+                    </th>
 
-        <th className="border border-gray-300 px-1 py-1 text-center">
-          %FSH
-        </th>
-      </React.Fragment>
-    ))}
-  </tr>
-</thead>
+                    <th className="border border-gray-300 px-1 py-1 text-center">
+                      %FSH
+                    </th>
+                  </React.Fragment>
+                ))}
+              </tr>
+            </thead>
             <tbody>
               {SKIPS.map(({ key, label }) => (
                 <tr key={key} className="hover:bg-gray-50">
@@ -1133,14 +1173,14 @@ export const VSSCUTReportFormPage: React.FC = () => {
                   {PROBE_MODES.map((pm) => (
                     <React.Fragment key={pm}>
                       {(["bp", "fsh"] as const).map((field) => (
-                        <td key={field} className="border border-gray-300 p-0">
+                        <td key={field} className={`border p-0 ${errors[`calibTable_${pm}_${key}_${field}`] && !calibTable[pm][key][field].trim() ? "border-red-400 bg-red-50" : "border-gray-300"}`}>
                           <input
                             type="text"
                             value={calibTable[pm][key][field]}
                             onChange={(e) =>
                               updateCalibCell(pm, key, field, e.target.value)
                             }
-                            className="w-full border-0 text-xs px-1 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center font-medium"
+                            className={`w-full border-0 text-xs px-1 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center font-medium ${errors[`calibTable_${pm}_${key}_${field}`] && !calibTable[pm][key][field].trim() ? "bg-red-50" : ""}`}
                           />
                         </td>
                       ))}
@@ -1306,8 +1346,6 @@ export const VSSCUTReportFormPage: React.FC = () => {
           </div>
         </div>
       </div>
-
-
 
       {/* Final Section */}
       <div className={sectionClass}>
