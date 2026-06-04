@@ -586,12 +586,24 @@ export const UTReportFormPage: React.FC = () => {
 
       // Angle Probe Calibration — require range and refDb for every angle
       if (mt(calib0.range)) e.calib0_range = true;
+      if (mt(calib0.point1)) e.calib0_point1 = true;
+      if (mt(calib0.point2)) e.calib0_point2 = true;
+      if (mt(calib0.point3)) e.calib0_point3 = true;
       if (mt(calib0.refDb)) e.calib0_refDb = true;
       if (mt(calib45.range)) e.calib45_range = true;
+      if (mt(calib45.point1)) e.calib45_point1 = true;
+      if (mt(calib45.point2)) e.calib45_point2 = true;
+      if (mt(calib45.point3)) e.calib45_point3 = true;
       if (mt(calib45.refDb)) e.calib45_refDb = true;
       if (mt(calib60.range)) e.calib60_range = true;
+      if (mt(calib60.point1)) e.calib60_point1 = true;
+      if (mt(calib60.point2)) e.calib60_point2 = true;
+      if (mt(calib60.point3)) e.calib60_point3 = true;
       if (mt(calib60.refDb)) e.calib60_refDb = true;
       if (mt(calib70.range)) e.calib70_range = true;
+      if (mt(calib70.point1)) e.calib70_point1 = true;
+      if (mt(calib70.point2)) e.calib70_point2 = true;
+      if (mt(calib70.point3)) e.calib70_point3 = true;
       if (mt(calib70.refDb)) e.calib70_refDb = true;
 
       // Observations — all fields in all rows required
@@ -1343,9 +1355,9 @@ export const UTReportFormPage: React.FC = () => {
               {(
                 [
                   { key: "range", label: "Range *" },
-                  { key: "point1", label: "1st Point" },
-                  { key: "point2", label: "2nd Point" },
-                  { key: "point3", label: "3rd Point" },
+                  { key: "point1", label: "1st Point *" },
+                  { key: "point2", label: "2nd Point *" },
+                  { key: "point3", label: "3rd Point *" },
                   { key: "refDb", label: "Ref dB *" },
                 ] as { key: keyof CalibRow; label: string }[]
               ).map((row) => (
@@ -1355,8 +1367,7 @@ export const UTReportFormPage: React.FC = () => {
                   </td>
                   {calibAngles.map((a) => {
                     const errKey = `${a.prefix}_${row.key}`;
-                    const isRequired = row.key === "range" || row.key === "refDb";
-                    const cellErr = isRequired && !!errors[errKey] && !a.state[row.key].trim();
+                    const cellErr = !!errors[errKey] && !a.state[row.key].trim();
                     return (
                       <td
                         key={a.label}

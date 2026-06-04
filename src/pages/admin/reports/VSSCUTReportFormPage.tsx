@@ -1091,40 +1091,40 @@ export const VSSCUTReportFormPage: React.FC = () => {
                 </th>
 
                 <th
-                  className="border border-gray-300 p-0 text-center font-bold"
+                  className={`border p-0 text-center font-bold ${errors.probe45Sr && !probe45Sr.trim() ? "border-red-400 bg-red-50" : "border-gray-300"}`}
                   colSpan={4}
                 >
                   <input
                     type="text"
                     value={probe45Sr}
                     onChange={(e) => setProbe45Sr(e.target.value)}
-                    className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
+                    className={`w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center ${errors.probe45Sr && !probe45Sr.trim() ? "bg-red-50" : "bg-transparent"}`}
                     placeholder="e.g. 45 - 63230"
                   />
                 </th>
 
                 <th
-                  className="border border-gray-300 p-0 text-center font-bold"
+                  className={`border p-0 text-center font-bold ${errors.probe60Sr && !probe60Sr.trim() ? "border-red-400 bg-red-50" : "border-gray-300"}`}
                   colSpan={4}
                 >
                   <input
                     type="text"
                     value={probe60Sr}
                     onChange={(e) => setProbe60Sr(e.target.value)}
-                    className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
+                    className={`w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center ${errors.probe60Sr && !probe60Sr.trim() ? "bg-red-50" : "bg-transparent"}`}
                     placeholder="e.g. 60 - 63285"
                   />
                 </th>
 
                 <th
-                  className="border border-gray-300 p-0 text-center font-bold"
+                  className={`border p-0 text-center font-bold ${errors.probe70Sr && !probe70Sr.trim() ? "border-red-400 bg-red-50" : "border-gray-300"}`}
                   colSpan={4}
                 >
                   <input
                     type="text"
                     value={probe70Sr}
                     onChange={(e) => setProbe70Sr(e.target.value)}
-                    className="w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center bg-transparent"
+                    className={`w-full border-0 text-xs px-1 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400 text-center ${errors.probe70Sr && !probe70Sr.trim() ? "bg-red-50" : "bg-transparent"}`}
                     placeholder="e.g. 70 - 63309"
                   />
                 </th>
