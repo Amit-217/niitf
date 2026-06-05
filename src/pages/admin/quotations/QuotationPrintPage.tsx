@@ -37,20 +37,16 @@ const PRINT_STYLES = `
 
 .quotation-page {
   width: 210mm;
-  min-height: 297mm;
+  height: 297mm;
   background: #fff;
   box-sizing: border-box;
-  padding: 0 5mm 38mm 5mm;
+  padding: 0 5mm 5mm 5mm;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  position: relative;
-}
-  .quotation-page-footer{
-  position: absolute;
-  left: 5mm;
-  right: 5mm;
-  bottom: 5mm;
 }
   .quotation-page-content { flex: 1 1 auto; }
+  .quotation-page-footer { margin-top: auto; }
 
   table { border-collapse: collapse; width: 100%; }
   .title { font-size: 18px; font-weight: bold; text-align: center; letter-spacing: 2px; padding: 0px 0;}
@@ -76,6 +72,7 @@ const PRINT_STYLES = `
     overflow: hidden; 
     transform: translateY(-4px); 
     margin-top: 2px; 
+    margin-bottom: 5px; 
   }
   .logo-box img { 
     width: 100%; 
@@ -351,7 +348,7 @@ export const QuotationPrintPage: React.FC = () => {
   // const PAGE_H = 297;
   // const HDR_H = 28;
   // const FTR_H = 22;
-  const AVAIL_H = 247; // ~247mm
+  const AVAIL_H = 238; // A4 content area after header, footer, and page padding.
 
   type Block =
     | { type: "intro"; height: number }
