@@ -348,10 +348,10 @@ export const QuotationPrintPage: React.FC = () => {
   }
 
   // --- Pagination block engine ---
-  const PAGE_H = 297;
-  const HDR_H = 28;
-  const FTR_H = 22;
-  const AVAIL_H = 258; // ~247mm
+  // const PAGE_H = 297;
+  // const HDR_H = 28;
+  // const FTR_H = 22;
+  const AVAIL_H = 247; // ~247mm
 
   type Block =
     | { type: "intro"; height: number }
@@ -514,8 +514,12 @@ export const QuotationPrintPage: React.FC = () => {
               >
                 <tbody>
                   <tr>
-                    <td className="info-label" style={{ borderTop: "0px" }}>Quotation No.:</td>
-                    <td className="info-value" style={{ borderTop: "0px" }}>{data.quotationNo}</td>
+                    <td className="info-label" style={{ borderTop: "0px" }}>
+                      Quotation No.:
+                    </td>
+                    <td className="info-value" style={{ borderTop: "0px" }}>
+                      {data.quotationNo}
+                    </td>
                   </tr>
 
                   <tr>
@@ -700,7 +704,7 @@ export const QuotationPrintPage: React.FC = () => {
                   Total Amount
                 </td>
 
-                <td style={{ textAlign: "right", fontWeight: "bold" }}>
+                <td style={{ textAlign: "right", fontWeight: "bold marginB" }}>
                   {fmtAmount(computedTotalAmount)}
                 </td>
               </tr>
@@ -713,14 +717,14 @@ export const QuotationPrintPage: React.FC = () => {
 
   const renderSignoff = () => (
     <div className="quotation-signoff">
-      <p style={{ marginBottom: "6px", fontSize: "16px", marginTop: "10px" }}>
+      <p style={{ marginBottom: "5px", fontSize: "16px", marginTop: "5px" }}>
         We trust the above notice is quite competitive acceptable to you Looking
         forward to favorable reply &amp; confirmed order on us.
       </p>
-      <div style={{ marginTop: "28px", fontWeight: "bold" }}>
+      <div style={{ marginTop: "15px", fontWeight: "bold" }}>
         Your faithfully,
       </div>
-      <div style={{ marginTop: "8px", fontWeight: "bold" }}>
+      <div style={{ marginTop: "5px", fontWeight: "bold" }}>
         {data.preparedBy?.name || "Mr. Bajirao T. Kadam"}
       </div>
       <div>
@@ -734,7 +738,7 @@ export const QuotationPrintPage: React.FC = () => {
       <div>+91 7875154431, 9860186056</div>
       <div
         style={{
-          marginTop: "12px",
+          marginTop: "5px",
           textAlign: "center",
           fontSize: "11px",
           color: "#555",

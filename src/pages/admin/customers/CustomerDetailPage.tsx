@@ -1025,7 +1025,7 @@ export const CustomerDetailPage = () => {
                           </td> */}
                           <td className="px-4 py-3 font-semibold text-gray-900">
                             {(() => {
-                              const quot = q as Record<string, unknown>;
+                              const quot = q as unknown as Record<string, unknown>;
                               const services = Array.isArray(quot.services)
                                 ? (quot.services as Record<string, unknown>[])
                                 : [];

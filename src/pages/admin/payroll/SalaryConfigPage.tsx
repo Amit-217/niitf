@@ -45,7 +45,7 @@ export const SalaryConfigPage = () => {
   );
   const [allConfigs, setAllConfigs] = useState<any[]>([]);
   const [selectedConfig, setSelectedConfig] = useState<any | null>(null);
-  const [viewCurrentSalary, setViewCurrentSalary] = useState<any>(null);
+  const [_viewCurrentSalary, setViewCurrentSalary] = useState<any>(null);
   const [viewOverview, setViewOverview] = useState<any>(null);
   const [viewHistory, setViewHistory] = useState<any[]>([]);
   const [viewLoading, setViewLoading] = useState(false);
