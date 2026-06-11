@@ -376,8 +376,20 @@ export const AWSDReportFormPage: React.FC = () => {
         if (!o.jointDetails?.trim()) e[`obs${i}_jointDetails`] = true;
         if (!o.drawingNoPartNo?.trim()) e[`obs${i}_drawingNoPartNo`] = true;
         if (!o.jobThickness?.trim()) e[`obs${i}_jobThickness`] = true;
+        if (!o.partNo?.trim()) e[`obs${i}_partNo`] = true;
         if (!o.transducerAngle?.trim()) e[`obs${i}_transducerAngle`] = true;
+        if (!o.jointNo?.trim()) e[`obs${i}_jointNo`] = true;
+        if (!o.indicationLevelA?.trim()) e[`obs${i}_indicationLevelA`] = true;
+        if (!o.referenceLevelB?.trim()) e[`obs${i}_referenceLevelB`] = true;
+        if (!o.attenuationFactorC?.trim()) e[`obs${i}_attenuationFactorC`] = true;
+        if (!o.indicationRatingD?.trim()) e[`obs${i}_indicationRatingD`] = true;
+        if (!o.length?.trim()) e[`obs${i}_length`] = true;
+        if (!o.angularDistance?.trim()) e[`obs${i}_angularDistance`] = true;
+        if (!o.depthFromASurface?.trim()) e[`obs${i}_depthFromASurface`] = true;
+        if (!o.distanceX?.trim()) e[`obs${i}_distanceX`] = true;
+        if (!o.distanceY?.trim()) e[`obs${i}_distanceY`] = true;
         if (!o.discontinuityEvaluation?.trim()) e[`obs${i}_discontinuityEvaluation`] = true;
+        if (!o.remarks?.trim()) e[`obs${i}_remarks`] = true;
       });
       if (!testDate) e.testDate = true;
       if (mt(inspectedBy)) e.inspectedBy = true;
@@ -385,6 +397,9 @@ export const AWSDReportFormPage: React.FC = () => {
       if (mt(manufacturerOrContractor)) e.manufacturerOrContractor = true;
       if (mt(authorizedBy)) e.authorizedBy = true;
       if (!footerDate) e.footerDate = true;
+      if (mt(verifiedBy)) e.verifiedBy = true;
+      if (mt(reviewedBy)) e.reviewedBy = true;
+      if (!reviewedByDate) e.reviewedByDate = true;
 
       if (Object.keys(e).length > 0) {
         setErrors(e);
@@ -893,7 +908,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       type="text"
                       value={row.partNo}
                       onChange={(e) => updateObs(idx, "partNo", e.target.value)}
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_partNo`] && !row.partNo?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -913,7 +928,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "jointNo", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_jointNo`] && !row.jointNo?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30">
@@ -923,7 +938,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "indicationLevelA", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_indicationLevelA`] && !row.indicationLevelA?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30">
@@ -933,7 +948,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "referenceLevelB", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_referenceLevelB`] && !row.referenceLevelB?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30">
@@ -943,7 +958,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "attenuationFactorC", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_attenuationFactorC`] && !row.attenuationFactorC?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30">
@@ -953,7 +968,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "indicationRatingD", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_indicationRatingD`] && !row.indicationRatingD?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
@@ -961,7 +976,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       type="text"
                       value={row.length}
                       onChange={(e) => updateObs(idx, "length", e.target.value)}
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_length`] && !row.length?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
@@ -971,7 +986,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "angularDistance", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_angularDistance`] && !row.angularDistance?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
@@ -981,7 +996,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "depthFromASurface", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_depthFromASurface`] && !row.depthFromASurface?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
@@ -991,7 +1006,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "distanceX", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_distanceX`] && !row.distanceX?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
@@ -1001,7 +1016,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "distanceY", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_distanceY`] && !row.distanceY?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1025,7 +1040,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "remarks", e.target.value)
                       }
-                      className={inputClass}
+                      className={!!errors[`obs${idx}_remarks`] && !row.remarks?.trim() ? inputErrorClass : inputClass}
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
@@ -1140,7 +1155,7 @@ export const AWSDReportFormPage: React.FC = () => {
               value={verifiedBy}
               onChange={(e) => setVerifiedBy(e.target.value)}
               // placeholder="Company / entity name"
-              className={inputClass + " mb-3 text-xs font-semibold"}
+              className={(!!errors.verifiedBy && !verifiedBy.trim() ? inputErrorClass : inputClass) + " mb-3 text-xs font-semibold"}
             />
             <div className="space-y-2">
               <div>
@@ -1149,7 +1164,7 @@ export const AWSDReportFormPage: React.FC = () => {
                   type="text"
                   value={reviewedBy}
                   onChange={(e) => setReviewedBy(e.target.value)}
-                  className={inputClass}
+                  className={fc("reviewedBy")}
                 />
               </div>
               <div>
@@ -1158,7 +1173,7 @@ export const AWSDReportFormPage: React.FC = () => {
                   type="date"
                   value={reviewedByDate}
                   onChange={(e) => setReviewedByDate(e.target.value)}
-                  className={inputClass}
+                  className={!!errors.reviewedByDate && !reviewedByDate ? inputErrorClass : inputClass}
                 />
               </div>
             </div>

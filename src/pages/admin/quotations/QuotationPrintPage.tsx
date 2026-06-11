@@ -37,20 +37,16 @@ const PRINT_STYLES = `
 
 .quotation-page {
   width: 210mm;
-  min-height: 297mm;
+  height: 297mm;
   background: #fff;
   box-sizing: border-box;
-  padding: 0 5mm 38mm 5mm;
+  padding: 0 5mm 5mm 5mm;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  position: relative;
-}
-  .quotation-page-footer{
-  position: absolute;
-  left: 5mm;
-  right: 5mm;
-  bottom: 5mm;
 }
   .quotation-page-content { flex: 1 1 auto; }
+  .quotation-page-footer { margin-top: auto; }
 
   table { border-collapse: collapse; width: 100%; }
   .title { font-size: 18px; font-weight: bold; text-align: center; letter-spacing: 2px; padding: 0px 0;}
@@ -76,6 +72,7 @@ const PRINT_STYLES = `
     overflow: hidden; 
     transform: translateY(-4px); 
     margin-top: 2px; 
+    margin-bottom: 5px; 
   }
   .logo-box img { 
     width: 100%; 
@@ -348,10 +345,10 @@ export const QuotationPrintPage: React.FC = () => {
   }
 
   // --- Pagination block engine ---
-  const PAGE_H = 297;
-  const HDR_H = 28;
-  const FTR_H = 22;
-  const AVAIL_H = 258; // ~247mm
+  // const PAGE_H = 297;
+  // const HDR_H = 28;
+  // const FTR_H = 22;
+  const AVAIL_H = 238; // A4 content area after header, footer, and page padding.
 
   type Block =
     | { type: "intro"; height: number }
@@ -514,8 +511,12 @@ export const QuotationPrintPage: React.FC = () => {
               >
                 <tbody>
                   <tr>
-                    <td className="info-label" style={{ borderTop: "0px" }}>Quotation No.:</td>
-                    <td className="info-value" style={{ borderTop: "0px" }}>{data.quotationNo}</td>
+                    <td className="info-label" style={{ borderTop: "0px" }}>
+                      Quotation No.:
+                    </td>
+                    <td className="info-value" style={{ borderTop: "0px" }}>
+                      {data.quotationNo}
+                    </td>
                   </tr>
 
                   <tr>
@@ -700,7 +701,7 @@ export const QuotationPrintPage: React.FC = () => {
                   Total Amount
                 </td>
 
-                <td style={{ textAlign: "right", fontWeight: "bold" }}>
+                <td style={{ textAlign: "right", fontWeight: "bold marginB" }}>
                   {fmtAmount(computedTotalAmount)}
                 </td>
               </tr>
@@ -713,14 +714,14 @@ export const QuotationPrintPage: React.FC = () => {
 
   const renderSignoff = () => (
     <div className="quotation-signoff">
-      <p style={{ marginBottom: "6px", fontSize: "16px", marginTop: "10px" }}>
+      <p style={{ marginBottom: "5px", fontSize: "16px", marginTop: "5px" }}>
         We trust the above notice is quite competitive acceptable to you Looking
         forward to favorable reply &amp; confirmed order on us.
       </p>
-      <div style={{ marginTop: "28px", fontWeight: "bold" }}>
+      <div style={{ marginTop: "15px", fontWeight: "bold" }}>
         Your faithfully,
       </div>
-      <div style={{ marginTop: "8px", fontWeight: "bold" }}>
+      <div style={{ marginTop: "5px", fontWeight: "bold" }}>
         {data.preparedBy?.name || "Mr. Bajirao T. Kadam"}
       </div>
       <div>
@@ -734,7 +735,7 @@ export const QuotationPrintPage: React.FC = () => {
       <div>+91 7875154431, 9860186056</div>
       <div
         style={{
-          marginTop: "12px",
+          marginTop: "5px",
           textAlign: "center",
           fontSize: "11px",
           color: "#555",

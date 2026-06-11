@@ -45,7 +45,7 @@ const PRINT_STYLES = `
   .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
   .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
   .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
-  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 3px 8px; }
+  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 1px 8px 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
   .bw .rpt-header { background: #fff !important; border-bottom: none !important; }
@@ -295,9 +295,9 @@ export const UTReportPrintPage: React.FC = () => {
             <td>Designation: {v((jd as any).clientDesignation) || "-"}</td>
           </tr>
           <tr>
-            <td style={{ height: "60px" }}>Signature:-</td>
-            <td style={{ height: "60px" }}>Signature:-</td>
-            <td style={{ height: "60px" }}>Signature:-</td>
+            <td style={{ height: "40px" }}>Signature:-</td>
+            <td style={{ height: "40px" }}>Signature:-</td>
+            <td style={{ height: "40px" }}>Signature:-</td>
           </tr>
           <tr>
             <td>Date:- {fmtDate(jd.reportDate)}</td>
@@ -327,64 +327,66 @@ export const UTReportPrintPage: React.FC = () => {
           </td>
         </tr>
         <tr>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Sr.</td>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Job Description</td>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Drg No. / Joint No.</td>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Size</td>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Qty(Nos)</td>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Interpretation</td>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Evaluation</td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Sr.
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Job Description
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Drg No. / Joint No.
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Size
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Qty(Nos)
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Interpretation
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Evaluation
+          </td>
         </tr>
       </thead>
-     <tbody>
-  {data.length === 0 ? (
-    <tr>
-      <td
-        colSpan={7}
-        style={{
-          textAlign: "center",
-          padding: "6px",
-          fontSize: "11px",
-          color: "#999",
-        }}
-      >
-        No observations recorded.
-      </td>
-    </tr>
-  ) : (
-    data.map((o, i) => (
-      <tr key={i}>
-        <td style={{ textAlign: "center" }}>
-          {o.srNo}
-        </td>
+      <tbody>
+        {data.length === 0 ? (
+          <tr>
+            <td
+              colSpan={7}
+              style={{
+                textAlign: "center",
+                padding: "6px",
+                fontSize: "11px",
+                color: "#999",
+              }}
+            >
+              No observations recorded.
+            </td>
+          </tr>
+        ) : (
+          data.map((o, i) => (
+            <tr key={i}>
+              <td style={{ textAlign: "center" }}>{o.srNo}</td>
 
-        <td>
-          {v(o.jobDescription)}
-        </td>
+              <td>{v(o.jobDescription)}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {v(o.drawingOrJointNo)}
-        </td>
+              <td style={{ textAlign: "center" }}>{v(o.drawingOrJointNo)}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {v(o.size)}
-        </td>
+              <td style={{ textAlign: "center" }}>{v(o.size)}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {o.quantity ?? ""}
-        </td>
+              <td style={{ textAlign: "center" }}>{o.quantity ?? ""}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {v(o.interpretation)}
-        </td>
+              <td style={{ textAlign: "center" }}>{v(o.interpretation)}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {v(o.evaluation || o.remark || o.result)}
-        </td>
-      </tr>
-    ))
-  )}
-</tbody>
+              <td style={{ textAlign: "center" }}>
+                {v(o.evaluation || o.remark || o.result)}
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
     </table>
   );
 
@@ -422,11 +424,18 @@ export const UTReportPrintPage: React.FC = () => {
           </td>
         </tr>
         <tr>
-          <td className="col-hdr" style={{ whiteSpace: "nowrap", textAlign: "center" }}>
+          <td
+            className="col-hdr"
+            style={{ whiteSpace: "nowrap", textAlign: "center" }}
+          >
             Angle Probe Calibration Detail
           </td>
           {calibAngles.map((a) => (
-            <td key={a.label} className="col-hdr" style={{ textAlign: "center" }}>
+            <td
+              key={a.label}
+              className="col-hdr"
+              style={{ textAlign: "center" }}
+            >
               {a.label}
             </td>
           ))}
@@ -455,196 +464,196 @@ export const UTReportPrintPage: React.FC = () => {
     </table>
   );
 
-// New render functions for sections previously in fixedSections
-const renderJobSection = () => (
-  <>
-    <div className="rpt-title">Ultrasonic Testing Report</div>
+  // New render functions for sections previously in fixedSections
+  const renderJobSection = () => (
+    <>
+      <div className="rpt-title">Ultrasonic Testing Report</div>
 
-    {/* --- 1. JOB DETAILS --- */}
+      {/* --- 1. JOB DETAILS --- */}
+      <table className="report-table mt-n1">
+        <colgroup>
+          <col style={{ width: "18%" }} />
+          <col style={{ width: "32%" }} />
+          <col style={{ width: "18%" }} />
+          <col style={{ width: "32%" }} />
+        </colgroup>
+        <tbody>
+          <tr>
+            <td colSpan={4} className="section-hdr">
+              1. JOB DETAILS
+            </td>
+          </tr>
+          <tr>
+            <td className="lbl">Customer:</td>
+            <td className="val">{v(jd.customer)}</td>
+            <td className="lbl">Report No.:</td>
+            <td className="val">{v(report.reportNo)}</td>
+          </tr>
+          <tr>
+            <td className="lbl">Client:</td>
+            <td className="val">{v(jd.client)}</td>
+            <td className="lbl">Report Date:</td>
+            <td className="val">{fmtDate(jd.reportDate)}</td>
+          </tr>
+          <tr>
+            <td className="lbl">Project:</td>
+            <td className="val">{v(jd.project)}</td>
+            <td className="lbl">Inspection Date:</td>
+            <td className="val">
+              {fmtDate(jd.inspectionDate)}
+              {jd.inspectionEndDate
+                ? ` to ${fmtDate(jd.inspectionEndDate)}`
+                : ""}
+            </td>
+          </tr>
+          <tr>
+            <td className="lbl">Reference Std.:</td>
+            <td className="val">{v(jd.referenceStd)}</td>
+            <td className="lbl">Material:</td>
+            <td className="val">{v(jd.material)}</td>
+          </tr>
+          <tr>
+            <td className="lbl">Acceptance Criteria:</td>
+            <td className="val">{v(jd.acceptanceCriteria)}</td>
+            <td className="lbl">Thickness:</td>
+            <td className="val">{v(jd.thickness)}</td>
+          </tr>
+          <tr>
+            <td className="lbl">Stage of Inspection:</td>
+            <td className="val">{v(jd.stageOfInspection)}</td>
+            <td className="lbl">Surface Condition:</td>
+            <td className="val">{v(jd.surfaceCondition)}</td>
+          </tr>
+          <tr>
+            <td className="lbl">Extent of Examination:</td>
+            <td className="val">{v(jd.extentOfExamination)}</td>
+            <td className="lbl">Surface Temperature:</td>
+            <td className="val">{v(jd.surfaceTemperature)}</td>
+          </tr>
+          <tr>
+            <td className="lbl">Type of Joint:</td>
+            <td colSpan={3} className="val">
+              {v(jd.typeOfJoint)}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </>
+  );
+
+  const renderEquipmentSection = () => (
     <table className="report-table mt-n1">
       <colgroup>
-        <col style={{ width: "18%" }} />
-        <col style={{ width: "32%" }} />
-        <col style={{ width: "18%" }} />
-        <col style={{ width: "32%" }} />
+        <col style={{ width: "15%" }} />
+        <col style={{ width: "18.3%" }} />
+        <col style={{ width: "15%" }} />
+        <col style={{ width: "18.3%" }} />
+        <col style={{ width: "15%" }} />
+        <col style={{ width: "18.4%" }} />
+      </colgroup>
+      <tbody>
+        <tr>
+          <td colSpan={6} className="section-hdr">
+            2. EQUIPMENT DETAILS
+          </td>
+        </tr>
+        <tr>
+          <td className="lbl">Equip. Type:</td>
+          <td className="val">{v(eq.equipmentType)}</td>
+          <td className="lbl">Sr. No.:</td>
+          <td className="val">{v(eq.srNo)}</td>
+          <td className="lbl">Make:</td>
+          <td className="val">{v(eq.make)}</td>
+        </tr>
+        <tr>
+          <td className="lbl">Calibration Due:</td>
+          <td className="val">{fmtDate(eq.calibrationDue)}</td>
+          <td className="lbl">Couplant:</td>
+          <td className="val">{v(eq.couplant)}</td>
+          <td className="lbl">Basic Calibration Block:</td>
+          <td className="val">{v(eq.basicCalibrationBlock)}</td>
+        </tr>
+      </tbody>
+    </table>
+  );
+
+  const renderSearchTable = (rows: any[], title: string) => (
+    <table className="report-table mt-n1">
+      <tbody>
+        <tr>
+          <td colSpan={6} className="section-hdr">
+            {title}
+          </td>
+        </tr>
+        <tr>
+          <td className="col-hdr" style={{ width: "20%", textAlign: "center" }}>
+            Search Unit / Model
+          </td>
+          <td className="col-hdr" style={{ width: "12%", textAlign: "center" }}>
+            Angle
+          </td>
+          <td className="col-hdr" style={{ width: "18%", textAlign: "center" }}>
+            Sr. No.
+          </td>
+          <td className="col-hdr" style={{ width: "20%", textAlign: "center" }}>
+            Crystal Size
+          </td>
+          <td className="col-hdr" style={{ width: "16%", textAlign: "center" }}>
+            Wave Mode
+          </td>
+          <td className="col-hdr" style={{ width: "14%", textAlign: "center" }}>
+            Frequency
+          </td>
+        </tr>
+        {(rows.length > 0 ? rows : [{}]).map((u: any, i: any) => (
+          <tr key={i} style={{ height: "20px", textAlign: "center" }}>
+            <td>{v(u.model)}</td>
+            <td>{v(u.angle)}</td>
+            <td>{v(u.srNo)}</td>
+            <td>{v(u.crystalSize)}</td>
+            <td>{v(u.waveMode)}</td>
+            <td>{v(u.frequency)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
+  const renderTechniqueSection = () => (
+    <table className="report-table mt-n1">
+      <colgroup>
+        <col style={{ width: "22%" }} />
+        <col style={{ width: "28%" }} />
+        <col style={{ width: "22%" }} />
+        <col style={{ width: "28%" }} />
       </colgroup>
       <tbody>
         <tr>
           <td colSpan={4} className="section-hdr">
-            1. JOB DETAILS
+            4. TECHNIQUE DETAILS
           </td>
         </tr>
         <tr>
-          <td className="lbl">Customer:</td>
-          <td className="val">{v(jd.customer)}</td>
-          <td className="lbl">Report No.:</td>
-          <td className="val">{v(report.reportNo)}</td>
+          <td className="lbl">UT Method:</td>
+          <td className="val">{v(td.utMethod)}</td>
+          <td className="lbl">Reference Calibration Block:</td>
+          <td className="val">{v(td.referenceCalibrationBlock)}</td>
         </tr>
         <tr>
-          <td className="lbl">Client:</td>
-          <td className="val">{v(jd.client)}</td>
-          <td className="lbl">Report Date:</td>
-          <td className="val">{fmtDate(jd.reportDate)}</td>
+          <td className="lbl">UT Calibration Method:</td>
+          <td className="val">{v(td.utCalibrationMethod)}</td>
+          <td className="lbl">Scanning dB:</td>
+          <td className="val">{v(td.scanningDb)}</td>
         </tr>
         <tr>
-          <td className="lbl">Project:</td>
-          <td className="val">{v(jd.project)}</td>
-          <td className="lbl">Inspection Date:</td>
-          <td className="val">
-            {fmtDate(jd.inspectionDate)}
-            {jd.inspectionEndDate
-              ? ` to ${fmtDate(jd.inspectionEndDate)}`
-              : ""}
-          </td>
-        </tr>
-        <tr>
-          <td className="lbl">Reference Std.:</td>
-          <td className="val">{v(jd.referenceStd)}</td>
-          <td className="lbl">Material:</td>
-          <td className="val">{v(jd.material)}</td>
-        </tr>
-        <tr>
-          <td className="lbl">Acceptance Criteria:</td>
-          <td className="val">{v(jd.acceptanceCriteria)}</td>
-          <td className="lbl">Thickness:</td>
-          <td className="val">{v(jd.thickness)}</td>
-        </tr>
-        <tr>
-          <td className="lbl">Stage of Inspection:</td>
-          <td className="val">{v(jd.stageOfInspection)}</td>
-          <td className="lbl">Surface Condition:</td>
-          <td className="val">{v(jd.surfaceCondition)}</td>
-        </tr>
-        <tr>
-          <td className="lbl">Extent of Examination:</td>
-          <td className="val">{v(jd.extentOfExamination)}</td>
-          <td className="lbl">Surface Temperature:</td>
-          <td className="val">{v(jd.surfaceTemperature)}</td>
-        </tr>
-        <tr>
-          <td className="lbl">Type of Joint:</td>
-          <td colSpan={3} className="val">
-            {v(jd.typeOfJoint)}
+          <td className="lbl">Scanning Sensitivity:</td>
+          <td className="val" colSpan={3}>
+            {v(td.scanningSensitivity)}
           </td>
         </tr>
       </tbody>
     </table>
-  </>
-);
-
-const renderEquipmentSection = () => (
-  <table className="report-table mt-n1">
-    <colgroup>
-      <col style={{ width: "15%" }} />
-      <col style={{ width: "18.3%" }} />
-      <col style={{ width: "15%" }} />
-      <col style={{ width: "18.3%" }} />
-      <col style={{ width: "15%" }} />
-      <col style={{ width: "18.4%" }} />
-    </colgroup>
-    <tbody>
-      <tr>
-        <td colSpan={6} className="section-hdr">
-          2. EQUIPMENT DETAILS
-        </td>
-      </tr>
-      <tr>
-        <td className="lbl">Equip. Type:</td>
-        <td className="val">{v(eq.equipmentType)}</td>
-        <td className="lbl">Sr. No.:</td>
-        <td className="val">{v(eq.srNo)}</td>
-        <td className="lbl">Make:</td>
-        <td className="val">{v(eq.make)}</td>
-      </tr>
-      <tr>
-        <td className="lbl">Calibration Due:</td>
-        <td className="val">{fmtDate(eq.calibrationDue)}</td>
-        <td className="lbl">Couplant:</td>
-        <td className="val">{v(eq.couplant)}</td>
-        <td className="lbl">Basic Calibration Block:</td>
-        <td className="val">{v(eq.basicCalibrationBlock)}</td>
-      </tr>
-    </tbody>
-  </table>
-);
-
-const renderSearchTable = (rows: any[], title: string) => (
-  <table className="report-table mt-n1">
-    <tbody>
-      <tr>
-        <td colSpan={6} className="section-hdr">
-          {title}
-        </td>
-      </tr>
-      <tr>
-        <td className="col-hdr" style={{ width: "20%",textAlign: "center" }}>
-          Search Unit / Model
-        </td>
-        <td className="col-hdr" style={{ width: "12%",textAlign: "center" }}>
-          Angle
-        </td>
-        <td className="col-hdr" style={{ width: "18%",textAlign: "center" }}>
-          Sr. No.
-        </td>
-        <td className="col-hdr" style={{ width: "20%",textAlign: "center" }}>
-          Crystal Size
-        </td>
-        <td className="col-hdr" style={{ width: "16%",textAlign: "center" }}>
-          Wave Mode
-        </td>
-        <td className="col-hdr" style={{ width: "14%",textAlign: "center"}}>
-          Frequency
-        </td>
-      </tr>
-      {(rows.length > 0 ? rows : [{}]).map((u: any, i: any) => (
-        <tr key={i} style={{ height: "20px", textAlign: "center" }}>
-          <td >{v(u.model)}</td>
-          <td>{v(u.angle)}</td>
-          <td>{v(u.srNo)}</td>
-          <td>{v(u.crystalSize)}</td>
-          <td>{v(u.waveMode)}</td>
-          <td>{v(u.frequency)}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-);
-
-const renderTechniqueSection = () => (
-  <table className="report-table mt-n1">
-    <colgroup>
-      <col style={{ width: "22%" }} />
-      <col style={{ width: "28%" }} />
-      <col style={{ width: "22%" }} />
-      <col style={{ width: "28%" }} />
-    </colgroup>
-    <tbody>
-      <tr>
-        <td colSpan={4} className="section-hdr">
-          4. TECHNIQUE DETAILS
-        </td>
-      </tr>
-      <tr>
-        <td className="lbl">UT Method:</td>
-        <td className="val">{v(td.utMethod)}</td>
-        <td className="lbl">Reference Calibration Block:</td>
-        <td className="val">{v(td.referenceCalibrationBlock)}</td>
-      </tr>
-      <tr>
-        <td className="lbl">UT Calibration Method:</td>
-        <td className="val">{v(td.utCalibrationMethod)}</td>
-        <td className="lbl">Scanning dB:</td>
-        <td className="val">{v(td.scanningDb)}</td>
-      </tr>
-      <tr>
-        <td className="lbl">Scanning Sensitivity:</td>
-        <td className="val" colSpan={3}>
-          {v(td.scanningSensitivity)}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-);
+  );
 
   // Dynamic pagination block layout engine
   const PAGE_HEIGHT_LIMIT = 284; // mm (Adjusted from 288)
@@ -684,7 +693,7 @@ const renderTechniqueSection = () => (
     height: 24, // Estimated height for equipment details section
   });
 
-  units.forEach((u:any) => {
+  units.forEach((u: any) => {
     blocks.push({
       type: "search-row",
       item: u,
@@ -724,19 +733,19 @@ const renderTechniqueSection = () => (
   const pages: PageDescriptor[] = [];
   let currentBlockIndex = 0;
 
-  const NON_SPLIT_BLOCKS = [
-    "job",
-    "equipment",
-    "technique",
-    "calib",
-  ];
+  const NON_SPLIT_BLOCKS = ["job", "equipment", "technique", "calib"];
 
   const SIGNATURES_HEIGHT = 48; // mm
 
   while (currentBlockIndex < blocks.length) {
     const isFirstPage = pages.length === 0;
     // Signatures are rendered on every page, so reduce available height by signature height on all pages
-    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT - FOOTER_SAFE; // Added FOOTER_SAFE
+    let availableHeight =
+      PAGE_HEIGHT_LIMIT -
+      HEADER_HEIGHT -
+      FOOTER_HEIGHT -
+      SIGNATURES_HEIGHT -
+      FOOTER_SAFE; // Added FOOTER_SAFE
 
     const pageBlocks: ContentBlock[] = [];
     let accumulatedHeight = 0;
@@ -763,7 +772,8 @@ const renderTechniqueSection = () => (
       }
 
       // Add table header height if starting observations table on this page (re-added logic)
-      if (block.type === "obs-row" && !hasObsTable) { // hasObsTable is now local to page loop
+      if (block.type === "obs-row" && !hasObsTable) {
+        // hasObsTable is now local to page loop
         blockHeight += OBS_HEADER_HEIGHT; // Added obs header height
       }
 
@@ -848,20 +858,14 @@ const renderTechniqueSection = () => (
             Print
           </button>
         </div>
-        {pages.map(({ isFirstPage, pageBlocks }, i) => {
+        {pages.map(({ pageBlocks }, i) => {
           const hasJob = pageBlocks.some((b) => b.type === "job");
 
-          const hasEquipment = pageBlocks.some(
-            (b) => b.type === "equipment"
-          );
+          const hasEquipment = pageBlocks.some((b) => b.type === "equipment");
 
-          const hasTechnique = pageBlocks.some(
-            (b) => b.type === "technique"
-          );
+          const hasTechnique = pageBlocks.some((b) => b.type === "technique");
 
-          const hasCalib = pageBlocks.some(
-            (b) => b.type === "calib"
-          );
+          const hasCalib = pageBlocks.some((b) => b.type === "calib");
 
           const searchRows = pageBlocks
             .filter((b) => b.type === "search-row")
@@ -872,8 +876,7 @@ const renderTechniqueSection = () => (
             .map((b: any) => b.item);
 
           const isSearchContd =
-            searchRows.length > 0 &&
-            searchRows[0] !== units[0];
+            searchRows.length > 0 && searchRows[0] !== units[0];
 
           // Re-added the wrapper as per instructions
           return (
@@ -890,7 +893,7 @@ const renderTechniqueSection = () => (
                       searchRows,
                       isSearchContd
                         ? "3. SEARCH UNIT DETAILS (Contd.)"
-                        : "3. SEARCH UNIT DETAILS"
+                        : "3. SEARCH UNIT DETAILS",
                     )}
 
                   {hasTechnique && renderTechniqueSection()}
@@ -902,7 +905,7 @@ const renderTechniqueSection = () => (
                       obsRows,
                       obsRows[0] === obs[0]
                         ? "6. OBSERVATIONS"
-                        : "6. OBSERVATIONS (Contd.)"
+                        : "6. OBSERVATIONS (Contd.)",
                     )}
 
                   {renderSignatures()}

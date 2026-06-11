@@ -83,7 +83,7 @@ export const AttendanceHistoryPage = () => {
             )
             .map((emp) => {
                 const empRecords = records.filter((record) => {
-                    const id = record.employeeId?._id || record.employeeId;
+                    const id = (record.employeeId as any)?._id || record.employeeId;
                     return id === emp._id;
                 });
 
@@ -106,7 +106,7 @@ export const AttendanceHistoryPage = () => {
     const selectedEmployeeRecords = selectedEmployee
         ? records
               .filter((record) => {
-                  const id = record.employeeId?._id || record.employeeId;
+                  const id = (record.employeeId as any)?._id || record.employeeId;
                   return id === selectedEmployee._id;
               })
               .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())

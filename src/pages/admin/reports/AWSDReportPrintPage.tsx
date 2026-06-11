@@ -628,21 +628,17 @@ export const AWSDReportPrintPage: React.FC = () => {
         </colgroup>
         <tbody>
           <tr>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}>For :</td>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}>For :</td>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}>For :</td>
-          </tr>
-          <tr>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-              National Industrial Inspection And Training
+              For : National Industrial Inspection And Training
             </td>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-              {v(cert.manufacturerOrContractor)}
+              For : {v(cert.manufacturerOrContractor)}
             </td>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-              {v(cert.verifiedBy)}
+              For : {v(cert.verifiedBy)}
             </td>
           </tr>
+
           <tr>
             <td>Inspected By : {v(cert.inspectedBy) || "-"}</td>
             <td>Verified By : {v(cert.authorizedBy) || "-"}</td>
