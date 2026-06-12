@@ -630,12 +630,16 @@ export const AWSDReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Surface Condition</label>
-            <input
-              type="text"
+            <select
               value={surfaceCondition}
               onChange={(e) => setSurfaceCondition(e.target.value)}
               className={fc("surfaceCondition")}
-            />
+            >
+              <option value="">Select...</option>
+              <option>Smooth</option>
+              <option>Rough</option>
+              <option>Ground and polished</option>
+            </select>
           </div>
           <div>
             <label className={labelClass}>P.O. No.</label>
@@ -648,12 +652,18 @@ export const AWSDReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Couplant</label>
-            <input
-              type="text"
+            <select
               value={couplant}
               onChange={(e) => setCouplant(e.target.value)}
               className={fc("couplant")}
-            />
+            >
+              <option value="">Select...</option>
+              <option>Water</option>
+              <option>Oil</option>
+              <option>Grease</option>
+              <option>Oil+ Grease</option>
+              <option>Starch</option>
+            </select>
           </div>
           <div>
             <label className={labelClass}>Stage of inspection</label>
