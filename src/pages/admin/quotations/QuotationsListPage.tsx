@@ -74,11 +74,28 @@ export const QuotationsListPage: React.FC = () => {
   const [customers, setCustomers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState<QuoteType>(
-    (location.state as any)?.activeTab || "service"
-  );
+  const [activeTab, setActiveTab] = useState<QuoteType>(() => {
+    const stateTab = (location.state as any)?.activeTab as QuoteType;
+    if (stateTab === "training" || stateTab === "service") return stateTab;
+    const saved = sessionStorage.getItem("quotations-active-tab") as QuoteType;
+    if (saved === "training" || saved === "service") return saved;
+    return "service";
+  });
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+
+  // Persist activeTab so browser back/forward restores correct tab
+  useEffect(() => {
+    if (activeTab) sessionStorage.setItem("quotations-active-tab", activeTab);
+  }, [activeTab]);
+
+  // Sync activeTab when navigating back from form page
+  useEffect(() => {
+    const stateTab = (location.state as any)?.activeTab as QuoteType;
+    if (stateTab === "training" || stateTab === "service") {
+      setActiveTab(stateTab);
+    }
+  }, [location.state]);
 
   const fetchData = useCallback(async () => {
     try {
