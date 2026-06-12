@@ -403,13 +403,17 @@ export const QuestionPaperFormPage: React.FC = () => {
     });
   };
 
-  const addSubQuestion = (itemIdx: number) => {
+  const addSubQuestion = (itemIdx: number, subtype: "mcq" | "truefalse" = "mcq") => {
     setItems((prev) => {
       const next = [...prev];
       const item = next[itemIdx] as PassageItem;
+      const newSq =
+        subtype === "truefalse"
+          ? { subtype: "truefalse" as const, questionText: "", options: ["True", "False"], correctOptionIndex: 0, marks: 1, explanation: "" }
+          : defaultSubQuestion();
       next[itemIdx] = {
         ...item,
-        questions: [...item.questions, defaultSubQuestion()],
+        questions: [...item.questions, newSq],
       };
       return next;
     });
@@ -951,13 +955,24 @@ export const QuestionPaperFormPage: React.FC = () => {
                         />
                       ))}
 
-                      <button
-                        type="button"
-                        onClick={() => addSubQuestion(idx)}
-                        className="mt-3 w-full py-2 border-2 border-dashed border-amber-200 text-amber-500 hover:text-amber-600 hover:border-amber-300 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
-                      >
-                        <Plus size={13} /> Add Sub-question
-                      </button>
+                      <div className="mt-3 grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => addSubQuestion(idx, "mcq")}
+                          className="py-2 border-2 border-dashed border-amber-200 text-amber-500 hover:text-amber-600 hover:border-amber-300 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <Plus size={13} />
+                          <AlignLeft size={12} />
+                          Add MCQ Sub-question
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => addSubQuestion(idx, "truefalse")}
+                          className="py-2 border-2 border-dashed border-teal-200 text-teal-600 hover:text-teal-700 hover:border-teal-300 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <Plus size={13} /> Add True/False Sub-question
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
