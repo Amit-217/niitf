@@ -629,49 +629,40 @@ export const AWSDReportPrintPage: React.FC = () => {
         <tbody>
           <tr>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-              For : National Industrial Inspection And Training
+              EXAMINED BY : National Industrial Inspection And Training
             </td>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-              For : {v(cert.manufacturerOrContractor)}
+              CUSTOMER : {v(cert.manufacturerOrContractor)}
             </td>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-              For : {v(cert.verifiedBy)}
+              CLIENT : {v(cert.verifiedBy)}
             </td>
-          </tr>
-
-          <tr>
-            <td>Inspected By : {v(cert.inspectedBy) || "-"}</td>
-            <td>Verified By : {v(cert.authorizedBy) || "-"}</td>
-            <td>Reviewed By : {v(cert.reviewedBy) || "-"}</td>
-          </tr>
-          <tr>
-            <td>
-              ASNT NDT Level-II - UT
-              {cert.year ? ` (${v(cert.year)})` : ""}
-            </td>
-            <td>-</td>
-            <td>-</td>
-          </tr>
-          <tr>
-            <td style={{ height: "32px" }}>Signature:-</td>
-            <td>Signature :</td>
-            <td>Signature :</td>
-          </tr>
-          <tr>
-            <td>Date : {fmtDate(cert.testDate)}</td>
-            <td>Date : {fmtDate(cert.date)}</td>
-            <td>Date : {fmtDate(cert.reviewedByDate)}</td>
           </tr>
           {/* <tr>
-            <td
-              colSpan={3}
-              style={{ fontSize: "9px", fontStyle: "italic", padding: "2px 5px" }}
-            >
-              <strong>Note :</strong> Welds that are unacceptable by the above
-              criteria shall be repaired or replaced. The repaired welds shall be
-              retested by UT and their re-inspection results also be recorded.
-            </td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}></td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}></td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}></td>
           </tr> */}
+          <tr>
+            <td>Name: {v(cert.inspectedBy) || "-"}</td>
+            <td>Name: {v(cert.authorizedBy) || "-"}</td>
+            <td>Name: {v(cert.reviewedBy) || "-"}</td>
+          </tr>
+          <tr>
+            <td>{v(cert.year) || "ASNT NDT Level-II - UT"}</td>
+            <td>Designation: {v(cert.custDesignation) || "-"}</td>
+            <td>Designation: {v(cert.clientDesignation) || "-"}</td>
+          </tr>
+          <tr>
+            <td style={{ height: "40px" }}>Signature:-</td>
+            <td style={{ height: "40px" }}>Signature:-</td>
+            <td style={{ height: "40px" }}>Signature:-</td>
+          </tr>
+          <tr>
+            <td>Date:- {fmtDate(cert.testDate)}</td>
+            <td>Date:- {fmtDate(cert.date)}</td>
+            <td>Date:- {fmtDate(cert.reviewedByDate)}</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -694,7 +685,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       <div className="footer-meta">
         Format No: <span>FMT-NDT-AWSD-01</span>
         &nbsp;|&nbsp; Rev. No: <span>00</span>
-        &nbsp;|&nbsp; Report Date: <span>{fmtDate(cert.date)}</span>
+        &nbsp;|&nbsp; Report Date: <span>{fmtDate(report.reportDate)}</span>
       </div>
     </>
   );
