@@ -249,7 +249,7 @@ export const AdvancesPage = () => {
           <div className="flex justify-end pt-4 border-t border-gray-100">
             <button
               type="submit"
-              className="px-6 py-2.5 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700"
+              className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"
               disabled={!selectedUser}
             >
               Record Advance
@@ -402,7 +402,7 @@ export const AdvancesPage = () => {
                     <td className="px-4 py-3 text-center">
                       <button
                         onClick={() => openHistory(adv)}
-                        className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                        className="p-1.5 text-gray-500 hover:bg-gray-100 rounded-lg transition-all"
                         title="View History"
                       >
                         <Eye size={16} />
@@ -507,23 +507,25 @@ export const AdvancesPage = () => {
                   <tbody className="divide-y divide-gray-100">
                     {historyData.map((h, idx) => (
                       <tr key={h._id} className="hover:bg-gray-50/60">
-                        <td className="py-2.5 pr-4 text-gray-400">
-                          {idx + 1}
-                        </td>
+                        <td className="py-2.5 pr-4 text-gray-400">{idx + 1}</td>
                         <td className="py-2.5 pr-4 text-gray-500">
                           {new Date(h.date).toLocaleDateString()}
                         </td>
                         <td className="py-2.5 pr-4 text-gray-500">
-                          {h.repaidDate
-                            ? new Date(h.repaidDate).toLocaleDateString()
-                            : h.repaidAmount
-                              ? new Date(h.updatedAt!).toLocaleDateString()
-                              : <span className="text-gray-300">—</span>}
+                          {h.repaidDate ? (
+                            new Date(h.repaidDate).toLocaleDateString()
+                          ) : h.repaidAmount ? (
+                            new Date(h.updatedAt!).toLocaleDateString()
+                          ) : (
+                            <span className="text-gray-300">—</span>
+                          )}
                         </td>
                         <td className="py-2.5 pr-4 font-bold text-emerald-600">
-                          {h.repaidAmount
-                            ? `₹${h.repaidAmount.toLocaleString()}`
-                            : <span className="text-gray-300">—</span>}
+                          {h.repaidAmount ? (
+                            `₹${h.repaidAmount.toLocaleString()}`
+                          ) : (
+                            <span className="text-gray-300">—</span>
+                          )}
                         </td>
                         <td className="py-2.5 pr-4 text-center">
                           <span

@@ -79,7 +79,8 @@ const getEffectiveStatus = (test: AssignedTest): AssignedTest["status"] => {
   if (test.status === "Cancelled") return "Cancelled";
   const now = Date.now();
   const start = new Date(test.scheduledAt).getTime();
-  const durationMs = (test.duration || test.questionPaper?.duration || 60) * 60 * 1000;
+  const durationMs =
+    (test.duration || test.questionPaper?.duration || 60) * 60 * 1000;
   if (now < start) return "Upcoming";
   if (now < start + durationMs) return "Ongoing";
   return "Completed";
@@ -415,7 +416,8 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get(`/assigned-tests/${test._id}/results`)
+    api
+      .get(`/assigned-tests/${test._id}/results`)
       .then((res: any) => {
         setSubmissions(res.submissions || []);
         setSummary(res.summary || null);
@@ -435,7 +437,10 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
               {test.questionPaper?.title} · {test.batch?.batchName}
             </p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+          >
             <X size={16} />
           </button>
         </div>
@@ -445,12 +450,25 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
           {[
             { label: "Scheduled", value: formatDateTime(test.scheduledAt) },
             { label: "Duration", value: `${effectiveDuration ?? "—"} min` },
-            { label: "Total Marks", value: test.questionPaper?.totalMarks ?? "—" },
-            { label: "Pass Marks", value: test.questionPaper?.passingMarks ?? "—" },
+            {
+              label: "Total Marks",
+              value: test.questionPaper?.totalMarks ?? "—",
+            },
+            {
+              label: "Pass Marks",
+              value: test.questionPaper?.passingMarks ?? "—",
+            },
           ].map((s) => (
-            <div key={s.label} className="text-center py-3 px-2 border-r border-gray-100 last:border-r-0">
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">{s.label}</p>
-              <p className="text-xs font-black text-gray-800 mt-0.5 leading-tight">{s.value}</p>
+            <div
+              key={s.label}
+              className="text-center py-3 px-2 border-r border-gray-100 last:border-r-0"
+            >
+              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">
+                {s.label}
+              </p>
+              <p className="text-xs font-black text-gray-800 mt-0.5 leading-tight">
+                {s.value}
+              </p>
             </div>
           ))}
         </div>
@@ -467,18 +485,47 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
               {summary && (
                 <div className="grid grid-cols-4 gap-3 p-4 border-b border-gray-100">
                   {[
-                    { label: "Appeared", value: summary.appeared, icon: Users, color: "text-blue-600 bg-blue-50" },
-                    { label: "Passed", value: summary.passed, icon: CheckCircle2, color: "text-emerald-600 bg-emerald-50" },
-                    { label: "Failed", value: summary.failed, icon: XCircle, color: "text-red-500 bg-red-50" },
-                    { label: "Avg Score", value: `${summary.avgScore}%`, icon: TrendingUp, color: "text-indigo-600 bg-indigo-50" },
+                    {
+                      label: "Appeared",
+                      value: summary.appeared,
+                      icon: Users,
+                      color: "text-blue-600 bg-blue-50",
+                    },
+                    {
+                      label: "Passed",
+                      value: summary.passed,
+                      icon: CheckCircle2,
+                      color: "text-emerald-600 bg-emerald-50",
+                    },
+                    {
+                      label: "Failed",
+                      value: summary.failed,
+                      icon: XCircle,
+                      color: "text-red-500 bg-red-50",
+                    },
+                    {
+                      label: "Avg Score",
+                      value: `${summary.avgScore}%`,
+                      icon: TrendingUp,
+                      color: "text-indigo-600 bg-indigo-50",
+                    },
                   ].map(({ label, value, icon: Icon, color }) => (
-                    <div key={label} className="bg-white rounded-xl border border-gray-200 p-3 flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${color}`}>
+                    <div
+                      key={label}
+                      className="bg-white rounded-xl border border-gray-200 p-3 flex items-center gap-3"
+                    >
+                      <div
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${color}`}
+                      >
                         <Icon size={15} />
                       </div>
                       <div>
-                        <p className="text-[10px] text-gray-400 uppercase tracking-wide">{label}</p>
-                        <p className="text-base font-bold text-gray-900 leading-tight">{value}</p>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wide">
+                          {label}
+                        </p>
+                        <p className="text-base font-bold text-gray-900 leading-tight">
+                          {value}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -491,32 +538,61 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
                   <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
                     <BarChart3 size={22} className="text-gray-400" />
                   </div>
-                  <p className="text-sm font-semibold text-gray-600">No submissions yet</p>
-                  <p className="text-xs text-gray-400 mt-1">Students haven't started this test.</p>
+                  <p className="text-sm font-semibold text-gray-600">
+                    No submissions yet
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Students haven't started this test.
+                  </p>
                 </div>
               ) : (
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                     <tr>
-                      <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">#</th>
-                      <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Student</th>
-                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Score</th>
-                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">%</th>
-                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Result</th>
-                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Submitted</th>
+                      <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        #
+                      </th>
+                      <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Student
+                      </th>
+                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Score
+                      </th>
+                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        %
+                      </th>
+                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Result
+                      </th>
+                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Submitted
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {submissions.map((s, i) => (
-                      <tr key={s._id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-4 py-3 text-xs text-gray-400 font-medium">{i + 1}</td>
+                      <tr
+                        key={s._id}
+                        className="hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="px-4 py-3 text-xs text-gray-400 font-medium">
+                          {i + 1}
+                        </td>
                         <td className="px-4 py-3">
-                          <p className="font-semibold text-gray-900 text-sm leading-tight">{s.student?.fullName || "—"}</p>
-                          <p className="text-[10px] text-gray-400">{s.student?.studentId} · {s.student?.email}</p>
+                          <p className="font-semibold text-gray-900 text-sm leading-tight">
+                            {s.student?.fullName || "—"}
+                          </p>
+                          <p className="text-[10px] text-gray-400">
+                            {s.student?.studentId} · {s.student?.email}
+                          </p>
                         </td>
                         <td className="px-4 py-3 text-center font-bold text-gray-800">
-                          {s.status === "InProgress" ? "—" : `${s.score}/${s.totalMarks}`}
+                          {s.status === "InProgress"
+                            ? "—"
+                            : `${s.score}/${s.totalMarks}`}
                         </td>
                         <td className="px-4 py-3 text-center font-bold text-gray-800">
                           {s.status === "InProgress" ? "—" : `${s.percentage}%`}
@@ -535,11 +611,15 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
                           )}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-bold border ${
-                            s.status === "Submitted" ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                            : s.status === "TimedOut" ? "bg-amber-50 text-amber-700 border-amber-200"
-                            : "bg-blue-50 text-blue-600 border-blue-200"
-                          }`}>
+                          <span
+                            className={`inline-flex px-2 py-0.5 rounded-full text-xs font-bold border ${
+                              s.status === "Submitted"
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : s.status === "TimedOut"
+                                  ? "bg-amber-50 text-amber-700 border-amber-200"
+                                  : "bg-blue-50 text-blue-600 border-blue-200"
+                            }`}
+                          >
                             {s.status === "TimedOut" ? "Timed Out" : s.status}
                           </span>
                         </td>
@@ -556,7 +636,10 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
         </div>
 
         <div className="p-4 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex-shrink-0">
-          <button onClick={onClose} className="w-full py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all">
+          <button
+            onClick={onClose}
+            className="w-full py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-white transition-all"
+          >
             Close
           </button>
         </div>
@@ -586,7 +669,10 @@ export const AssignTestPage: React.FC = () => {
   const fetchTests = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(limit),
+      });
       if (search) params.set("search", search);
       if (statusFilter !== "All") params.set("status", statusFilter);
 
@@ -660,7 +746,7 @@ export const AssignTestPage: React.FC = () => {
           </button>
           <button
             onClick={openAssign}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-200"
+            className="w-full flex items-center justify-center gap-2 p-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"
           >
             <Plus size={16} /> Assign Test
           </button>
@@ -732,8 +818,14 @@ export const AssignTestPage: React.FC = () => {
             <tbody key={tick} className="divide-y divide-gray-100">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-gray-400">
-                    <Loader2 size={28} className="animate-spin text-blue-500 inline" />
+                  <td
+                    colSpan={7}
+                    className="px-4 py-12 text-center text-gray-400"
+                  >
+                    <Loader2
+                      size={28}
+                      className="animate-spin text-blue-500 inline"
+                    />
                   </td>
                 </tr>
               ) : tests.length === 0 ? (
@@ -742,8 +834,12 @@ export const AssignTestPage: React.FC = () => {
                     <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-3">
                       <CalendarClock size={24} className="text-blue-400" />
                     </div>
-                    <p className="text-gray-600 font-semibold text-sm">No assigned tests found</p>
-                    <p className="text-xs text-gray-400 mt-1">Click "Assign Test" to schedule a test for a batch</p>
+                    <p className="text-gray-600 font-semibold text-sm">
+                      No assigned tests found
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Click "Assign Test" to schedule a test for a batch
+                    </p>
                     <button
                       onClick={openAssign}
                       className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-xl hover:bg-blue-700 transition-colors"
@@ -754,10 +850,14 @@ export const AssignTestPage: React.FC = () => {
                 </tr>
               ) : (
                 tests.map((test, idx) => {
-                  const effectiveDuration = test.duration || test.questionPaper?.duration;
+                  const effectiveDuration =
+                    test.duration || test.questionPaper?.duration;
                   const effectiveStatus = getEffectiveStatus(test);
                   return (
-                    <tr key={test._id} className="hover:bg-gray-50 transition-colors">
+                    <tr
+                      key={test._id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
                       {/* # */}
                       <td className="px-4 py-3 text-gray-400 text-xs font-medium">
                         {(page - 1) * limit + idx + 1}
@@ -767,7 +867,10 @@ export const AssignTestPage: React.FC = () => {
                       <td className="px-4 py-3">
                         <div className="flex items-start gap-2">
                           <span className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <ClipboardList size={13} className="text-indigo-500" />
+                            <ClipboardList
+                              size={13}
+                              className="text-indigo-500"
+                            />
                           </span>
                           <div>
                             <p className="font-semibold text-gray-900 text-sm leading-tight line-clamp-1">
@@ -800,8 +903,13 @@ export const AssignTestPage: React.FC = () => {
                       {/* Scheduled At */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1.5 text-sm text-gray-700">
-                          <Clock size={13} className="text-gray-400 flex-shrink-0" />
-                          <span className="font-medium">{formatDateTime(test.scheduledAt)}</span>
+                          <Clock
+                            size={13}
+                            className="text-gray-400 flex-shrink-0"
+                          />
+                          <span className="font-medium">
+                            {formatDateTime(test.scheduledAt)}
+                          </span>
                         </div>
                       </td>
 
@@ -816,7 +924,8 @@ export const AssignTestPage: React.FC = () => {
                       <td className="px-4 py-3 text-center">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${
-                            STATUS_STYLES[effectiveStatus] || "bg-gray-50 text-gray-500 border-gray-200"
+                            STATUS_STYLES[effectiveStatus] ||
+                            "bg-gray-50 text-gray-500 border-gray-200"
                           }`}
                         >
                           {effectiveStatus}
@@ -837,7 +946,7 @@ export const AssignTestPage: React.FC = () => {
                           <button
                             onClick={() => openEdit(test)}
                             title="Edit"
-                            className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                           >
                             <Pencil size={14} />
                           </button>
@@ -864,7 +973,10 @@ export const AssignTestPage: React.FC = () => {
             total={pagination.total}
             limit={limit}
             onPageChange={setPage}
-            onLimitChange={(l) => { setLimit(l); setPage(1); }}
+            onLimitChange={(l) => {
+              setLimit(l);
+              setPage(1);
+            }}
           />
         )}
       </div>

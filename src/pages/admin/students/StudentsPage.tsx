@@ -154,10 +154,19 @@ export const StudentsPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.fullName.trim()) { toast.error("Full name is required"); return; }
-    if (!form.mobile.trim()) { toast.error("Mobile number is required"); return; }
-    if (!/^\d{10}$/.test(form.mobile.trim())) { toast.error("Mobile must be exactly 10 digits"); return; }
-    
+    if (!form.fullName.trim()) {
+      toast.error("Full name is required");
+      return;
+    }
+    if (!form.mobile.trim()) {
+      toast.error("Mobile number is required");
+      return;
+    }
+    if (!/^\d{10}$/.test(form.mobile.trim())) {
+      toast.error("Mobile must be exactly 10 digits");
+      return;
+    }
+
     if (form.dob) {
       const selectedDate = new Date(form.dob);
       const todayDate = new Date();
@@ -168,7 +177,10 @@ export const StudentsPage = () => {
       }
     }
 
-    if (form.sponsorType === "Company" && !form.companyName?.trim()) { toast.error("Company name is required"); return; }
+    if (form.sponsorType === "Company" && !form.companyName?.trim()) {
+      toast.error("Company name is required");
+      return;
+    }
     setSubmitting(true);
     try {
       const payload = { ...form };
@@ -308,13 +320,13 @@ export const StudentsPage = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => openEdit(s)}
-                          className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                          className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                         >
                           <Pencil size={14} />
                         </button>
                         <button
                           onClick={() => handleDelete(s._id)}
-                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -332,7 +344,10 @@ export const StudentsPage = () => {
           total={total}
           limit={limit}
           onPageChange={setPage}
-          onLimitChange={(l) => { setLimit(l); setPage(1); }}
+          onLimitChange={(l) => {
+            setLimit(l);
+            setPage(1);
+          }}
         />
       </div>
 
@@ -450,7 +465,11 @@ export const StudentsPage = () => {
                       <input
                         type="date"
                         required
-                        max={new Date(Date.now() - 86400000).toISOString().split("T")[0]}
+                        max={
+                          new Date(Date.now() - 86400000)
+                            .toISOString()
+                            .split("T")[0]
+                        }
                         value={form.dob || ""}
                         onChange={(e) =>
                           setForm((f) => ({ ...f, dob: e.target.value }))

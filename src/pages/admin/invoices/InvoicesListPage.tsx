@@ -102,7 +102,8 @@ export const InvoicesListPage: React.FC = () => {
         </div>
         <button
           onClick={() => navigate(`${basePath}/invoices/new`)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"
+          // className="w-full flex items-center justify-center gap-2 p-2.5 "
         >
           <Plus size={16} /> New Invoice
         </button>
@@ -228,14 +229,14 @@ export const InvoicesListPage: React.FC = () => {
                             navigate(`${basePath}/invoices/${inv._id}/edit`)
                           }
                           title="Edit"
-                          className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
+                          className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                         >
                           <Pencil size={15} />
                         </button>
                         <button
                           onClick={() => setDeleteId(inv._id)}
                           title="Delete"
-                          className="p-1.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                          className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
                         >
                           <Trash2 size={15} />
                         </button>

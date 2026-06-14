@@ -206,7 +206,9 @@ export const QuotationsListPage: React.FC = () => {
           <button
             id="add-quote-btn"
             onClick={() =>
-              navigate(`/admin/quotations/${activeTab ?? "training"}/new`, { state: { from: 'quotations-list' } })
+              navigate(`/admin/quotations/${activeTab ?? "training"}/new`, {
+                state: { from: "quotations-list" },
+              })
             }
             className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300 whitespace-nowrap"
           >
@@ -277,18 +279,27 @@ export const QuotationsListPage: React.FC = () => {
       {/* ── Filters ── */}
       <div className="glass-card p-4 flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          />
           <input
             type="text"
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             placeholder="Search by quote number or customer..."
             className="input-field pl-9 w-full"
           />
         </div>
         {search && (
           <button
-            onClick={() => { setSearch(""); setPage(1); }}
+            onClick={() => {
+              setSearch("");
+              setPage(1);
+            }}
             className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors whitespace-nowrap"
           >
             Clear
@@ -306,29 +317,48 @@ export const QuotationsListPage: React.FC = () => {
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
             <FileText size={40} className="mb-3 opacity-40" />
             <p className="font-medium">No quotations found</p>
-            <p className="text-sm mt-1">Try adjusting your search or create a new {activeInfo.label.toLowerCase()} quotation.</p>
+            <p className="text-sm mt-1">
+              Try adjusting your search or create a new{" "}
+              {activeInfo.label.toLowerCase()} quotation.
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Quote No.</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Customer</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Date</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Type</th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-600">Amount (₹)</th>
-                  <th className="px-4 py-3 text-center font-semibold text-gray-600">Actions</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">
+                    Quote No.
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">
+                    Customer
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">
+                    Date
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">
+                    Type
+                  </th>
+                  <th className="px-4 py-3 text-right font-semibold text-gray-600">
+                    Amount (₹)
+                  </th>
+                  <th className="px-4 py-3 text-center font-semibold text-gray-600">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {paginated.map((q) => {
                   const grandTotal = (() => {
-                    const services = Array.isArray(q.services) ? q.services : [];
+                    const services = Array.isArray(q.services)
+                      ? q.services
+                      : [];
                     let subtotal = services.reduce((sum: number, s: any) => {
                       const amt = Number(s.amount);
                       if (!isNaN(amt) && amt > 0) return sum + amt;
-                      return sum + Number(s.quantity || 1) * Number(s.price || 0);
+                      return (
+                        sum + Number(s.quantity || 1) * Number(s.price || 0)
+                      );
                     }, 0);
                     if (q._type === "service" && q.extraCharges) {
                       subtotal += Number(q.extraCharges.transportation || 0);
@@ -336,49 +366,72 @@ export const QuotationsListPage: React.FC = () => {
                       subtotal += Number(q.extraCharges.boarding || 0);
                       subtotal += Number(q.extraCharges.minimumVisit || 0);
                     }
-                    const gst = (subtotal * Number(q.gstPercentage ?? 18)) / 100;
+                    const gst =
+                      (subtotal * Number(q.gstPercentage ?? 18)) / 100;
                     return subtotal + gst;
                   })();
 
                   return (
-                    <tr key={q._id} className="hover:bg-gray-50 transition-colors">
+                    <tr
+                      key={q._id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
                       <td className="px-4 py-3 font-medium text-primary-700">
                         <div className="flex items-center gap-2">
                           <FileText size={14} className="text-primary-400" />
                           {q.quotationNo || "—"}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-gray-700">{getCustomerName(q.customerId)}</td>
+                      <td className="px-4 py-3 text-gray-700">
+                        {getCustomerName(q.customerId)}
+                      </td>
                       <td className="px-4 py-3 text-gray-600">{fmt(q.date)}</td>
                       <td className="px-4 py-3">
-                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          q._type === "training" ? "bg-primary-100 text-primary-700" : "bg-blue-100 text-blue-700"
-                        }`}>
+                        <span
+                          className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            q._type === "training"
+                              ? "bg-primary-100 text-primary-700"
+                              : "bg-blue-100 text-blue-700"
+                          }`}
+                        >
                           {q._type === "training" ? "Training" : "Service"}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right font-semibold text-gray-800">
-                        ₹{grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        ₹
+                        {grandTotal.toLocaleString("en-IN", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-2">
                           <button
-                            onClick={() => navigate(`/admin/quotations/${q._type}/${q._id}/print`)}
+                            onClick={() =>
+                              navigate(
+                                `/admin/quotations/${q._type}/${q._id}/print`,
+                              )
+                            }
                             className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                             title="View / Print"
                           >
                             <Eye size={15} />
                           </button>
                           <button
-                            onClick={() => navigate(`/admin/quotations/${q._type}/${q._id}/edit`, { state: { from: 'quotations-list' } })}
-                            className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
+                            onClick={() =>
+                              navigate(
+                                `/admin/quotations/${q._type}/${q._id}/edit`,
+                                { state: { from: "quotations-list" } },
+                              )
+                            }
+                            className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                             title="Edit"
                           >
                             <Pencil size={15} />
                           </button>
                           <button
                             onClick={() => handleDelete(q._id, q._type)}
-                            className="p-1.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                            className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
                             title="Delete"
                           >
                             <Trash2 size={15} />
@@ -401,7 +454,10 @@ export const QuotationsListPage: React.FC = () => {
               total={total}
               limit={limit}
               onPageChange={setPage}
-              onLimitChange={(l) => { setLimit(l); setPage(1); }}
+              onLimitChange={(l) => {
+                setLimit(l);
+                setPage(1);
+              }}
             />
           </div>
         )}
