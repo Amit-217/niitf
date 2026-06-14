@@ -316,7 +316,7 @@ export const SalaryConfigPage = () => {
             <button
               type="button"
               onClick={() => openGenerateModal()}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"
             >
               <Plus size={14} />
               <span className="hidden sm:inline">Generate New</span>
@@ -457,10 +457,10 @@ export const SalaryConfigPage = () => {
                       <select
                         value={selectedUser}
                         onChange={(e) => setSelectedUser(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-2xl bg-white focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 outline-none font-semibold text-gray-900 shadow-sm"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-2xl bg-white focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 outline-none font-semibold text-gray-900 text-sm shadow-sm"
                         required
                       >
-                        <option value="">-- Select an employee --</option>
+                        <option value="">Select employee</option>
                         {employees.map((emp) => (
                           <option key={emp._id} value={emp._id}>
                             {emp.name} ({emp.empId})
