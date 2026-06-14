@@ -13,6 +13,7 @@ import {
   markOvertime,
   getEmployeeMonthlyOvertime,
   getOvertimeByDate,
+  getAllOvertimeForMonth,
 } from "../../../api/payrollApi";
 import api from "../../../api/axios";
 
@@ -36,6 +37,10 @@ export const OvertimePage = () => {
   const [filterDate, setFilterDate] = useState(
     new Date().toISOString().split("T")[0],
   );
+  const [filterMode, setFilterMode] = useState<"date" | "month">("date");
+  const [filterMonth, setFilterMonth] = useState(
+    new Date().toISOString().substring(0, 7),
+  );
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>("");
   const [units, setUnits] = useState<number>(0);
@@ -49,11 +54,14 @@ export const OvertimePage = () => {
 
   useEffect(() => {
     fetchAllOvertimes();
-  }, [filterDate]);
+  }, [filterDate, filterMonth, filterMode]);
 
   const fetchAllOvertimes = async () => {
     try {
-      const res = await getOvertimeByDate(filterDate);
+      const res =
+        filterMode === "month"
+          ? await getAllOvertimeForMonth(filterMonth)
+          : await getOvertimeByDate(filterDate);
       setAllOvertimes(res.data || []);
     } catch (e) {
       console.error(e);
@@ -157,7 +165,7 @@ export const OvertimePage = () => {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `Overtime_${filterDate}.csv`;
+    link.download = `Overtime_${filterMode === "month" ? filterMonth : filterDate}.csv`;
     link.click();
     window.URL.revokeObjectURL(url);
   };
@@ -328,18 +336,41 @@ export const OvertimePage = () => {
       {/* Global Extracted Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-6">
         <div className="p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
               <Table2 className="text-gray-500" size={18} />
-              <h3 className="font-semibold text-gray-700">Daily Records</h3>
+              <h3 className="font-semibold text-gray-700">Records</h3>
             </div>
             <div className="h-6 w-px bg-gray-300 hidden sm:block"></div>
-            <input
-              type="date"
-              value={filterDate}
-              onChange={(e) => setFilterDate(e.target.value)}
-              className="text-sm px-3 py-1.5 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500/30 text-gray-700 font-medium"
-            />
+            <div className="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
+              <button
+                onClick={() => setFilterMode("date")}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${filterMode === "date" ? "bg-white text-gray-800 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+              >
+                By Date
+              </button>
+              <button
+                onClick={() => setFilterMode("month")}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${filterMode === "month" ? "bg-white text-gray-800 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+              >
+                By Month
+              </button>
+            </div>
+            {filterMode === "date" ? (
+              <input
+                type="date"
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+                className="text-sm px-3 py-1.5 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500/30 text-gray-700 font-medium"
+              />
+            ) : (
+              <input
+                type="month"
+                value={filterMonth}
+                onChange={(e) => setFilterMonth(e.target.value)}
+                className="text-sm px-3 py-1.5 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500/30 text-gray-700 font-medium"
+              />
+            )}
           </div>
           <button
             onClick={exportCSV}
