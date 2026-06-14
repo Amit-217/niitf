@@ -737,6 +737,11 @@ export const SalaryRecordsPage = () => {
                       </div>
                       <div className="flex flex-wrap gap-3 mt-1 text-xs font-bold">
                         <span className="text-emerald-600">+ Gross: ₹{Math.round(dynamicGross).toLocaleString()}</span>
+                        {(previewData.overtimeAmount || 0) > 0 && (
+                          <span className="text-teal-600">
+                            + OT ({previewData.overtimeUnits || 0} units): ₹{Math.round(previewData.overtimeAmount).toLocaleString()}
+                          </span>
+                        )}
                         {Number(bonusAmount) > 0 && <span className="text-emerald-600">+ Bonus: ₹{Math.round(Number(bonusAmount)).toLocaleString()}</span>}
                         <span className="text-red-600">- Absent/Leave: ₹{Math.round(previewData.deductionAmount).toLocaleString()}</span>
                         {Number(standardDeduction) > 0 && <span className="text-blue-600">- Std Ded: ₹{Math.round(Number(standardDeduction)).toLocaleString()}</span>}

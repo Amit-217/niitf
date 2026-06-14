@@ -33,7 +33,7 @@ interface AttendanceRecord {
   _id: string;
   employeeId: User | string;
   date: string;
-  status: "PRESENT" | "HOLIDAY" | "LEAVE" | "ABSENT";
+  status: "PRESENT" | "HOLIDAY" | "LEAVE" | "ABSENT" | "CUTOFF";
 }
 
 export const AttendancePage = () => {
@@ -207,7 +207,7 @@ export const AttendancePage = () => {
   // Handle single attendance marking/updating
   const handleStatusChange = async (
     employeeId: string,
-    status: "PRESENT" | "HOLIDAY" | "LEAVE" | "ABSENT",
+    status: "PRESENT" | "HOLIDAY" | "LEAVE" | "ABSENT" | "CUTOFF",
   ) => {
     const existingRecord = attendanceRecords.find(
       (r) => getEmployeeId(r.employeeId) === employeeId,
@@ -218,10 +218,18 @@ export const AttendancePage = () => {
         await updateAttendance(existingRecord._id, status);
         toast.success(`Updated to ${status}`);
       } else {
-        await bulkMarkAttendance({
+        const result = (await bulkMarkAttendance({
           date: selectedDate,
           attendances: [{ employeeId, status }],
-        });
+        })) as {
+          data?: { errors?: { employeeId: string; message: string }[] };
+        };
+        // bulkMark always returns 201 — check the errors array for failures
+        const firstError = result?.data?.errors?.[0];
+        if (firstError) {
+          toast.error(firstError.message || "Failed to mark attendance");
+          return;
+        }
         toast.success(`Marked as ${status}`);
       }
       // Await both so errors are surfaced and UI stays in sync
@@ -236,7 +244,10 @@ export const AttendancePage = () => {
         /* already handled inside */
       }
     } catch (error: any) {
-      toast.error(error.message || error || "Failed to update attendance");
+      // updateAttendance throws a proper 400 — extract message from response body
+      const msg =
+        error?.message || error?.data?.message || "Failed to update attendance";
+      toast.error(msg);
     }
   };
 
@@ -261,6 +272,7 @@ export const AttendancePage = () => {
       A: eMonthlyRecords.filter((r) => r.status === "ABSENT").length,
       L: eMonthlyRecords.filter((r) => r.status === "LEAVE").length,
       H: eMonthlyRecords.filter((r) => r.status === "HOLIDAY").length,
+      C: eMonthlyRecords.filter((r) => r.status === "CUTOFF").length,
     };
 
     return {
@@ -290,6 +302,8 @@ export const AttendancePage = () => {
         return "bg-amber-500 text-white border-amber-600";
       case "HOLIDAY":
         return "bg-blue-500 text-white border-blue-600";
+      case "CUTOFF":
+        return "bg-purple-500 text-white border-purple-600";
       default:
         return "bg-gray-100 text-gray-400 border-gray-200";
     }
@@ -305,6 +319,8 @@ export const AttendancePage = () => {
         return "bg-amber-500";
       case "HOLIDAY":
         return "bg-blue-500";
+      case "CUTOFF":
+        return "bg-purple-500";
       default:
         return "bg-gray-100";
     }
@@ -446,19 +462,22 @@ export const AttendancePage = () => {
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mt-0.5">
                         {row.employee.empId}
                       </span>
-                      {/* Monthly Summary Badges — wrap when needed */}
-                      <div className="flex flex-wrap items-center gap-1 mt-1.5">
-                        <span className="bg-emerald-50 text-emerald-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-emerald-100">
+                      {/* Monthly Summary Badges */}
+                      <div className="flex items-center w-52 gap-1 mt-1.5">
+                        <span className="shrink-0 bg-emerald-50 text-emerald-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-emerald-100">
                           P:{row.stats.P}
                         </span>
-                        <span className="bg-red-50 text-red-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-red-100">
+                        <span className="shrink-0 bg-red-50 text-red-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-red-100">
                           A:{row.stats.A}
                         </span>
-                        <span className="bg-amber-50 text-amber-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-amber-100">
+                        <span className="shrink-0 bg-amber-50 text-amber-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-amber-100">
                           L:{row.stats.L}
                         </span>
-                        <span className="bg-blue-50 text-blue-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-blue-100">
+                        <span className="shrink-0 bg-blue-50 text-blue-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-blue-100">
                           H:{row.stats.H}
+                        </span>
+                        <span className="shrink-0 bg-purple-50 text-purple-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-purple-100">
+                          C:{row.stats.C}
                         </span>
                       </div>
                     </div>
@@ -473,12 +492,14 @@ export const AttendancePage = () => {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-4 gap-1.5 mt-4">
+                <div className="grid grid-cols-5 gap-1.5 mt-4">
                   {[
                     { s: "PRESENT", icon: CheckCircle2, label: "P" },
                     { s: "ABSENT", icon: XCircle, label: "A" },
                     { s: "LEAVE", icon: FileWarning, label: "L" },
                     { s: "HOLIDAY", icon: Coffee, label: "H" },
+                    // now we have to add here cut off system
+                    { s: "CUTOFF", icon: FileWarning, label: "C" },
                   ].map((opt) => (
                     <button
                       key={opt.s}
@@ -596,6 +617,7 @@ export const AttendancePage = () => {
               { s: "ABSENT", c: "bg-red-500", l: "Absent" },
               { s: "LEAVE", c: "bg-amber-500", l: "Leave" },
               { s: "HOLIDAY", c: "bg-blue-500", l: "Holiday" },
+              { s: "CUTOFF", c: "bg-purple-500", l: "Cutoff (OT Used)" },
             ].map((legend) => (
               <div key={legend.s} className="flex items-center gap-1.5">
                 <div className={`w-3 h-3 rounded-full ${legend.c}`} />
