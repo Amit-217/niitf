@@ -190,7 +190,7 @@ export const AdmissionsPage = () => {
   useEffect(() => {
     if (!isCreateOpen) return;
     setForm((f) => ({ ...f, initialPayment: "0", initialPaymentMode: "Cash" }));
-    getStudents({ limit: 200 })
+    getStudents({ limit: 200, activeOnly: true })
       .then((r: any) => {
         if (Array.isArray(r)) setStudents(r);
         else if (r?.data?.students) setStudents(r.data.students);

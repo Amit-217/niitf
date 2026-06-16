@@ -13,12 +13,16 @@ import {
   Link2,
   Save,
   Loader2,
+  ArchiveX,
+  ArchiveRestore,
 } from "lucide-react";
 import {
   getStudents,
   createStudent,
   updateStudent,
   deleteStudent,
+  archiveStudent,
+  unarchiveStudent,
   Student,
   StudentPayload,
 } from "../../../api/admissionApi";
@@ -48,6 +52,7 @@ export const StudentsPage = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"active" | "archived" | "all">("active");
   const [isLoading, setIsLoading] = useState(true);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Student | null>(null);
@@ -58,7 +63,10 @@ export const StudentsPage = () => {
   const fetchStudents = useCallback(async () => {
     setIsLoading(true);
     try {
-      const res: any = await getStudents({ page, limit, search });
+      const params: Parameters<typeof getStudents>[0] = { page, limit, search };
+      if (statusFilter === "active") params.activeOnly = true;
+      else if (statusFilter === "archived") params.archived = true;
+      const res: any = await getStudents(params);
       // By default res is the unwrapped JSON body (via Axios interceptor).
       // Example successful body: { success: true, message: "...", data: { students: [...], pagination: {...} } }
 
@@ -90,7 +98,7 @@ export const StudentsPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [page, limit, search]);
+  }, [page, limit, search, statusFilter]);
 
   useEffect(() => {
     fetchStudents();
@@ -212,6 +220,28 @@ export const StudentsPage = () => {
     }
   };
 
+  const handleArchive = async (id: string) => {
+    if (!window.confirm("Archive this student? They will be hidden from admissions and dropdowns.")) return;
+    try {
+      await archiveStudent(id);
+      toast.success("Student archived");
+      fetchStudents();
+    } catch {
+      toast.error("Failed to archive student");
+    }
+  };
+
+  const handleUnarchive = async (id: string) => {
+    if (!window.confirm("Restore this student? They will become active again.")) return;
+    try {
+      await unarchiveStudent(id);
+      toast.success("Student restored");
+      fetchStudents();
+    } catch {
+      toast.error("Failed to restore student");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -229,6 +259,23 @@ export const StudentsPage = () => {
         >
           <Plus size={17} /> Add Student
         </button>
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit">
+        {(["active", "archived", "all"] as const).map((f) => (
+          <button
+            key={f}
+            onClick={() => { setStatusFilter(f); setPage(1); }}
+            className={`px-4 py-1.5 text-xs font-bold rounded-lg capitalize transition-all ${
+              statusFilter === f
+                ? "bg-white text-violet-700 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            {f === "all" ? "All" : f === "active" ? "Active" : "Archived"}
+          </button>
+        ))}
       </div>
 
       {/* Search */}
@@ -299,7 +346,14 @@ export const StudentsPage = () => {
                       {s.studentId}
                     </td>
                     <td className="px-4 py-3 font-semibold text-gray-900">
-                      {s.fullName}
+                      <div className="flex items-center gap-2">
+                        {s.fullName}
+                        {!s.isActive && (
+                          <span className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 uppercase tracking-wide">
+                            Archived
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-blue-600 font-mono text-xs font-semibold">
                       {s.email}
@@ -321,12 +375,31 @@ export const StudentsPage = () => {
                         <button
                           onClick={() => openEdit(s)}
                           className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                          title="Edit"
                         >
                           <Pencil size={14} />
                         </button>
+                        {s.isActive ? (
+                          <button
+                            onClick={() => handleArchive(s._id)}
+                            className="p-1.5 text-amber-500 hover:bg-amber-50 rounded-lg transition-all"
+                            title="Archive student"
+                          >
+                            <ArchiveX size={14} />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleUnarchive(s._id)}
+                            className="p-1.5 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-all"
+                            title="Restore student"
+                          >
+                            <ArchiveRestore size={14} />
+                          </button>
+                        )}
                         <button
                           onClick={() => handleDelete(s._id)}
                           className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                          title="Delete"
                         >
                           <Trash2 size={14} />
                         </button>

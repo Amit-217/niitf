@@ -81,7 +81,7 @@ export interface PayRemainingFeePayload {
 
 // ─── Student APIs ────────────────────────────────────────────────────────────
 
-export const getStudents = (params?: { page?: number; limit?: number; search?: string }) =>
+export const getStudents = (params?: { page?: number; limit?: number; search?: string; activeOnly?: boolean; archived?: boolean }) =>
     api.get('/admin/students', { params });
 
 export const getStudentById = (id: string) =>
@@ -95,6 +95,12 @@ export const updateStudent = (id: string, data: Partial<StudentPayload>) =>
 
 export const deleteStudent = (id: string) =>
     api.delete(`/admin/students/${id}`);
+
+export const archiveStudent = (id: string) =>
+    api.patch(`/admin/students/${id}/archive`);
+
+export const unarchiveStudent = (id: string) =>
+    api.patch(`/admin/students/${id}/unarchive`);
 
 // ─── Admission APIs ──────────────────────────────────────────────────────────
 
