@@ -8,7 +8,6 @@ import {
   Eye,
   X,
   ArrowRight,
-  Edit2,
   Pencil,
 } from "lucide-react";
 import {
@@ -228,7 +227,10 @@ export const SalaryConfigPage = () => {
       setSelectedUser(employeeId);
       setMonthlySalary(Number(config.monthlySalary || 0));
       const parsed = parseDate(config.effectiveFrom) || new Date();
-      setEffectiveFrom(toMonthInputValue(parsed));
+      const prefilled = toMonthInputValue(parsed);
+      setEffectiveFrom(
+        prefilled < getCurrentMonthLocal() ? getCurrentMonthLocal() : prefilled,
+      );
     } else {
       setSelectedUser("");
       setMonthlySalary("");
@@ -250,6 +252,10 @@ export const SalaryConfigPage = () => {
     e.preventDefault();
     if (!selectedUser || !monthlySalary || !effectiveFrom) {
       return toast.warning("Please fill all fields");
+    }
+
+    if (effectiveFrom < getCurrentMonthLocal()) {
+      return toast.warning("Effective month cannot be in the past");
     }
 
     try {
@@ -476,6 +482,7 @@ export const SalaryConfigPage = () => {
                       <input
                         type="month"
                         value={effectiveFrom}
+                        min={getCurrentMonthLocal()}
                         onChange={(e) => setEffectiveFrom(e.target.value)}
                         className="w-full px-4 py-3 border border-gray-300 rounded-2xl bg-white focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 outline-none font-semibold text-gray-900 shadow-sm"
                         required
