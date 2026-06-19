@@ -240,7 +240,7 @@ const StudentTestResultPage: React.FC = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3 justify-center pb-6">
+            <div className="flex gap-3 justify-center flex-wrap pb-6">
                 <button
                     onClick={() => navigate('/student/tests')}
                     className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors"

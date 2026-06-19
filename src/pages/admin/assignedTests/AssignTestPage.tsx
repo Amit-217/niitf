@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   TrendingUp,
   XCircle,
+  Send,
 } from "lucide-react";
 import api from "../../../api/axios";
 import { Pagination } from "../../../components/Pagination";
@@ -48,6 +49,7 @@ interface AssignedTest {
   scheduledAt: string;
   duration?: number;
   status: "Upcoming" | "Ongoing" | "Completed" | "Cancelled";
+  isResultReleased: boolean;
   createdAt: string;
 }
 
@@ -664,6 +666,8 @@ export const AssignTestPage: React.FC = () => {
   const [viewResults, setViewResults] = useState<AssignedTest | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AssignedTest | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [releaseTarget, setReleaseTarget] = useState<AssignedTest | null>(null);
+  const [releasing, setReleasing] = useState(false);
   const [tick, setTick] = useState(0);
 
   const fetchTests = async () => {
@@ -719,6 +723,25 @@ export const AssignTestPage: React.FC = () => {
       toast.error(err?.message || "Failed to delete.");
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const closeRelease = () => {
+    setReleaseTarget(null);
+  };
+
+  const handleRelease = async () => {
+    if (!releaseTarget) return;
+    setReleasing(true);
+    try {
+      const res: any = await api.post(`/assigned-tests/${releaseTarget._id}/release-result`);
+      toast.success(`Results released! Emails sent to ${res?.emailsSent ?? 0} student(s).`);
+      closeRelease();
+      fetchTests();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to release results.");
+    } finally {
+      setReleasing(false);
     }
   };
 
@@ -934,7 +957,7 @@ export const AssignTestPage: React.FC = () => {
 
                       {/* Actions */}
                       <td className="px-4 py-3">
-                        <div className="flex items-center justify-center gap-1">
+                        <div className="flex items-center justify-center gap-1 flex-wrap">
                           <button
                             onClick={() => setViewResults(test)}
                             title="View Results"
@@ -943,6 +966,23 @@ export const AssignTestPage: React.FC = () => {
                             <BarChart3 size={13} />
                             Results
                           </button>
+                          {effectiveStatus === "Completed" && (
+                            test.isResultReleased ? (
+                              <span className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg">
+                                <CheckCircle2 size={12} />
+                                Released
+                              </span>
+                            ) : (
+                              <button
+                                onClick={() => setReleaseTarget(test)}
+                                title="Release Result"
+                                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors"
+                              >
+                                <Send size={12} />
+                                Release
+                              </button>
+                            )
+                          )}
                           <button
                             onClick={() => openEdit(test)}
                             title="Edit"
@@ -999,6 +1039,43 @@ export const AssignTestPage: React.FC = () => {
           test={viewResults}
           onClose={() => setViewResults(null)}
         />
+      )}
+
+      {/* ── Release Result Modal ── */}
+      {releaseTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center animate-in zoom-in-95 fade-in duration-200">
+            <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center mx-auto mb-4">
+              <Send size={22} className="text-amber-600" />
+            </div>
+            <h3 className="text-lg font-bold mb-2">Release Results?</h3>
+            <p className="text-sm text-gray-500 mb-1">
+              <strong>{releaseTarget.questionPaper?.title}</strong>
+            </p>
+            <p className="text-sm text-gray-400 mb-2">
+              Batch: <strong>{releaseTarget.batch?.batchName}</strong>
+            </p>
+            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-6 text-left">
+              This will send result emails with certificates to all passed students. This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={closeRelease}
+                className="flex-1 py-2.5 border rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRelease}
+                disabled={releasing}
+                className="flex-1 py-2.5 bg-amber-500 text-white rounded-xl text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-amber-600 transition-colors"
+              >
+                {releasing ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                Release & Send
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* ── Delete Confirmation ── */}

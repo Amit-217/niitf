@@ -20,6 +20,7 @@ export interface MyTest {
     scheduledAt: string;
     duration?: number;
     status: 'Upcoming' | 'Ongoing' | 'Completed' | 'Cancelled';
+    isResultReleased: boolean;
     submission: {
         _id: string;
         status: 'InProgress' | 'Submitted' | 'TimedOut';
