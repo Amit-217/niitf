@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   CalendarClock,
@@ -18,6 +19,7 @@ import {
   TrendingUp,
   XCircle,
   Send,
+  Eye,
 } from "lucide-react";
 import api from "../../../api/axios";
 import { Pagination } from "../../../components/Pagination";
@@ -147,9 +149,13 @@ const AssignModal: React.FC<ModalProps> = ({
   );
   const [ndtMethod, setNdtMethod] = useState(editTarget?.ndtMethod || "");
   const [ndtLevel, setNdtLevel] = useState(editTarget?.ndtLevel || "Level II");
-  const [ndtTechnique, setNdtTechnique] = useState(editTarget?.ndtTechnique || "");
+  const [ndtTechnique, setNdtTechnique] = useState(
+    editTarget?.ndtTechnique || "",
+  );
   const [limitations, setLimitations] = useState(editTarget?.limitations || "");
-  const [signatoryName1, setSignatoryName1] = useState(editTarget?.signatoryName1 || "");
+  const [signatoryName1, setSignatoryName1] = useState(
+    editTarget?.signatoryName1 || "",
+  );
   const [saving, setSaving] = useState(false);
 
   // Auto-fill duration when paper is selected
@@ -202,10 +208,10 @@ const AssignModal: React.FC<ModalProps> = ({
         scheduledAt: new Date(scheduledAt).toISOString(),
         duration: duration ? Number(duration) : undefined,
         status,
-        ndtMethod:      ndtMethod      || undefined,
-        ndtLevel:       ndtLevel       || undefined,
-        ndtTechnique:   ndtTechnique   || undefined,
-        limitations:    limitations    || undefined,
+        ndtMethod: ndtMethod || undefined,
+        ndtLevel: ndtLevel || undefined,
+        ndtTechnique: ndtTechnique || undefined,
+        limitations: limitations || undefined,
         signatoryName1: signatoryName1 || undefined,
       };
 
@@ -489,6 +495,7 @@ const AssignModal: React.FC<ModalProps> = ({
   );
 };
 
+
 // ── View Results Modal ────────────────────────────────────────────────────────
 
 interface Submission {
@@ -518,6 +525,7 @@ interface ResultsModalProps {
 
 const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
   const effectiveDuration = test.duration || test.questionPaper?.duration;
+  const navigate = useNavigate();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [summary, setSummary] = useState<ResultsSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -677,6 +685,9 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
                       <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Submitted
                       </th>
+                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Certificate
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -732,6 +743,23 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
                         </td>
                         <td className="px-4 py-3 text-xs text-gray-500">
                           {s.submittedAt ? formatDateTime(s.submittedAt) : "—"}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {s.isPassed && s.status !== "InProgress" ? (
+                            <button
+                              onClick={() =>
+                                navigate(
+                                  `/admin/assign-tests/${test._id}/certificate/${s._id}`
+                                )
+                              }
+                              title="View Certificate"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors"
+                            >
+                              <Eye size={12} /> View
+                            </button>
+                          ) : (
+                            <span className="text-xs text-gray-300">—</span>
+                          )}
                         </td>
                       </tr>
                     ))}

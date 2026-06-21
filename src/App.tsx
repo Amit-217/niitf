@@ -58,6 +58,7 @@ import { EmployeeSalaryDetailPage } from "./pages/admin/payroll/EmployeeSalaryDe
 import { QuestionPapersPage } from "./pages/admin/questionPapers/QuestionPapersPage";
 import { QuestionPaperFormPage } from "./pages/admin/questionPapers/QuestionPaperFormPage";
 import { AssignTestPage } from "./pages/admin/assignedTests/AssignTestPage";
+import { CertificatePrintPage } from "./pages/admin/assignedTests/CertificatePrintPage";
 import { ResultsPage } from "./pages/admin/results/ResultsPage";
 import { ResultDetailPage } from "./pages/admin/results/ResultDetailPage";
 import { SubmissionReviewPage } from "./pages/admin/results/SubmissionReviewPage";
@@ -419,6 +420,16 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
               <AWSDReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* NDT Certificate Print Page (standalone, no DashboardLayout) */}
+        <Route
+          path="/admin/assign-tests/:testId/certificate/:submissionId"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+              <CertificatePrintPage />
             </ProtectedRoute>
           }
         />
