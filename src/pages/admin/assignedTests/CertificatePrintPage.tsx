@@ -357,7 +357,7 @@ export const CertificatePrintPage: React.FC = () => {
             }}
           >
             <img
-              src="/logo.png"
+              src="/logo.jpeg"
               alt="NIIT Logo"
               style={{ height: "30mm", width: "40mm", objectFit: "contain" }}
             />
