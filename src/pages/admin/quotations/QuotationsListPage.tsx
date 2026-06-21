@@ -180,21 +180,19 @@ export const QuotationsListPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* ── Header ── */}
-      <div className="relative overflow-hidden bg-white/40 backdrop-blur-md rounded-3xl border border-white/20 p-6 sm:p-8 shadow-xl shadow-gray-200/50">
-        <div className="absolute top-0 right-0 -m-8 w-64 h-64 bg-violet-100/50 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 -m-8 w-48 h-48 bg-primary-100/50 rounded-full blur-3xl" />
+      {/* <div className="relative overflow-hidden bg-white/40 backdrop-blur-md rounded-3xl border border-white/20 p-6 sm:p-8 shadow-xl shadow-gray-200/50"> */}
+      <div className="absolute top-0 right-0 -m-8 w-64 h-64 bg-violet-100/50 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 -m-8 w-48 h-48 bg-primary-100/50 rounded-full blur-3xl" />
 
-        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div
-              className={`p-4 rounded-2xl ${activeInfo.color} ${activeInfo.textColor} shadow-lg shadow-current/10 bg-white`}
-            >
-              <FileText size={32} />
+      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div className="flex items-center gap-4">
+          <div>
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <FileText className="text-primary-600" /> Quotation Records
+              </h1>
             </div>
             <div>
-              <h1 className="text-2xl font-black text-gray-900 tracking-tight">
-                Quotation Records
-              </h1>
               <p className="text-sm font-medium text-gray-500 mt-1 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 {total} total {activeTab ? activeInfo.label.toLowerCase() : ""}{" "}
@@ -202,21 +200,22 @@ export const QuotationsListPage: React.FC = () => {
               </p>
             </div>
           </div>
-
-          <button
-            id="add-quote-btn"
-            onClick={() =>
-              navigate(`/admin/quotations/${activeTab ?? "training"}/new`, {
-                state: { from: "quotations-list" },
-              })
-            }
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300 whitespace-nowrap"
-          >
-            <Plus size={17} /> New {activeTab ? `${activeInfo.label} ` : ""}
-            Quote
-          </button>
         </div>
+
+        <button
+          id="add-quote-btn"
+          onClick={() =>
+            navigate(`/admin/quotations/${activeTab ?? "training"}/new`, {
+              state: { from: "quotations-list" },
+            })
+          }
+          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300 whitespace-nowrap"
+        >
+          <Plus size={17} /> New {activeTab ? `${activeInfo.label} ` : ""}
+          Quote
+        </button>
       </div>
+      {/* </div> */}
 
       {/* ── Stat Cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
