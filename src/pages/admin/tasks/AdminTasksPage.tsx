@@ -530,7 +530,7 @@ export const AdminTasksPage = () => {
               {task.status.replace("_", " ")}
             </span>
             {task.status === "COMPLETED" && !task.isArchived && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex gap-2 ml-2">
                 <button
                   onClick={(e) => handleArchiveTask(task._id, e)}
                   disabled={processingTasks.has(task._id)}
@@ -715,7 +715,7 @@ export const AdminTasksPage = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
           {visibleTasks.map((task) => (
             <TaskCard
               key={task._id}
