@@ -5,14 +5,14 @@ import api from './axios';
 export interface AttendancePayload {
     employeeId: string;
     date: string; // YYYY-MM-DD
-    status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT';
+    status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'CUTOFF';
 }
 
 export interface BulkAttendancePayload {
     date: string; // YYYY-MM-DD
     attendances: {
         employeeId: string;
-        status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT';
+        status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'CUTOFF';
     }[];
 }
 
@@ -42,7 +42,7 @@ export const markAttendance = (data: AttendancePayload) =>
 export const bulkMarkAttendance = (data: BulkAttendancePayload) =>
     api.post('/admin/attendance/bulk', data);
 
-export const updateAttendance = (id: string, status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT') =>
+export const updateAttendance = (id: string, status: 'PRESENT' | 'HOLIDAY' | 'LEAVE' | 'ABSENT' | 'CUTOFF') =>
     api.put(`/admin/attendance/${id}`, { status });
 
 export const getAttendanceByDate = (date: string) =>

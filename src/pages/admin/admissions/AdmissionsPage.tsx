@@ -190,7 +190,7 @@ export const AdmissionsPage = () => {
   useEffect(() => {
     if (!isCreateOpen) return;
     setForm((f) => ({ ...f, initialPayment: "0", initialPaymentMode: "Cash" }));
-    getStudents({ limit: 200 })
+    getStudents({ limit: 200, activeOnly: true })
       .then((r: any) => {
         if (Array.isArray(r)) setStudents(r);
         else if (r?.data?.students) setStudents(r.data.students);
@@ -445,7 +445,7 @@ export const AdmissionsPage = () => {
                 ].map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-left {} font-semibold text-gray-500 text-xs uppercase tracking-wider"
+                    className={`px-4 py-3 text-left font-semibold text-gray-500 text-xs uppercase tracking-wider ${h === "Actions" && "text-center"}`}
                   >
                     {h}
                   </th>
@@ -518,14 +518,14 @@ export const AdmissionsPage = () => {
                       </button>
                       <button
                         onClick={() => openEdit(a)}
-                        className="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors"
+                        className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                         title="Edit"
                       >
                         <Pencil size={15} />
                       </button>
                       <button
                         onClick={() => handleDelete(a._id)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
                         title="Delete"
                       >
                         <Trash2 size={15} />

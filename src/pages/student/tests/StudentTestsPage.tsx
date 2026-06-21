@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CalendarDays, Clock, BookOpen, CheckCircle, XCircle } from 'lucide-react';
+import { CalendarDays, Clock, BookOpen, CheckCircle, XCircle, Hourglass } from 'lucide-react';
 import { getMyTests, MyTest } from '../../../api/studentTestApi';
 import { toast } from 'react-toastify';
 
@@ -49,9 +49,12 @@ const StudentTestsPage: React.FC = () => {
     const getAction = (t: MyTest) => {
         const sub = t.submission;
         const status = getEffectiveStatus(t);
-        // Submitted — always show View Result
+        // Submitted — only show View Result if results have been released
         if (sub?.status === 'Submitted' || sub?.status === 'TimedOut') {
-            return { type: 'button', label: 'View Result', onClick: () => navigate(`/student/tests/${t._id}/result`), style: 'bg-gray-100 text-gray-700 hover:bg-gray-200' } as const;
+            if (t.isResultReleased) {
+                return { type: 'button', label: 'View Result', onClick: () => navigate(`/student/tests/${t._id}/result`), style: 'bg-gray-100 text-gray-700 hover:bg-gray-200' } as const;
+            }
+            return { type: 'pending' } as const;
         }
         // Ongoing — allow attending
         if (status === 'Ongoing') {
@@ -122,6 +125,12 @@ const StudentTestsPage: React.FC = () => {
                                             {action.label}
                                         </button>
                                     )}
+                                    {action?.type === 'pending' && (
+                                        <span className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-yellow-50 text-yellow-700 border border-yellow-200">
+                                            <Hourglass size={14} />
+                                            Pending Result
+                                        </span>
+                                    )}
                                     {action?.type === 'absent' && (
                                         <span className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-orange-50 text-orange-600 border border-orange-200">
                                             <XCircle size={14} />
@@ -147,7 +156,7 @@ const StudentTestsPage: React.FC = () => {
                                     </span>
                                 </div>
 
-                                {isSubmitted && t.submission && (
+                                {isSubmitted && t.submission && t.isResultReleased && (
                                     <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-4">
                                         <span className={`flex items-center gap-1.5 text-sm font-semibold ${t.submission.isPassed ? 'text-green-600' : 'text-red-600'}`}>
                                             {t.submission.isPassed ? <CheckCircle size={14} /> : <XCircle size={14} />}
@@ -159,6 +168,12 @@ const StudentTestsPage: React.FC = () => {
                                         <span className="text-sm text-gray-600">
                                             {t.submission.percentage}%
                                         </span>
+                                    </div>
+                                )}
+                                {isSubmitted && !t.isResultReleased && (
+                                    <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-1.5 text-sm text-yellow-700">
+                                        <Hourglass size={13} />
+                                        <span>Result pending — awaiting admin release</span>
                                     </div>
                                 )}
 

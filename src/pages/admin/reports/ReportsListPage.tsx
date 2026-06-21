@@ -309,7 +309,11 @@ export const ReportsListPage = () => {
           </div>
 
           <button
-            onClick={() => navigate(`/admin/reports/${activeTab}/new`, { state: { from: "reports-list" } })}
+            onClick={() =>
+              navigate(`/admin/reports/${activeTab}/new`, {
+                state: { from: "reports-list" },
+              })
+            }
             className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300 whitespace-nowrap"
           >
             <Plus size={17} /> New {activeInfo.label}
@@ -370,18 +374,27 @@ export const ReportsListPage = () => {
       {/* ── Filters ── */}
       <div className="glass-card p-4 flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          />
           <input
             type="text"
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             placeholder="Search reports by customer or report number..."
             className="input-field pl-9 w-full"
           />
         </div>
         <select
           value={status}
-          onChange={(e) => { setStatus(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
           className="input-field w-full sm:w-40"
         >
           <option value="">All Status</option>
@@ -408,24 +421,42 @@ export const ReportsListPage = () => {
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
             <FileBarChart2 size={40} className="mb-3 opacity-40" />
             <p className="font-medium">No reports found</p>
-            <p className="text-sm mt-1">Try adjusting your search or create a new {activeInfo.label} report.</p>
+            <p className="text-sm mt-1">
+              Try adjusting your search or create a new {activeInfo.label}{" "}
+              report.
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Report No</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Customer</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Date</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-600">Inspection Stage</th>
-                  <th className="px-4 py-3 text-center font-semibold text-gray-600">Status</th>
-                  <th className="px-4 py-3 text-center font-semibold text-gray-600">Actions</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">
+                    Report No
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">
+                    Customer
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">
+                    Date
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-600">
+                    Inspection Stage
+                  </th>
+                  <th className="px-4 py-3 text-center font-semibold text-gray-600">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-center font-semibold text-gray-600">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {reports.map((r) => (
-                  <tr key={r._id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={r._id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-4 py-3 font-medium text-primary-700">
                       <div className="flex items-center gap-2">
                         <FileBarChart2 size={14} className="text-primary-400" />
@@ -433,42 +464,66 @@ export const ReportsListPage = () => {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-gray-700">
-                      {r.customerId?.companyName || r.jobDetails?.customer || r.jobDetails?.client || r.client || r.customer || "—"}
+                      {r.customerId?.companyName ||
+                        r.jobDetails?.customer ||
+                        r.jobDetails?.client ||
+                        r.client ||
+                        r.customer ||
+                        "—"}
                     </td>
                     <td className="px-4 py-3 text-gray-600">
-                      {fmt(r.dateOfInspection || r.jobDetails?.reportDate || r.dtOfInspection || r.reportDate)}
+                      {fmt(
+                        r.dateOfInspection ||
+                          r.jobDetails?.reportDate ||
+                          r.dtOfInspection ||
+                          r.reportDate,
+                      )}
                     </td>
                     <td className="px-4 py-3 text-gray-600">
-                      {r.stageOfInspection || r.jobDetails?.stageOfInspection || r.inspectionStage || "—"}
+                      {r.stageOfInspection ||
+                        r.jobDetails?.stageOfInspection ||
+                        r.inspectionStage ||
+                        "—"}
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        r.status === "final"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}>
+                      <span
+                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          r.status === "final"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-yellow-100 text-yellow-700"
+                        }`}
+                      >
                         {r.status === "final" ? "Final" : "Draft"}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
                         <button
-                          onClick={() => navigate(`/admin/reports/${activeTab}/${r._id}/print`)}
+                          onClick={() =>
+                            navigate(
+                              `/admin/reports/${activeTab}/${r._id}/print`,
+                            )
+                          }
                           className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                           title="View / Print"
                         >
                           <Eye size={15} />
                         </button>
                         <button
-                          onClick={() => navigate(`/admin/reports/${activeTab}/${r._id}/edit`, { state: { from: "reports-list" } })}
-                          className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
+                          onClick={() =>
+                            navigate(
+                              `/admin/reports/${activeTab}/${r._id}/edit`,
+                              { state: { from: "reports-list" } },
+                            )
+                          }
+                          className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                           title="Edit"
                         >
                           <Pencil size={15} />
                         </button>
                         <button
                           onClick={() => handleDeleteReport(r._id)}
-                          className="p-1.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                          className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
                           title="Delete"
                         >
                           <Trash2 size={15} />
@@ -490,7 +545,10 @@ export const ReportsListPage = () => {
               total={total}
               limit={limit}
               onPageChange={setPage}
-              onLimitChange={(l) => { setLimit(l); setPage(1); }}
+              onLimitChange={(l) => {
+                setLimit(l);
+                setPage(1);
+              }}
             />
           </div>
         )}

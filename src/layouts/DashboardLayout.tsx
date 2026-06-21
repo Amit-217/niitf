@@ -47,6 +47,8 @@ export const DashboardLayout: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [notifications, setNotifications] = useState<any[]>([]);
   const [myTaskCount, setMyTaskCount] = useState(0);
+  const notificationsRequestInFlight = useRef(false);
+  const hasLoadedNotificationsRef = useRef(false);
 
   // Sub-menu states
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({
@@ -153,7 +155,10 @@ export const DashboardLayout: React.FC = () => {
   }, []);
 
   const fetchNotifications = useCallback(async () => {
-    const isFirstLoad = notifications.length === 0;
+    if (notificationsRequestInFlight.current) return;
+
+    const isFirstLoad = !hasLoadedNotificationsRef.current;
+    notificationsRequestInFlight.current = true;
     if (isFirstLoad) setIsNotificationsLoading(true);
     try {
       // Only fetch UNREAD notifications to ensure they "disappear" once read/visited
@@ -188,15 +193,17 @@ export const DashboardLayout: React.FC = () => {
               new Date(a.createdAt || 0).getTime(),
           ),
       );
+      hasLoadedNotificationsRef.current = true;
     } catch (error: any) {
       console.error("Notification fetch error:", error);
-      if (notifications.length === 0) {
+      if (!hasLoadedNotificationsRef.current) {
         setNotifications([]);
       }
     } finally {
+      notificationsRequestInFlight.current = false;
       if (isFirstLoad) setIsNotificationsLoading(false);
     }
-  }, [notifications.length]);
+  }, []);
 
   const fetchMyTaskCount = useCallback(async () => {
     if (!currentUserId) {
@@ -223,13 +230,13 @@ export const DashboardLayout: React.FC = () => {
     } catch {
       setMyTaskCount(0);
     }
-  }, [role, currentUserId]);
+  }, [currentUserId]);
 
   useEffect(() => {
     fetchNotifications();
     fetchMyTaskCount();
-    const timer = window.setInterval(fetchNotifications, 5000);
-    const taskTimer = window.setInterval(fetchMyTaskCount, 5000);
+    const timer = window.setInterval(fetchNotifications, 30000);
+    const taskTimer = window.setInterval(fetchMyTaskCount, 30000);
     const handleNotificationRefresh = () => {
       fetchNotifications();
     };

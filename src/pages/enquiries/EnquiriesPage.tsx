@@ -404,7 +404,6 @@ const EnquiryCard: React.FC<{
   onDelete: (e: Enquiry) => void;
   onConvert: (e: Enquiry) => void;
 }> = ({ enquiry, onEdit, onDelete, onConvert }) => {
-
   const isDue =
     enquiry.nextFollowUpDate &&
     new Date(enquiry.nextFollowUpDate) <= new Date() &&
@@ -421,13 +420,13 @@ const EnquiryCard: React.FC<{
         <div className="flex gap-1">
           <button
             onClick={() => onEdit(enquiry)}
-            className="p-1.5 text-gray-400 hover:text-indigo-600"
+            className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
           >
             <Pencil size={14} />
           </button>
           <button
             onClick={() => onDelete(enquiry)}
-            className="p-1.5 text-gray-400 hover:text-red-600"
+            className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
           >
             <Trash2 size={14} />
           </button>

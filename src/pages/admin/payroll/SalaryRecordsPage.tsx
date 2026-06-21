@@ -148,41 +148,41 @@ export const SalaryRecordsPage = () => {
 
     setPreviews([]);
     try {
-        const res: any = await getAllSalaryRecordsForMonth(month);
-        const existingRecords = res.data || res || [];
-        setRecords(Array.isArray(existingRecords) ? existingRecords : []);
+      const res: any = await getAllSalaryRecordsForMonth(month);
+      const existingRecords = res.data || res || [];
+      setRecords(Array.isArray(existingRecords) ? existingRecords : []);
 
-        const previewPromises = targetEmployees.map(async (emp) => {
-          const hasRecord = existingRecords.some((r: any) => {
-            const rId = r.employeeId?._id || r.employeeId;
-            return rId === emp._id;
-          });
-
-          if (!hasRecord) {
-            try {
-              const pRes: any = await previewSalary(emp._id, month);
-              const details = pRes.data || pRes;
-              return {
-                ...details,
-                isPreview: true,
-                _id: `preview-${emp._id}`,
-                status: "LIVE_BALANCE",
-              };
-            } catch (e) {
-              console.error(`Preview failed for ${emp.name}:`, e);
-              return null;
-            }
-          }
-          return null;
+      const previewPromises = targetEmployees.map(async (emp) => {
+        const hasRecord = existingRecords.some((r: any) => {
+          const rId = r.employeeId?._id || r.employeeId;
+          return rId === emp._id;
         });
-        const fetchedPreviews = (await Promise.all(previewPromises)).filter(
-          Boolean,
-        );
-        setPreviews(fetchedPreviews);
-      } catch (error) {
-        console.error("Fetch records error:", error);
-      }
-    };
+
+        if (!hasRecord) {
+          try {
+            const pRes: any = await previewSalary(emp._id, month);
+            const details = pRes.data || pRes;
+            return {
+              ...details,
+              isPreview: true,
+              _id: `preview-${emp._id}`,
+              status: "LIVE_BALANCE",
+            };
+          } catch (e) {
+            console.error(`Preview failed for ${emp.name}:`, e);
+            return null;
+          }
+        }
+        return null;
+      });
+      const fetchedPreviews = (await Promise.all(previewPromises)).filter(
+        Boolean,
+      );
+      setPreviews(fetchedPreviews);
+    } catch (error) {
+      console.error("Fetch records error:", error);
+    }
+  };
 
   const getDaysInMonth = (monthValue: string) => {
     const [year, monthNumber] = monthValue.split("-").map(Number);
@@ -257,7 +257,12 @@ export const SalaryRecordsPage = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this salary record? Associated advance deductions will be reverted.")) return;
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this salary record? Associated advance deductions will be reverted.",
+      )
+    )
+      return;
     try {
       await deleteSalaryRecord(id);
       toast.success("Salary record deleted successfully");
@@ -299,7 +304,7 @@ export const SalaryRecordsPage = () => {
           <button
             type="button"
             onClick={() => setIsCreatePayrollOpen(true)}
-            className="px-3 py-2 bg-primary-600 text-white rounded-xl font-bold text-sm shadow-md shadow-primary-200 hover:bg-primary-700 transition-all flex items-center gap-1.5"
+            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"
           >
             <Calculator size={15} />
             <span className="hidden sm:inline">Create Payroll</span>
@@ -449,7 +454,8 @@ export const SalaryRecordsPage = () => {
                               </span>
                             </div>
                             <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
-                              {summary.payableDays} payable / {summary.daysInMonth} days
+                              {summary.payableDays} payable /{" "}
+                              {summary.daysInMonth} days
                             </p>
                           </div>
                         );
@@ -464,7 +470,8 @@ export const SalaryRecordsPage = () => {
                       </div>
                       {record.bonusAmount > 0 && (
                         <div className="text-[10px] font-bold text-emerald-600">
-                          + ₹{(record.bonusAmount || 0).toLocaleString()} (Bonus)
+                          + ₹{(record.bonusAmount || 0).toLocaleString()}{" "}
+                          (Bonus)
                         </div>
                       )}
                     </td>
@@ -477,7 +484,9 @@ export const SalaryRecordsPage = () => {
                       </div>
                       <div className="text-[10px] font-bold text-blue-600">
                         - ₹{(record.standardDeduction || 0).toLocaleString()}{" "}
-                        <span className="text-[8px] opacity-70">(Standard Deduction)</span>
+                        <span className="text-[8px] opacity-70">
+                          (Standard Deduction)
+                        </span>
                       </div>
                       <div className="text-[10px] font-bold text-amber-600">
                         - ₹{(record.advanceTotal || 0).toLocaleString()}{" "}
@@ -661,7 +670,9 @@ export const SalaryRecordsPage = () => {
                     type="number"
                     min={0}
                     value={standardDeduction}
-                    onChange={(e) => setStandardDeduction(Number(e.target.value))}
+                    onChange={(e) =>
+                      setStandardDeduction(Number(e.target.value))
+                    }
                     placeholder="Enter deduction amount..."
                     className="w-full pl-7 pr-4 py-2.5 border border-blue-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 font-black text-gray-700 bg-white"
                   />
@@ -720,33 +731,82 @@ export const SalaryRecordsPage = () => {
               </div>
 
               {/* LIVE PREVIEW SECTION */}
-              {selectedGenEmployee && (() => {
-                const previewData = previews.find(p => (p.employeeId?._id || p.employeeId) === selectedGenEmployee);
-                if (previewData) {
-                  const dynamicGross = (previewData.baseSalary || 0) + (previewData.overtimeAmount || 0) + Number(bonusAmount || 0);
-                  const dynamicNet = Math.max(0, dynamicGross - (previewData.deductionAmount || 0) - Number(standardDeduction || 0) - Number(advanceDeduction || 0));
-                  return (
-                    <div className="bg-primary-50 border border-primary-100 rounded-2xl p-4 mt-2">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-black uppercase tracking-[0.2em] text-primary-600">
-                          Live Net Salary Preview
-                        </span>
-                        <span className="text-lg font-black text-primary-700">
-                          ₹{Math.round(dynamicNet).toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap gap-3 mt-1 text-xs font-bold">
-                        <span className="text-emerald-600">+ Gross: ₹{Math.round(dynamicGross).toLocaleString()}</span>
-                        {Number(bonusAmount) > 0 && <span className="text-emerald-600">+ Bonus: ₹{Math.round(Number(bonusAmount)).toLocaleString()}</span>}
-                        <span className="text-red-600">- Absent/Leave: ₹{Math.round(previewData.deductionAmount).toLocaleString()}</span>
-                        {Number(standardDeduction) > 0 && <span className="text-blue-600">- Std Ded: ₹{Math.round(Number(standardDeduction)).toLocaleString()}</span>}
-                        {Number(advanceDeduction) > 0 && <span className="text-amber-600">- Advance: ₹{Math.round(Number(advanceDeduction)).toLocaleString()}</span>}
-                      </div>
-                    </div>
+              {selectedGenEmployee &&
+                (() => {
+                  const previewData = previews.find(
+                    (p) =>
+                      (p.employeeId?._id || p.employeeId) ===
+                      selectedGenEmployee,
                   );
-                }
-                return null;
-              })()}
+                  if (previewData) {
+                    const dynamicGross =
+                      (previewData.baseSalary || 0) +
+                      (previewData.overtimeAmount || 0) +
+                      Number(bonusAmount || 0);
+                    const dynamicNet = Math.max(
+                      0,
+                      dynamicGross -
+                        (previewData.deductionAmount || 0) -
+                        Number(standardDeduction || 0) -
+                        Number(advanceDeduction || 0),
+                    );
+                    return (
+                      <div className="bg-primary-50 border border-primary-100 rounded-2xl p-4 mt-2">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-black uppercase tracking-[0.2em] text-primary-600">
+                            Live Net Salary Preview
+                          </span>
+                          <span className="text-lg font-black text-primary-700">
+                            ₹{Math.round(dynamicNet).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-3 mt-1 text-xs font-bold">
+                          <span className="text-emerald-600">
+                            + Gross: ₹
+                            {Math.round(dynamicGross).toLocaleString()}
+                          </span>
+                          {(previewData.overtimeAmount || 0) > 0 && (
+                            <span className="text-teal-600">
+                              + OT ({previewData.overtimeUnits || 0} units): ₹
+                              {Math.round(
+                                previewData.overtimeAmount,
+                              ).toLocaleString()}
+                            </span>
+                          )}
+                          {Number(bonusAmount) > 0 && (
+                            <span className="text-emerald-600">
+                              + Bonus: ₹
+                              {Math.round(Number(bonusAmount)).toLocaleString()}
+                            </span>
+                          )}
+                          <span className="text-red-600">
+                            - Absent/Leave: ₹
+                            {Math.round(
+                              previewData.deductionAmount,
+                            ).toLocaleString()}
+                          </span>
+                          {Number(standardDeduction) > 0 && (
+                            <span className="text-blue-600">
+                              - Std Ded: ₹
+                              {Math.round(
+                                Number(standardDeduction),
+                              ).toLocaleString()}
+                            </span>
+                          )}
+                          {Number(advanceDeduction) > 0 && (
+                            <span className="text-amber-600">
+                              - Advance: ₹
+                              {Math.round(
+                                Number(advanceDeduction),
+                              ).toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
 
               <div className="flex gap-3 pt-2 pb-1">
                 <button

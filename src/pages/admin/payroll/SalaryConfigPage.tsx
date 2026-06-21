@@ -8,6 +8,7 @@ import {
   Eye,
   X,
   ArrowRight,
+  Pencil,
 } from "lucide-react";
 import {
   createSalaryConfig,
@@ -64,7 +65,9 @@ export const SalaryConfigPage = () => {
   const pickOneConfigPerEmployee = (configs: any[]) => {
     const safeDate = (value?: string) => {
       if (!value) return null;
-      const parsed = new Date(value.includes("T") ? value : `${value}T00:00:00Z`);
+      const parsed = new Date(
+        value.includes("T") ? value : `${value}T00:00:00Z`,
+      );
       return Number.isNaN(parsed.getTime()) ? null : parsed;
     };
 
@@ -193,8 +196,10 @@ export const SalaryConfigPage = () => {
         getSalaryConfigOverview(employeeId),
         getSalaryHistory(employeeId),
       ]);
-      const overviewData = overviewRes?.data?.data || overviewRes?.data || overviewRes || {};
-      const historyData = historyRes?.data?.data || historyRes?.data || historyRes || [];
+      const overviewData =
+        overviewRes?.data?.data || overviewRes?.data || overviewRes || {};
+      const historyData =
+        historyRes?.data?.data || historyRes?.data || historyRes || [];
 
       setViewOverview(overviewData || null);
       setViewCurrentSalary(overviewData?.activeConfig || null);
@@ -222,7 +227,10 @@ export const SalaryConfigPage = () => {
       setSelectedUser(employeeId);
       setMonthlySalary(Number(config.monthlySalary || 0));
       const parsed = parseDate(config.effectiveFrom) || new Date();
-      setEffectiveFrom(toMonthInputValue(parsed));
+      const prefilled = toMonthInputValue(parsed);
+      setEffectiveFrom(
+        prefilled < getCurrentMonthLocal() ? getCurrentMonthLocal() : prefilled,
+      );
     } else {
       setSelectedUser("");
       setMonthlySalary("");
@@ -246,11 +254,16 @@ export const SalaryConfigPage = () => {
       return toast.warning("Please fill all fields");
     }
 
+    if (effectiveFrom < getCurrentMonthLocal()) {
+      return toast.warning("Effective month cannot be in the past");
+    }
+
     try {
       await createSalaryConfig({
         employeeId: selectedUser,
         monthlySalary: Number(monthlySalary),
-        effectiveFrom: effectiveFrom.length === 7 ? `${effectiveFrom}-01` : effectiveFrom,
+        effectiveFrom:
+          effectiveFrom.length === 7 ? `${effectiveFrom}-01` : effectiveFrom,
         repaymentMonth: "",
       } as any);
       toast.success("Salary configuration updated");
@@ -309,7 +322,7 @@ export const SalaryConfigPage = () => {
             <button
               type="button"
               onClick={() => openGenerateModal()}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"
             >
               <Plus size={14} />
               <span className="hidden sm:inline">Generate New</span>
@@ -373,9 +386,9 @@ export const SalaryConfigPage = () => {
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                          getStatusClasses(getConfigStatus(config))
-                        }`}
+                        className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase ${getStatusClasses(
+                          getConfigStatus(config),
+                        )}`}
                       >
                         {getConfigStatus(config)}
                       </span>
@@ -385,18 +398,16 @@ export const SalaryConfigPage = () => {
                         <button
                           type="button"
                           onClick={() => openConfigView(config)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 text-xs font-bold hover:bg-gray-50 transition-colors"
+                          className="p-1.5 text-gray-500 hover:bg-gray-100 rounded-lg transition-all"
                         >
                           <Eye size={14} />
-                          View
                         </button>
                         <button
                           type="button"
                           onClick={() => openGenerateModal(config)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-600 text-white text-xs font-bold hover:bg-primary-700 transition-colors"
+                          className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                         >
-                          <ArrowRight size={14} />
-                          Edit
+                          <Pencil size={16} />
                         </button>
                       </div>
                     </td>
@@ -452,10 +463,10 @@ export const SalaryConfigPage = () => {
                       <select
                         value={selectedUser}
                         onChange={(e) => setSelectedUser(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-2xl bg-white focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 outline-none font-semibold text-gray-900 shadow-sm"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-2xl bg-white focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 outline-none font-semibold text-gray-900 text-sm shadow-sm"
                         required
                       >
-                        <option value="">-- Select an employee --</option>
+                        <option value="">Select employee</option>
                         {employees.map((emp) => (
                           <option key={emp._id} value={emp._id}>
                             {emp.name} ({emp.empId})
@@ -471,6 +482,7 @@ export const SalaryConfigPage = () => {
                       <input
                         type="month"
                         value={effectiveFrom}
+                        min={getCurrentMonthLocal()}
                         onChange={(e) => setEffectiveFrom(e.target.value)}
                         className="w-full px-4 py-3 border border-gray-300 rounded-2xl bg-white focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 outline-none font-semibold text-gray-900 shadow-sm"
                         required
@@ -669,9 +681,7 @@ export const SalaryConfigPage = () => {
                           Effective Month
                         </p>
                         <p className="text-base font-bold text-blue-900 mt-1">
-                          {formatMonthLabel(
-                            selectedConfig.effectiveFrom,
-                          )}
+                          {formatMonthLabel(selectedConfig.effectiveFrom)}
                         </p>
                       </div>
                       <div className="rounded-xl bg-white border border-blue-100 p-3">
@@ -708,7 +718,10 @@ export const SalaryConfigPage = () => {
                               {formatMonthLabel(futureConfig.effectiveFrom)}
                             </p>
                             <p className="text-xs text-gray-500">
-                              Rs. {Number(futureConfig.monthlySalary || 0).toLocaleString()}
+                              Rs.{" "}
+                              {Number(
+                                futureConfig.monthlySalary || 0,
+                              ).toLocaleString()}
                             </p>
                           </div>
                         ))}
@@ -773,11 +786,12 @@ export const SalaryConfigPage = () => {
                                 <td className="px-5 py-3 text-center">
                                   <span
                                     className={`inline-flex px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tighter border ${
-                                        getStatusClasses(getConfigStatus(record)) +
-                                          " border-transparent"
+                                      getStatusClasses(
+                                        getConfigStatus(record),
+                                      ) + " border-transparent"
                                     }`}
                                   >
-                                      {getConfigStatus(record).toUpperCase()}
+                                    {getConfigStatus(record).toUpperCase()}
                                   </span>
                                 </td>
                               </tr>

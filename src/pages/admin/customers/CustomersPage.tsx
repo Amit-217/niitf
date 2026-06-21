@@ -59,10 +59,12 @@ export const CustomersPage = () => {
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getIndianStates().then((res: any) => {
-      const data = res?.data?.data || res?.data || [];
-      setIndiaStates(data);
-    }).catch(() => {});
+    getIndianStates()
+      .then((res: any) => {
+        const data = res?.data?.data || res?.data || [];
+        setIndiaStates(data);
+      })
+      .catch(() => {});
   }, []);
 
   const fetchCustomers = useCallback(async () => {
@@ -320,13 +322,13 @@ export const CustomersPage = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => openEdit(c)}
-                          className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                          className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                         >
                           <Pencil size={14} />
                         </button>
                         <button
                           onClick={() => handleDelete(c._id)}
-                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -345,7 +347,10 @@ export const CustomersPage = () => {
           total={total}
           limit={limit}
           onPageChange={setPage}
-          onLimitChange={(l) => { setLimit(l); setPage(1); }}
+          onLimitChange={(l) => {
+            setLimit(l);
+            setPage(1);
+          }}
         />
       </div>
 
@@ -455,7 +460,7 @@ export const CustomersPage = () => {
                         value={form.state || ""}
                         onChange={(e) => {
                           const selected = indiaStates.find(
-                            (s) => s.name === e.target.value
+                            (s) => s.name === e.target.value,
                           );
                           setForm((f) => ({
                             ...f,

@@ -133,8 +133,12 @@ const ViewPaperModal: React.FC<ViewModalProps> = ({ paper, onClose }) => {
           {[
             {
               label: "Questions",
-              value: (paper.questions || []).reduce((sum, item) =>
-                item.type === "passage" ? sum + item.questions.length : sum + 1, 0
+              value: (paper.questions || []).reduce(
+                (sum, item) =>
+                  item.type === "passage"
+                    ? sum + item.questions.length
+                    : sum + 1,
+                0,
               ),
             },
             { label: "Total Marks", value: paper.totalMarks },
@@ -232,10 +236,13 @@ const ViewPaperModal: React.FC<ViewModalProps> = ({ paper, onClose }) => {
                                     </span>
                                     <span className="flex-1">{opt}</span>
                                     {oi === sq.correctOptionIndex && (
-                                      <CheckCircle2 size={13} className="text-emerald-600 flex-shrink-0" />
+                                      <CheckCircle2
+                                        size={13}
+                                        className="text-emerald-600 flex-shrink-0"
+                                      />
                                     )}
                                   </div>
-                                ) : null
+                                ) : null,
                               )}
                             </div>
                             <div className="flex items-center gap-3 mt-2">
@@ -283,7 +290,10 @@ const ViewPaperModal: React.FC<ViewModalProps> = ({ paper, onClose }) => {
                     </div>
                     {/* Correct answer */}
                     <div className="flex items-start gap-2 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-lg">
-                      <CheckCircle2 size={14} className="text-emerald-600 mt-0.5 flex-shrink-0" />
+                      <CheckCircle2
+                        size={14}
+                        className="text-emerald-600 mt-0.5 flex-shrink-0"
+                      />
                       <div className="flex-1 min-w-0">
                         <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wide mb-0.5">
                           Correct Answer
@@ -342,10 +352,13 @@ const ViewPaperModal: React.FC<ViewModalProps> = ({ paper, onClose }) => {
                             </span>
                             <span className="flex-1">{opt}</span>
                             {oi === item.correctOptionIndex && (
-                              <CheckCircle2 size={14} className="text-emerald-600 flex-shrink-0" />
+                              <CheckCircle2
+                                size={14}
+                                className="text-emerald-600 flex-shrink-0"
+                              />
                             )}
                           </div>
-                        ) : null
+                        ) : null,
                       )}
                     </div>
                     <div className="flex items-center gap-3 mt-3">
@@ -509,15 +522,17 @@ const QuestionPaperCard: React.FC<CardProps> = ({
           <div className="bg-gray-50 rounded-xl p-2.5 text-center">
             <p className="text-[10px] text-gray-400 font-medium">Questions</p>
             <p className="text-base font-black text-gray-800">
-              {(paper.questions || []).reduce((sum, item) =>
-                item.type === "passage" ? sum + item.questions.length : sum + 1, 0
+              {(paper.questions || []).reduce(
+                (sum, item) =>
+                  item.type === "passage"
+                    ? sum + item.questions.length
+                    : sum + 1,
+                0,
               )}
             </p>
           </div>
           <div className="bg-gray-50 rounded-xl p-2.5 text-center">
-            <p className="text-[10px] text-gray-400 font-medium">
-              Total Marks
-            </p>
+            <p className="text-[10px] text-gray-400 font-medium">Total Marks</p>
             <p className="text-base font-black text-gray-800">
               {paper.totalMarks}
             </p>
@@ -531,9 +546,8 @@ const QuestionPaperCard: React.FC<CardProps> = ({
         </div>
 
         <p className="text-[11px] text-gray-400 mt-2 text-center">
-          Pass:{" "}
-          <strong className="text-gray-600">{paper.passingMarks}</strong> /{" "}
-          {paper.totalMarks} marks
+          Pass: <strong className="text-gray-600">{paper.passingMarks}</strong>{" "}
+          / {paper.totalMarks} marks
         </p>
 
         {/* View button */}
@@ -644,7 +658,7 @@ export const QuestionPapersPage: React.FC = () => {
           </button>
           <button
             onClick={() => navigate(`${basePath}/question-papers/new`)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300"
+            className="w-full flex items-center justify-center gap-2 p-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"
           >
             <Plus size={16} /> New Paper
           </button>
@@ -741,7 +755,9 @@ export const QuestionPapersPage: React.FC = () => {
           <p className="text-sm text-gray-700">
             Page <strong>{page}</strong> of{" "}
             <strong>{pagination.totalPages}</strong>
-            <span className="text-gray-400 ml-1">({pagination.total} total)</span>
+            <span className="text-gray-400 ml-1">
+              ({pagination.total} total)
+            </span>
           </p>
           <div className="flex gap-1">
             <button
@@ -780,8 +796,12 @@ export const QuestionPapersPage: React.FC = () => {
             </p>
             <p className="text-sm text-gray-400 mb-6">
               All{" "}
-              {(deleteTarget.questions || []).reduce((sum, item) =>
-                item.type === "passage" ? sum + item.questions.length : sum + 1, 0
+              {(deleteTarget.questions || []).reduce(
+                (sum, item) =>
+                  item.type === "passage"
+                    ? sum + item.questions.length
+                    : sum + 1,
+                0,
               )}{" "}
               questions will be permanently removed.
             </p>

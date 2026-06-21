@@ -9,6 +9,7 @@ import {
 } from "../../../api/customerApi";
 import { CustomerPickerBanner } from "../../../components/CustomerPickerBanner";
 import { getApiErrorMessage } from "../../../api/error";
+import api from "../../../api/axios";
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
@@ -114,6 +115,22 @@ const emptyObs = (lineNo: number): ObsRow => ({
   remarks: "",
 });
 
+interface InspRow {
+  name: string;
+  qualification: string;
+  designation: string;
+  signature: string;
+  date: string;
+}
+
+const emptyInspector = (): InspRow => ({
+  name: "",
+  qualification: "ASNT NDT Level-II - UT",
+  designation: "",
+  signature: "",
+  date: "",
+});
+
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export const AWSDReportFormPage: React.FC = () => {
@@ -133,6 +150,7 @@ export const AWSDReportFormPage: React.FC = () => {
 
   // ── Header Fields ──
   const [reportNo, setReportNo] = useState("");
+  const [reportDate, setReportDate] = useState("");
   const [project, setProject] = useState("");
   const [dateOfInspection, setDateOfInspection] = useState("");
 
@@ -168,15 +186,26 @@ export const AWSDReportFormPage: React.FC = () => {
   );
 
   // ── Footer / Certification ──
-  const [testDate, setTestDate] = useState("");
-  const [inspectedBy, setInspectedBy] = useState("");
-  const [certYear, setCertYear] = useState("");
+  const [inspectors, setInspectors] = useState<InspRow[]>([emptyInspector()]);
   const [manufacturerOrContractor, setManufacturerOrContractor] = useState("");
-  const [authorizedBy, setAuthorizedBy] = useState("");
+  const [custName, setCustName] = useState("");
+  const [custDesig, setCustDesig] = useState("");
+  const [custSig, setCustSig] = useState("");
+  const [custDate, setCustDate] = useState("");
   const [verifiedBy, setVerifiedBy] = useState("");
-  const [reviewedBy, setReviewedBy] = useState("");
-  const [reviewedByDate, setReviewedByDate] = useState("");
-  const [footerDate, setFooterDate] = useState("");
+  const [clientName, setClientName] = useState("");
+  const [clientDesig, setClientDesig] = useState("");
+  const [clientSig, setClientSig] = useState("");
+  const [clientDate, setClientDate] = useState("");
+
+  // ── Users for inspector dropdown ──
+  const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
+  useEffect(() => {
+    api
+      .get("/users?status=active&limit=100")
+      .then((res: any) => setUsers(res.data ?? res ?? []))
+      .catch(() => {});
+  }, []);
 
   const [errors, setErrors] = useState<Record<string, boolean>>({});
 
@@ -203,6 +232,7 @@ export const AWSDReportFormPage: React.FC = () => {
           }
         }
         setReportNo(r.reportNo ?? "");
+        setReportDate(toDate(r.reportDate));
         setProject(r.project ?? "");
         setDateOfInspection(toDate(r.dateOfInspection));
 
@@ -264,15 +294,23 @@ export const AWSDReportFormPage: React.FC = () => {
           );
         }
         const cert = r.certification ?? {};
-        setTestDate(toDate(cert.testDate));
-        setInspectedBy(cert.inspectedBy ?? "");
-        setCertYear(cert.year ?? "");
+        setInspectors([{
+          name: cert.inspectedBy ?? "",
+          qualification: cert.year || "ASNT NDT Level-II - UT",
+          designation: cert.inspectorDesignation ?? "",
+          signature: cert.inspectorSignature ?? "",
+          date: toDate(cert.testDate),
+        }]);
         setManufacturerOrContractor(cert.manufacturerOrContractor ?? "");
-        setAuthorizedBy(cert.authorizedBy ?? "");
+        setCustName(cert.authorizedBy ?? "");
+        setCustDesig(cert.custDesignation ?? "");
+        setCustSig(cert.custSignature ?? "");
+        setCustDate(toDate(cert.date));
         setVerifiedBy(cert.verifiedBy ?? "");
-        setReviewedBy(cert.reviewedBy ?? "");
-        setReviewedByDate(toDate(cert.reviewedByDate));
-        setFooterDate(toDate(cert.date));
+        setClientName(cert.reviewedBy ?? "");
+        setClientDesig(cert.clientDesignation ?? "");
+        setClientSig(cert.clientSignature ?? "");
+        setClientDate(toDate(cert.reviewedByDate));
       })
       .catch(() => toast.error("Failed to load report."));
   }, [id]);
@@ -305,13 +343,18 @@ export const AWSDReportFormPage: React.FC = () => {
       scanningSensitivity,
       referenceDb,
       scanningDb,
-      testDate,
-      inspectedBy,
-      certYear,
       manufacturerOrContractor,
-      authorizedBy,
       verifiedBy,
-      reviewedBy,
+      custName,
+      custDesig,
+      custDate,
+      clientName,
+      clientDesig,
+      clientDate,
+      inspectorName_0: inspectors[0]?.name ?? "",
+      inspectorQual_0: inspectors[0]?.qualification ?? "",
+      inspectorDesig_0: inspectors[0]?.designation ?? "",
+      inspectorDate_0: inspectors[0]?.date ?? "",
       weldingProcess:
         weldingProcess === "Other" ? weldingProcessOther : weldingProcess,
     };
@@ -334,6 +377,15 @@ export const AWSDReportFormPage: React.FC = () => {
         .filter((_, i) => i !== idx)
         .map((r, i) => ({ ...r, serialNo: (i + 1).toString() })),
     );
+
+  const updateInsp = (idx: number, key: keyof InspRow, val: string) =>
+    setInspectors((prev) =>
+      prev.map((r, i) => (i === idx ? { ...r, [key]: val } : r)),
+    );
+  const addInspector = () =>
+    setInspectors((prev) => [...prev, emptyInspector()]);
+  const removeInspector = (idx: number) =>
+    setInspectors((prev) => prev.filter((_, i) => i !== idx));
 
   // ── Submit ──
   const handleSubmit = async (status: "draft" | "final") => {
@@ -381,25 +433,35 @@ export const AWSDReportFormPage: React.FC = () => {
         if (!o.jointNo?.trim()) e[`obs${i}_jointNo`] = true;
         if (!o.indicationLevelA?.trim()) e[`obs${i}_indicationLevelA`] = true;
         if (!o.referenceLevelB?.trim()) e[`obs${i}_referenceLevelB`] = true;
-        if (!o.attenuationFactorC?.trim()) e[`obs${i}_attenuationFactorC`] = true;
+        if (!o.attenuationFactorC?.trim())
+          e[`obs${i}_attenuationFactorC`] = true;
         if (!o.indicationRatingD?.trim()) e[`obs${i}_indicationRatingD`] = true;
         if (!o.length?.trim()) e[`obs${i}_length`] = true;
         if (!o.angularDistance?.trim()) e[`obs${i}_angularDistance`] = true;
         if (!o.depthFromASurface?.trim()) e[`obs${i}_depthFromASurface`] = true;
         if (!o.distanceX?.trim()) e[`obs${i}_distanceX`] = true;
         if (!o.distanceY?.trim()) e[`obs${i}_distanceY`] = true;
-        if (!o.discontinuityEvaluation?.trim()) e[`obs${i}_discontinuityEvaluation`] = true;
+        if (!o.discontinuityEvaluation?.trim())
+          e[`obs${i}_discontinuityEvaluation`] = true;
         if (!o.remarks?.trim()) e[`obs${i}_remarks`] = true;
       });
-      if (!testDate) e.testDate = true;
-      if (mt(inspectedBy)) e.inspectedBy = true;
-      if (mt(certYear)) e.certYear = true;
+      // Inspectors
+      inspectors.forEach((insp, i) => {
+        if (!insp.name?.trim()) e[`inspectorName_${i}`] = true;
+        if (!insp.qualification?.trim()) e[`inspectorQual_${i}`] = true;
+        if (!insp.designation?.trim()) e[`inspectorDesig_${i}`] = true;
+        if (!insp.date) e[`inspectorDate_${i}`] = true;
+      });
+      // Customer
       if (mt(manufacturerOrContractor)) e.manufacturerOrContractor = true;
-      if (mt(authorizedBy)) e.authorizedBy = true;
-      if (!footerDate) e.footerDate = true;
+      if (mt(custName)) e.custName = true;
+      if (mt(custDesig)) e.custDesig = true;
+      if (!custDate) e.custDate = true;
+      // Client
       if (mt(verifiedBy)) e.verifiedBy = true;
-      if (mt(reviewedBy)) e.reviewedBy = true;
-      if (!reviewedByDate) e.reviewedByDate = true;
+      if (mt(clientName)) e.clientName = true;
+      if (mt(clientDesig)) e.clientDesig = true;
+      if (!clientDate) e.clientDate = true;
 
       if (Object.keys(e).length > 0) {
         setErrors(e);
@@ -415,6 +477,7 @@ export const AWSDReportFormPage: React.FC = () => {
         customerId,
         reportNo: reportNo.trim(),
         status,
+        reportDate: reportDate || undefined,
         project,
         dateOfInspection: dateOfInspection || undefined,
         jobDescription,
@@ -468,15 +531,21 @@ export const AWSDReportFormPage: React.FC = () => {
             remarks: o.remarks,
           })),
         certification: {
-          testDate: testDate || undefined,
-          inspectedBy,
-          year: certYear,
+          inspectedBy: inspectors[0]?.name ?? "",
+          year: inspectors[0]?.qualification ?? "",
+          inspectorDesignation: inspectors[0]?.designation ?? "",
+          inspectorSignature: inspectors[0]?.signature ?? "",
+          testDate: inspectors[0]?.date || undefined,
           manufacturerOrContractor,
-          authorizedBy,
+          authorizedBy: custName,
+          custDesignation: custDesig,
+          custSignature: custSig,
+          date: custDate || undefined,
           verifiedBy,
-          reviewedBy,
-          reviewedByDate: reviewedByDate || undefined,
-          date: footerDate || undefined,
+          reviewedBy: clientName,
+          clientDesignation: clientDesig,
+          clientSignature: clientSig,
+          reviewedByDate: clientDate || undefined,
         },
       };
       if (id) {
@@ -541,6 +610,15 @@ export const AWSDReportFormPage: React.FC = () => {
                 inputClass + " bg-gray-50 font-mono font-bold text-indigo-700"
               }
               placeholder="Auto-generated"
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Report Date</label>
+            <input
+              type="date"
+              value={reportDate}
+              onChange={(e) => setReportDate(e.target.value)}
+              className={inputClass}
             />
           </div>
           <div>
@@ -628,12 +706,16 @@ export const AWSDReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Surface Condition</label>
-            <input
-              type="text"
+            <select
               value={surfaceCondition}
               onChange={(e) => setSurfaceCondition(e.target.value)}
               className={fc("surfaceCondition")}
-            />
+            >
+              <option value="">Select...</option>
+              <option>Smooth</option>
+              <option>Rough</option>
+              <option>Ground and polished</option>
+            </select>
           </div>
           <div>
             <label className={labelClass}>P.O. No.</label>
@@ -646,21 +728,38 @@ export const AWSDReportFormPage: React.FC = () => {
           </div>
           <div>
             <label className={labelClass}>Couplant</label>
-            <input
-              type="text"
+            <select
               value={couplant}
               onChange={(e) => setCouplant(e.target.value)}
               className={fc("couplant")}
-            />
+            >
+              <option value="">Select...</option>
+              <option>Water</option>
+              <option>Oil</option>
+              <option>Grease</option>
+              <option>Oil+ Grease</option>
+              <option>Starch</option>
+            </select>
           </div>
           <div>
             <label className={labelClass}>Stage of inspection</label>
-            <input
+            {/* <input
               type="text"
               value={stageOfInspection}
               onChange={(e) => setStageOfInspection(e.target.value)}
               className={fc("stageOfInspection")}
-            />
+            /> */}
+            <select
+              value={stageOfInspection}
+              onChange={(e) => setStageOfInspection(e.target.value)}
+              className={fc("stageOfInspection")}
+            >
+              <option value="">Select...</option>
+              <option>After Welding</option>
+              <option>After Casting</option>
+              <option>After Machining</option>
+              <option>After Forging</option>
+            </select>
           </div>
           <div>
             <label className={labelClass}>Material</label>
@@ -870,7 +969,11 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "serialNo", e.target.value)
                       }
-                      className={(!!errors[`obs${idx}_serialNo`] && !row.serialNo?.trim() ? inputErrorClass : inputClass) + " text-center"}
+                      className={
+                        (!!errors[`obs${idx}_serialNo`] && !row.serialNo?.trim()
+                          ? inputErrorClass
+                          : inputClass) + " text-center"
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -880,7 +983,12 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "jointDetails", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_jointDetails`] && !row.jointDetails?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_jointDetails`] &&
+                        !row.jointDetails?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -890,7 +998,12 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "drawingNoPartNo", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_drawingNoPartNo`] && !row.drawingNoPartNo?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_drawingNoPartNo`] &&
+                        !row.drawingNoPartNo?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -900,7 +1013,12 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "jobThickness", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_jobThickness`] && !row.jobThickness?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_jobThickness`] &&
+                        !row.jobThickness?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -908,7 +1026,11 @@ export const AWSDReportFormPage: React.FC = () => {
                       type="text"
                       value={row.partNo}
                       onChange={(e) => updateObs(idx, "partNo", e.target.value)}
-                      className={!!errors[`obs${idx}_partNo`] && !row.partNo?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_partNo`] && !row.partNo?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -918,7 +1040,12 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "transducerAngle", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_transducerAngle`] && !row.transducerAngle?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_transducerAngle`] &&
+                        !row.transducerAngle?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -928,7 +1055,11 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "jointNo", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_jointNo`] && !row.jointNo?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_jointNo`] && !row.jointNo?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30">
@@ -938,7 +1069,12 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "indicationLevelA", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_indicationLevelA`] && !row.indicationLevelA?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_indicationLevelA`] &&
+                        !row.indicationLevelA?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30">
@@ -948,7 +1084,12 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "referenceLevelB", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_referenceLevelB`] && !row.referenceLevelB?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_referenceLevelB`] &&
+                        !row.referenceLevelB?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30">
@@ -958,7 +1099,12 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "attenuationFactorC", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_attenuationFactorC`] && !row.attenuationFactorC?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_attenuationFactorC`] &&
+                        !row.attenuationFactorC?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-indigo-50/30">
@@ -968,7 +1114,12 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "indicationRatingD", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_indicationRatingD`] && !row.indicationRatingD?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_indicationRatingD`] &&
+                        !row.indicationRatingD?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
@@ -976,7 +1127,11 @@ export const AWSDReportFormPage: React.FC = () => {
                       type="text"
                       value={row.length}
                       onChange={(e) => updateObs(idx, "length", e.target.value)}
-                      className={!!errors[`obs${idx}_length`] && !row.length?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_length`] && !row.length?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
@@ -986,7 +1141,12 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "angularDistance", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_angularDistance`] && !row.angularDistance?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_angularDistance`] &&
+                        !row.angularDistance?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
@@ -996,7 +1156,12 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "depthFromASurface", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_depthFromASurface`] && !row.depthFromASurface?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_depthFromASurface`] &&
+                        !row.depthFromASurface?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
@@ -1006,7 +1171,12 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "distanceX", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_distanceX`] && !row.distanceX?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_distanceX`] &&
+                        !row.distanceX?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 bg-orange-50/30">
@@ -1016,7 +1186,12 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "distanceY", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_distanceY`] && !row.distanceY?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_distanceY`] &&
+                        !row.distanceY?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1030,7 +1205,12 @@ export const AWSDReportFormPage: React.FC = () => {
                           e.target.value,
                         )
                       }
-                      className={!!errors[`obs${idx}_discontinuityEvaluation`] && !row.discontinuityEvaluation?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_discontinuityEvaluation`] &&
+                        !row.discontinuityEvaluation?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1040,7 +1220,11 @@ export const AWSDReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "remarks", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_remarks`] && !row.remarks?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_remarks`] && !row.remarks?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1 text-center">
@@ -1063,117 +1247,205 @@ export const AWSDReportFormPage: React.FC = () => {
 
       {/* ── Certification & Signatures ── */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Certification &amp; Signatures</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* Examined By */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
             <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-0.5">
-              For
+              Examined By
             </p>
-            <p className="text-xs font-semibold text-gray-700 uppercase mb-3">
-              National Ind. Insp. &amp; Training
-            </p>
-            <div className="space-y-2">
-              <div>
-                <label className={labelClass}>Inspected By</label>
-                <input
-                  type="text"
-                  value={inspectedBy}
-                  onChange={(e) => setInspectedBy(e.target.value)}
-                  className={fc("inspectedBy")}
-                />
-              </div>
-              {/* <div>
-                <label className={labelClass}>Year (for certification)</label>
-                <input
-                  type="text"
-                  value={certYear}
-                  onChange={(e) => setCertYear(e.target.value)}
-                  className={fc("certYear")}
-                  placeholder="e.g. 2025"
-                />
-              </div> */}
-              <div>
-                <label className={labelClass}>Test Date</label>
-                <input
-                  type="date"
-                  value={testDate}
-                  onChange={(e) => setTestDate(e.target.value)}
-                  className={fc("testDate")}
-                />
-              </div>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-semibold text-gray-700 uppercase">
+                National Ind. Insp. &amp; Training
+              </p>
+              <button
+                type="button"
+                onClick={addInspector}
+                className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 rounded-lg px-2 py-1 hover:bg-indigo-50 transition-colors"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              {inspectors.map((insp, idx) => (
+                <div key={idx} className="relative">
+                  {inspectors.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => removeInspector(idx)}
+                        className="absolute top-0 right-0 text-red-400 hover:text-red-600"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                      <p className="text-xs text-gray-400 mb-2">
+                        Inspector {idx + 1}
+                      </p>
+                    </>
+                  )}
+                  <div className="space-y-2">
+                    <div>
+                      <label className={labelClass}>Name *</label>
+                      <select
+                        value={insp.name}
+                        onChange={(e) => updateInsp(idx, "name", e.target.value)}
+                        className={`${errors[`inspectorName_${idx}`] && !insp.name.trim() ? inputErrorClass : inputClass} bg-white`}
+                      >
+                        <option value="">Select....</option>
+                        {users.map((u) => (
+                          <option key={u._id} value={u.name}>
+                            {u.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className={labelClass}>Qualification *</label>
+                      <input
+                        type="text"
+                        value={insp.qualification}
+                        onChange={(e) => updateInsp(idx, "qualification", e.target.value)}
+                        className={!!errors[`inspectorQual_${idx}`] && !insp.qualification.trim() ? inputErrorClass : inputClass}
+                        placeholder="e.g. ASNT NDT Level-II - UT"
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Designation *</label>
+                      <input
+                        type="text"
+                        value={insp.designation}
+                        onChange={(e) => updateInsp(idx, "designation", e.target.value)}
+                        className={!!errors[`inspectorDesig_${idx}`] && !insp.designation.trim() ? inputErrorClass : inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Signature</label>
+                      <input
+                        type="text"
+                        value={insp.signature}
+                        onChange={(e) => updateInsp(idx, "signature", e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Date *</label>
+                      <input
+                        type="date"
+                        value={insp.date}
+                        onChange={(e) => updateInsp(idx, "date", e.target.value)}
+                        className={!!errors[`inspectorDate_${idx}`] && !insp.date ? inputErrorClass : inputClass}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Manufacturer / Contractor */}
+          {/* Customer */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-1">
-              For
+            <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-0.5">
+              Customer
             </p>
             <input
               type="text"
               value={manufacturerOrContractor}
               onChange={(e) => setManufacturerOrContractor(e.target.value)}
-              // placeholder="Company / Contractor name"
               className={
                 fc("manufacturerOrContractor") + " mb-3 text-xs font-semibold"
               }
+              placeholder="Company name"
             />
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Verified By</label>
+                <label className={labelClass}>Name *</label>
                 <input
                   type="text"
-                  value={authorizedBy}
-                  onChange={(e) => setAuthorizedBy(e.target.value)}
-                  className={fc("authorizedBy")}
+                  value={custName}
+                  onChange={(e) => setCustName(e.target.value)}
+                  className={fc("custName")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Date</label>
+                <label className={labelClass}>Designation *</label>
+                <input
+                  type="text"
+                  value={custDesig}
+                  onChange={(e) => setCustDesig(e.target.value)}
+                  className={fc("custDesig")}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Signature</label>
+                <input
+                  type="text"
+                  value={custSig}
+                  onChange={(e) => setCustSig(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Date *</label>
                 <input
                   type="date"
-                  value={footerDate}
-                  onChange={(e) => setFooterDate(e.target.value)}
-                  className={
-                    errors.footerDate && !footerDate
-                      ? inputErrorClass
-                      : inputClass
-                  }
+                  value={custDate}
+                  onChange={(e) => setCustDate(e.target.value)}
+                  className={fc("custDate")}
                 />
               </div>
             </div>
           </div>
 
-          {/* Verified By */}
+          {/* Client */}
           <div className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-            <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-1">
-              For
+            <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-0.5">
+              Client
             </p>
             <input
               type="text"
               value={verifiedBy}
               onChange={(e) => setVerifiedBy(e.target.value)}
-              // placeholder="Company / entity name"
-              className={(!!errors.verifiedBy && !verifiedBy.trim() ? inputErrorClass : inputClass) + " mb-3 text-xs font-semibold"}
+              className={
+                (!!errors.verifiedBy && !verifiedBy.trim()
+                  ? inputErrorClass
+                  : inputClass) + " mb-3 text-xs font-semibold"
+              }
+              placeholder="Company / TPI name"
             />
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Reviewed By</label>
+                <label className={labelClass}>Name *</label>
                 <input
                   type="text"
-                  value={reviewedBy}
-                  onChange={(e) => setReviewedBy(e.target.value)}
-                  className={fc("reviewedBy")}
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                  className={fc("clientName")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Date</label>
+                <label className={labelClass}>Designation *</label>
+                <input
+                  type="text"
+                  value={clientDesig}
+                  onChange={(e) => setClientDesig(e.target.value)}
+                  className={fc("clientDesig")}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Signature</label>
+                <input
+                  type="text"
+                  value={clientSig}
+                  onChange={(e) => setClientSig(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Date *</label>
                 <input
                   type="date"
-                  value={reviewedByDate}
-                  onChange={(e) => setReviewedByDate(e.target.value)}
-                  className={!!errors.reviewedByDate && !reviewedByDate ? inputErrorClass : inputClass}
+                  value={clientDate}
+                  onChange={(e) => setClientDate(e.target.value)}
+                  className={fc("clientDate")}
                 />
               </div>
             </div>
