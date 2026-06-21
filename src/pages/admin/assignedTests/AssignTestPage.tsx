@@ -495,7 +495,6 @@ const AssignModal: React.FC<ModalProps> = ({
   );
 };
 
-
 // ── View Results Modal ────────────────────────────────────────────────────────
 
 interface Submission {
@@ -529,6 +528,10 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [summary, setSummary] = useState<ResultsSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [releasing, setReleasing] = useState(false);
+  const [isResultReleased, setIsResultReleased] = useState(
+    test.isResultReleased,
+  );
 
   useEffect(() => {
     api
@@ -541,6 +544,39 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
       .finally(() => setLoading(false));
   }, [test._id]);
 
+  useEffect(() => {
+    setIsResultReleased(test.isResultReleased);
+  }, [test._id, test.isResultReleased]);
+
+  async function setReleaseTarget(test: AssignedTest): Promise<void> {
+    if (
+      getEffectiveStatus(test) !== "Completed" ||
+      isResultReleased ||
+      releasing
+    )
+      return;
+
+    const ok = window.confirm(
+      "Release results now? This will send result emails with certificates to passed students.",
+    );
+    if (!ok) return;
+
+    setReleasing(true);
+    try {
+      const res: any = await api.post(
+        `/assigned-tests/${test._id}/release-result`,
+      );
+      setIsResultReleased(true);
+      toast.success(
+        `Results released! Emails sent to ${res?.emailsSent ?? 0} student(s).`,
+      );
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to release results.");
+    } finally {
+      setReleasing(false);
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl animate-in zoom-in-95 fade-in duration-200 max-h-[90vh] flex flex-col">
@@ -552,12 +588,36 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
               {test.questionPaper?.title} · {test.batch?.batchName}
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-          >
-            <X size={16} />
-          </button>
+          {/* release button */}
+          <div className="flex items-center gap-2">
+            {getEffectiveStatus(test) === "Completed" &&
+              (isResultReleased ? (
+                <span className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg">
+                  <CheckCircle2 size={12} />
+                  Released
+                </span>
+              ) : (
+                <button
+                  onClick={() => setReleaseTarget(test)}
+                  disabled={releasing}
+                  title="Release Result"
+                  className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors"
+                >
+                  {releasing ? (
+                    <Loader2 size={12} className="animate-spin" />
+                  ) : (
+                    <Send size={12} />
+                  )}
+                  {releasing ? "Releasing..." : "Release"}
+                </button>
+              ))}
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
         </div>
 
         {/* Test info bar */}
@@ -749,7 +809,7 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
                             <button
                               onClick={() =>
                                 navigate(
-                                  `/admin/assign-tests/${test._id}/certificate/${s._id}`
+                                  `/admin/assign-tests/${test._id}/certificate/${s._id}`,
                                 )
                               }
                               title="View Certificate"
@@ -1103,7 +1163,7 @@ export const AssignTestPage: React.FC = () => {
                             <BarChart3 size={13} />
                             Results
                           </button>
-                          {effectiveStatus === "Completed" &&
+                          {/* {effectiveStatus === "Completed" &&
                             (test.isResultReleased ? (
                               <span className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg">
                                 <CheckCircle2 size={12} />
@@ -1118,21 +1178,23 @@ export const AssignTestPage: React.FC = () => {
                                 <Send size={12} />
                                 Release
                               </button>
-                            ))}
-                          <button
-                            onClick={() => openEdit(test)}
-                            title="Edit"
-                            className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                          >
-                            <Pencil size={14} />
-                          </button>
-                          <button
-                            onClick={() => setDeleteTarget(test)}
-                            title="Delete"
-                            className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                            ))} */}
+                          <div>
+                            <button
+                              onClick={() => openEdit(test)}
+                              title="Edit"
+                              className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                            >
+                              <Pencil size={14} />
+                            </button>
+                            <button
+                              onClick={() => setDeleteTarget(test)}
+                              title="Delete"
+                              className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </div>
                       </td>
                     </tr>
