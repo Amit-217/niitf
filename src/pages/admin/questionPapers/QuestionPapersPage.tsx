@@ -92,6 +92,13 @@ const DIFFICULTY_GRADIENTS: Record<string, string> = {
   Hard: "from-rose-500 to-red-600",
 };
 
+// Solid card accent color by difficulty (sky-blue / purple family)
+const DIFFICULTY_BAR: Record<string, string> = {
+  Easy: "bg-sky-500",
+  Medium: "bg-violet-600",
+  Hard: "bg-purple-700",
+};
+
 // ── View Paper Modal ───────────────────────────────────────────────────────────
 
 interface ViewModalProps {
@@ -410,8 +417,7 @@ const QuestionPaperCard: React.FC<CardProps> = ({
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const gradient =
-    DIFFICULTY_GRADIENTS[paper.difficulty] || "from-blue-400 to-indigo-500";
+  const barColor = DIFFICULTY_BAR[paper.difficulty] || "bg-sky-500";
   const diffColor =
     DIFFICULTY_COLORS[paper.difficulty] ||
     "bg-gray-100 text-gray-500 border-gray-200";
@@ -431,14 +437,14 @@ const QuestionPaperCard: React.FC<CardProps> = ({
         !paper.isActive ? "opacity-60" : ""
       }`}
     >
-      <div className={`h-1.5 bg-gradient-to-r ${gradient}`} />
+      <div className={`h-1.5 ${barColor}`} />
 
       <div className="p-5">
         {/* Title row */}
         <div className="flex items-start justify-between gap-2 mb-3">
           <div className="flex items-center gap-3 min-w-0">
             <div
-              className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-sm flex-shrink-0 text-white`}
+              className={`w-10 h-10 rounded-xl ${barColor} flex items-center justify-center shadow-sm flex-shrink-0 text-white`}
             >
               <ClipboardList size={18} />
             </div>
@@ -553,7 +559,7 @@ const QuestionPaperCard: React.FC<CardProps> = ({
         {/* View button */}
         <button
           onClick={() => onView(paper)}
-          className={`w-full mt-3 py-2 text-xs font-bold rounded-xl transition-all bg-gradient-to-r ${gradient} text-white hover:opacity-90 flex items-center justify-center gap-1.5`}
+          className={`w-full mt-3 py-2 text-xs font-bold rounded-xl transition-all ${barColor} text-white hover:opacity-90 flex items-center justify-center gap-1.5`}
         >
           <Eye size={13} /> View Questions
         </button>

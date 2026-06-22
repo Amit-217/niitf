@@ -51,22 +51,11 @@ interface Pagination {
   totalPages: number;
 }
 
-const STATUS_CONFIG = {
-  Upcoming: {
-    color: "bg-sky-100 text-sky-700 border-sky-200",
-    dot: "bg-sky-50",
-    gradient: "from-sky-400 to-blue-500",
-  },
-  Running: {
-    color: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    dot: "bg-emerald-500",
-    gradient: "from-emerald-400 to-green-500",
-  },
-  Completed: {
-    color: "bg-gray-100 text-gray-600 border-gray-200",
-    dot: "bg-gray-400",
-    gradient: "from-gray-400 to-gray-500",
-  },
+// Solid card accent color by status (sky-blue / purple family)
+const STATUS_BAR: Record<string, string> = {
+  Upcoming: "bg-sky-500",
+  Running: "bg-violet-600",
+  Completed: "bg-gray-400",
 };
 
 const BatchProgressBar: React.FC<{
@@ -316,7 +305,7 @@ const BatchCard: React.FC<{
 }> = ({ batch, onEdit, onDelete, onToggleActive }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const cfg = STATUS_CONFIG[batch.status];
+  const barColor = STATUS_BAR[batch.status] || "bg-sky-500";
   useEffect(() => {
     const h = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node))
@@ -329,12 +318,12 @@ const BatchCard: React.FC<{
     <div
       className={`bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden ${!batch.isActive ? "opacity-60" : ""}`}
     >
-      <div className={`h-1.5 bg-gradient-to-r ${cfg.gradient}`} />
+      <div className={`h-1.5 ${barColor}`} />
       <div className="p-5">
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-3">
             <div
-              className={`w-10 h-10 rounded-xl bg-gradient-to-br ${cfg.gradient} flex items-center justify-center text-white`}
+              className={`w-10 h-10 rounded-xl ${barColor} flex items-center justify-center text-white`}
             >
               <Layers size={18} />
             </div>
