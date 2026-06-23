@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   ListTodo,
   CalendarDays,
-  Edit2,
   Trash2,
   Plus,
   Search,

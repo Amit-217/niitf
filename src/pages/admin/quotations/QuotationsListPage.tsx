@@ -352,19 +352,13 @@ export const QuotationsListPage: React.FC = () => {
                     const services = Array.isArray(q.services)
                       ? q.services
                       : [];
-                    let subtotal = services.reduce((sum: number, s: any) => {
+                    const subtotal = services.reduce((sum: number, s: any) => {
                       const amt = Number(s.amount);
                       if (!isNaN(amt) && amt > 0) return sum + amt;
                       return (
                         sum + Number(s.quantity || 1) * Number(s.price || 0)
                       );
                     }, 0);
-                    if (q._type === "service" && q.extraCharges) {
-                      subtotal += Number(q.extraCharges.transportation || 0);
-                      subtotal += Number(q.extraCharges.lodging || 0);
-                      subtotal += Number(q.extraCharges.boarding || 0);
-                      subtotal += Number(q.extraCharges.minimumVisit || 0);
-                    }
                     const gst =
                       (subtotal * Number(q.gstPercentage ?? 18)) / 100;
                     return subtotal + gst;

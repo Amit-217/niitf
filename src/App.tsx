@@ -142,6 +142,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       return <Navigate to="/student/dashboard" replace />;
     } else if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
       return <Navigate to="/admin/dashboard" replace />;
+    } else if (userRole === "SUPERVISOR") {
+      return <Navigate to="/supervisor/dashboard" replace />;
     } else {
       return <Navigate to="/employee/dashboard" replace />;
     }
@@ -165,6 +167,9 @@ const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({
   }
   if (role === "ADMIN" || role === "SUPER_ADMIN") {
     return <Navigate to="/admin/dashboard" replace />;
+  }
+  if (role === "SUPERVISOR") {
+    return <Navigate to="/supervisor/dashboard" replace />;
   }
   return <Navigate to="/employee/dashboard" replace />;
 };
@@ -353,6 +358,27 @@ function App() {
           <Route
             path="*"
             element={<Navigate to="/employee/dashboard" replace />}
+          />
+        </Route>
+
+        {/* Supervisor Dashboard Routes */}
+        <Route
+          path="/supervisor"
+          element={
+            <ProtectedRoute allowedRoles={["SUPERVISOR"]}>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<EmployeeDashboard />} />
+          <Route path="my-tasks" element={<MyTasksPage />} />
+          <Route path="attendance" element={<AttendancePage />} />
+          <Route path="attendance/history" element={<AttendanceHistoryPage />} />
+          <Route path="payroll/overtime" element={<OvertimePage />} />
+          <Route path="settings" element={<Settings />} />
+          <Route
+            path="*"
+            element={<Navigate to="/supervisor/dashboard" replace />}
           />
         </Route>
 

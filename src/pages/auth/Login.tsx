@@ -37,6 +37,8 @@ export const Login: React.FC = () => {
 
       if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
         navigate("/admin/dashboard", { replace: true });
+      } else if (userRole === "SUPERVISOR") {
+        navigate("/supervisor/dashboard", { replace: true });
       } else {
         navigate("/employee/dashboard", { replace: true });
       }

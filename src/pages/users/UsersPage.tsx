@@ -302,6 +302,7 @@ const UserModal: React.FC<UserModalProps> = ({
                 {currentUserRole === "SUPER_ADMIN" && (
                   <option value="SUPER_ADMIN">Super Admin</option>
                 )}
+                <option value="SUPERVISOR">Supervisor</option>
               </select>
             </div>
             {mode === "create" && (

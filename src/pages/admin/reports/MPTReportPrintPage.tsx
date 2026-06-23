@@ -876,6 +876,10 @@ while (currentBlockIndex < blocks.length) {
   });
 }
 
+  if (pages.length === 0) {
+    pages.push({ isFirstPage: true, pageBlocks: [] });
+  }
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
