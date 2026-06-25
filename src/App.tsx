@@ -14,6 +14,7 @@ import { ResetPassword } from "./pages/auth/ResetPassword";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import { AdminDashboard } from "./pages/dashboard/AdminDashboard";
 import { EmployeeDashboard } from "./pages/dashboard/EmployeeDashboard";
+import { SupervisorDashboard } from "./pages/dashboard/SupervisorDashboard";
 import { Settings } from "./pages/settings/Settings";
 import { UsersPage } from "./pages/users/UsersPage";
 import { CoursesPage } from "./pages/courses/CoursesPage";
@@ -370,7 +371,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="dashboard" element={<EmployeeDashboard />} />
+          <Route path="dashboard" element={<SupervisorDashboard />} />
           <Route path="my-tasks" element={<MyTasksPage />} />
           <Route path="attendance" element={<AttendancePage />} />
           <Route path="attendance/history" element={<AttendanceHistoryPage />} />
