@@ -524,7 +524,7 @@ export const DashboardLayout: React.FC = () => {
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <img
-              src="/logo.png"
+              src="/logo.jpeg"
               alt="NIIT"
               className="w-24 h-12 object-contain"
             />

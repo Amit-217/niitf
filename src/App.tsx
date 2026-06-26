@@ -177,7 +177,7 @@ const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/">
       <Routes>
         {/* Auth Routes */}
         <Route

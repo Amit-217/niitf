@@ -236,18 +236,24 @@ export const SalaryRecordsPage = () => {
       toast.error("Please select an employee to generate salary");
       return;
     }
+    const advanceDeductionAmount = Number(advanceDeduction || 0);
+    if (advanceDeductionAmount > outstandingAdvance) {
+      toast.error(`Advance deduction (₹${advanceDeductionAmount}) cannot exceed outstanding advance (₹${outstandingAdvance})`);
+      return;
+    }
     setIsGenerating(true);
     try {
       await generateSalary({
         employeeId: selectedGenEmployee,
         month: month,
-        advanceDeduction: Number(advanceDeduction || 0),
+        advanceDeduction: advanceDeductionAmount,
         standardDeduction: Number(standardDeduction || 0),
         bonusAmount: Number(bonusAmount || 0),
       });
       toast.success("Salary generated successfully");
       setStandardDeduction(0);
       setBonusAmount(0);
+      setAdvanceDeduction(0);
       fetchMonthRecords();
     } catch (error: any) {
       toast.error(error.message || error || "Failed to generate salary");
@@ -724,9 +730,18 @@ export const SalaryRecordsPage = () => {
                         setAdvanceDeduction(Number(e.target.value))
                       }
                       placeholder="Enter amount to deduct..."
-                      className="w-full pl-7 pr-4 py-2.5 border border-amber-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500/20 font-black text-gray-700 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className={`w-full pl-7 pr-4 py-2.5 border rounded-xl text-sm outline-none font-black text-gray-700 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed transition-all ${
+                        Number(advanceDeduction) > outstandingAdvance
+                          ? 'border-red-300 focus:ring-2 focus:ring-red-500/20'
+                          : 'border-amber-200 focus:ring-2 focus:ring-amber-500/20'
+                      }`}
                     />
                   </div>
+                  {Number(advanceDeduction) > outstandingAdvance && (
+                    <p className="text-xs font-bold text-red-600 mt-1">
+                      ⚠ Cannot exceed outstanding advance (₹{outstandingAdvance.toLocaleString()})
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -822,7 +837,7 @@ export const SalaryRecordsPage = () => {
                     await handleGenerate();
                     setIsCreatePayrollOpen(false);
                   }}
-                  disabled={isGenerating || !selectedGenEmployee}
+                  disabled={isGenerating || !selectedGenEmployee || Number(advanceDeduction) > outstandingAdvance}
                   className="flex-1 px-4 py-3 rounded-xl bg-primary-600 text-white font-bold text-sm hover:bg-primary-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
                 >
                   {isGenerating ? (
