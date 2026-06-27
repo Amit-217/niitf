@@ -150,6 +150,8 @@ export const QuotationFormPage: React.FC = () => {
   });
 
   const [totals, setTotals] = useState({
+    taxableSubtotal: 0,
+    fixedCharges: 0,
     subtotal: 0,
     gstAmount: 0,
     totalAmount: 0,
@@ -161,18 +163,26 @@ export const QuotationFormPage: React.FC = () => {
   }, [formData.services, formData.extraCharges, formData.gstPercentage]);
 
   const calculateTotals = () => {
-    let subtotal = formData.services.reduce(
-      (acc: number, cur: any) => acc + (parseFloat(cur.amount) || 0),
+    // Fixed charges (transportation, lodging, boarding) are excluded from GST
+    let taxableSubtotal = formData.services.reduce(
+      (acc: number, cur: any) =>
+        cur._isFixed ? acc : acc + (parseFloat(cur.amount) || 0),
+      0,
+    );
+    let fixedCharges = formData.services.reduce(
+      (acc: number, cur: any) =>
+        cur._isFixed ? acc + (parseFloat(cur.amount) || 0) : acc,
       0,
     );
     if (type === "service") {
       const extras = formData.extraCharges || {};
-      subtotal += parseFloat(extras.minimumVisit) || 0;
+      taxableSubtotal += parseFloat(extras.minimumVisit) || 0;
     }
+    const subtotal = taxableSubtotal + fixedCharges;
     const gstAmount =
-      (subtotal * (parseFloat(formData.gstPercentage) || 0)) / 100;
+      (taxableSubtotal * (parseFloat(formData.gstPercentage) || 0)) / 100;
     const totalAmount = subtotal + gstAmount;
-    setTotals({ subtotal, gstAmount, totalAmount });
+    setTotals({ taxableSubtotal, fixedCharges, subtotal, gstAmount, totalAmount });
   };
 
   useEffect(() => {
@@ -279,7 +289,14 @@ export const QuotationFormPage: React.FC = () => {
 
   const handleServiceChange = (index: number, field: string, value: any) => {
     const updated = [...formData.services];
-    updated[index][field] = value;
+
+    // Prevent negative values for quantity and price
+    if (field === "quantity" || field === "price") {
+      const num = parseFloat(value);
+      updated[index][field] = isNaN(num) || num < 0 ? 0 : value;
+    } else {
+      updated[index][field] = value;
+    }
 
     // Auto calculate amount
     if (field === "quantity" || field === "price") {
@@ -401,17 +418,23 @@ export const QuotationFormPage: React.FC = () => {
     try {
       setIsSaving(true);
 
-      // Calculate totals correctly
-      let subtotal = formData.services.reduce(
-        (acc: number, cur: any) => acc + (parseFloat(cur.amount) || 0),
+      // Calculate totals — fixed charges (transportation etc.) are excluded from GST
+      let taxableSubtotal = formData.services.reduce(
+        (acc: number, cur: any) =>
+          cur._isFixed ? acc : acc + (parseFloat(cur.amount) || 0),
+        0,
+      );
+      const fixedCharges = formData.services.reduce(
+        (acc: number, cur: any) =>
+          cur._isFixed ? acc + (parseFloat(cur.amount) || 0) : acc,
         0,
       );
       if (type === "service") {
         const extras = formData.extraCharges || {};
-        subtotal += parseFloat(extras.minimumVisit) || 0;
+        taxableSubtotal += parseFloat(extras.minimumVisit) || 0;
       }
-
-      const gstAmount = (subtotal * formData.gstPercentage) / 100;
+      const subtotal = taxableSubtotal + fixedCharges;
+      const gstAmount = (taxableSubtotal * formData.gstPercentage) / 100;
       const totalAmount = subtotal + gstAmount;
 
       const payload = {
@@ -840,6 +863,7 @@ export const QuotationFormPage: React.FC = () => {
                     <td className="px-1 w-28 py-2">
                       <input
                         type="number"
+                        min="0"
                         value={row.quantity}
                         onChange={(e) =>
                           handleServiceChange(i, "quantity", e.target.value)
@@ -865,6 +889,7 @@ export const QuotationFormPage: React.FC = () => {
                     <td className="px-2 py-2">
                       <input
                         type="number"
+                        min="0"
                         value={row.price}
                         onChange={(e) =>
                           handleServiceChange(i, "price", e.target.value)
@@ -1189,11 +1214,22 @@ export const QuotationFormPage: React.FC = () => {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-end">
           <div className="w-full md:w-80 space-y-3">
             <div className="flex justify-between items-center text-gray-600">
-              <span className="text-sm font-semibold">Subtotal</span>
+              <span className="text-sm font-semibold">Taxable Amount</span>
               <span className="font-bold">
-                ₹ {totals.subtotal.toLocaleString()}
+                ₹ {totals.taxableSubtotal.toLocaleString()}
               </span>
             </div>
+            {totals.fixedCharges > 0 && (
+              <div className="flex justify-between items-center text-gray-500">
+                <span className="text-sm font-semibold">
+                  Transportation / Lodging / Boarding
+                  <span className="ml-1 text-xs font-normal text-gray-400">(excl. GST)</span>
+                </span>
+                <span className="font-bold">
+                  ₹ {totals.fixedCharges.toLocaleString()}
+                </span>
+              </div>
+            )}
             <div className="flex justify-between items-center text-gray-600">
               <span className="text-sm font-semibold">
                 GST ({formData.gstPercentage}%)
