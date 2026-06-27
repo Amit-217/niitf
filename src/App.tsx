@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  BrowserRouter,
+  HashRouter,
   Routes,
   Route,
   Navigate,
@@ -177,7 +177,7 @@ const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({
 
 function App() {
   return (
-    <BrowserRouter basename="/">
+    <HashRouter>
       <Routes>
         {/* Auth Routes */}
         <Route
@@ -520,7 +520,7 @@ function App() {
         <Route path="*" element={<Login />} />
       </Routes>
       <ToastContainer position="top-right" autoClose={3000} limit={3} />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
