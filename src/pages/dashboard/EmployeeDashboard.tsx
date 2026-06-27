@@ -63,10 +63,12 @@ export const EmployeeDashboard: React.FC = () => {
         ]);
 
         // Customer count from pagination total
+        // Note: axios interceptor unwraps response.data, so customersRes IS the body
+        // Backend shape: { success, data: [...customers], pagination: { total: N } }
         const total =
-          customersRes.data?.total ??
-          customersRes.data?.pagination?.total ??
-          (customersRes.data?.customers || customersRes.data?.data || []).length;
+          customersRes.pagination?.total ??
+          customersRes.total ??
+          (Array.isArray(customersRes.data) ? customersRes.data.length : 0);
         setCustomerCount(total);
 
         // My active tasks (ASSIGNED or IN_PROGRESS assigned to current user)
