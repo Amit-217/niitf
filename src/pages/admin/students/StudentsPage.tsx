@@ -68,7 +68,7 @@ export const StudentsPage = () => {
       else if (statusFilter === "archived") params.archived = true;
       const res: any = await getStudents(params);
       // By default res is the unwrapped JSON body (via Axios interceptor).
-      // Example successful body: { success: true, message: "...", data: { students: [...], pagination: {...} } }
+      // Backend returns: { success: true, data: { students: [...], pagination: {...} } }
 
       let items = [];
       let count = 0;
