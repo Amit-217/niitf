@@ -349,19 +349,18 @@ export const QuotationsListPage: React.FC = () => {
               <tbody className="divide-y divide-gray-100">
                 {paginated.map((q) => {
                   const grandTotal = (() => {
-                    const services = Array.isArray(q.services)
-                      ? q.services
-                      : [];
-                    const subtotal = services.reduce((sum: number, s: any) => {
+                    const FIXED_DESCS = ["Transportation Charges", "Lodging Charges", "Boarding Charges"];
+                    const services = Array.isArray(q.services) ? q.services : [];
+                    const getAmt = (s: any) => {
                       const amt = Number(s.amount);
-                      if (!isNaN(amt) && amt > 0) return sum + amt;
-                      return (
-                        sum + Number(s.quantity || 1) * Number(s.price || 0)
-                      );
-                    }, 0);
-                    const gst =
-                      (subtotal * Number(q.gstPercentage ?? 18)) / 100;
-                    return subtotal + gst;
+                      return !isNaN(amt) && amt > 0 ? amt : Number(s.quantity || 1) * Number(s.price || 0);
+                    };
+                    const taxable = services.reduce((sum: number, s: any) =>
+                      (s._isFixed || FIXED_DESCS.includes(s.description)) ? sum : sum + getAmt(s), 0);
+                    const fixed = services.reduce((sum: number, s: any) =>
+                      (s._isFixed || FIXED_DESCS.includes(s.description)) ? sum + getAmt(s) : sum, 0);
+                    const gst = (taxable * Number(q.gstPercentage ?? 18)) / 100;
+                    return taxable + fixed + gst;
                   })();
 
                   return (

@@ -289,13 +289,22 @@ export const QuotationPrintPage: React.FC = () => {
     ...(Array.isArray(data.services) ? data.services : []),
   ];
 
-  const computedSubtotal = rows.reduce((sum, row) => {
+  const getRowAmount = (row: QuotationRow) => {
     const amount = toNumber(row.amount);
-    if (amount > 0) return sum + amount;
-    return sum + toNumber(row.quantity || 1) * toNumber(row.price);
+    return amount > 0 ? amount : toNumber(row.quantity || 1) * toNumber(row.price);
+  };
+
+  const taxableSubtotal = rows.reduce((sum, row) => {
+    return isChargeRow(row) ? sum : sum + getRowAmount(row);
   }, 0);
+
+  const fixedCharges = rows.reduce((sum, row) => {
+    return isChargeRow(row) ? sum + getRowAmount(row) : sum;
+  }, 0);
+
+  const computedSubtotal = taxableSubtotal + fixedCharges;
   const gstPercentage = toNumber(data.gstPercentage);
-  const computedGstAmount = (computedSubtotal * gstPercentage) / 100;
+  const computedGstAmount = (taxableSubtotal * gstPercentage) / 100;
   const computedTotalAmount = computedSubtotal + computedGstAmount;
 
   // --- Build term lines as strings for pagination ---
@@ -320,7 +329,7 @@ export const QuotationPrintPage: React.FC = () => {
       `${pad2(tc++)}. Payment terms: ${data.termsAndConditions?.paymentTerms}`,
     );
   } else {
-    if (data.extraCharges?.minimumVisit > 0)
+    if (data.extraCharges?.minimumVisit?.toString().trim())
       termLines.push(
         `${pad2(tc++)}. Minimum Visit Charges: ${data.extraCharges.minimumVisit}`,
       );
@@ -672,13 +681,26 @@ export const QuotationPrintPage: React.FC = () => {
                   colSpan={colSpan}
                   style={{ textAlign: "right", fontWeight: "bold" }}
                 >
-                  Subtotal
+                  Taxable Amount
                 </td>
-
                 <td style={{ textAlign: "right", fontWeight: "bold" }}>
-                  {fmtAmount(computedSubtotal)}
+                  {fmtAmount(taxableSubtotal)}
                 </td>
               </tr>
+
+              {fixedCharges > 0 && (
+                <tr>
+                  <td
+                    colSpan={colSpan}
+                    style={{ textAlign: "right", fontWeight: "bold" }}
+                  >
+                    Transportation / Lodging / Boarding (excl. GST)
+                  </td>
+                  <td style={{ textAlign: "right", fontWeight: "bold" }}>
+                    {fmtAmount(fixedCharges)}
+                  </td>
+                </tr>
+              )}
 
               <tr>
                 <td
@@ -687,7 +709,6 @@ export const QuotationPrintPage: React.FC = () => {
                 >
                   GST ({data.gstPercentage}%)
                 </td>
-
                 <td style={{ textAlign: "right", fontWeight: "bold" }}>
                   {fmtAmount(computedGstAmount)}
                 </td>
@@ -700,8 +721,7 @@ export const QuotationPrintPage: React.FC = () => {
                 >
                   Total Amount
                 </td>
-
-                <td style={{ textAlign: "right", fontWeight: "bold marginB" }}>
+                <td style={{ textAlign: "right", fontWeight: "bold" }}>
                   {fmtAmount(computedTotalAmount)}
                 </td>
               </tr>

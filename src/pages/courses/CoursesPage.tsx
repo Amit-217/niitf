@@ -395,8 +395,8 @@ export const CoursesPage: React.FC = () => {
         status: statusFilter,
       });
       const res: any = await api.get(`/courses?${params.toString()}`);
-      setCourses(res.data?.courses || []);
-      setPagination(res.data?.pagination);
+      setCourses(res.data || []);
+      setPagination(res.pagination);
     } catch {
       toast.error("Failed to load courses.");
     } finally {

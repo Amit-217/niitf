@@ -174,10 +174,6 @@ export const QuotationFormPage: React.FC = () => {
         cur._isFixed ? acc + (parseFloat(cur.amount) || 0) : acc,
       0,
     );
-    if (type === "service") {
-      const extras = formData.extraCharges || {};
-      taxableSubtotal += parseFloat(extras.minimumVisit) || 0;
-    }
     const subtotal = taxableSubtotal + fixedCharges;
     const gstAmount =
       (taxableSubtotal * (parseFloat(formData.gstPercentage) || 0)) / 100;
@@ -429,10 +425,6 @@ export const QuotationFormPage: React.FC = () => {
           cur._isFixed ? acc + (parseFloat(cur.amount) || 0) : acc,
         0,
       );
-      if (type === "service") {
-        const extras = formData.extraCharges || {};
-        taxableSubtotal += parseFloat(extras.minimumVisit) || 0;
-      }
       const subtotal = taxableSubtotal + fixedCharges;
       const gstAmount = (taxableSubtotal * formData.gstPercentage) / 100;
       const totalAmount = subtotal + gstAmount;
