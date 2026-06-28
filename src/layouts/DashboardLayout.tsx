@@ -848,7 +848,7 @@ export const DashboardLayout: React.FC = () => {
                 {!sidebarCollapsed && (
                   <button
                     onClick={() => toggleMenu(group.key)}
-                    className="w-full flex items-center justify-between px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-gray-600 transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2 text-[12px] font-bold text-gray-400 uppercase tracking-widest hover:text-gray-600 transition-colors"
                   >
                     <span>{group.name}</span>
                     {openMenus[group.key] ? (

@@ -534,9 +534,10 @@ export const QuotationFormPage: React.FC = () => {
               <input
                 type="date"
                 value={formData.date}
-                onChange={(e) =>
-                  setFormData({ ...formData, date: e.target.value })
-                }
+                onChange={(e) => {
+                  setFormData({ ...formData, date: e.target.value });
+                  if (e.target.value) setErrors((prev) => { const e2 = { ...prev }; delete e2.date; return e2; });
+                }}
                 className={ic("date")}
               />
             </div>
@@ -561,6 +562,7 @@ export const QuotationFormPage: React.FC = () => {
                         ]
                       : formData.contactPersons,
                   });
+                  if (custId) setErrors((prev) => { const e = { ...prev }; delete e.customerId; return e; });
                 }}
                 className={`${ic("customerId")} focus:ring-2 focus:ring-primary-500 outline-none`}
               >
@@ -596,14 +598,15 @@ export const QuotationFormPage: React.FC = () => {
             <input
               type="text"
               value={formData.contactPersons[0]?.name || ""}
-              onChange={(e) =>
+              onChange={(e) => {
                 setFormData({
                   ...formData,
                   contactPersons: [
                     { ...formData.contactPersons[0], name: e.target.value },
                   ],
-                })
-              }
+                });
+                if (e.target.value) setErrors((prev) => { const e2 = { ...prev }; delete e2.contactName; return e2; });
+              }}
               className={ic("contactName")}
               placeholder="Mr. Name / Mr. Other"
             />
@@ -938,15 +941,16 @@ export const QuotationFormPage: React.FC = () => {
                 <input
                   type="text"
                   value={formData.extraCharges.minimumVisit}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData({
                       ...formData,
                       extraCharges: {
                         ...formData.extraCharges,
                         minimumVisit: e.target.value,
                       },
-                    })
-                  }
+                    });
+                    if (e.target.value) setErrors((prev) => { const e2 = { ...prev }; delete e2.minimumVisit; return e2; });
+                  }}
                   className={ic("minimumVisit")}
                 />
               </div>
@@ -967,15 +971,16 @@ export const QuotationFormPage: React.FC = () => {
                 <input
                   type="number"
                   value={formData.trainingDetails.minCandidates}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData({
                       ...formData,
                       trainingDetails: {
                         ...formData.trainingDetails,
                         minCandidates: e.target.value,
                       },
-                    })
-                  }
+                    });
+                    if (e.target.value) setErrors((prev) => { const e2 = { ...prev }; delete e2.minCandidates; return e2; });
+                  }}
                   className={ic("minCandidates")}
                 />
               </div>
@@ -986,15 +991,16 @@ export const QuotationFormPage: React.FC = () => {
                 <input
                   type="text"
                   value={formData.trainingDetails.trainingMode}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData({
                       ...formData,
                       trainingDetails: {
                         ...formData.trainingDetails,
                         trainingMode: e.target.value,
                       },
-                    })
-                  }
+                    });
+                    if (e.target.value) setErrors((prev) => { const e2 = { ...prev }; delete e2.trainingMode; return e2; });
+                  }}
                   className={ic("trainingMode")}
                 />
               </div>
@@ -1027,15 +1033,16 @@ export const QuotationFormPage: React.FC = () => {
           <input
             type="text"
             value={formData.termsAndConditions.paymentTerms}
-            onChange={(e) =>
+            onChange={(e) => {
               setFormData({
                 ...formData,
                 termsAndConditions: {
                   ...formData.termsAndConditions,
                   paymentTerms: e.target.value,
                 },
-              })
-            }
+              });
+              if (e.target.value) setErrors((prev) => { const e2 = { ...prev }; delete e2.paymentTerms; return e2; });
+            }}
             className={`${ic("paymentTerms")} mb-4`}
           />
 
@@ -1048,15 +1055,16 @@ export const QuotationFormPage: React.FC = () => {
                 <input
                   type="text"
                   value={formData.termsAndConditions.materialHandling}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData({
                       ...formData,
                       termsAndConditions: {
                         ...formData.termsAndConditions,
                         materialHandling: e.target.value,
                       },
-                    })
-                  }
+                    });
+                    if (e.target.value) setErrors((prev) => { const e2 = { ...prev }; delete e2.materialHandling; return e2; });
+                  }}
                   className={ic("materialHandling")}
                 />
               </div>
@@ -1067,15 +1075,16 @@ export const QuotationFormPage: React.FC = () => {
                 <input
                   type="text"
                   value={formData.termsAndConditions.personnel}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData({
                       ...formData,
                       termsAndConditions: {
                         ...formData.termsAndConditions,
                         personnel: e.target.value,
                       },
-                    })
-                  }
+                    });
+                    if (e.target.value) setErrors((prev) => { const e2 = { ...prev }; delete e2.personnel; return e2; });
+                  }}
                   className={ic("personnel")}
                 />
               </div>
@@ -1085,15 +1094,16 @@ export const QuotationFormPage: React.FC = () => {
                 </label>
                 <select
                   value={formData.termsAndConditions.machines}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData({
                       ...formData,
                       termsAndConditions: {
                         ...formData.termsAndConditions,
                         machines: e.target.value,
                       },
-                    })
-                  }
+                    });
+                    if (e.target.value) setErrors((prev) => { const e2 = { ...prev }; delete e2.machines; return e2; });
+                  }}
                   className={ic("machines")}
                 >
                   <option value="">Select...</option>
@@ -1121,15 +1131,16 @@ export const QuotationFormPage: React.FC = () => {
                 </label>
                 <select
                   value={formData.termsAndConditions.consumables}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData({
                       ...formData,
                       termsAndConditions: {
                         ...formData.termsAndConditions,
                         consumables: e.target.value,
                       },
-                    })
-                  }
+                    });
+                    if (e.target.value) setErrors((prev) => { const e2 = { ...prev }; delete e2.consumables; return e2; });
+                  }}
                   className={ic("consumables")}
                 >
                   <option value="">Select...</option>
@@ -1168,15 +1179,13 @@ export const QuotationFormPage: React.FC = () => {
               <input
                 type="text"
                 value={formData.preparedBy.name}
-                onChange={(e) =>
+                onChange={(e) => {
                   setFormData({
                     ...formData,
-                    preparedBy: {
-                      ...formData.preparedBy,
-                      name: e.target.value,
-                    },
-                  })
-                }
+                    preparedBy: { ...formData.preparedBy, name: e.target.value },
+                  });
+                  if (e.target.value) setErrors((prev) => { const e2 = { ...prev }; delete e2.preparedByName; return e2; });
+                }}
                 className={ic("preparedByName")}
               />
             </div>
@@ -1187,15 +1196,13 @@ export const QuotationFormPage: React.FC = () => {
               <input
                 type="text"
                 value={formData.preparedBy.designation}
-                onChange={(e) =>
+                onChange={(e) => {
                   setFormData({
                     ...formData,
-                    preparedBy: {
-                      ...formData.preparedBy,
-                      designation: e.target.value,
-                    },
-                  })
-                }
+                    preparedBy: { ...formData.preparedBy, designation: e.target.value },
+                  });
+                  if (e.target.value) setErrors((prev) => { const e2 = { ...prev }; delete e2.preparedByDesig; return e2; });
+                }}
                 className={ic("preparedByDesig")}
               />
             </div>
