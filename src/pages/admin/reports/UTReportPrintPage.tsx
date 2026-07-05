@@ -223,7 +223,7 @@ export const UTReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = `${window.location.origin}/reports/public/ut/${id}`;
+  const qrUrl = `${window.location.origin}/#/reports/public/ut/${id}`;
 
   const jd = report.jobDetails ?? {};
   const eq = report.equipmentDetails ?? {};
@@ -816,6 +816,7 @@ export const UTReportPrintPage: React.FC = () => {
           padding: "16px",
         }}
       >
+        {!isPublic && (
         <div
           className="no-print"
           style={{
@@ -858,6 +859,7 @@ export const UTReportPrintPage: React.FC = () => {
             Print
           </button>
         </div>
+        )}
         {pages.map(({ pageBlocks }, i) => {
           const hasJob = pageBlocks.some((b) => b.type === "job");
 
