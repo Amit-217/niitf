@@ -339,7 +339,7 @@ export const MPTReportPrintPage = () => {
     );
   }
 
-  const qrUrl = `${window.location.origin}/reports/public/mpt/${id}`;
+  const qrUrl = `${window.location.origin}/#/reports/public/mpt/${id}`;
 
   const jd = report.jobDetails ?? {};
   const eq = report.equipmentDetails ?? {};

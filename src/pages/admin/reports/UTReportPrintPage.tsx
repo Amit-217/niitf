@@ -223,7 +223,7 @@ export const UTReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = `${window.location.origin}/reports/public/ut/${id}`;
+  const qrUrl = `${window.location.origin}/#/reports/public/ut/${id}`;
 
   const jd = report.jobDetails ?? {};
   const eq = report.equipmentDetails ?? {};

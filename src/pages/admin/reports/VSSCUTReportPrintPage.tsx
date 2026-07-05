@@ -216,7 +216,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = `${window.location.origin}/reports/public/vssc-ut/${id}`;
+  const qrUrl = `${window.location.origin}/#/reports/public/vssc-ut/${id}`;
 
   const apc = (report as any).angleProbeCalibration ?? {};
   const npc = (report as any).normalProbeCalibration ?? {};

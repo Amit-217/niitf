@@ -351,7 +351,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = `${window.location.origin}/reports/public/tpi-ivr/${id}`;
+  const qrUrl = `${window.location.origin}/#/reports/public/tpi-ivr/${id}`;
 
   const cd = report.clientDetails ?? {};
   const vd = report.vendorDetails ?? {};

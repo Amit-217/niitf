@@ -340,7 +340,7 @@ export const PTReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = `${window.location.origin}/reports/public/pt/${id}`;
+  const qrUrl = `${window.location.origin}/#/reports/public/pt/${id}`;
 
   const jd = report.jobDetails ?? {};
   const md = report.methodDetails ?? {};

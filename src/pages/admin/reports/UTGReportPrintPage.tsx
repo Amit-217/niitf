@@ -232,7 +232,7 @@ export const UTGReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = `${window.location.origin}/reports/public/utg/${id}`;
+  const qrUrl = `${window.location.origin}/#/reports/public/utg/${id}`;
 
   const jd = report.jobDetails ?? {};
   const eq = report.equipmentDetails ?? {};

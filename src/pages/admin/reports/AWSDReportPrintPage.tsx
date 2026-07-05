@@ -291,7 +291,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = `${window.location.origin}/reports/public/awsd/${id}`;
+  const qrUrl = `${window.location.origin}/#/reports/public/awsd/${id}`;
   const obs = report.observations ?? [];
   const cert = report.certification ?? {};
 
