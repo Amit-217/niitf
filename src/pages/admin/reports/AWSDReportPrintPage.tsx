@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { getAWSDReportById } from "../../../api/customerApi";
+import { getAWSDReportById, getPublicAWSDReportById } from "../../../api/customerApi";
 
 // ───────── Print Styles ─────────────────────────────────────────────────────────────
 
@@ -216,6 +216,8 @@ export const AWSDReportPrintPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const autoPrint = searchParams.get("autoprint") === "true";
 
+  const isPublic = location.pathname.startsWith("/reports/public/");
+
   const [report, setReport] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [bwMode, setBwMode] = useState(false);
@@ -235,11 +237,12 @@ export const AWSDReportPrintPage: React.FC = () => {
 
   useEffect(() => {
     if (!id) return;
-    getAWSDReportById(id)
+    const fetcher = isPublic ? getPublicAWSDReportById : getAWSDReportById;
+    fetcher(id)
       .then((res: any) => setReport((res as any).data ?? res))
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, isPublic]);
 
   useEffect(() => {
     if (!loading && report && autoPrint) {
@@ -695,6 +698,7 @@ export const AWSDReportPrintPage: React.FC = () => {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
+      {!isPublic && (
       <div
         className="no-print"
         style={{
@@ -737,6 +741,7 @@ export const AWSDReportPrintPage: React.FC = () => {
           Print
         </button>
       </div>
+      )}
 
       <div
         id="report-root"

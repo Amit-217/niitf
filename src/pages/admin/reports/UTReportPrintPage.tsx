@@ -816,6 +816,7 @@ export const UTReportPrintPage: React.FC = () => {
           padding: "16px",
         }}
       >
+        {!isPublic && (
         <div
           className="no-print"
           style={{
@@ -858,6 +859,7 @@ export const UTReportPrintPage: React.FC = () => {
             Print
           </button>
         </div>
+        )}
         {pages.map(({ pageBlocks }, i) => {
           const hasJob = pageBlocks.some((b) => b.type === "job");
 
