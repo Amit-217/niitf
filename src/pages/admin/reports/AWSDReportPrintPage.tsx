@@ -24,6 +24,17 @@ const PRINT_STYLES = `
     .report-body { overflow: visible !important; }
   }
 
+  @media screen and (max-width: 768px) {
+    #report-root {
+      padding: 0 !important;
+      background: #fff !important;
+    }
+    .print-page {
+      margin: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+
   body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
 
@@ -250,7 +261,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       const trigger = async () => {
         try {
           await document.fonts.ready;
-        } catch (_) {}
+        } catch (_) { }
         requestAnimationFrame(() => {
           setTimeout(() => {
             window.print();
@@ -699,48 +710,48 @@ export const AWSDReportPrintPage: React.FC = () => {
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
       {!isPublic && (
-      <div
-        className="no-print"
-        style={{
-          position: "fixed",
-          top: 12,
-          right: 16,
-          zIndex: 100,
-          display: "flex",
-          gap: 8,
-        }}
-      >
-        <button
-          onClick={() => setBwMode((b) => !b)}
+        <div
+          className="no-print"
           style={{
-            padding: "7px 16px",
-            background: bwMode ? "#374151" : "#185FA5",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
+            position: "fixed",
+            top: 12,
+            right: 16,
+            zIndex: 100,
+            display: "flex",
+            gap: 8,
           }}
         >
-          {bwMode ? "Color Mode" : "B&W Mode"}
-        </button>
-        <button
-          onClick={() => window.print()}
-          style={{
-            padding: "7px 16px",
-            background: "#16a34a",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
-          }}
-        >
-          Print
-        </button>
-      </div>
+          <button
+            onClick={() => setBwMode((b) => !b)}
+            style={{
+              padding: "7px 16px",
+              background: bwMode ? "#374151" : "#185FA5",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            {bwMode ? "Color Mode" : "B&W Mode"}
+          </button>
+          <button
+            onClick={() => window.print()}
+            style={{
+              padding: "7px 16px",
+              background: "#16a34a",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            Print
+          </button>
+        </div>
       )}
 
       <div
