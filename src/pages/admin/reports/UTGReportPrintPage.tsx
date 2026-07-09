@@ -31,6 +31,17 @@ const PRINT_STYLES = `
     .print-page:last-child { break-after: auto; page-break-after: auto; }
     .report-body { overflow: visible !important; }
   }
+
+  @media screen and (max-width: 768px) {
+    #report-root {
+      padding: 0 !important;
+      background: #fff !important;
+    }
+    .print-page {
+      margin: 0 !important;
+      box-shadow: none !important;
+    }
+  }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
 

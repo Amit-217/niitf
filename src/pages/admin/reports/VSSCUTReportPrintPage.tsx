@@ -32,6 +32,17 @@ const PRINT_STYLES = `
     .report-body { overflow: visible !important; }
   }
 
+  @media screen and (max-width: 768px) {
+    #report-root {
+      padding: 0 !important;
+      background: #fff !important;
+    }
+    .print-page {
+      margin: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
   .print-page { width: 210mm; height: 297mm; background: #fff; box-sizing: border-box; padding: 0 5mm 5mm 5mm; display: flex; flex-direction: column; overflow: hidden; }
