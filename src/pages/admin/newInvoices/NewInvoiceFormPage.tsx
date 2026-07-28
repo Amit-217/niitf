@@ -350,6 +350,7 @@ export const NewInvoiceFormPage: React.FC = () => {
     try {
       const payload = {
         ...form,
+        status: form.status as "Draft" | "Final",
         quotationId: form.quotationId || null,
         items: form.items
           .filter((it) => it.description)

@@ -691,13 +691,13 @@ export const UTReportFormPage: React.FC = () => {
     { label: "70°", state: calib70, setter: setCalib70, prefix: "calib70" },
   ];
 
-  const conclusionOptions = [
-    "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-    "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-    "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-    "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-    "Other",
-  ];
+  // const conclusionOptions = [
+  //   "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+  //   "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+  //   "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+  //   "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+  //   "Other",
+  // ];
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
