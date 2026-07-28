@@ -1349,13 +1349,13 @@ export const UTReportFormPage: React.FC = () => {
 
       {/* -- Angle Probe Calibration -- */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Angle Probe Calibration Detail</h2>
+        <h2 className={sectionTitleClass}>Calibration Detail</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse min-w-[600px]">
             <thead>
               <tr className="bg-gray-50 text-xs text-gray-600 uppercase">
                 <th className="border border-gray-200 px-3 py-2 text-left w-28">
-                  Point
+                  Angle Probe
                 </th>
                 {calibAngles.map((a) => (
                   <th
