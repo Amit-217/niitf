@@ -16,6 +16,7 @@ import {
   ChevronRight,
   ListTodo,
   FileText,
+  FilePlus,
   GraduationCap,
   Search,
   ChevronDown,
@@ -376,6 +377,11 @@ export const DashboardLayout: React.FC = () => {
         name: "Invoices",
         path: `/${basePath}/invoices`,
         icon: FileText,
+      },
+      {
+        name: "New Invoice",
+        path: `/${basePath}/new-invoices`,
+        icon: FilePlus,
       },
     ],
   };

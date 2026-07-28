@@ -54,6 +54,9 @@ import { QuotationPrintPage } from "./pages/admin/quotations/QuotationPrintPage"
 import { InvoicesListPage } from "./pages/admin/invoices/InvoicesListPage";
 import { InvoiceFormPage } from "./pages/admin/invoices/InvoiceFormPage";
 import { InvoicePrintPage } from "./pages/admin/invoices/InvoicePrintPage";
+import { NewInvoicesListPage } from "./pages/admin/newInvoices/NewInvoicesListPage";
+import { NewInvoiceFormPage } from "./pages/admin/newInvoices/NewInvoiceFormPage";
+import { NewInvoicePrintPage } from "./pages/admin/newInvoices/NewInvoicePrintPage";
 import { SalarySlipPage } from "./pages/admin/payroll/SalarySlipPage";
 import { EmployeeSalaryDetailPage } from "./pages/admin/payroll/EmployeeSalaryDetailPage";
 import { QuestionPapersPage } from "./pages/admin/questionPapers/QuestionPapersPage";
@@ -274,6 +277,10 @@ function App() {
           <Route path="invoices/new" element={<InvoiceFormPage />} />
           <Route path="invoices/:id/edit" element={<InvoiceFormPage />} />
 
+          <Route path="new-invoices" element={<NewInvoicesListPage />} />
+          <Route path="new-invoices/new" element={<NewInvoiceFormPage />} />
+          <Route path="new-invoices/:id/edit" element={<NewInvoiceFormPage />} />
+
           <Route path="reports" element={<ReportsListPage />} />
           <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
           <Route path="reports/mpt/:id/edit" element={<MPTReportFormPage />} />
@@ -328,6 +335,11 @@ function App() {
           <Route path="invoices" element={<InvoicesListPage />} />
           <Route path="invoices/new" element={<InvoiceFormPage />} />
           <Route path="invoices/:id/edit" element={<InvoiceFormPage />} />
+
+          <Route path="new-invoices" element={<NewInvoicesListPage />} />
+          <Route path="new-invoices/new" element={<NewInvoiceFormPage />} />
+          <Route path="new-invoices/:id/edit" element={<NewInvoiceFormPage />} />
+
           <Route path="reports" element={<ReportsListPage />} />
           <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
           <Route path="reports/mpt/:id/edit" element={<MPTReportFormPage />} />
@@ -507,6 +519,24 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
               <InvoicePrintPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* New Invoice Print Routes */}
+        <Route
+          path="/admin/new-invoices/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
+              <NewInvoicePrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employee/new-invoices/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
+              <NewInvoicePrintPage />
             </ProtectedRoute>
           }
         />
