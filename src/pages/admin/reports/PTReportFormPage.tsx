@@ -191,7 +191,7 @@ export const PTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   // ── Final Section ──
@@ -389,7 +389,8 @@ export const PTReportFormPage: React.FC = () => {
       removalMethod,
       postCleaning,
       jobRefStd: jobRefStd === "Other" ? jobRefStdCustom : jobRefStd,
-      jobAcceptance: jobAcceptance === "Other" ? jobAcceptanceCustom : jobAcceptance,
+      jobAcceptance:
+        jobAcceptance === "Other" ? jobAcceptanceCustom : jobAcceptance,
       jobExtent: jobExtent === "Other" ? jobExtentCustom : jobExtent,
       penMfr: penMfr === "Other" ? penMfrCustom : penMfr,
       devMfr: devMfr === "Other" ? devMfrCustom : devMfr,
@@ -507,7 +508,8 @@ export const PTReportFormPage: React.FC = () => {
       // Inspectors — all fields in all rows required
       inspectors.forEach((insp, i) => {
         if (!insp.name?.trim()) e[`inspectorName_${i}`] = true;
-        if (!insp.qualification?.trim()) e[`inspectorQualification_${i}`] = true;
+        if (!insp.qualification?.trim())
+          e[`inspectorQualification_${i}`] = true;
         if (!insp.designation?.trim()) e[`inspectorDesignation_${i}`] = true;
         if (!insp.date) e[`inspectorDate_${i}`] = true;
       });
@@ -1112,7 +1114,12 @@ export const PTReportFormPage: React.FC = () => {
       {/* ── Observations ── */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className={sectionTitleClass.replace(" mb-4 pb-2 border-b border-gray-100", "")}>
+          <h2
+            className={sectionTitleClass.replace(
+              " mb-4 pb-2 border-b border-gray-100",
+              "",
+            )}
+          >
             Observations
           </h2>
           <button
@@ -1164,7 +1171,12 @@ export const PTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "jobDescription", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_jobDescription`] && !row.jobDescription?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_jobDescription`] &&
+                        !row.jobDescription?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1174,7 +1186,12 @@ export const PTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "drawingOrJointNo", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_drawingOrJointNo`] && !row.drawingOrJointNo?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_drawingOrJointNo`] &&
+                        !row.drawingOrJointNo?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1182,7 +1199,11 @@ export const PTReportFormPage: React.FC = () => {
                       type="text"
                       value={row.size}
                       onChange={(e) => updateObs(idx, "size", e.target.value)}
-                      className={!!errors[`obs${idx}_size`] && !row.size?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_size`] && !row.size?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1192,7 +1213,12 @@ export const PTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "quantity", e.target.value)
                       }
-                      className={(!!errors[`obs${idx}_quantity`] && !row.quantity?.toString().trim() ? inputErrorClass : inputClass) + " w-16"}
+                      className={
+                        (!!errors[`obs${idx}_quantity`] &&
+                        !row.quantity?.toString().trim()
+                          ? inputErrorClass
+                          : inputClass) + " w-16"
+                      }
                       min="0"
                     />
                   </td>
@@ -1202,7 +1228,12 @@ export const PTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "interpretation", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_interpretation`] && !row.interpretation ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_interpretation`] &&
+                        !row.interpretation
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     >
                       <option value="">Select...</option>
                       <option>No relevant Indication Found</option>
@@ -1215,7 +1246,11 @@ export const PTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "evaluation", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_evaluation`] && !row.evaluation ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_evaluation`] && !row.evaluation
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     >
                       <option value="">Select...</option>
                       <option>Accepted</option>
@@ -1241,7 +1276,7 @@ export const PTReportFormPage: React.FC = () => {
       </div>
 
       {/* ── Conclusion ── */}
-      <div className={sectionClass}>
+      {/* <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Conclusion</h2>
         <div>
           <label className={labelClass}>Conclusion</label>
@@ -1260,7 +1295,7 @@ export const PTReportFormPage: React.FC = () => {
             error={hasError("conclusion")}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* ── Examined By ── */}
       <div className={sectionClass}>
@@ -1304,7 +1339,9 @@ export const PTReportFormPage: React.FC = () => {
                       <label className={labelClass}>Name</label>
                       <select
                         value={insp.name}
-                        onChange={(e) => updateInsp(idx, "name", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "name", e.target.value)
+                        }
                         className={`${errors[`inspectorName_${idx}`] && !insp.name ? inputErrorClass : inputClass} bg-white`}
                       >
                         <option value="">Select....</option>
@@ -1320,26 +1357,42 @@ export const PTReportFormPage: React.FC = () => {
                       <input
                         type="text"
                         value={insp.qualification}
-                        onChange={(e) => updateInsp(idx, "qualification", e.target.value)}
-                        className={!!errors[`inspectorQualification_${idx}`] && !insp.qualification.trim() ? inputErrorClass : inputClass}
+                        onChange={(e) =>
+                          updateInsp(idx, "qualification", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorQualification_${idx}`] &&
+                          !insp.qualification.trim()
+                            ? inputErrorClass
+                            : inputClass
+                        }
                         placeholder="e.g. PT NDE Level II"
                       />
                     </div>
-                    <div>
+                    {/* <div>
                       <label className={labelClass}>Designation *</label>
                       <input
                         type="text"
                         value={insp.designation}
-                        onChange={(e) => updateInsp(idx, "designation", e.target.value)}
-                        className={!!errors[`inspectorDesignation_${idx}`] && !insp.designation.trim() ? inputErrorClass : inputClass}
+                        onChange={(e) =>
+                          updateInsp(idx, "designation", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorDesignation_${idx}`] &&
+                          !insp.designation.trim()
+                            ? inputErrorClass
+                            : inputClass
+                        }
                       />
-                    </div>
+                    </div> */}
                     <div>
                       <label className={labelClass}>Signature</label>
                       <input
                         type="text"
                         value={insp.signature}
-                        onChange={(e) => updateInsp(idx, "signature", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "signature", e.target.value)
+                        }
                         className={inputClass}
                       />
                     </div>
@@ -1348,8 +1401,14 @@ export const PTReportFormPage: React.FC = () => {
                       <input
                         type="date"
                         value={insp.date}
-                        onChange={(e) => updateInsp(idx, "date", e.target.value)}
-                        className={!!errors[`inspectorDate_${idx}`] && !insp.date ? inputErrorClass : inputClass}
+                        onChange={(e) =>
+                          updateInsp(idx, "date", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorDate_${idx}`] && !insp.date
+                            ? inputErrorClass
+                            : inputClass
+                        }
                       />
                     </div>
                   </div>

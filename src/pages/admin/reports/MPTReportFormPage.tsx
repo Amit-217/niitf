@@ -229,13 +229,25 @@ export const MPTReportFormPage: React.FC = () => {
       gaussMeterReading,
       current,
       postCleaning,
-      jobReferenceStd: jobReferenceStd === "Other" ? jobReferenceStdOther : jobReferenceStd,
-      jobAcceptanceCriteria: jobAcceptanceCriteria === "Other" ? jobAcceptanceCriteriaOther : jobAcceptanceCriteria,
-      jobExtentOfExamination: jobExtentOfExamination === "Other" ? jobExtentOfExaminationOther : jobExtentOfExamination,
+      jobReferenceStd:
+        jobReferenceStd === "Other" ? jobReferenceStdOther : jobReferenceStd,
+      jobAcceptanceCriteria:
+        jobAcceptanceCriteria === "Other"
+          ? jobAcceptanceCriteriaOther
+          : jobAcceptanceCriteria,
+      jobExtentOfExamination:
+        jobExtentOfExamination === "Other"
+          ? jobExtentOfExaminationOther
+          : jobExtentOfExamination,
       eqMake: eqMake === "Other" ? eqMakeOther : eqMake,
-      biManufacturer: biManufacturer === "Other" ? biManufacturerOther : biManufacturer,
-      wcManufacturer: wcManufacturer === "Other" ? wcManufacturerOther : wcManufacturer,
-      bathConcentration: bathConcentration === "Other" ? bathConcentrationOther : bathConcentration,
+      biManufacturer:
+        biManufacturer === "Other" ? biManufacturerOther : biManufacturer,
+      wcManufacturer:
+        wcManufacturer === "Other" ? wcManufacturerOther : wcManufacturer,
+      bathConcentration:
+        bathConcentration === "Other"
+          ? bathConcentrationOther
+          : bathConcentration,
       currentType: currentType === "Other" ? currentTypeOther : currentType,
       conclusion: conclusion === "Other" ? conclusionOther : conclusion,
       custName,
@@ -255,7 +267,7 @@ export const MPTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -406,13 +418,13 @@ export const MPTReportFormPage: React.FC = () => {
         setInspectors(
           fs.inspector?.length
             ? fs.inspector.map((i: any) => ({
-              name: i.name ?? "",
-              qualification: i.qualification || "MT NDE Level II",
-              designation: i.designation ?? "",
-              signature: i.signature ?? "",
-              idNo: i.idNo ?? "",
-              date: toDate(i.date),
-            }))
+                name: i.name ?? "",
+                qualification: i.qualification || "MT NDE Level II",
+                designation: i.designation ?? "",
+                signature: i.signature ?? "",
+                idNo: i.idNo ?? "",
+                date: toDate(i.date),
+              }))
             : [emptyInspector()],
         );
         const cust = fs.customer ?? {};
@@ -487,11 +499,13 @@ export const MPTReportFormPage: React.FC = () => {
       if (mt(jobProject)) e.jobProject = true;
       if (!jobReportDate) e.jobReportDate = true;
       if (oth(jobReferenceStd, jobReferenceStdOther)) e.jobReferenceStd = true;
-      if (oth(jobAcceptanceCriteria, jobAcceptanceCriteriaOther)) e.jobAcceptanceCriteria = true;
+      if (oth(jobAcceptanceCriteria, jobAcceptanceCriteriaOther))
+        e.jobAcceptanceCriteria = true;
       if (!jobInspectionDate) e.jobInspectionDate = true;
       if (!jobInspectionEndDate) e.jobInspectionEndDate = true;
       if (sel(jobStageOfInspection)) e.jobStageOfInspection = true;
-      if (oth(jobExtentOfExamination, jobExtentOfExaminationOther)) e.jobExtentOfExamination = true;
+      if (oth(jobExtentOfExamination, jobExtentOfExaminationOther))
+        e.jobExtentOfExamination = true;
       if (mt(jobThickness)) e.jobThickness = true;
       if (mt(jobMaterial)) e.jobMaterial = true;
       if (sel(jobTypeOfJoint)) e.jobTypeOfJoint = true;
@@ -517,7 +531,8 @@ export const MPTReportFormPage: React.FC = () => {
       if (sel(magnetizationType)) e.magnetizationType = true;
       if (sel(lightEquipUsed)) e.lightEquipUsed = true;
       if (sel(magnetizingMethod)) e.magnetizingMethod = true;
-      if (oth(bathConcentration, bathConcentrationOther)) e.bathConcentration = true;
+      if (oth(bathConcentration, bathConcentrationOther))
+        e.bathConcentration = true;
       if (sel(demagnetization)) e.demagnetization = true;
       if (sel(magFieldVerifiedBy)) e.magFieldVerifiedBy = true;
       if (mt(gaussMeterReading)) e.gaussMeterReading = true;
@@ -711,7 +726,6 @@ export const MPTReportFormPage: React.FC = () => {
           <p className="text-sm text-gray-500">{customerName}</p>
         </div>
       </div>
-
       {/* â”€â”€ Missing Customer Banner â”€â”€ */}
       {!customerId && (
         <CustomerPickerBanner
@@ -749,7 +763,6 @@ export const MPTReportFormPage: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Ã¢"â‚¬Ã¢"â‚¬ Job Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Job Details</h2>
@@ -778,7 +791,7 @@ export const MPTReportFormPage: React.FC = () => {
               className={fc("jobClient")}
             />
           </div>
-           <div>
+          <div>
             <label className={labelClass} htmlFor="jobProject">
               Project
             </label>
@@ -802,7 +815,7 @@ export const MPTReportFormPage: React.FC = () => {
               className={fc("jobReportDate")}
             />
           </div>
-                    <div>
+          <div>
             <label className={labelClass} htmlFor="jobInspectionDate">
               Inspection Start Date
             </label>
@@ -926,7 +939,7 @@ export const MPTReportFormPage: React.FC = () => {
               placeholder="e.g. As per Drawing"
             />
           </div>
-          
+
           <div>
             <label className={labelClass} htmlFor="jobTypeOfJoint">
               Type of Joint
@@ -979,7 +992,6 @@ export const MPTReportFormPage: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Ã¢"â‚¬Ã¢"â‚¬ Equipment Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Equipment Details</h2>
@@ -1069,7 +1081,6 @@ export const MPTReportFormPage: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Ã¢"â‚¬Ã¢"â‚¬ Medium Details Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Medium Details</h2>
@@ -1164,7 +1175,6 @@ export const MPTReportFormPage: React.FC = () => {
           </table>
         </div>
       </div>
-
       {/* Ã¢"â‚¬Ã¢"â‚¬ Method Description Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Method Description</h2>
@@ -1345,7 +1355,6 @@ export const MPTReportFormPage: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Ã¢"â‚¬Ã¢"â‚¬ Observations Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
@@ -1401,7 +1410,12 @@ export const MPTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "jobDescription", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_jobDescription`] && !row.jobDescription?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_jobDescription`] &&
+                        !row.jobDescription?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1411,7 +1425,12 @@ export const MPTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "drawingOrJointNo", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_drawingOrJointNo`] && !row.drawingOrJointNo?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_drawingOrJointNo`] &&
+                        !row.drawingOrJointNo?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1419,7 +1438,11 @@ export const MPTReportFormPage: React.FC = () => {
                       type="text"
                       value={row.size}
                       onChange={(e) => updateObs(idx, "size", e.target.value)}
-                      className={!!errors[`obs${idx}_size`] && !row.size?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_size`] && !row.size?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1429,7 +1452,12 @@ export const MPTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "quantity", e.target.value)
                       }
-                      className={(!!errors[`obs${idx}_quantity`] && !row.quantity?.toString().trim() ? inputErrorClass : inputClass) + " w-16"}
+                      className={
+                        (!!errors[`obs${idx}_quantity`] &&
+                        !row.quantity?.toString().trim()
+                          ? inputErrorClass
+                          : inputClass) + " w-16"
+                      }
                       min="0"
                     />
                   </td>
@@ -1439,7 +1467,12 @@ export const MPTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "interpretation", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_interpretation`] && !row.interpretation ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_interpretation`] &&
+                        !row.interpretation
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     >
                       <option value="">Select...</option>
                       <option>No relevant Indication Found</option>
@@ -1452,7 +1485,11 @@ export const MPTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "evaluation", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_evaluation`] && !row.evaluation ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_evaluation`] && !row.evaluation
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     >
                       <option value="">Select...</option>
                       <option>Accepted</option>
@@ -1476,13 +1513,13 @@ export const MPTReportFormPage: React.FC = () => {
           </table>
         </div>
       </div>
-
-
-      {/* ── Conclusion ── */}
+      {/* ── Conclusion ──
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Conclusion</h2>
         <div className="max-w-2xl">
-          <label className={labelClass} htmlFor="conclusion">Conclusion</label>
+          <label className={labelClass} htmlFor="conclusion">
+            Conclusion
+          </label>
           <SelectWithOther
             id="conclusion"
             value={conclusion}
@@ -1500,8 +1537,7 @@ export const MPTReportFormPage: React.FC = () => {
             error={hasError("conclusion")}
           />
         </div>
-      </div>
-
+      </div> */}
       {/* ── Examined By ── */}
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -1565,11 +1601,16 @@ export const MPTReportFormPage: React.FC = () => {
                         onChange={(e) =>
                           updateInsp(idx, "qualification", e.target.value)
                         }
-                        className={!!errors[`inspectorQual_${idx}`] && !insp.qualification.trim() ? inputErrorClass : inputClass}
+                        className={
+                          !!errors[`inspectorQual_${idx}`] &&
+                          !insp.qualification.trim()
+                            ? inputErrorClass
+                            : inputClass
+                        }
                         placeholder="e.g. MT NDE Level II"
                       />
                     </div>
-                    <div>
+                    {/* <div>
                       <label className={labelClass}>Designation *</label>
                       <input
                         type="text"
@@ -1577,9 +1618,14 @@ export const MPTReportFormPage: React.FC = () => {
                         onChange={(e) =>
                           updateInsp(idx, "designation", e.target.value)
                         }
-                        className={!!errors[`inspectorDesig_${idx}`] && !insp.designation.trim() ? inputErrorClass : inputClass}
+                        className={
+                          !!errors[`inspectorDesig_${idx}`] &&
+                          !insp.designation.trim()
+                            ? inputErrorClass
+                            : inputClass
+                        }
                       />
-                    </div>
+                    </div> */}
                     <div>
                       <label className={labelClass}>Signature</label>
                       <input
@@ -1599,7 +1645,11 @@ export const MPTReportFormPage: React.FC = () => {
                         onChange={(e) =>
                           updateInsp(idx, "date", e.target.value)
                         }
-                        className={!!errors[`inspectorDate_${idx}`] && !insp.date ? inputErrorClass : inputClass}
+                        className={
+                          !!errors[`inspectorDate_${idx}`] && !insp.date
+                            ? inputErrorClass
+                            : inputClass
+                        }
                       />
                     </div>
                   </div>
@@ -1705,7 +1755,6 @@ export const MPTReportFormPage: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Ã¢"â‚¬Ã¢"â‚¬ Action Buttons Ã¢"â‚¬Ã¢"â‚¬ */}
       <div className="flex items-center justify-end gap-3 pb-8">
         <button

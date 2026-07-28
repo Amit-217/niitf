@@ -125,7 +125,7 @@ interface InspRow {
 
 const emptyInspector = (): InspRow => ({
   name: "",
-  qualification: "ASNT NDT Level-II - UT",
+  qualification: "UT NDE Level II",
   designation: "",
   signature: "",
   date: "",
@@ -294,13 +294,15 @@ export const AWSDReportFormPage: React.FC = () => {
           );
         }
         const cert = r.certification ?? {};
-        setInspectors([{
-          name: cert.inspectedBy ?? "",
-          qualification: cert.year || "ASNT NDT Level-II - UT",
-          designation: cert.inspectorDesignation ?? "",
-          signature: cert.inspectorSignature ?? "",
-          date: toDate(cert.testDate),
-        }]);
+        setInspectors([
+          {
+            name: cert.inspectedBy ?? "",
+            qualification: cert.year || "UT NDE Level II",
+            designation: cert.inspectorDesignation ?? "",
+            signature: cert.inspectorSignature ?? "",
+            date: toDate(cert.testDate),
+          },
+        ]);
         setManufacturerOrContractor(cert.manufacturerOrContractor ?? "");
         setCustName(cert.authorizedBy ?? "");
         setCustDesig(cert.custDesignation ?? "");
@@ -1287,7 +1289,9 @@ export const AWSDReportFormPage: React.FC = () => {
                       <label className={labelClass}>Name *</label>
                       <select
                         value={insp.name}
-                        onChange={(e) => updateInsp(idx, "name", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "name", e.target.value)
+                        }
                         className={`${errors[`inspectorName_${idx}`] && !insp.name.trim() ? inputErrorClass : inputClass} bg-white`}
                       >
                         <option value="">Select....</option>
@@ -1303,26 +1307,42 @@ export const AWSDReportFormPage: React.FC = () => {
                       <input
                         type="text"
                         value={insp.qualification}
-                        onChange={(e) => updateInsp(idx, "qualification", e.target.value)}
-                        className={!!errors[`inspectorQual_${idx}`] && !insp.qualification.trim() ? inputErrorClass : inputClass}
-                        placeholder="e.g. ASNT NDT Level-II - UT"
+                        onChange={(e) =>
+                          updateInsp(idx, "qualification", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorQual_${idx}`] &&
+                          !insp.qualification.trim()
+                            ? inputErrorClass
+                            : inputClass
+                        }
+                        placeholder="e.g. UT NDE Level II"
                       />
                     </div>
-                    <div>
+                    {/* <div>
                       <label className={labelClass}>Designation *</label>
                       <input
                         type="text"
                         value={insp.designation}
-                        onChange={(e) => updateInsp(idx, "designation", e.target.value)}
-                        className={!!errors[`inspectorDesig_${idx}`] && !insp.designation.trim() ? inputErrorClass : inputClass}
+                        onChange={(e) =>
+                          updateInsp(idx, "designation", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorDesig_${idx}`] &&
+                          !insp.designation.trim()
+                            ? inputErrorClass
+                            : inputClass
+                        }
                       />
-                    </div>
+                    </div> */}
                     <div>
                       <label className={labelClass}>Signature</label>
                       <input
                         type="text"
                         value={insp.signature}
-                        onChange={(e) => updateInsp(idx, "signature", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "signature", e.target.value)
+                        }
                         className={inputClass}
                       />
                     </div>
@@ -1331,8 +1351,14 @@ export const AWSDReportFormPage: React.FC = () => {
                       <input
                         type="date"
                         value={insp.date}
-                        onChange={(e) => updateInsp(idx, "date", e.target.value)}
-                        className={!!errors[`inspectorDate_${idx}`] && !insp.date ? inputErrorClass : inputClass}
+                        onChange={(e) =>
+                          updateInsp(idx, "date", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorDate_${idx}`] && !insp.date
+                            ? inputErrorClass
+                            : inputClass
+                        }
                       />
                     </div>
                   </div>
