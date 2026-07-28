@@ -1198,14 +1198,31 @@ export const MPTReportFormPage: React.FC = () => {
             <label className={labelClass} htmlFor="lightIntensity">
               Light Intensity
             </label>
-            <input
-              id="lightIntensity"
-              type="text"
-              value={lightIntensity}
-              onChange={(e) => setLightIntensity(e.target.value)}
-              className={fc("lightIntensity")}
-              placeholder="e.g. 1180 lux"
-            />
+
+            <div className="relative">
+              <input
+                id="lightIntensity"
+                type="text"
+                value={lightIntensity.replace(/ (lux|µW\/cm²)$/, "")}
+                onChange={(e) => {
+                  const inputValue = e.target.value.replace(
+                    / (lux|µW\/cm²)$/,
+                    "",
+                  );
+                  const unit = method === "Visible" ? "lux" : "µW/cm²";
+
+                  setLightIntensity(`${inputValue} ${unit}`);
+                }}
+                className={`${fc("lightIntensity")} pr-20`}
+                placeholder={method === "Visible" ? "e.g. 1180" : "e.g. 1200"}
+              />
+
+              {method && (
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">
+                  {method === "Visible" ? "lux" : "µW/cm²"}
+                </span>
+              )}
+            </div>
           </div>
           <div>
             <label className={labelClass} htmlFor="magType">
