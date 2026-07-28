@@ -449,7 +449,22 @@ export const MPTReportFormPage: React.FC = () => {
 
   const updateObs = (idx: number, key: keyof ObsRow, value: string) => {
     setObservations((prev) =>
-      prev.map((row, i) => (i === idx ? { ...row, [key]: value } : row)),
+      prev.map((row, i) => {
+        if (i === idx) {
+          const updated = { ...row, [key]: value };
+          if (key === "interpretation") {
+            if (value === "No relevant Indication Found") {
+              updated.evaluation = "Accepted";
+            } else if (value === "Relevant Indication Found") {
+              updated.evaluation = "Not Accepted";
+            } else {
+              updated.evaluation = "";
+            }
+          }
+          return updated;
+        }
+        return row;
+      }),
     );
   };
 

@@ -332,7 +332,22 @@ export const UTReportFormPage: React.FC = () => {
 
   const updateObs = (idx: number, key: keyof ObsRow, val: string) =>
     setObservations((prev) =>
-      prev.map((row, i) => (i === idx ? { ...row, [key]: val } : row)),
+      prev.map((row, i) => {
+        if (i === idx) {
+          const updated = { ...row, [key]: val };
+          if (key === "interpretation") {
+            if (val === "No relevant Indication Found") {
+              updated.evaluation = "Accepted";
+            } else if (val === "Relevant Indication Found") {
+              updated.evaluation = "Rejected";
+            } else {
+              updated.evaluation = "";
+            }
+          }
+          return updated;
+        }
+        return row;
+      }),
     );
 
   const addObs = () =>
