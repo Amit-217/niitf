@@ -15,6 +15,7 @@ import {
   Loader2,
   ArchiveX,
   ArchiveRestore,
+  AlertTriangle,
 } from "lucide-react";
 import {
   getStudents,
@@ -68,7 +69,7 @@ export const StudentsPage = () => {
       else if (statusFilter === "archived") params.archived = true;
       const res: any = await getStudents(params);
       // By default res is the unwrapped JSON body (via Axios interceptor).
-      // Example successful body: { success: true, message: "...", data: { students: [...], pagination: {...} } }
+      // Backend returns: { success: true, data: { students: [...], pagination: {...} } }
 
       let items = [];
       let count = 0;
@@ -355,11 +356,25 @@ export const StudentsPage = () => {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-blue-600 font-mono text-xs font-semibold">
-                      {s.email}
+                    <td className="px-4 py-3 font-mono text-xs font-semibold">
+                      {s.email ? (
+                        <span className="text-blue-600">{s.email}</span>
+                      ) : (
+                        <span className="flex items-center gap-1 text-red-500">
+                          <AlertTriangle size={12} />
+                          Missing — can't login
+                        </span>
+                      )}
                     </td>
-                    <td className="px-4 py-3 text-emerald-600 font-mono text-xs font-bold">
-                      {s.dob ? s.dob.substring(0, 10) : "—"}
+                    <td className="px-4 py-3 font-mono text-xs font-bold">
+                      {s.dob ? (
+                        <span className="text-emerald-600">{s.dob.substring(0, 10)}</span>
+                      ) : (
+                        <span className="flex items-center gap-1 text-red-500">
+                          <AlertTriangle size={12} />
+                          Missing — can't login
+                        </span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-gray-600">{s.mobile}</td>
                     <td className="px-4 py-3 text-gray-500">{s.city || "—"}</td>

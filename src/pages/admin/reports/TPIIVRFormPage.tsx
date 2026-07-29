@@ -389,78 +389,6 @@ export const TPIIVRFormPage: React.FC = () => {
     }
 
     if (status === "final") {
-      const e: Record<string, boolean> = {};
-      const mt = (v: string) => !v.trim();
-      const oth = (v: string, o: string) => !v || (v === "Other" && !o.trim());
-
-      // ── previously validated ──
-      if (mt(client)) e.client = true;
-      if (mt(project)) e.project = true;
-      if (!dtOfInspection) e.dtOfInspection = true;
-      if (mt(inspectionLocation)) e.inspectionLocation = true;
-      if (mt(appdQapNo)) e.appdQapNo = true;
-      if (mt(vendor)) e.vendor = true;
-      if (oth(clientRef, clientRefOther)) e.clientRef = true;
-      if (oth(conclusion, conclusionOther)) e.conclusion = true;
-
-      // ── newly required header fields ──
-      if (mt(irRev)) e.irRev = true;
-      if (mt(clientPoNo)) e.clientPoNo = true;
-      if (!appdQapDt) e.appdQapDt = true;
-      if (mt(poAmedNo)) e.poAmedNo = true;
-      if (mt(partName)) e.partName = true;
-      if (!poDate) e.poDate = true;
-      if (oth(inspectionStage, inspectionStageOther)) e.inspectionStage = true;
-
-      // ── newly required client / vendor scalar fields ──
-      if (mt(vendorContact)) e.vendorContact = true;
-      if (mt(vendorPhone)) e.vendorPhone = true;
-      if (mt(subVendor)) e.subVendor = true;
-      if (!callDate) e.callDate = true;
-      if (!inspAttDt) e.inspAttDt = true;
-      if (mt(clientContact)) e.clientContact = true;
-
-      // Items — all fields in all rows required
-      items.forEach((item, i) => {
-        if (!item.poLineNo?.trim()) e[`item${i}_poLineNo`] = true;
-        if (!item.description?.trim()) e[`item${i}_description`] = true;
-        if (!item.drgOrHeatNo?.trim()) e[`item${i}_drgOrHeatNo`] = true;
-        if (!item.qtyOffered.trim()) e[`item${i}_qtyOffered`] = true;
-        if (!item.qtyInspected.trim()) e[`item${i}_qtyInspected`] = true;
-        if (!item.qtyAccepted.trim()) e[`item${i}_qtyAccepted`] = true;
-        if (!item.qtyHold.trim()) e[`item${i}_qtyHold`] = true;
-        if (!item.qtyReject.trim()) e[`item${i}_qtyReject`] = true;
-        if (!item.inspectionType) e[`item${i}_inspectionType`] = true;
-      });
-      // Ref Docs — all fields required in all rows
-      refDocs.forEach((doc, i) => {
-        if (!doc.document?.trim()) e[`refDoc${i}_document`] = true;
-        if (!doc.referenceNumber?.trim()) e[`refDoc${i}_referenceNumber`] = true;
-        if (!doc.revNo?.trim()) e[`refDoc${i}_revNo`] = true;
-      });
-      // Calibration — all fields in all rows required
-      calibRows.forEach((row, i) => {
-        if (!row.equipment?.trim()) e[`calib${i}_equipment`] = true;
-        if (!row.idNumber?.trim()) e[`calib${i}_idNumber`] = true;
-        if (!row.calibrationDate) e[`calib${i}_calibrationDate`] = true;
-        if (!row.dueDate) e[`calib${i}_dueDate`] = true;
-        if (!row.nablCertified) e[`calib${i}_nablCertified`] = true;
-      });
-      // Inspection Activities, Extra Visit, Comment
-      if (!inspectionActivities.trim()) e.inspectionActivities = true;
-      if (!extraVisitDate.trim()) e.extraVisitDate = true;
-      if (!extraVisitComment.trim()) e.extraVisitComment = true;
-      // Signatures
-      if (!vendorSignName.trim()) e.vendorSignName = true;
-      if (!vendorSignDate) e.vendorSignDate = true;
-      if (!niitSignName.trim()) e.niitSignName = true;
-      if (!niitSignDate) e.niitSignDate = true;
-
-      if (Object.keys(e).length > 0) {
-        setErrors(e);
-        toast.error("Please fill all required fields before saving as Final.");
-        return;
-      }
       setErrors({});
     }
 
@@ -772,7 +700,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Contact *</label>
+                <label className={labelClass}>Contact Person *</label>
                 <input
                   type="text"
                   value={clientContact}
@@ -791,7 +719,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Inspection Att. Date *</label>
+                <label className={labelClass}>Inspection Att.</label>
                 <input
                   type="date"
                   value={inspAttDt}
@@ -828,7 +756,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Contact *</label>
+                <label className={labelClass}>Contact Person*</label>
                 <input
                   type="text"
                   value={vendorContact}
@@ -858,7 +786,11 @@ export const TPIIVRFormPage: React.FC = () => {
               type="text"
               value={extraVisitDate}
               onChange={(e) => setExtraVisitDate(e.target.value)}
-              className={!!errors.extraVisitDate && !extraVisitDate.trim() ? inputErrorClass : inputClass}
+              className={
+                !!errors.extraVisitDate && !extraVisitDate.trim()
+                  ? inputErrorClass
+                  : inputClass
+              }
               placeholder="e.g. NA"
             />
           </div>
@@ -868,7 +800,11 @@ export const TPIIVRFormPage: React.FC = () => {
               type="text"
               value={extraVisitComment}
               onChange={(e) => setExtraVisitComment(e.target.value)}
-              className={!!errors.extraVisitComment && !extraVisitComment.trim() ? inputErrorClass : inputClass}
+              className={
+                !!errors.extraVisitComment && !extraVisitComment.trim()
+                  ? inputErrorClass
+                  : inputClass
+              }
               placeholder="e.g. NA"
             />
           </div>
@@ -879,8 +815,7 @@ export const TPIIVRFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
-            Inspection Items{" "}
-            <span className="text-red-500 font-bold">*</span>
+            Inspection Items <span className="text-red-500 font-bold">*</span>
           </h2>
           <button
             type="button"
@@ -934,7 +869,11 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateItem(idx, "poLineNo", e.target.value)
                       }
-                      className={!!errors[`item${idx}_poLineNo`] && !row.poLineNo?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`item${idx}_poLineNo`] && !row.poLineNo?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                       placeholder="01"
                     />
                   </td>
@@ -945,7 +884,12 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateItem(idx, "description", e.target.value)
                       }
-                      className={!!errors[`item${idx}_description`] && !row.description?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`item${idx}_description`] &&
+                        !row.description?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -955,7 +899,12 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateItem(idx, "drgOrHeatNo", e.target.value)
                       }
-                      className={!!errors[`item${idx}_drgOrHeatNo`] && !row.drgOrHeatNo?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`item${idx}_drgOrHeatNo`] &&
+                        !row.drgOrHeatNo?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -965,7 +914,12 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateItem(idx, "qtyOffered", e.target.value)
                       }
-                      className={(!!errors[`item${idx}_qtyOffered`] && !row.qtyOffered.trim() ? inputErrorClass : inputClass) + " w-16"}
+                      className={
+                        (!!errors[`item${idx}_qtyOffered`] &&
+                        !row.qtyOffered.trim()
+                          ? inputErrorClass
+                          : inputClass) + " w-16"
+                      }
                       min="0"
                     />
                   </td>
@@ -976,7 +930,12 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateItem(idx, "qtyInspected", e.target.value)
                       }
-                      className={(!!errors[`item${idx}_qtyInspected`] && !row.qtyInspected.trim() ? inputErrorClass : inputClass) + " w-16"}
+                      className={
+                        (!!errors[`item${idx}_qtyInspected`] &&
+                        !row.qtyInspected.trim()
+                          ? inputErrorClass
+                          : inputClass) + " w-16"
+                      }
                       min="0"
                     />
                   </td>
@@ -987,7 +946,12 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateItem(idx, "qtyAccepted", e.target.value)
                       }
-                      className={(!!errors[`item${idx}_qtyAccepted`] && !row.qtyAccepted.trim() ? inputErrorClass : inputClass) + " w-16"}
+                      className={
+                        (!!errors[`item${idx}_qtyAccepted`] &&
+                        !row.qtyAccepted.trim()
+                          ? inputErrorClass
+                          : inputClass) + " w-16"
+                      }
                       min="0"
                     />
                   </td>
@@ -998,7 +962,11 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateItem(idx, "qtyHold", e.target.value)
                       }
-                      className={(!!errors[`item${idx}_qtyHold`] && !row.qtyHold.trim() ? inputErrorClass : inputClass) + " w-16"}
+                      className={
+                        (!!errors[`item${idx}_qtyHold`] && !row.qtyHold.trim()
+                          ? inputErrorClass
+                          : inputClass) + " w-16"
+                      }
                       min="0"
                     />
                   </td>
@@ -1009,7 +977,12 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateItem(idx, "qtyReject", e.target.value)
                       }
-                      className={(!!errors[`item${idx}_qtyReject`] && !row.qtyReject.trim() ? inputErrorClass : inputClass) + " w-16"}
+                      className={
+                        (!!errors[`item${idx}_qtyReject`] &&
+                        !row.qtyReject.trim()
+                          ? inputErrorClass
+                          : inputClass) + " w-16"
+                      }
                       min="0"
                     />
                   </td>
@@ -1019,7 +992,12 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateItem(idx, "inspectionType", e.target.value)
                       }
-                      className={!!errors[`item${idx}_inspectionType`] && !row.inspectionType ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`item${idx}_inspectionType`] &&
+                        !row.inspectionType
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     >
                       <option value="">Select...</option>
                       <option>STAGE</option>
@@ -1047,7 +1025,7 @@ export const TPIIVRFormPage: React.FC = () => {
       {/* ── Inspection Activities & Conclusion ── */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>
-          Inspection Activities &amp; Conclusion
+          Inspection Activities
         </h2>
         <div className="space-y-4">
           <div>
@@ -1056,27 +1034,15 @@ export const TPIIVRFormPage: React.FC = () => {
               value={inspectionActivities}
               onChange={(e) => setInspectionActivities(e.target.value)}
               rows={5}
-              className={!!errors.inspectionActivities && !inspectionActivities.trim() ? inputErrorClass : inputClass}
+              className={
+                !!errors.inspectionActivities && !inspectionActivities.trim()
+                  ? inputErrorClass
+                  : inputClass
+              }
               placeholder="Describe inspection activities performed..."
             />
           </div>
-          <div>
-            <label className={labelClass}>Conclusion *</label>
-            <SelectWithOther
-              value={conclusion}
-              onChange={setConclusion}
-              otherValue={conclusionOther}
-              onOtherChange={setConclusionOther}
-              options={[
-                "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-                "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-                "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-                "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-                "Other",
-              ]}
-              error={hasError("conclusion")}
-            />
-          </div>
+        
         </div>
       </div>
 
@@ -1121,7 +1087,12 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateRefDoc(idx, "document", e.target.value)
                       }
-                      className={!!errors[`refDoc${idx}_document`] && !doc.document?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`refDoc${idx}_document`] &&
+                        !doc.document?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                       placeholder="e.g. Drawing"
                     />
                   </td>
@@ -1132,7 +1103,12 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateRefDoc(idx, "referenceNumber", e.target.value)
                       }
-                      className={!!errors[`refDoc${idx}_referenceNumber`] && !doc.referenceNumber?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`refDoc${idx}_referenceNumber`] &&
+                        !doc.referenceNumber?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                       placeholder="e.g. xxxx"
                     />
                   </td>
@@ -1143,7 +1119,11 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateRefDoc(idx, "revNo", e.target.value)
                       }
-                      className={!!errors[`refDoc${idx}_revNo`] && !doc.revNo?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`refDoc${idx}_revNo`] && !doc.revNo?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                       placeholder="e.g. 00"
                     />
                   </td>
@@ -1211,7 +1191,12 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateCalib(idx, "equipment", e.target.value)
                       }
-                      className={!!errors[`calib${idx}_equipment`] && !row.equipment?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`calib${idx}_equipment`] &&
+                        !row.equipment?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1221,7 +1206,12 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateCalib(idx, "idNumber", e.target.value)
                       }
-                      className={!!errors[`calib${idx}_idNumber`] && !row.idNumber?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`calib${idx}_idNumber`] &&
+                        !row.idNumber?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1231,7 +1221,12 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateCalib(idx, "calibrationDate", e.target.value)
                       }
-                      className={!!errors[`calib${idx}_calibrationDate`] && !row.calibrationDate ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`calib${idx}_calibrationDate`] &&
+                        !row.calibrationDate
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1241,7 +1236,11 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateCalib(idx, "dueDate", e.target.value)
                       }
-                      className={!!errors[`calib${idx}_dueDate`] && !row.dueDate ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`calib${idx}_dueDate`] && !row.dueDate
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1250,7 +1249,12 @@ export const TPIIVRFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateCalib(idx, "nablCertified", e.target.value)
                       }
-                      className={!!errors[`calib${idx}_nablCertified`] && !row.nablCertified ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`calib${idx}_nablCertified`] &&
+                        !row.nablCertified
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     >
                       <option value="">Select...</option>
                       <option>Yes</option>
@@ -1269,9 +1273,31 @@ export const TPIIVRFormPage: React.FC = () => {
                     )}
                   </td>
                 </tr>
+                
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+       <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>
+          Conclusion
+        </h2>
+        <div className="space-y-4">
+          
+          <div>
+            <label className={labelClass}>Conclusion *</label>
+            <input
+              type="text"
+              value={conclusion}
+              onChange={(e) => setConclusion(e.target.value)}
+              placeholder="Enter conclusion"
+              className={`w-full rounded-md border px-3 py-2 ${
+                hasError("conclusion") ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+          </div>
         </div>
       </div>
 
@@ -1289,9 +1315,12 @@ export const TPIIVRFormPage: React.FC = () => {
                 <label className={labelClass}>Vendor Name *</label>
                 <input
                   type="text"
-                  value={vendorSignName}
-                  onChange={(e) => setVendorSignName(e.target.value)}
-                  className={!!errors.vendorSignName && !vendorSignName.trim() ? inputErrorClass : inputClass}
+                  value={vendor}
+                  className={
+                    !!errors.vendorSignName && !vendorSignName.trim()
+                      ? inputErrorClass
+                      : inputClass
+                  }
                   placeholder="e.g. Mr. Ravindra Naral"
                 />
               </div>
@@ -1301,7 +1330,11 @@ export const TPIIVRFormPage: React.FC = () => {
                   type="date"
                   value={vendorSignDate}
                   onChange={(e) => setVendorSignDate(e.target.value)}
-                  className={!!errors.vendorSignDate && !vendorSignDate ? inputErrorClass : inputClass}
+                  className={
+                    !!errors.vendorSignDate && !vendorSignDate
+                      ? inputErrorClass
+                      : inputClass
+                  }
                 />
               </div>
             </div>
@@ -1333,7 +1366,11 @@ export const TPIIVRFormPage: React.FC = () => {
                   type="date"
                   value={niitSignDate}
                   onChange={(e) => setNiitSignDate(e.target.value)}
-                  className={!!errors.niitSignDate && !niitSignDate ? inputErrorClass : inputClass}
+                  className={
+                    !!errors.niitSignDate && !niitSignDate
+                      ? inputErrorClass
+                      : inputClass
+                  }
                 />
               </div>
             </div>

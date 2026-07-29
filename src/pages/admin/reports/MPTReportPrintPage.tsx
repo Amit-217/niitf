@@ -40,6 +40,17 @@ const PRINT_STYLES = `
     .print-page:last-child { break-after: auto; page-break-after: auto; }
     .report-body { overflow: visible !important; }
   }
+
+  @media screen and (max-width: 768px) {
+    #report-root {
+      padding: 0 !important;
+      background: #fff !important;
+    }
+    .print-page {
+      margin: 0 !important;
+      box-shadow: none !important;
+    }
+  }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
 
@@ -339,7 +350,7 @@ export const MPTReportPrintPage = () => {
     );
   }
 
-  const qrUrl = `${window.location.origin}/reports/public/mpt/${id}`;
+  const qrUrl = `${window.location.origin}/#/reports/public/mpt/${id}`;
 
   const jd = report.jobDetails ?? {};
   const eq = report.equipmentDetails ?? {};
@@ -876,52 +887,58 @@ while (currentBlockIndex < blocks.length) {
   });
 }
 
+  if (pages.length === 0) {
+    pages.push({ isFirstPage: true, pageBlocks: [] });
+  }
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
-      <div
-        className="no-print"
-        style={{
-          position: "fixed",
-          top: 12,
-          right: 16,
-          zIndex: 100,
-          display: "flex",
-          gap: 8,
-        }}
-      >
-        <button
-          onClick={() => setBwMode((b) => !b)}
+      {!isPublic && (
+        <div
+          className="no-print"
           style={{
-            padding: "7px 16px",
-            background: bwMode ? "#374151" : "#185FA5",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
+            position: "fixed",
+            top: 12,
+            right: 16,
+            zIndex: 100,
+            display: "flex",
+            gap: 8,
           }}
         >
-          {bwMode ? "Color Mode" : "B&W Mode"}
-        </button>
-        <button
-          onClick={() => window.print()}
-          style={{
-            padding: "7px 16px",
-            background: "#16a34a",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
-          }}
-        >
-          Print
-        </button>
-      </div>
+          <button
+            onClick={() => setBwMode((b) => !b)}
+            style={{
+              padding: "7px 16px",
+              background: bwMode ? "#374151" : "#185FA5",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            {bwMode ? "Color Mode" : "B&W Mode"}
+          </button>
+          <button
+            onClick={() => window.print()}
+            style={{
+              padding: "7px 16px",
+              background: "#16a34a",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            Print
+          </button>
+        </div>
+      )}
 
       <div
         id="report-root"
@@ -931,7 +948,7 @@ while (currentBlockIndex < blocks.length) {
           const pageObs = pageBlocks
             .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
             .map((b) => b.item);
-          const hasObsTable = pageObs.length > 0;
+          const hasObsTable = pageObs.length > 0 || isFirstPage;
 
           return (
             <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>

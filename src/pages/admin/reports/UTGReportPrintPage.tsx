@@ -31,6 +31,17 @@ const PRINT_STYLES = `
     .print-page:last-child { break-after: auto; page-break-after: auto; }
     .report-body { overflow: visible !important; }
   }
+
+  @media screen and (max-width: 768px) {
+    #report-root {
+      padding: 0 !important;
+      background: #fff !important;
+    }
+    .print-page {
+      margin: 0 !important;
+      box-shadow: none !important;
+    }
+  }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
 
@@ -165,7 +176,7 @@ export const UTGReportPrintPage: React.FC = () => {
     if (!id) return;
     const fetcher = isPublic ? getPublicUTGReportById : getUTGReportById;
     fetcher(id)
-      .then((res: any) => setReport((res as any).data ?? res))
+      .then((res: any) => setReport(res?.data?.data ?? res?.data ?? res?.report ?? res))
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
   }, [id, isPublic]);
@@ -232,7 +243,7 @@ export const UTGReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = `${window.location.origin}/reports/public/utg/${id}`;
+  const qrUrl = `${window.location.origin}/#/reports/public/utg/${id}`;
 
   const jd = report.jobDetails ?? {};
   const eq = report.equipmentDetails ?? {};
@@ -335,6 +346,13 @@ export const UTGReportPrintPage: React.FC = () => {
     });
   }
 
+  if (pages.length === 0) {
+    pages.push({
+      isFirstPage: true,
+      pageBlocks: [],
+    });
+  }
+
   const renderHeader = () => (
     <div className="rpt-header">
       <div className="logo-box">
@@ -354,7 +372,7 @@ export const UTGReportPrintPage: React.FC = () => {
       </div>
     </div>
   );
-  const sudCount = sud.length;
+
   const renderObsTable = (data: any[], title: string) => (
     <table className="obs-table mt-n1">
       <colgroup>
@@ -378,7 +396,7 @@ export const UTGReportPrintPage: React.FC = () => {
       </thead>
       <tbody>
         
-        {data.length === 0 && sudCount === 0 ? (
+        {data.length === 0 ? (
           <tr>
             <td
               colSpan={4}
@@ -671,48 +689,50 @@ export const UTGReportPrintPage: React.FC = () => {
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
-      <div
-        className="no-print"
-        style={{
-          position: "fixed",
-          top: 12,
-          right: 16,
-          zIndex: 100,
-          display: "flex",
-          gap: 8,
-        }}
-      >
-        <button
-          onClick={() => setBwMode((b) => !b)}
+      {!isPublic && (
+        <div
+          className="no-print"
           style={{
-            padding: "7px 16px",
-            background: bwMode ? "#374151" : "#185FA5",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
+            position: "fixed",
+            top: 12,
+            right: 16,
+            zIndex: 100,
+            display: "flex",
+            gap: 8,
           }}
         >
-          {bwMode ? "Color Mode" : "B&W Mode"}
-        </button>
-        <button
-          onClick={() => window.print()}
-          style={{
-            padding: "7px 16px",
-            background: "#16a34a",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
-          }}
-        >
-          Print
-        </button>
-      </div>
+          <button
+            onClick={() => setBwMode((b) => !b)}
+            style={{
+              padding: "7px 16px",
+              background: bwMode ? "#374151" : "#185FA5",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            {bwMode ? "Color Mode" : "B&W Mode"}
+          </button>
+          <button
+            onClick={() => window.print()}
+            style={{
+              padding: "7px 16px",
+              background: "#16a34a",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            Print
+          </button>
+        </div>
+      )}
 
       {/* ── Report Content ── */}
       <div
@@ -723,7 +743,7 @@ export const UTGReportPrintPage: React.FC = () => {
           const pageObs = pageBlocks
             .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
             .map((b) => b.item);
-          const hasObsTable = pageObs.length > 0;
+          const hasObsTable = pageObs.length > 0 || isFirstPage;
           const isFirstObs = pageObs[0] === obs[0];
 
           return (

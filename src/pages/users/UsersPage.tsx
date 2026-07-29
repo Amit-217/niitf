@@ -24,7 +24,7 @@ import api from "../../api/axios";
 import { Pagination } from "../../components/Pagination";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type Role = "SUPER_ADMIN" | "ADMIN" | "EMPLOYEE";
+type Role = "SUPER_ADMIN" | "ADMIN" | "EMPLOYEE" | "SUPERVISOR";
 
 interface UserType {
   _id: string;
@@ -32,7 +32,7 @@ interface UserType {
   name: string;
   email: string;
   mobile: string;
-  role: Role;
+  role: string;
   isActive: boolean;
   createdAt: string;
 }
@@ -54,12 +54,25 @@ const ROLE_CONFIG: Record<
     bg: "bg-violet-50 border-violet-200",
     icon: Shield,
   },
+  SUPERVISOR: {
+    label: "Supervisor",
+    color: "text-indigo-700",
+    bg: "bg-indigo-50 border-indigo-200",
+    icon: Shield,
+  },
   EMPLOYEE: {
     label: "Employee",
     color: "text-sky-700",
     bg: "bg-sky-50 border-sky-200",
     icon: User,
   },
+};
+
+const FALLBACK_ROLE_CONFIG = {
+  label: "User",
+  color: "text-gray-700",
+  bg: "bg-gray-100 border-gray-200",
+  icon: User,
 };
 
 const avatarGradients = [
@@ -87,8 +100,8 @@ function formatDate(dateStr: string) {
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
-const RoleBadge: React.FC<{ role: Role }> = ({ role }) => {
-  const cfg = ROLE_CONFIG[role];
+const RoleBadge: React.FC<{ role: string }> = ({ role }) => {
+  const cfg = ROLE_CONFIG[role as Role] || FALLBACK_ROLE_CONFIG;
   const Icon = cfg.icon;
   return (
     <span
@@ -302,6 +315,7 @@ const UserModal: React.FC<UserModalProps> = ({
                 {currentUserRole === "SUPER_ADMIN" && (
                   <option value="SUPER_ADMIN">Super Admin</option>
                 )}
+                <option value="SUPERVISOR">Supervisor</option>
               </select>
             </div>
             {mode === "create" && (
@@ -518,8 +532,16 @@ export const UsersPage: React.FC = () => {
   } | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-  const currentUserRole: Role = storedUser.role || "EMPLOYEE";
+  let storedUser: { role?: string } = {};
+  try {
+    storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+  } catch {
+    storedUser = {};
+  }
+  const currentUserRole: Role =
+    storedUser.role && storedUser.role in ROLE_CONFIG
+      ? (storedUser.role as Role)
+      : "EMPLOYEE";
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -694,6 +716,7 @@ export const UsersPage: React.FC = () => {
             <option value="ALL">All Roles</option>
             <option value="SUPER_ADMIN">Super Admin</option>
             <option value="ADMIN">Admin</option>
+            <option value="SUPERVISOR">Supervisor</option>
             <option value="EMPLOYEE">Employee</option>
           </select>
           <select

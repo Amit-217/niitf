@@ -15,6 +15,7 @@ import {
   FileText,
   Receipt,
   FileBadge,
+  FilePlus,
   Plus,
   Pencil,
   Trash2,
@@ -594,8 +595,8 @@ export const CustomerDetailPage = () => {
         </div>
       </div>
 
-      {/* 3 Overview Cards */}
-      <div className="grid grid-cols-3 gap-4">
+      {/* 4 Overview Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.key;
@@ -636,6 +637,24 @@ export const CustomerDetailPage = () => {
             </button>
           );
         })}
+
+        {/* New Invoice Card */}
+        <button
+          onClick={() =>
+            navigate(`/admin/new-invoices/new`, {
+              state: { customerId: id },
+            })
+          }
+          className="relative flex flex-col items-start p-5 rounded-2xl border-2 border-dashed border-violet-300 bg-violet-50/30 hover:bg-violet-50/60 transition-all text-left shadow-sm hover:shadow-md"
+        >
+          <div className="p-2.5 rounded-xl mb-3 bg-violet-100 text-violet-600">
+            <FilePlus size={20} />
+          </div>
+          <p className="text-xs font-black uppercase tracking-wider mb-1 text-violet-700">
+            New Invoice
+          </p>
+          <p className="text-3xl font-extrabold text-violet-900">+</p>
+        </button>
       </div>
 
       {/* Tab Content */}
@@ -646,14 +665,24 @@ export const CustomerDetailPage = () => {
               {tabs.find((t) => t.key === activeTab)?.label}
             </h2>
             {activeTab === "invoices" && (
-              <button
-                onClick={() =>
-                  navigate(`/admin/invoices/new`, { state: { customerId: id } })
-                }
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-xs font-bold hover:from-violet-700 hover:to-purple-700 transition-all shadow shadow-violet-200"
-              >
-                <Plus size={14} /> Add Invoice
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() =>
+                    navigate(`/admin/invoices/new`, { state: { customerId: id } })
+                  }
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-xs font-bold hover:from-violet-700 hover:to-purple-700 transition-all shadow shadow-violet-200"
+                >
+                  <Plus size={14} /> Add Invoice
+                </button>
+                <button
+                  onClick={() =>
+                    navigate(`/admin/new-invoices/new`, { state: { customerId: id } })
+                  }
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl text-xs font-bold hover:from-emerald-700 hover:to-green-700 transition-all shadow shadow-emerald-200"
+                >
+                  <Plus size={14} /> New Invoice
+                </button>
+              </div>
             )}
             {activeTab === "quotations" && (
               <div className="relative">

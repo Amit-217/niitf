@@ -109,8 +109,8 @@ const CourseModal: React.FC<ModalProps> = ({ course, onClose, onSaved }) => {
         className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col animate-in zoom-in-95 fade-in duration-200">
-        <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex items-start justify-between">
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-200">
+        <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 shrink-0 flex items-start justify-between">
           <div>
             <h2 className="text-lg font-bold text-white">
               {course ? "Edit Course" : "New Course"}
@@ -126,8 +126,8 @@ const CourseModal: React.FC<ModalProps> = ({ course, onClose, onSaved }) => {
             <X size={18} />
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="flex flex-col">
-          <div className="px-6 py-5 space-y-4 overflow-y-auto max-h-[60vh]">
+        <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden">
+          <div className="px-6 py-5 space-y-4 overflow-y-auto no-scrollbar">
             <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
               <div className="w-7 h-7 rounded-lg bg-violet-100 flex items-center justify-center">
                 <BookOpen size={14} className="text-violet-600" />
@@ -175,7 +175,7 @@ const CourseModal: React.FC<ModalProps> = ({ course, onClose, onSaved }) => {
                 Schedule & Pricing
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className={labelClass}>Duration</label>
                 <input
@@ -198,7 +198,7 @@ const CourseModal: React.FC<ModalProps> = ({ course, onClose, onSaved }) => {
               </div>
             </div>
           </div>
-          <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3 rounded-b-2xl">
+          <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3 shrink-0">
             <button
               type="button"
               onClick={onClose}

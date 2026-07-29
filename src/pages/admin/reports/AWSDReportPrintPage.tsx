@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { getAWSDReportById } from "../../../api/customerApi";
+import { getAWSDReportById, getPublicAWSDReportById } from "../../../api/customerApi";
 
 // ───────── Print Styles ─────────────────────────────────────────────────────────────
 
@@ -22,6 +22,17 @@ const PRINT_STYLES = `
     .print-page { min-height: 210mm; height: 210mm; margin: 0 !important; box-shadow: none !important; break-after: page; page-break-after: always; }
     .print-page:last-child { break-after: auto; page-break-after: auto; }
     .report-body { overflow: visible !important; }
+  }
+
+  @media screen and (max-width: 768px) {
+    #report-root {
+      padding: 0 !important;
+      background: #fff !important;
+    }
+    .print-page {
+      margin: 0 !important;
+      box-shadow: none !important;
+    }
   }
 
   body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -216,6 +227,8 @@ export const AWSDReportPrintPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const autoPrint = searchParams.get("autoprint") === "true";
 
+  const isPublic = location.pathname.startsWith("/reports/public/");
+
   const [report, setReport] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [bwMode, setBwMode] = useState(false);
@@ -235,11 +248,12 @@ export const AWSDReportPrintPage: React.FC = () => {
 
   useEffect(() => {
     if (!id) return;
-    getAWSDReportById(id)
+    const fetcher = isPublic ? getPublicAWSDReportById : getAWSDReportById;
+    fetcher(id)
       .then((res: any) => setReport((res as any).data ?? res))
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, isPublic]);
 
   useEffect(() => {
     if (!loading && report && autoPrint) {
@@ -247,7 +261,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       const trigger = async () => {
         try {
           await document.fonts.ready;
-        } catch (_) {}
+        } catch (_) { }
         requestAnimationFrame(() => {
           setTimeout(() => {
             window.print();
@@ -291,7 +305,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = `${window.location.origin}/reports/public/awsd/${id}`;
+  const qrUrl = `${window.location.origin}/#/reports/public/awsd/${id}`;
   const obs = report.observations ?? [];
   const cert = report.certification ?? {};
 
@@ -695,48 +709,50 @@ export const AWSDReportPrintPage: React.FC = () => {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
-      <div
-        className="no-print"
-        style={{
-          position: "fixed",
-          top: 12,
-          right: 16,
-          zIndex: 100,
-          display: "flex",
-          gap: 8,
-        }}
-      >
-        <button
-          onClick={() => setBwMode((b) => !b)}
+      {!isPublic && (
+        <div
+          className="no-print"
           style={{
-            padding: "7px 16px",
-            background: bwMode ? "#374151" : "#185FA5",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
+            position: "fixed",
+            top: 12,
+            right: 16,
+            zIndex: 100,
+            display: "flex",
+            gap: 8,
           }}
         >
-          {bwMode ? "Color Mode" : "B&W Mode"}
-        </button>
-        <button
-          onClick={() => window.print()}
-          style={{
-            padding: "7px 16px",
-            background: "#16a34a",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
-          }}
-        >
-          Print
-        </button>
-      </div>
+          <button
+            onClick={() => setBwMode((b) => !b)}
+            style={{
+              padding: "7px 16px",
+              background: bwMode ? "#374151" : "#185FA5",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            {bwMode ? "Color Mode" : "B&W Mode"}
+          </button>
+          <button
+            onClick={() => window.print()}
+            style={{
+              padding: "7px 16px",
+              background: "#16a34a",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            Print
+          </button>
+        </div>
+      )}
 
       <div
         id="report-root"

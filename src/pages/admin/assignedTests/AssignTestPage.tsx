@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   CalendarClock,
@@ -18,6 +19,7 @@ import {
   TrendingUp,
   XCircle,
   Send,
+  Eye,
 } from "lucide-react";
 import api from "../../../api/axios";
 import { Pagination } from "../../../components/Pagination";
@@ -50,6 +52,11 @@ interface AssignedTest {
   duration?: number;
   status: "Upcoming" | "Ongoing" | "Completed" | "Cancelled";
   isResultReleased: boolean;
+  ndtMethod?: string;
+  ndtLevel?: string;
+  ndtTechnique?: string;
+  limitations?: string;
+  signatoryName1?: string;
   createdAt: string;
 }
 
@@ -140,6 +147,15 @@ const AssignModal: React.FC<ModalProps> = ({
   const [status, setStatus] = useState<AssignedTest["status"]>(
     editTarget?.status || "Upcoming",
   );
+  const [ndtMethod, setNdtMethod] = useState(editTarget?.ndtMethod || "");
+  const [ndtLevel, setNdtLevel] = useState(editTarget?.ndtLevel || "Level II");
+  const [ndtTechnique, setNdtTechnique] = useState(
+    editTarget?.ndtTechnique || "",
+  );
+  const [limitations, setLimitations] = useState(editTarget?.limitations || "");
+  const [signatoryName1, setSignatoryName1] = useState(
+    editTarget?.signatoryName1 || "",
+  );
   const [saving, setSaving] = useState(false);
 
   // Auto-fill duration when paper is selected
@@ -192,6 +208,11 @@ const AssignModal: React.FC<ModalProps> = ({
         scheduledAt: new Date(scheduledAt).toISOString(),
         duration: duration ? Number(duration) : undefined,
         status,
+        ndtMethod: ndtMethod || undefined,
+        ndtLevel: ndtLevel || undefined,
+        ndtTechnique: ndtTechnique || undefined,
+        limitations: limitations || undefined,
+        signatoryName1: signatoryName1 || undefined,
       };
 
       if (isEdit) {
@@ -211,11 +232,17 @@ const AssignModal: React.FC<ModalProps> = ({
     }
   };
 
+  const selectCls =
+    "w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8 bg-white transition-colors";
+  const inputCls =
+    "w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors";
+  const labelCls = "block text-xs font-semibold text-gray-600 mb-1.5";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-in zoom-in-95 fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col animate-in zoom-in-95 fade-in duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
           <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
             <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white">
               <CalendarClock size={14} />
@@ -230,155 +257,239 @@ const AssignModal: React.FC<ModalProps> = ({
           </button>
         </div>
 
-        {loadingOptions ? (
-          <div className="py-16 flex justify-center">
-            <Loader2 size={28} className="animate-spin text-blue-500" />
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            {/* Question Paper */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                Question Paper *
-              </label>
-              <div className="relative">
-                <select
-                  value={selectedPaper}
-                  onChange={(e) => handlePaperChange(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8 transition-colors"
-                >
-                  <option value="">-- Select Question Paper --</option>
-                  {questionPapers.map((p) => (
-                    <option key={p._id} value={p._id}>
-                      [{p.paperId}] {p.title}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  size={14}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                />
-              </div>
-              {selectedPaper &&
-                (() => {
-                  const p = questionPapers.find((x) => x._id === selectedPaper);
-                  return p ? (
-                    <div className="mt-1.5 flex items-center gap-2 text-xs text-gray-500">
-                      <span
-                        className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${DIFFICULTY_STYLES[p.difficulty] || "bg-gray-100 text-gray-600"}`}
+        {/* Scrollable body */}
+        <div className="overflow-y-auto flex-1">
+          {loadingOptions ? (
+            <div className="py-16 flex justify-center">
+              <Loader2 size={28} className="animate-spin text-blue-500" />
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+              {/* ── Test Info ── */}
+              <div>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+                  Test Info
+                </p>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Question Paper */}
+                  <div className="col-span-2">
+                    <label className={labelCls}>Question Paper *</label>
+                    <div className="relative">
+                      <select
+                        value={selectedPaper}
+                        onChange={(e) => handlePaperChange(e.target.value)}
+                        className={selectCls}
                       >
-                        {p.difficulty}
-                      </span>
-                      <span>{p.totalMarks} marks</span>
-                      <span>·</span>
-                      <span>{p.duration} min</span>
+                        <option value="">-- Select Question Paper --</option>
+                        {questionPapers.map((p) => (
+                          <option key={p._id} value={p._id}>
+                            [{p.paperId}] {p.title}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown
+                        size={14}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                      />
                     </div>
-                  ) : null;
-                })()}
-            </div>
+                    {selectedPaper &&
+                      (() => {
+                        const p = questionPapers.find(
+                          (x) => x._id === selectedPaper,
+                        );
+                        return p ? (
+                          <div className="mt-1.5 flex items-center gap-2 text-xs text-gray-500">
+                            <span
+                              className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${DIFFICULTY_STYLES[p.difficulty] || "bg-gray-100 text-gray-600"}`}
+                            >
+                              {p.difficulty}
+                            </span>
+                            <span>
+                              {p.totalMarks} marks · {p.duration} min
+                            </span>
+                          </div>
+                        ) : null;
+                      })()}
+                  </div>
 
-            {/* Batch */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                Batch *
-              </label>
-              <div className="relative">
-                <select
-                  value={selectedBatch}
-                  onChange={(e) => setSelectedBatch(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8 transition-colors"
-                >
-                  <option value="">-- Select Batch --</option>
-                  {batches.map((b) => (
-                    <option key={b._id} value={b._id}>
-                      [{b.batchId}] {b.batchName}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  size={14}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                />
-              </div>
-            </div>
+                  {/* Batch */}
+                  <div className="col-span-2">
+                    <label className={labelCls}>Batch *</label>
+                    <div className="relative">
+                      <select
+                        value={selectedBatch}
+                        onChange={(e) => setSelectedBatch(e.target.value)}
+                        className={selectCls}
+                      >
+                        <option value="">-- Select Batch --</option>
+                        {batches.map((b) => (
+                          <option key={b._id} value={b._id}>
+                            [{b.batchId}] {b.batchName}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown
+                        size={14}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                      />
+                    </div>
+                  </div>
 
-            {/* Date & Time */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                Scheduled Date & Time *
-              </label>
-              <input
-                type="datetime-local"
-                value={scheduledAt}
-                onChange={(e) => setScheduledAt(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-              />
-            </div>
+                  {/* Scheduled Date & Time */}
+                  <div>
+                    <label className={labelCls}>Scheduled Date & Time *</label>
+                    <input
+                      type="datetime-local"
+                      value={scheduledAt}
+                      onChange={(e) => setScheduledAt(e.target.value)}
+                      className={inputCls}
+                    />
+                  </div>
 
-            {/* Duration & Status row */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                  Duration (minutes)
-                </label>
-                <input
-                  type="number"
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  min="1"
-                  placeholder="Auto from paper"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                  Status
-                </label>
-                <div className="relative">
-                  <select
-                    value={status}
-                    onChange={(e) =>
-                      setStatus(e.target.value as AssignedTest["status"])
-                    }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8 transition-colors"
-                  >
-                    <option value="Upcoming">Upcoming</option>
-                    <option value="Ongoing">Ongoing</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </select>
-                  <ChevronDown
-                    size={14}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                  />
+                  {/* Duration */}
+                  <div>
+                    <label className={labelCls}>Duration (minutes)</label>
+                    <input
+                      type="number"
+                      value={duration}
+                      onChange={(e) => setDuration(e.target.value)}
+                      min="1"
+                      placeholder="Auto from paper"
+                      className={inputCls}
+                    />
+                  </div>
+
+                  {/* Status */}
+                  <div>
+                    <label className={labelCls}>Status</label>
+                    <div className="relative">
+                      <select
+                        value={status}
+                        onChange={(e) =>
+                          setStatus(e.target.value as AssignedTest["status"])
+                        }
+                        className={selectCls}
+                      >
+                        <option value="Upcoming">Upcoming</option>
+                        <option value="Ongoing">Ongoing</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                      </select>
+                      <ChevronDown
+                        size={14}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Footer */}
-            <div className="flex gap-3 pt-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={saving}
-                className="flex-1 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-bold disabled:opacity-70 flex items-center justify-center gap-2 hover:from-blue-700 hover:to-indigo-700 transition-all"
-              >
-                {saving ? (
-                  <Loader2 size={15} className="animate-spin" />
-                ) : (
-                  <CalendarClock size={15} />
-                )}
-                {isEdit ? "Update" : "Assign Test"}
-              </button>
-            </div>
-          </form>
-        )}
+              {/* ── Certificate Details ── */}
+              <div className="bg-blue-50/60 border border-blue-100 rounded-xl p-4">
+                <p className="text-xs font-semibold text-blue-700 uppercase tracking-widest mb-4">
+                  Certificate Details
+                </p>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* NDT Method */}
+                  <div>
+                    <label className={labelCls}>NDT Method</label>
+                    <input
+                      type="text"
+                      value={ndtMethod}
+                      onChange={(e) => setNdtMethod(e.target.value)}
+                      placeholder="e.g. Magnetic Particle Testing"
+                      className={inputCls}
+                    />
+                  </div>
+
+                  {/* NDT Level */}
+                  <div>
+                    <label className={labelCls}>NDT Level</label>
+                    <div className="relative">
+                      <select
+                        value={ndtLevel}
+                        onChange={(e) => setNdtLevel(e.target.value)}
+                        className={selectCls}
+                      >
+                        <option value="Level I">Level I</option>
+                        <option value="Level II">Level II</option>
+                        <option value="Level III">Level III</option>
+                      </select>
+                      <ChevronDown
+                        size={14}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* NDT Technique */}
+                  <div>
+                    <label className={labelCls}>NDT Technique</label>
+                    <input
+                      type="text"
+                      value={ndtTechnique}
+                      onChange={(e) => setNdtTechnique(e.target.value)}
+                      placeholder="e.g. Wet / Dry"
+                      className={inputCls}
+                    />
+                  </div>
+
+                  {/* Limitations */}
+                  <div>
+                    <label className={labelCls}>Limitations (if any)</label>
+                    <input
+                      type="text"
+                      value={limitations}
+                      onChange={(e) => setLimitations(e.target.value)}
+                      placeholder="e.g. Ferromagnetic only"
+                      className={inputCls}
+                    />
+                  </div>
+
+                  {/* Signatory Name 1 */}
+                  <div className="col-span-2">
+                    <label className={labelCls}>
+                      Certifying Authority Name
+                      <span className="ml-1.5 text-gray-400 font-normal normal-case">
+                        (appears on certificate above "Designated Level III")
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      value={signatoryName1}
+                      onChange={(e) => setSignatoryName1(e.target.value)}
+                      placeholder="e.g. Mr. B. R. Lohar"
+                      className={inputCls}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-bold disabled:opacity-70 flex items-center justify-center gap-2 hover:from-blue-700 hover:to-indigo-700 transition-all"
+                >
+                  {saving ? (
+                    <Loader2 size={15} className="animate-spin" />
+                  ) : (
+                    <CalendarClock size={15} />
+                  )}
+                  {isEdit ? "Update" : "Assign Test"}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -413,9 +524,14 @@ interface ResultsModalProps {
 
 const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
   const effectiveDuration = test.duration || test.questionPaper?.duration;
+  const navigate = useNavigate();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [summary, setSummary] = useState<ResultsSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [releasing, setReleasing] = useState(false);
+  const [isResultReleased, setIsResultReleased] = useState(
+    test.isResultReleased,
+  );
 
   useEffect(() => {
     api
@@ -428,6 +544,39 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
       .finally(() => setLoading(false));
   }, [test._id]);
 
+  useEffect(() => {
+    setIsResultReleased(test.isResultReleased);
+  }, [test._id, test.isResultReleased]);
+
+  async function setReleaseTarget(test: AssignedTest): Promise<void> {
+    if (
+      getEffectiveStatus(test) !== "Completed" ||
+      isResultReleased ||
+      releasing
+    )
+      return;
+
+    const ok = window.confirm(
+      "Release results now? This will send result emails with certificates to passed students.",
+    );
+    if (!ok) return;
+
+    setReleasing(true);
+    try {
+      const res: any = await api.post(
+        `/assigned-tests/${test._id}/release-result`,
+      );
+      setIsResultReleased(true);
+      toast.success(
+        `Results released! Emails sent to ${res?.emailsSent ?? 0} student(s).`,
+      );
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to release results.");
+    } finally {
+      setReleasing(false);
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl animate-in zoom-in-95 fade-in duration-200 max-h-[90vh] flex flex-col">
@@ -439,12 +588,36 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
               {test.questionPaper?.title} · {test.batch?.batchName}
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-          >
-            <X size={16} />
-          </button>
+          {/* release button */}
+          <div className="flex items-center gap-2">
+            {getEffectiveStatus(test) === "Completed" &&
+              (isResultReleased ? (
+                <span className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg">
+                  <CheckCircle2 size={12} />
+                  Released
+                </span>
+              ) : (
+                <button
+                  onClick={() => setReleaseTarget(test)}
+                  disabled={releasing}
+                  title="Release Result"
+                  className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors"
+                >
+                  {releasing ? (
+                    <Loader2 size={12} className="animate-spin" />
+                  ) : (
+                    <Send size={12} />
+                  )}
+                  {releasing ? "Releasing..." : "Release"}
+                </button>
+              ))}
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
         </div>
 
         {/* Test info bar */}
@@ -572,6 +745,9 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
                       <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Submitted
                       </th>
+                      <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Certificate
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -627,6 +803,23 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
                         </td>
                         <td className="px-4 py-3 text-xs text-gray-500">
                           {s.submittedAt ? formatDateTime(s.submittedAt) : "—"}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {s.isPassed && s.status !== "InProgress" ? (
+                            <button
+                              onClick={() =>
+                                navigate(
+                                  `/admin/assign-tests/${test._id}/certificate/${s._id}`,
+                                )
+                              }
+                              title="View Certificate"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors"
+                            >
+                              <Eye size={12} /> View
+                            </button>
+                          ) : (
+                            <span className="text-xs text-gray-300">—</span>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -734,8 +927,12 @@ export const AssignTestPage: React.FC = () => {
     if (!releaseTarget) return;
     setReleasing(true);
     try {
-      const res: any = await api.post(`/assigned-tests/${releaseTarget._id}/release-result`);
-      toast.success(`Results released! Emails sent to ${res?.emailsSent ?? 0} student(s).`);
+      const res: any = await api.post(
+        `/assigned-tests/${releaseTarget._id}/release-result`,
+      );
+      toast.success(
+        `Results released! Emails sent to ${res?.emailsSent ?? 0} student(s).`,
+      );
       closeRelease();
       fetchTests();
     } catch (err: any) {
@@ -966,8 +1163,8 @@ export const AssignTestPage: React.FC = () => {
                             <BarChart3 size={13} />
                             Results
                           </button>
-                          {effectiveStatus === "Completed" && (
-                            test.isResultReleased ? (
+                          {/* {effectiveStatus === "Completed" &&
+                            (test.isResultReleased ? (
                               <span className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg">
                                 <CheckCircle2 size={12} />
                                 Released
@@ -981,22 +1178,23 @@ export const AssignTestPage: React.FC = () => {
                                 <Send size={12} />
                                 Release
                               </button>
-                            )
-                          )}
-                          <button
-                            onClick={() => openEdit(test)}
-                            title="Edit"
-                            className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                          >
-                            <Pencil size={14} />
-                          </button>
-                          <button
-                            onClick={() => setDeleteTarget(test)}
-                            title="Delete"
-                            className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                            ))} */}
+                          <div>
+                            <button
+                              onClick={() => openEdit(test)}
+                              title="Edit"
+                              className="p-1.5 text-primary-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                            >
+                              <Pencil size={14} />
+                            </button>
+                            <button
+                              onClick={() => setDeleteTarget(test)}
+                              title="Delete"
+                              className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -1056,7 +1254,8 @@ export const AssignTestPage: React.FC = () => {
               Batch: <strong>{releaseTarget.batch?.batchName}</strong>
             </p>
             <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-6 text-left">
-              This will send result emails with certificates to all passed students. This action cannot be undone.
+              This will send result emails with certificates to all passed
+              students. This action cannot be undone.
             </p>
             <div className="flex gap-3">
               <button
@@ -1070,7 +1269,11 @@ export const AssignTestPage: React.FC = () => {
                 disabled={releasing}
                 className="flex-1 py-2.5 bg-amber-500 text-white rounded-xl text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-amber-600 transition-colors"
               >
-                {releasing ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                {releasing ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Send size={14} />
+                )}
                 Release & Send
               </button>
             </div>

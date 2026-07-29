@@ -121,6 +121,7 @@ export const AdmissionsPage = () => {
         search: debouncedSearch || undefined,
       });
       // By default res is the unwrapped JSON body (via Axios interceptor).
+      // Backend returns: { success: true, data: { admissions: [...], pagination: {...} } }
 
       let items = [];
       let count = 0;
@@ -129,7 +130,7 @@ export const AdmissionsPage = () => {
         items = res;
         count = items.length;
       } else if (res?.data?.admissions) {
-        // Shape: res.data = { admissions: [...], ... }
+        // Shape: res.data = { admissions: [...], pagination: {...} }
         items = res.data.admissions;
         count = res.data.pagination?.total || items.length;
       } else if (res?.data && Array.isArray(res.data)) {
@@ -201,11 +202,11 @@ export const AdmissionsPage = () => {
       .catch(() => toast.error("Failed to load students"));
     api
       .get("/courses?limit=200&status=Active")
-      .then((r: any) => setCourses(r?.data?.data || r?.data || r || []))
+      .then((r: any) => setCourses(r?.data?.courses || r?.data || r || []))
       .catch(() => toast.error("Failed to load courses"));
     api
       .get("/batches?limit=200")
-      .then((r: any) => setBatches(r?.data?.data || r?.data || r || []))
+      .then((r: any) => setBatches(r?.data || r?.data || r || []))
       .catch(() => toast.error("Failed to load batches"));
   }, [isCreateOpen]);
 

@@ -219,7 +219,7 @@ export const UTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   // -- Final Section --
@@ -292,13 +292,16 @@ export const UTReportFormPage: React.FC = () => {
       clientDate,
       // SelectWithCustom fields
       jobRefStd: jobRefStd === "Other" ? jobRefStdCustom : jobRefStd,
-      jobAcceptance: jobAcceptance === "Other" ? jobAcceptanceCustom : jobAcceptance,
+      jobAcceptance:
+        jobAcceptance === "Other" ? jobAcceptanceCustom : jobAcceptance,
       jobExtent: jobExtent === "Other" ? jobExtentCustom : jobExtent,
       eqType: eqType === "Other" ? eqTypeCustom : eqType,
       eqMake: eqMake === "Other" ? eqMakeCustom : eqMake,
       utMethod: utMethod === "Other" ? utMethodCustom : utMethod,
-      refCalibBlock: refCalibBlock === "Other" ? refCalibBlockCustom : refCalibBlock,
-      scanningSens: scanningSens === "Other" ? scanningSensCustom : scanningSens,
+      refCalibBlock:
+        refCalibBlock === "Other" ? refCalibBlockCustom : refCalibBlock,
+      scanningSens:
+        scanningSens === "Other" ? scanningSensCustom : scanningSens,
       conclusion: conclusion === "Other" ? conclusionCustom : conclusion,
     };
     return map[key] ?? "";
@@ -329,7 +332,22 @@ export const UTReportFormPage: React.FC = () => {
 
   const updateObs = (idx: number, key: keyof ObsRow, val: string) =>
     setObservations((prev) =>
-      prev.map((row, i) => (i === idx ? { ...row, [key]: val } : row)),
+      prev.map((row, i) => {
+        if (i === idx) {
+          const updated = { ...row, [key]: val };
+          if (key === "interpretation") {
+            if (val === "No relevant Indication Found") {
+              updated.evaluation = "Accepted";
+            } else if (val === "Relevant Indication Found") {
+              updated.evaluation = "Rejected";
+            } else {
+              updated.evaluation = "";
+            }
+          }
+          return updated;
+        }
+        return row;
+      }),
     );
 
   const addObs = () =>
@@ -539,109 +557,6 @@ export const UTReportFormPage: React.FC = () => {
       return;
     }
     if (status === "final") {
-      const e: Record<string, boolean> = {};
-      const mt = (v: string) => !v.trim();
-      const sel = (v: string) => !v;
-      const oth = (v: string, o: string) => !v || (v === "Other" && !o.trim());
-
-      // Job Details
-      if (mt(jobClient)) e.jobClient = true;
-      if (mt(jobProject)) e.jobProject = true;
-      if (!jobReportDate) e.jobReportDate = true;
-      if (!jobInspectionDate) e.jobInspectionDate = true;
-      if (!jobInspectionEndDate) e.jobInspectionEndDate = true;
-      if (oth(jobRefStd, jobRefStdCustom)) e.jobRefStd = true;
-      if (oth(jobAcceptance, jobAcceptanceCustom)) e.jobAcceptance = true;
-      if (mt(jobMaterial)) e.jobMaterial = true;
-      if (sel(jobStage)) e.jobStage = true;
-      if (mt(jobThickness)) e.jobThickness = true;
-      if (oth(jobExtent, jobExtentCustom)) e.jobExtent = true;
-      if (sel(jobSurface)) e.jobSurface = true;
-      if (sel(jobJointType)) e.jobJointType = true;
-      if (sel(jobSurfaceTemp)) e.jobSurfaceTemp = true;
-
-      // Equipment
-      if (oth(eqType, eqTypeCustom)) e.eqType = true;
-      if (mt(eqSrNo)) e.eqSrNo = true;
-      if (oth(eqMake, eqMakeCustom)) e.eqMake = true;
-      if (mt(eqCalibDue)) e.eqCalibDue = true;
-      if (sel(eqCouplant)) e.eqCouplant = true;
-      if (sel(eqBasicCalib)) e.eqBasicCalib = true;
-
-      // Search Unit — require all rows to be fully filled
-      searchUnits.forEach((su, i) => {
-        if (mt(su.model)) e[`searchUnit${i}_model`] = true;
-        if (sel(su.angle)) e[`searchUnit${i}_angle`] = true;
-        if (mt(su.srNo)) e[`searchUnit${i}_srNo`] = true;
-        if (sel(su.crystalSize)) e[`searchUnit${i}_crystalSize`] = true;
-        if (oth(su.frequency, su.frequencyCustom ?? "")) e[`searchUnit${i}_frequency`] = true;
-      });
-
-      // Technique
-      if (oth(utMethod, utMethodCustom)) e.utMethod = true;
-      if (oth(refCalibBlock, refCalibBlockCustom)) e.refCalibBlock = true;
-      if (sel(utCalibMethod)) e.utCalibMethod = true;
-      if (oth(scanningSens, scanningSensCustom)) e.scanningSens = true;
-      if (mt(scanningDb)) e.scanningDb = true;
-
-      // Angle Probe Calibration — require range and refDb for every angle
-      if (mt(calib0.range)) e.calib0_range = true;
-      if (mt(calib0.point1)) e.calib0_point1 = true;
-      if (mt(calib0.point2)) e.calib0_point2 = true;
-      if (mt(calib0.point3)) e.calib0_point3 = true;
-      if (mt(calib0.refDb)) e.calib0_refDb = true;
-      if (mt(calib45.range)) e.calib45_range = true;
-      if (mt(calib45.point1)) e.calib45_point1 = true;
-      if (mt(calib45.point2)) e.calib45_point2 = true;
-      if (mt(calib45.point3)) e.calib45_point3 = true;
-      if (mt(calib45.refDb)) e.calib45_refDb = true;
-      if (mt(calib60.range)) e.calib60_range = true;
-      if (mt(calib60.point1)) e.calib60_point1 = true;
-      if (mt(calib60.point2)) e.calib60_point2 = true;
-      if (mt(calib60.point3)) e.calib60_point3 = true;
-      if (mt(calib60.refDb)) e.calib60_refDb = true;
-      if (mt(calib70.range)) e.calib70_range = true;
-      if (mt(calib70.point1)) e.calib70_point1 = true;
-      if (mt(calib70.point2)) e.calib70_point2 = true;
-      if (mt(calib70.point3)) e.calib70_point3 = true;
-      if (mt(calib70.refDb)) e.calib70_refDb = true;
-
-      // Observations — all fields in all rows required
-      observations.forEach((o, i) => {
-        if (!o.jobDescription?.trim()) e[`obs${i}_jobDescription`] = true;
-        if (!o.drawingOrJointNo?.trim()) e[`obs${i}_drawingOrJointNo`] = true;
-        if (!o.size?.trim()) e[`obs${i}_size`] = true;
-        if (!o.quantity?.toString().trim()) e[`obs${i}_quantity`] = true;
-        if (!o.interpretation) e[`obs${i}_interpretation`] = true;
-        if (!o.evaluation) e[`obs${i}_evaluation`] = true;
-      });
-
-      // Conclusion
-      if (oth(conclusion, conclusionCustom)) e.conclusion = true;
-
-      // Inspectors — all fields in all rows required
-      inspectors.forEach((insp, i) => {
-        if (!insp.name?.trim()) e[`inspectorName_${i}`] = true;
-        if (!insp.qualification?.trim()) e[`inspectorQual_${i}`] = true;
-        if (!insp.designation?.trim()) e[`inspectorDesig_${i}`] = true;
-        if (!insp.date) e[`inspectorDate_${i}`] = true;
-      });
-
-      // Customer representative
-      if (mt(custName)) e.custName = true;
-      if (mt(custDesig)) e.custDesig = true;
-      if (!custDate) e.custDate = true;
-
-      // Client / TPI representative
-      if (mt(clientName)) e.clientName = true;
-      if (mt(clientDesig)) e.clientDesig = true;
-      if (!clientDate) e.clientDate = true;
-
-      if (Object.keys(e).length > 0) {
-        setErrors(e);
-        toast.error("Please fill all required fields before saving as Final.");
-        return;
-      }
       setErrors({});
     }
     setSaving(true);
@@ -679,9 +594,7 @@ export const UTReportFormPage: React.FC = () => {
         searchUnitDetails: searchUnits.map((u) => ({
           ...u,
           frequency:
-            u.frequency === "Other"
-              ? u.frequencyCustom || ""
-              : u.frequency,
+            u.frequency === "Other" ? u.frequencyCustom || "" : u.frequency,
         })),
         techniqueDetails: {
           utMethod: resolve(utMethod, utMethodCustom),
@@ -778,13 +691,13 @@ export const UTReportFormPage: React.FC = () => {
     { label: "70°", state: calib70, setter: setCalib70, prefix: "calib70" },
   ];
 
-  const conclusionOptions = [
-    "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
-    "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
-    "Examination completed as per applicable process. No rejectable indications observed in inspected items",
-    "Examination completed as per applicable process. Rejectable indications observed in inspected items",
-    "Other",
-  ];
+  // const conclusionOptions = [
+  //   "Examination completed as per applicable standards. No rejectable indications observed in inspected items",
+  //   "Examination completed as per applicable standards. Rejectable indications observed in inspected items",
+  //   "Examination completed as per applicable process. No rejectable indications observed in inspected items",
+  //   "Examination completed as per applicable process. Rejectable indications observed in inspected items",
+  //   "Other",
+  // ];
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
@@ -1158,19 +1071,29 @@ export const UTReportFormPage: React.FC = () => {
             </thead>
             <tbody>
               {searchUnits.map((unit, idx) => {
-                const modelErr = !!errors[`searchUnit${idx}_model`] && !unit.model.trim();
-                const angleErr = !!errors[`searchUnit${idx}_angle`] && !unit.angle;
-                const srNoErr = !!errors[`searchUnit${idx}_srNo`] && !unit.srNo.trim();
-                const crystalErr = !!errors[`searchUnit${idx}_crystalSize`] && !unit.crystalSize;
-                const freqVal = unit.frequency === "Other" ? unit.frequencyCustom ?? "" : unit.frequency;
-                const freqErr = !!errors[`searchUnit${idx}_frequency`] && !freqVal.trim();
+                const modelErr =
+                  !!errors[`searchUnit${idx}_model`] && !unit.model.trim();
+                const angleErr =
+                  !!errors[`searchUnit${idx}_angle`] && !unit.angle;
+                const srNoErr =
+                  !!errors[`searchUnit${idx}_srNo`] && !unit.srNo.trim();
+                const crystalErr =
+                  !!errors[`searchUnit${idx}_crystalSize`] && !unit.crystalSize;
+                const freqVal =
+                  unit.frequency === "Other"
+                    ? (unit.frequencyCustom ?? "")
+                    : unit.frequency;
+                const freqErr =
+                  !!errors[`searchUnit${idx}_frequency`] && !freqVal.trim();
                 return (
                   <tr key={idx} className="hover:bg-gray-50">
                     <td className="border border-gray-200 px-1 py-1">
                       <input
                         type="text"
                         value={unit.model}
-                        onChange={(e) => updateUnit(idx, "model", e.target.value)}
+                        onChange={(e) =>
+                          updateUnit(idx, "model", e.target.value)
+                        }
                         className={modelErr ? inputErrorClass : inputClass}
                         placeholder="e.g. Modsonic"
                       />
@@ -1178,7 +1101,9 @@ export const UTReportFormPage: React.FC = () => {
                     <td className="border border-gray-200 px-1 py-1">
                       <select
                         value={unit.angle}
-                        onChange={(e) => updateUnit(idx, "angle", e.target.value)}
+                        onChange={(e) =>
+                          updateUnit(idx, "angle", e.target.value)
+                        }
                         className={angleErr ? inputErrorClass : inputClass}
                       >
                         <option value="">Select...</option>
@@ -1193,7 +1118,9 @@ export const UTReportFormPage: React.FC = () => {
                       <input
                         type="text"
                         value={unit.srNo}
-                        onChange={(e) => updateUnit(idx, "srNo", e.target.value)}
+                        onChange={(e) =>
+                          updateUnit(idx, "srNo", e.target.value)
+                        }
                         className={srNoErr ? inputErrorClass : inputClass}
                       />
                     </td>
@@ -1236,8 +1163,8 @@ export const UTReportFormPage: React.FC = () => {
                             prev.map((row, i) =>
                               i === idx
                                 ? { ...row, frequencyCustom: val }
-                                : row
-                            )
+                                : row,
+                            ),
                           )
                         }
                         error={freqErr}
@@ -1323,7 +1250,7 @@ export const UTReportFormPage: React.FC = () => {
               options={[
                 "Ø 2.5 mm SDH",
                 "Ø 3mm SDH",
-                '1ˢᵗ BWE set @ 80% of FSH on Job',
+                "1ˢᵗ BWE set @ 80% of FSH on Job",
                 "Other",
               ]}
             />
@@ -1333,13 +1260,13 @@ export const UTReportFormPage: React.FC = () => {
 
       {/* -- Angle Probe Calibration -- */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Angle Probe Calibration Detail</h2>
+        <h2 className={sectionTitleClass}>Calibration Detail</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse min-w-[600px]">
             <thead>
               <tr className="bg-gray-50 text-xs text-gray-600 uppercase">
                 <th className="border border-gray-200 px-3 py-2 text-left w-28">
-                  Point
+                  Angle Probe
                 </th>
                 {calibAngles.map((a) => (
                   <th
@@ -1367,7 +1294,8 @@ export const UTReportFormPage: React.FC = () => {
                   </td>
                   {calibAngles.map((a) => {
                     const errKey = `${a.prefix}_${row.key}`;
-                    const cellErr = !!errors[errKey] && !a.state[row.key].trim();
+                    const cellErr =
+                      !!errors[errKey] && !a.state[row.key].trim();
                     return (
                       <td
                         key={a.label}
@@ -1440,94 +1368,104 @@ export const UTReportFormPage: React.FC = () => {
             </thead>
             <tbody>
               {observations.map((row, idx) => {
-                const jobDescErr = !!errors[`obs${idx}_jobDescription`] && !row.jobDescription?.trim();
-                const drawingErr = !!errors[`obs${idx}_drawingOrJointNo`] && !row.drawingOrJointNo?.trim();
+                const jobDescErr =
+                  !!errors[`obs${idx}_jobDescription`] &&
+                  !row.jobDescription?.trim();
+                const drawingErr =
+                  !!errors[`obs${idx}_drawingOrJointNo`] &&
+                  !row.drawingOrJointNo?.trim();
                 const sizeErr = !!errors[`obs${idx}_size`] && !row.size?.trim();
-                const quantityErr = !!errors[`obs${idx}_quantity`] && !row.quantity?.toString().trim();
-                const interpErr = !!errors[`obs${idx}_interpretation`] && !row.interpretation;
-                const evalErr = !!errors[`obs${idx}_evaluation`] && !row.evaluation;
+                const quantityErr =
+                  !!errors[`obs${idx}_quantity`] &&
+                  !row.quantity?.toString().trim();
+                const interpErr =
+                  !!errors[`obs${idx}_interpretation`] && !row.interpretation;
+                const evalErr =
+                  !!errors[`obs${idx}_evaluation`] && !row.evaluation;
                 return (
-                <tr key={idx} className="hover:bg-gray-50">
-                  <td className="border border-gray-200 px-2 py-1 text-center text-gray-500">
-                    {row.srNo}
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <input
-                      type="text"
-                      value={row.jobDescription}
-                      onChange={(e) =>
-                        updateObs(idx, "jobDescription", e.target.value)
-                      }
-                      className={jobDescErr ? inputErrorClass : inputClass}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <input
-                      type="text"
-                      value={row.drawingOrJointNo}
-                      onChange={(e) =>
-                        updateObs(idx, "drawingOrJointNo", e.target.value)
-                      }
-                      className={drawingErr ? inputErrorClass : inputClass}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <input
-                      type="text"
-                      value={row.size}
-                      onChange={(e) => updateObs(idx, "size", e.target.value)}
-                      className={sizeErr ? inputErrorClass : inputClass}
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <input
-                      type="number"
-                      value={row.quantity}
-                      onChange={(e) =>
-                        updateObs(idx, "quantity", e.target.value)
-                      }
-                      className={(quantityErr ? inputErrorClass : inputClass) + " w-16"}
-                      min="0"
-                    />
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={row.interpretation}
-                      onChange={(e) =>
-                        updateObs(idx, "interpretation", e.target.value)
-                      }
-                      className={interpErr ? inputErrorClass : inputClass}
-                    >
-                      <option value="">Select...</option>
-                      <option>No relevant Indication Found</option>
-                      <option>Relevant Indication Found</option>
-                    </select>
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1">
-                    <select
-                      value={row.evaluation}
-                      onChange={(e) =>
-                        updateObs(idx, "evaluation", e.target.value)
-                      }
-                      className={evalErr ? inputErrorClass : inputClass}
-                    >
-                      <option value="">Select...</option>
-                      <option>Accepted</option>
-                      <option>Rejected</option>
-                    </select>
-                  </td>
-                  <td className="border border-gray-200 px-1 py-1 text-center">
-                    {observations.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeObs(idx)}
-                        className="text-red-400 hover:text-red-600"
+                  <tr key={idx} className="hover:bg-gray-50">
+                    <td className="border border-gray-200 px-2 py-1 text-center text-gray-500">
+                      {row.srNo}
+                    </td>
+                    <td className="border border-gray-200 px-1 py-1">
+                      <input
+                        type="text"
+                        value={row.jobDescription}
+                        onChange={(e) =>
+                          updateObs(idx, "jobDescription", e.target.value)
+                        }
+                        className={jobDescErr ? inputErrorClass : inputClass}
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-1 py-1">
+                      <input
+                        type="text"
+                        value={row.drawingOrJointNo}
+                        onChange={(e) =>
+                          updateObs(idx, "drawingOrJointNo", e.target.value)
+                        }
+                        className={drawingErr ? inputErrorClass : inputClass}
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-1 py-1">
+                      <input
+                        type="text"
+                        value={row.size}
+                        onChange={(e) => updateObs(idx, "size", e.target.value)}
+                        className={sizeErr ? inputErrorClass : inputClass}
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-1 py-1">
+                      <input
+                        type="number"
+                        value={row.quantity}
+                        onChange={(e) =>
+                          updateObs(idx, "quantity", e.target.value)
+                        }
+                        className={
+                          (quantityErr ? inputErrorClass : inputClass) + " w-16"
+                        }
+                        min="0"
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-1 py-1">
+                      <select
+                        value={row.interpretation}
+                        onChange={(e) =>
+                          updateObs(idx, "interpretation", e.target.value)
+                        }
+                        className={interpErr ? inputErrorClass : inputClass}
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </td>
-                </tr>
+                        <option value="">Select...</option>
+                        <option>No relevant Indication Found</option>
+                        <option>Relevant Indication Found</option>
+                      </select>
+                    </td>
+                    <td className="border border-gray-200 px-1 py-1">
+                      <select
+                        value={row.evaluation}
+                        onChange={(e) =>
+                          updateObs(idx, "evaluation", e.target.value)
+                        }
+                        className={evalErr ? inputErrorClass : inputClass}
+                      >
+                        <option value="">Select...</option>
+                        <option>Accepted</option>
+                        <option>Rejected</option>
+                      </select>
+                    </td>
+                    <td className="border border-gray-200 px-1 py-1 text-center">
+                      {observations.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeObs(idx)}
+                          className="text-red-400 hover:text-red-600"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
                 );
               })}
             </tbody>
@@ -1536,7 +1474,7 @@ export const UTReportFormPage: React.FC = () => {
       </div>
 
       {/* -- Conclusion -- */}
-      <div className={sectionClass}>
+      {/* <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Conclusion</h2>
         <div>
           <label className={labelClass}>Conclusion *</label>
@@ -1550,7 +1488,7 @@ export const UTReportFormPage: React.FC = () => {
             placeholder="Select conclusion..."
           />
         </div>
-      </div>
+      </div> */}
 
       {/* -- Final Section -- */}
       <div className={sectionClass}>
@@ -1594,7 +1532,9 @@ export const UTReportFormPage: React.FC = () => {
                       <label className={labelClass}>Name *</label>
                       <select
                         value={insp.name}
-                        onChange={(e) => updateInsp(idx, "name", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "name", e.target.value)
+                        }
                         className={`${errors[`inspectorName_${idx}`] && !insp.name.trim() ? inputErrorClass : inputClass} bg-white`}
                       >
                         <option value="">Select....</option>
@@ -1610,26 +1550,42 @@ export const UTReportFormPage: React.FC = () => {
                       <input
                         type="text"
                         value={insp.qualification}
-                        onChange={(e) => updateInsp(idx, "qualification", e.target.value)}
-                        className={!!errors[`inspectorQual_${idx}`] && !insp.qualification.trim() ? inputErrorClass : inputClass}
+                        onChange={(e) =>
+                          updateInsp(idx, "qualification", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorQual_${idx}`] &&
+                          !insp.qualification.trim()
+                            ? inputErrorClass
+                            : inputClass
+                        }
                         placeholder="e.g. UT NDE Level II"
                       />
                     </div>
-                    <div>
+                    {/* <div>
                       <label className={labelClass}>Designation *</label>
                       <input
                         type="text"
                         value={insp.designation}
-                        onChange={(e) => updateInsp(idx, "designation", e.target.value)}
-                        className={!!errors[`inspectorDesig_${idx}`] && !insp.designation.trim() ? inputErrorClass : inputClass}
+                        onChange={(e) =>
+                          updateInsp(idx, "designation", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorDesig_${idx}`] &&
+                          !insp.designation.trim()
+                            ? inputErrorClass
+                            : inputClass
+                        }
                       />
-                    </div>
+                    </div> */}
                     <div>
                       <label className={labelClass}>Signature</label>
                       <input
                         type="text"
                         value={insp.signature}
-                        onChange={(e) => updateInsp(idx, "signature", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "signature", e.target.value)
+                        }
                         className={inputClass}
                       />
                     </div>
@@ -1638,8 +1594,14 @@ export const UTReportFormPage: React.FC = () => {
                       <input
                         type="date"
                         value={insp.date}
-                        onChange={(e) => updateInsp(idx, "date", e.target.value)}
-                        className={!!errors[`inspectorDate_${idx}`] && !insp.date ? inputErrorClass : inputClass}
+                        onChange={(e) =>
+                          updateInsp(idx, "date", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorDate_${idx}`] && !insp.date
+                            ? inputErrorClass
+                            : inputClass
+                        }
                       />
                     </div>
                   </div>

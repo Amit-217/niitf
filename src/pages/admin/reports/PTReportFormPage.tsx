@@ -191,7 +191,7 @@ export const PTReportFormPage: React.FC = () => {
     api
       .get("/users?status=active&limit=100")
       .then((res: any) => setUsers(res.data ?? res ?? []))
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   // ── Final Section ──
@@ -389,7 +389,8 @@ export const PTReportFormPage: React.FC = () => {
       removalMethod,
       postCleaning,
       jobRefStd: jobRefStd === "Other" ? jobRefStdCustom : jobRefStd,
-      jobAcceptance: jobAcceptance === "Other" ? jobAcceptanceCustom : jobAcceptance,
+      jobAcceptance:
+        jobAcceptance === "Other" ? jobAcceptanceCustom : jobAcceptance,
       jobExtent: jobExtent === "Other" ? jobExtentCustom : jobExtent,
       penMfr: penMfr === "Other" ? penMfrCustom : penMfr,
       devMfr: devMfr === "Other" ? devMfrCustom : devMfr,
@@ -414,7 +415,22 @@ export const PTReportFormPage: React.FC = () => {
 
   const updateObs = (idx: number, key: keyof ObsRow, val: string) =>
     setObservations((prev) =>
-      prev.map((row, i) => (i === idx ? { ...row, [key]: val } : row)),
+      prev.map((row, i) => {
+        if (i === idx) {
+          const updated = { ...row, [key]: val };
+          if (key === "interpretation") {
+            if (val === "No relevant Indication Found") {
+              updated.evaluation = "Accepted";
+            } else if (val === "Relevant Indication Found") {
+              updated.evaluation = "Not Accepted";
+            } else {
+              updated.evaluation = "";
+            }
+          }
+          return updated;
+        }
+        return row;
+      }),
     );
 
   const addObs = () =>
@@ -452,79 +468,6 @@ export const PTReportFormPage: React.FC = () => {
     }
 
     if (status === "final") {
-      const e: Record<string, boolean> = {};
-      const mt = (v: string) => !v.trim();
-      const sel = (v: string) => !v;
-      const oth = (v: string, o: string) => !v || (v === "Other" && !o.trim());
-
-      // Job Details
-      if (mt(jobClient)) e.jobClient = true;
-      if (mt(jobProject)) e.jobProject = true;
-      if (!jobReportDate) e.jobReportDate = true;
-      if (!jobInspectionDate) e.jobInspectionDate = true;
-      if (!jobInspectionEndDate) e.jobInspectionEndDate = true;
-      if (oth(jobRefStd, jobRefStdCustom)) e.jobRefStd = true;
-      if (oth(jobAcceptance, jobAcceptanceCustom)) e.jobAcceptance = true;
-      if (sel(jobStage)) e.jobStage = true;
-      if (mt(jobMaterial)) e.jobMaterial = true;
-      if (oth(jobExtent, jobExtentCustom)) e.jobExtent = true;
-      if (mt(jobThickness)) e.jobThickness = true;
-      if (sel(jobJointType)) e.jobJointType = true;
-      if (sel(jobSurface)) e.jobSurface = true;
-      if (sel(jobWeldingProcess)) e.jobWeldingProcess = true;
-      if (sel(jobSurfaceTemp)) e.jobSurfaceTemp = true;
-      // Method Details
-      if (sel(penetrantMethod)) e.penetrantMethod = true;
-      if (sel(removalMethod)) e.removalMethod = true;
-      // Consumables
-      if (oth(penMfr, penMfrCustom)) e.penMfr = true;
-      if (mt(penBatch)) e.penBatch = true;
-      if (mt(penExpiry)) e.penExpiry = true;
-      if (oth(devMfr, devMfrCustom)) e.devMfr = true;
-      if (mt(devBatch)) e.devBatch = true;
-      if (mt(devExpiry)) e.devExpiry = true;
-      if (oth(cleanMfr, cleanMfrCustom)) e.cleanMfr = true;
-      if (mt(cleanBatch)) e.cleanBatch = true;
-      if (mt(cleanExpiry)) e.cleanExpiry = true;
-      // Method Description
-      if (mt(dwellTime)) e.dwellTime = true;
-      if (mt(lightIntensity)) e.lightIntensity = true;
-      if (mt(developingTime)) e.developingTime = true;
-      if (oth(lightEquip, lightEquipCustom)) e.lightEquip = true;
-      if (sel(postCleaning)) e.postCleaning = true;
-      if (oth(dryingTime, dryingTimeCustom)) e.dryingTime = true;
-      // Observations — all fields in all rows required
-      observations.forEach((o, i) => {
-        if (!o.jobDescription?.trim()) e[`obs${i}_jobDescription`] = true;
-        if (!o.drawingOrJointNo?.trim()) e[`obs${i}_drawingOrJointNo`] = true;
-        if (!o.size?.trim()) e[`obs${i}_size`] = true;
-        if (!o.quantity?.toString().trim()) e[`obs${i}_quantity`] = true;
-        if (!o.interpretation) e[`obs${i}_interpretation`] = true;
-        if (!o.evaluation) e[`obs${i}_evaluation`] = true;
-      });
-      // Conclusion
-      if (oth(conclusion, conclusionCustom)) e.conclusion = true;
-      // Inspectors — all fields in all rows required
-      inspectors.forEach((insp, i) => {
-        if (!insp.name?.trim()) e[`inspectorName_${i}`] = true;
-        if (!insp.qualification?.trim()) e[`inspectorQualification_${i}`] = true;
-        if (!insp.designation?.trim()) e[`inspectorDesignation_${i}`] = true;
-        if (!insp.date) e[`inspectorDate_${i}`] = true;
-      });
-      // Customer section
-      if (mt(custName)) e.custName = true;
-      if (mt(custDesig)) e.custDesig = true;
-      if (!custDate) e.custDate = true;
-      // Client / TPI section
-      if (mt(clientName)) e.clientName = true;
-      if (mt(clientDesig)) e.clientDesig = true;
-      if (!clientDate) e.clientDate = true;
-
-      if (Object.keys(e).length > 0) {
-        setErrors(e);
-        toast.error("Please fill all required fields before saving as Final.");
-        return;
-      }
       setErrors({});
     }
 
@@ -1112,7 +1055,12 @@ export const PTReportFormPage: React.FC = () => {
       {/* ── Observations ── */}
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className={sectionTitleClass.replace(" mb-4 pb-2 border-b border-gray-100", "")}>
+          <h2
+            className={sectionTitleClass.replace(
+              " mb-4 pb-2 border-b border-gray-100",
+              "",
+            )}
+          >
             Observations
           </h2>
           <button
@@ -1164,7 +1112,12 @@ export const PTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "jobDescription", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_jobDescription`] && !row.jobDescription?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_jobDescription`] &&
+                        !row.jobDescription?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1174,7 +1127,12 @@ export const PTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "drawingOrJointNo", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_drawingOrJointNo`] && !row.drawingOrJointNo?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_drawingOrJointNo`] &&
+                        !row.drawingOrJointNo?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1182,7 +1140,11 @@ export const PTReportFormPage: React.FC = () => {
                       type="text"
                       value={row.size}
                       onChange={(e) => updateObs(idx, "size", e.target.value)}
-                      className={!!errors[`obs${idx}_size`] && !row.size?.trim() ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_size`] && !row.size?.trim()
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     />
                   </td>
                   <td className="border border-gray-200 px-1 py-1">
@@ -1192,7 +1154,12 @@ export const PTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "quantity", e.target.value)
                       }
-                      className={(!!errors[`obs${idx}_quantity`] && !row.quantity?.toString().trim() ? inputErrorClass : inputClass) + " w-16"}
+                      className={
+                        (!!errors[`obs${idx}_quantity`] &&
+                        !row.quantity?.toString().trim()
+                          ? inputErrorClass
+                          : inputClass) + " w-16"
+                      }
                       min="0"
                     />
                   </td>
@@ -1202,7 +1169,12 @@ export const PTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "interpretation", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_interpretation`] && !row.interpretation ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_interpretation`] &&
+                        !row.interpretation
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     >
                       <option value="">Select...</option>
                       <option>No relevant Indication Found</option>
@@ -1215,7 +1187,11 @@ export const PTReportFormPage: React.FC = () => {
                       onChange={(e) =>
                         updateObs(idx, "evaluation", e.target.value)
                       }
-                      className={!!errors[`obs${idx}_evaluation`] && !row.evaluation ? inputErrorClass : inputClass}
+                      className={
+                        !!errors[`obs${idx}_evaluation`] && !row.evaluation
+                          ? inputErrorClass
+                          : inputClass
+                      }
                     >
                       <option value="">Select...</option>
                       <option>Accepted</option>
@@ -1241,7 +1217,7 @@ export const PTReportFormPage: React.FC = () => {
       </div>
 
       {/* ── Conclusion ── */}
-      <div className={sectionClass}>
+      {/* <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Conclusion</h2>
         <div>
           <label className={labelClass}>Conclusion</label>
@@ -1260,7 +1236,7 @@ export const PTReportFormPage: React.FC = () => {
             error={hasError("conclusion")}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* ── Examined By ── */}
       <div className={sectionClass}>
@@ -1304,7 +1280,9 @@ export const PTReportFormPage: React.FC = () => {
                       <label className={labelClass}>Name</label>
                       <select
                         value={insp.name}
-                        onChange={(e) => updateInsp(idx, "name", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "name", e.target.value)
+                        }
                         className={`${errors[`inspectorName_${idx}`] && !insp.name ? inputErrorClass : inputClass} bg-white`}
                       >
                         <option value="">Select....</option>
@@ -1320,26 +1298,42 @@ export const PTReportFormPage: React.FC = () => {
                       <input
                         type="text"
                         value={insp.qualification}
-                        onChange={(e) => updateInsp(idx, "qualification", e.target.value)}
-                        className={!!errors[`inspectorQualification_${idx}`] && !insp.qualification.trim() ? inputErrorClass : inputClass}
+                        onChange={(e) =>
+                          updateInsp(idx, "qualification", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorQualification_${idx}`] &&
+                          !insp.qualification.trim()
+                            ? inputErrorClass
+                            : inputClass
+                        }
                         placeholder="e.g. PT NDE Level II"
                       />
                     </div>
-                    <div>
+                    {/* <div>
                       <label className={labelClass}>Designation *</label>
                       <input
                         type="text"
                         value={insp.designation}
-                        onChange={(e) => updateInsp(idx, "designation", e.target.value)}
-                        className={!!errors[`inspectorDesignation_${idx}`] && !insp.designation.trim() ? inputErrorClass : inputClass}
+                        onChange={(e) =>
+                          updateInsp(idx, "designation", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorDesignation_${idx}`] &&
+                          !insp.designation.trim()
+                            ? inputErrorClass
+                            : inputClass
+                        }
                       />
-                    </div>
+                    </div> */}
                     <div>
                       <label className={labelClass}>Signature</label>
                       <input
                         type="text"
                         value={insp.signature}
-                        onChange={(e) => updateInsp(idx, "signature", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "signature", e.target.value)
+                        }
                         className={inputClass}
                       />
                     </div>
@@ -1348,8 +1342,14 @@ export const PTReportFormPage: React.FC = () => {
                       <input
                         type="date"
                         value={insp.date}
-                        onChange={(e) => updateInsp(idx, "date", e.target.value)}
-                        className={!!errors[`inspectorDate_${idx}`] && !insp.date ? inputErrorClass : inputClass}
+                        onChange={(e) =>
+                          updateInsp(idx, "date", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorDate_${idx}`] && !insp.date
+                            ? inputErrorClass
+                            : inputClass
+                        }
                       />
                     </div>
                   </div>

@@ -33,6 +33,17 @@ const PRINT_STYLES = `
     .report-body { overflow: visible !important; }
   }
 
+  @media screen and (max-width: 768px) {
+    #report-root {
+      padding: 0 !important;
+      background: #fff !important;
+    }
+    .print-page {
+      margin: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   * { box-sizing: border-box; }
   .print-page { width: 210mm; height: 297mm; background: #fff; box-sizing: border-box; padding: 0 5mm 5mm 5mm; display: flex; flex-direction: column; overflow: hidden; }
@@ -101,8 +112,8 @@ const PRINT_STYLES = `
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
 
-  .calib-table { width: 100%; border-collapse: collapse; table-layout: auto; }
-  .calib-table td, .calib-table th { border: 1.2px solid #000; padding: 4px; font-size: 11px; text-align: left; vertical-align: middle; }
+  .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .calib-table td, .calib-table th { border: 1.2px solid #000; padding: 4px; font-size: 11px; text-align: left; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; word-break: break-word; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
   .calib-table td.section-hdr { text-align: left; }
   .footer { background: #f8fafc; padding: 5px 10px; font-size: 11px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
@@ -223,7 +234,7 @@ export const UTReportPrintPage: React.FC = () => {
       </div>
     );
 
-  const qrUrl = `${window.location.origin}/reports/public/ut/${id}`;
+  const qrUrl = `${window.location.origin}/#/reports/public/ut/${id}`;
 
   const jd = report.jobDetails ?? {};
   const eq = report.equipmentDetails ?? {};
@@ -417,10 +428,17 @@ export const UTReportPrintPage: React.FC = () => {
   // Angle Probe Calibration — rendered on page 2 to prevent page-1 overflow
   const calibSection = (
     <table className="calib-table mt-n1">
+      <colgroup>
+        <col style={{ width: "20%" }} />
+        <col style={{ width: "20%" }} />
+        <col style={{ width: "20%" }} />
+        <col style={{ width: "20%" }} />
+        <col style={{ width: "20%" }} />
+      </colgroup>
       <tbody>
         <tr>
           <td colSpan={5} className="section-hdr">
-            5. ANGLE PROBE CALIBRATION DETAIL
+            5. CALIBRATION DETAIL
           </td>
         </tr>
         <tr>
@@ -428,7 +446,7 @@ export const UTReportPrintPage: React.FC = () => {
             className="col-hdr"
             style={{ whiteSpace: "nowrap", textAlign: "center" }}
           >
-            Angle Probe Calibration Detail
+            Angle Probe 
           </td>
           {calibAngles.map((a) => (
             <td
@@ -816,6 +834,7 @@ export const UTReportPrintPage: React.FC = () => {
           padding: "16px",
         }}
       >
+        {!isPublic && (
         <div
           className="no-print"
           style={{
@@ -858,6 +877,7 @@ export const UTReportPrintPage: React.FC = () => {
             Print
           </button>
         </div>
+        )}
         {pages.map(({ pageBlocks }, i) => {
           const hasJob = pageBlocks.some((b) => b.type === "job");
 

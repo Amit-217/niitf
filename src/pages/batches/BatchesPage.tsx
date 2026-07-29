@@ -157,8 +157,8 @@ const BatchModal: React.FC<ModalProps> = ({
         className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
-        <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 rounded-t-2xl flex items-start justify-between">
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div className="bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-5 shrink-0 flex items-start justify-between">
           <div>
             <h2 className="text-lg font-bold text-white">
               {batch ? "Edit Batch" : "New Academic Batch"}
@@ -177,8 +177,8 @@ const BatchModal: React.FC<ModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden">
+          <div className="p-6 space-y-6 overflow-y-auto no-scrollbar">
             {/* Section: Basic details */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
@@ -190,8 +190,8 @@ const BatchModal: React.FC<ModalProps> = ({
                 </h3>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="col-span-1 sm:col-span-2">
                   <label className={labelClass}>Batch Name *</label>
                   <input
                     value={batchName}
@@ -203,7 +203,7 @@ const BatchModal: React.FC<ModalProps> = ({
                 </div>
 
                 {!batch && (
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-2">
                     <label className={labelClass}>Assigned Course *</label>
                     <select
                       value={courseId}
@@ -234,7 +234,7 @@ const BatchModal: React.FC<ModalProps> = ({
                 </h3>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelClass}>Start Date *</label>
                   <input
@@ -255,16 +255,16 @@ const BatchModal: React.FC<ModalProps> = ({
                   />
                 </div>
 
-                <div className="col-span-2">
+                <div className="col-span-1 sm:col-span-2">
                   <label className={labelClass}>Instruction Status</label>
-                  <div className="flex gap-2 p-1 bg-gray-50 rounded-xl border border-gray-100">
+                  <div className="flex gap-1 sm:gap-2 p-1 bg-gray-50 rounded-xl border border-gray-100">
                     {(["Upcoming", "Running", "Completed"] as const).map(
                       (s) => (
                         <button
                           key={s}
                           type="button"
                           onClick={() => setStatus(s)}
-                          className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all ${status === s ? "bg-violet-600 text-white shadow-md" : "text-gray-400 hover:text-gray-600"}`}
+                          className={`flex-1 py-2 px-1 text-[9px] sm:text-[10px] font-black rounded-lg transition-all ${status === s ? "bg-violet-600 text-white shadow-md" : "text-gray-400 hover:text-gray-600"}`}
                         >
                           {s.toUpperCase()}
                         </button>
@@ -276,7 +276,7 @@ const BatchModal: React.FC<ModalProps> = ({
             </div>
           </div>
 
-          <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
+          <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3 shrink-0">
             <button
               type="button"
               onClick={onClose}

@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  BrowserRouter,
+  HashRouter,
   Routes,
   Route,
   Navigate,
@@ -14,6 +14,7 @@ import { ResetPassword } from "./pages/auth/ResetPassword";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import { AdminDashboard } from "./pages/dashboard/AdminDashboard";
 import { EmployeeDashboard } from "./pages/dashboard/EmployeeDashboard";
+import { SupervisorDashboard } from "./pages/dashboard/SupervisorDashboard";
 import { Settings } from "./pages/settings/Settings";
 import { UsersPage } from "./pages/users/UsersPage";
 import { CoursesPage } from "./pages/courses/CoursesPage";
@@ -53,11 +54,15 @@ import { QuotationPrintPage } from "./pages/admin/quotations/QuotationPrintPage"
 import { InvoicesListPage } from "./pages/admin/invoices/InvoicesListPage";
 import { InvoiceFormPage } from "./pages/admin/invoices/InvoiceFormPage";
 import { InvoicePrintPage } from "./pages/admin/invoices/InvoicePrintPage";
+import { NewInvoicesListPage } from "./pages/admin/newInvoices/NewInvoicesListPage";
+import { NewInvoiceFormPage } from "./pages/admin/newInvoices/NewInvoiceFormPage";
+import { NewInvoicePrintPage } from "./pages/admin/newInvoices/NewInvoicePrintPage";
 import { SalarySlipPage } from "./pages/admin/payroll/SalarySlipPage";
 import { EmployeeSalaryDetailPage } from "./pages/admin/payroll/EmployeeSalaryDetailPage";
 import { QuestionPapersPage } from "./pages/admin/questionPapers/QuestionPapersPage";
 import { QuestionPaperFormPage } from "./pages/admin/questionPapers/QuestionPaperFormPage";
 import { AssignTestPage } from "./pages/admin/assignedTests/AssignTestPage";
+import { CertificatePrintPage } from "./pages/admin/assignedTests/CertificatePrintPage";
 import { ResultsPage } from "./pages/admin/results/ResultsPage";
 import { ResultDetailPage } from "./pages/admin/results/ResultDetailPage";
 import { SubmissionReviewPage } from "./pages/admin/results/SubmissionReviewPage";
@@ -141,6 +146,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       return <Navigate to="/student/dashboard" replace />;
     } else if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
       return <Navigate to="/admin/dashboard" replace />;
+    } else if (userRole === "SUPERVISOR") {
+      return <Navigate to="/supervisor/dashboard" replace />;
     } else {
       return <Navigate to="/employee/dashboard" replace />;
     }
@@ -165,12 +172,15 @@ const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({
   if (role === "ADMIN" || role === "SUPER_ADMIN") {
     return <Navigate to="/admin/dashboard" replace />;
   }
+  if (role === "SUPERVISOR") {
+    return <Navigate to="/supervisor/dashboard" replace />;
+  }
   return <Navigate to="/employee/dashboard" replace />;
 };
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         {/* Auth Routes */}
         <Route
@@ -267,6 +277,10 @@ function App() {
           <Route path="invoices/new" element={<InvoiceFormPage />} />
           <Route path="invoices/:id/edit" element={<InvoiceFormPage />} />
 
+          <Route path="new-invoices" element={<NewInvoicesListPage />} />
+          <Route path="new-invoices/new" element={<NewInvoiceFormPage />} />
+          <Route path="new-invoices/:id/edit" element={<NewInvoiceFormPage />} />
+
           <Route path="reports" element={<ReportsListPage />} />
           <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
           <Route path="reports/mpt/:id/edit" element={<MPTReportFormPage />} />
@@ -321,6 +335,11 @@ function App() {
           <Route path="invoices" element={<InvoicesListPage />} />
           <Route path="invoices/new" element={<InvoiceFormPage />} />
           <Route path="invoices/:id/edit" element={<InvoiceFormPage />} />
+
+          <Route path="new-invoices" element={<NewInvoicesListPage />} />
+          <Route path="new-invoices/new" element={<NewInvoiceFormPage />} />
+          <Route path="new-invoices/:id/edit" element={<NewInvoiceFormPage />} />
+
           <Route path="reports" element={<ReportsListPage />} />
           <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
           <Route path="reports/mpt/:id/edit" element={<MPTReportFormPage />} />
@@ -352,6 +371,27 @@ function App() {
           <Route
             path="*"
             element={<Navigate to="/employee/dashboard" replace />}
+          />
+        </Route>
+
+        {/* Supervisor Dashboard Routes */}
+        <Route
+          path="/supervisor"
+          element={
+            <ProtectedRoute allowedRoles={["SUPERVISOR"]}>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<SupervisorDashboard />} />
+          <Route path="my-tasks" element={<MyTasksPage />} />
+          <Route path="attendance" element={<AttendancePage />} />
+          <Route path="attendance/history" element={<AttendanceHistoryPage />} />
+          <Route path="payroll/overtime" element={<OvertimePage />} />
+          <Route path="settings" element={<Settings />} />
+          <Route
+            path="*"
+            element={<Navigate to="/supervisor/dashboard" replace />}
           />
         </Route>
 
@@ -423,6 +463,16 @@ function App() {
           }
         />
 
+        {/* NDT Certificate Print Page (standalone, no DashboardLayout) */}
+        <Route
+          path="/admin/assign-tests/:testId/certificate/:submissionId"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+              <CertificatePrintPage />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Public Report View Routes — no auth required */}
         <Route
           path="/reports/public/mpt/:id"
@@ -473,6 +523,24 @@ function App() {
           }
         />
 
+        {/* New Invoice Print Routes */}
+        <Route
+          path="/admin/new-invoices/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
+              <NewInvoicePrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employee/new-invoices/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN", "EMPLOYEE"]}>
+              <NewInvoicePrintPage />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/reports/quotations/:type/:id/print"
           element={<QuotationPrintPage />}
@@ -482,7 +550,7 @@ function App() {
         <Route path="*" element={<Login />} />
       </Routes>
       <ToastContainer position="top-right" autoClose={3000} limit={3} />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 

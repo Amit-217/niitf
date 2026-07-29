@@ -125,7 +125,7 @@ interface InspRow {
 
 const emptyInspector = (): InspRow => ({
   name: "",
-  qualification: "ASNT NDT Level-II - UT",
+  qualification: "UT NDE Level II",
   designation: "",
   signature: "",
   date: "",
@@ -294,13 +294,15 @@ export const AWSDReportFormPage: React.FC = () => {
           );
         }
         const cert = r.certification ?? {};
-        setInspectors([{
-          name: cert.inspectedBy ?? "",
-          qualification: cert.year || "ASNT NDT Level-II - UT",
-          designation: cert.inspectorDesignation ?? "",
-          signature: cert.inspectorSignature ?? "",
-          date: toDate(cert.testDate),
-        }]);
+        setInspectors([
+          {
+            name: cert.inspectedBy ?? "",
+            qualification: cert.year || "UT NDE Level II",
+            designation: cert.inspectorDesignation ?? "",
+            signature: cert.inspectorSignature ?? "",
+            date: toDate(cert.testDate),
+          },
+        ]);
         setManufacturerOrContractor(cert.manufacturerOrContractor ?? "");
         setCustName(cert.authorizedBy ?? "");
         setCustDesig(cert.custDesignation ?? "");
@@ -395,79 +397,6 @@ export const AWSDReportFormPage: React.FC = () => {
     }
 
     if (status === "final") {
-      const e: Record<string, boolean> = {};
-      const mt = (v: string) => !v.trim();
-      const oth = (v: string, o: string) => !v || (v === "Other" && !o.trim());
-
-      if (!dateOfInspection) e.dateOfInspection = true;
-      if (mt(project)) e.project = true;
-      if (mt(jobDescription)) e.jobDescription = true;
-      if (mt(drawingNo)) e.drawingNo = true;
-      if (mt(calibrationBlock)) e.calibrationBlock = true;
-      if (mt(qtyOfJts)) e.qtyOfJts = true;
-      if (mt(flawDetectorSrNo)) e.flawDetectorSrNo = true;
-      if (oth(weldingProcess, weldingProcessOther)) e.weldingProcess = true;
-      if (mt(machineCalibration)) e.machineCalibration = true;
-      if (mt(surfaceCondition)) e.surfaceCondition = true;
-      if (mt(poNo)) e.poNo = true;
-      if (mt(couplant)) e.couplant = true;
-      if (mt(stageOfInspection)) e.stageOfInspection = true;
-      if (mt(material)) e.material = true;
-      if (mt(qapNo)) e.qapNo = true;
-      if (mt(accStandard)) e.accStandard = true;
-      if (mt(probe)) e.probe = true;
-      if (mt(overallProbeAngle)) e.overallProbeAngle = true;
-      if (mt(frequency)) e.frequency = true;
-      if (mt(range)) e.range = true;
-      if (mt(scanningSensitivity)) e.scanningSensitivity = true;
-      if (mt(referenceDb)) e.referenceDb = true;
-      if (mt(scanningDb)) e.scanningDb = true;
-      // Observations — all fields in all rows required
-      observations.forEach((o, i) => {
-        if (!o.serialNo?.trim()) e[`obs${i}_serialNo`] = true;
-        if (!o.jointDetails?.trim()) e[`obs${i}_jointDetails`] = true;
-        if (!o.drawingNoPartNo?.trim()) e[`obs${i}_drawingNoPartNo`] = true;
-        if (!o.jobThickness?.trim()) e[`obs${i}_jobThickness`] = true;
-        if (!o.partNo?.trim()) e[`obs${i}_partNo`] = true;
-        if (!o.transducerAngle?.trim()) e[`obs${i}_transducerAngle`] = true;
-        if (!o.jointNo?.trim()) e[`obs${i}_jointNo`] = true;
-        if (!o.indicationLevelA?.trim()) e[`obs${i}_indicationLevelA`] = true;
-        if (!o.referenceLevelB?.trim()) e[`obs${i}_referenceLevelB`] = true;
-        if (!o.attenuationFactorC?.trim())
-          e[`obs${i}_attenuationFactorC`] = true;
-        if (!o.indicationRatingD?.trim()) e[`obs${i}_indicationRatingD`] = true;
-        if (!o.length?.trim()) e[`obs${i}_length`] = true;
-        if (!o.angularDistance?.trim()) e[`obs${i}_angularDistance`] = true;
-        if (!o.depthFromASurface?.trim()) e[`obs${i}_depthFromASurface`] = true;
-        if (!o.distanceX?.trim()) e[`obs${i}_distanceX`] = true;
-        if (!o.distanceY?.trim()) e[`obs${i}_distanceY`] = true;
-        if (!o.discontinuityEvaluation?.trim())
-          e[`obs${i}_discontinuityEvaluation`] = true;
-        if (!o.remarks?.trim()) e[`obs${i}_remarks`] = true;
-      });
-      // Inspectors
-      inspectors.forEach((insp, i) => {
-        if (!insp.name?.trim()) e[`inspectorName_${i}`] = true;
-        if (!insp.qualification?.trim()) e[`inspectorQual_${i}`] = true;
-        if (!insp.designation?.trim()) e[`inspectorDesig_${i}`] = true;
-        if (!insp.date) e[`inspectorDate_${i}`] = true;
-      });
-      // Customer
-      if (mt(manufacturerOrContractor)) e.manufacturerOrContractor = true;
-      if (mt(custName)) e.custName = true;
-      if (mt(custDesig)) e.custDesig = true;
-      if (!custDate) e.custDate = true;
-      // Client
-      if (mt(verifiedBy)) e.verifiedBy = true;
-      if (mt(clientName)) e.clientName = true;
-      if (mt(clientDesig)) e.clientDesig = true;
-      if (!clientDate) e.clientDate = true;
-
-      if (Object.keys(e).length > 0) {
-        setErrors(e);
-        toast.error("Please fill all required fields before saving as Final.");
-        return;
-      }
       setErrors({});
     }
 
@@ -1287,7 +1216,9 @@ export const AWSDReportFormPage: React.FC = () => {
                       <label className={labelClass}>Name *</label>
                       <select
                         value={insp.name}
-                        onChange={(e) => updateInsp(idx, "name", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "name", e.target.value)
+                        }
                         className={`${errors[`inspectorName_${idx}`] && !insp.name.trim() ? inputErrorClass : inputClass} bg-white`}
                       >
                         <option value="">Select....</option>
@@ -1303,26 +1234,42 @@ export const AWSDReportFormPage: React.FC = () => {
                       <input
                         type="text"
                         value={insp.qualification}
-                        onChange={(e) => updateInsp(idx, "qualification", e.target.value)}
-                        className={!!errors[`inspectorQual_${idx}`] && !insp.qualification.trim() ? inputErrorClass : inputClass}
-                        placeholder="e.g. ASNT NDT Level-II - UT"
+                        onChange={(e) =>
+                          updateInsp(idx, "qualification", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorQual_${idx}`] &&
+                          !insp.qualification.trim()
+                            ? inputErrorClass
+                            : inputClass
+                        }
+                        placeholder="e.g. UT NDE Level II"
                       />
                     </div>
-                    <div>
+                    {/* <div>
                       <label className={labelClass}>Designation *</label>
                       <input
                         type="text"
                         value={insp.designation}
-                        onChange={(e) => updateInsp(idx, "designation", e.target.value)}
-                        className={!!errors[`inspectorDesig_${idx}`] && !insp.designation.trim() ? inputErrorClass : inputClass}
+                        onChange={(e) =>
+                          updateInsp(idx, "designation", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorDesig_${idx}`] &&
+                          !insp.designation.trim()
+                            ? inputErrorClass
+                            : inputClass
+                        }
                       />
-                    </div>
+                    </div> */}
                     <div>
                       <label className={labelClass}>Signature</label>
                       <input
                         type="text"
                         value={insp.signature}
-                        onChange={(e) => updateInsp(idx, "signature", e.target.value)}
+                        onChange={(e) =>
+                          updateInsp(idx, "signature", e.target.value)
+                        }
                         className={inputClass}
                       />
                     </div>
@@ -1331,8 +1278,14 @@ export const AWSDReportFormPage: React.FC = () => {
                       <input
                         type="date"
                         value={insp.date}
-                        onChange={(e) => updateInsp(idx, "date", e.target.value)}
-                        className={!!errors[`inspectorDate_${idx}`] && !insp.date ? inputErrorClass : inputClass}
+                        onChange={(e) =>
+                          updateInsp(idx, "date", e.target.value)
+                        }
+                        className={
+                          !!errors[`inspectorDate_${idx}`] && !insp.date
+                            ? inputErrorClass
+                            : inputClass
+                        }
                       />
                     </div>
                   </div>

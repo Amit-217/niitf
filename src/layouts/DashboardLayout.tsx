@@ -16,6 +16,7 @@ import {
   ChevronRight,
   ListTodo,
   FileText,
+  FilePlus,
   GraduationCap,
   Search,
   ChevronDown,
@@ -79,7 +80,11 @@ export const DashboardLayout: React.FC = () => {
   const user = userStr ? JSON.parse(userStr) : null;
   const role = user?.role || "EMPLOYEE";
   const basePath =
-    role === "ADMIN" || role === "SUPER_ADMIN" ? "admin" : "employee";
+    role === "ADMIN" || role === "SUPER_ADMIN"
+      ? "admin"
+      : role === "SUPERVISOR"
+        ? "supervisor"
+        : "employee";
   const currentUserId = user?.userId || user?.id || user?._id || "";
 
   const normalizeNotificationId = (value: any) => {
@@ -350,121 +355,147 @@ export const DashboardLayout: React.FC = () => {
   };
 
   const isAdminRole = role === "ADMIN" || role === "SUPER_ADMIN";
+  const isSupervisor = role === "SUPERVISOR";
 
-  const groups = [
-    ...(isAdminRole
+  const customerManagementGroup = {
+    name: "Customer Management",
+    key: "customerManagement",
+    icon: Building2,
+    links: [
+      { name: "Customer", path: `/${basePath}/customers`, icon: Users },
+      {
+        name: "All Reports",
+        path: `/${basePath}/reports`,
+        icon: FileBarChart2,
+      },
+      {
+        name: "Quotations",
+        path: `/${basePath}/quotations`,
+        icon: FileText,
+      },
+      {
+        name: "Invoices",
+        path: `/${basePath}/invoices`,
+        icon: FileText,
+      },
+      {
+        name: "New Invoice",
+        path: `/${basePath}/new-invoices`,
+        icon: FilePlus,
+      },
+    ],
+  };
+
+  const groups = isAdminRole
+    ? [
+        {
+          name: "User Management",
+          key: "userManagement",
+          icon: Users,
+          links: [
+            { name: "Users", path: `/${basePath}/users`, icon: Users },
+            {
+              name: "Salary Generation",
+              path: `/${basePath}/payroll/records`,
+              icon: LayoutDashboard,
+            },
+            {
+              name: "Payroll Config",
+              path: `/${basePath}/payroll/config`,
+              icon: Briefcase,
+            },
+            {
+              name: "Attendance",
+              path: `/${basePath}/attendance`,
+              icon: Clock,
+            },
+            {
+              name: "Admin Task",
+              path: `/${basePath}/tasks`,
+              icon: ListTodo,
+            },
+            {
+              name: "Overtime",
+              path: `/${basePath}/payroll/overtime`,
+              icon: Clock,
+            },
+            {
+              name: "Advances",
+              path: `/${basePath}/payroll/advances`,
+              icon: Briefcase,
+            },
+          ],
+        },
+        {
+          name: "Student Management",
+          key: "studentManagement",
+          icon: GraduationCap,
+          links: [
+            {
+              name: "Courses",
+              path: `/${basePath}/courses`,
+              icon: BookOpen,
+            },
+            {
+              name: "Batches",
+              path: `/${basePath}/batches`,
+              icon: Clock,
+            },
+            {
+              name: "Students",
+              path: `/${basePath}/students`,
+              icon: Users,
+            },
+            {
+              name: "Admissions",
+              path: `/${basePath}/admissions`,
+              icon: GraduationCap,
+            },
+            {
+              name: "Enquiries",
+              path: `/${basePath}/enquiries`,
+              icon: CircleHelp,
+            },
+            {
+              name: "Question Papers",
+              path: `/${basePath}/question-papers`,
+              icon: ClipboardList,
+            },
+            {
+              name: "Assign Tests",
+              path: `/${basePath}/assign-tests`,
+              icon: CalendarClock,
+            },
+            {
+              name: "Results",
+              path: `/${basePath}/results`,
+              icon: BarChart2,
+            },
+          ],
+        },
+        customerManagementGroup,
+      ]
+    : isSupervisor
       ? [
           {
             name: "User Management",
             key: "userManagement",
             icon: Users,
             links: [
-              { name: "Users", path: `/${basePath}/users`, icon: Users },
-              {
-                name: "Salary Generation",
-                path: `/${basePath}/payroll/records`,
-                icon: LayoutDashboard,
-              },
-              {
-                name: "Payroll Config",
-                path: `/${basePath}/payroll/config`,
-                icon: Briefcase,
-              },
               {
                 name: "Attendance",
                 path: `/${basePath}/attendance`,
                 icon: Clock,
               },
               {
-                name: "Admin Task",
-                path: `/${basePath}/tasks`,
-                icon: ListTodo,
-              },
-              {
                 name: "Overtime",
                 path: `/${basePath}/payroll/overtime`,
                 icon: Clock,
               },
-              {
-                name: "Advances",
-                path: `/${basePath}/payroll/advances`,
-                icon: Briefcase,
-              },
-            ],
-          },
-          {
-            name: "Student Management",
-            key: "studentManagement",
-            icon: GraduationCap,
-            links: [
-              {
-                name: "Courses",
-                path: `/${basePath}/courses`,
-                icon: BookOpen,
-              },
-              {
-                name: "Batches",
-                path: `/${basePath}/batches`,
-                icon: Clock,
-              },
-              {
-                name: "Students",
-                path: `/${basePath}/students`,
-                icon: Users,
-              },
-              {
-                name: "Admissions",
-                path: `/${basePath}/admissions`,
-                icon: GraduationCap,
-              },
-              {
-                name: "Enquiries",
-                path: `/${basePath}/enquiries`,
-                icon: CircleHelp,
-              },
-              {
-                name: "Question Papers",
-                path: `/${basePath}/question-papers`,
-                icon: ClipboardList,
-              },
-              {
-                name: "Assign Tests",
-                path: `/${basePath}/assign-tests`,
-                icon: CalendarClock,
-              },
-              {
-                name: "Results",
-                path: `/${basePath}/results`,
-                icon: BarChart2,
-              },
             ],
           },
         ]
-      : []),
-    {
-      name: "Customer Management",
-      key: "customerManagement",
-      icon: Building2,
-      links: [
-        { name: "Customer", path: `/${basePath}/customers`, icon: Users },
-        {
-          name: "All Reports",
-          path: `/${basePath}/reports`,
-          icon: FileBarChart2,
-        },
-        {
-          name: "Quotations",
-          path: `/${basePath}/quotations`,
-          icon: FileText,
-        },
-        {
-          name: "Invoices",
-          path: `/${basePath}/invoices`,
-          icon: FileText,
-        },
-      ],
-    },
-  ];
+      : [customerManagementGroup];
 
   const standaloneLinks = [
     {
@@ -499,7 +530,7 @@ export const DashboardLayout: React.FC = () => {
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <img
-              src="/logo.png"
+              src="/logo.jpeg"
               alt="NIIT"
               className="w-24 h-12 object-contain"
             />
@@ -823,7 +854,7 @@ export const DashboardLayout: React.FC = () => {
                 {!sidebarCollapsed && (
                   <button
                     onClick={() => toggleMenu(group.key)}
-                    className="w-full flex items-center justify-between px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-gray-600 transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2 text-[12px] font-bold text-gray-400 uppercase tracking-widest hover:text-gray-600 transition-colors"
                   >
                     <span>{group.name}</span>
                     {openMenus[group.key] ? (
