@@ -559,7 +559,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                   <td className="val">{v(cd.ref)}</td>
                 </tr>
                 <tr>
-                  <td className="lbl">Contact:</td>
+                  <td className="lbl">Contact Person:</td>
                   <td className="val">{v(cd.contact)}</td>
                 </tr>
                 <tr>
@@ -567,7 +567,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                   <td className="val">{fmtDate(cd.callDate)}</td>
                 </tr>
                 <tr>
-                  <td className="lbl">Inspection Att. Date:</td>
+                  <td className="lbl">Inspection Att.</td>
                   <td className="val">{fmtDate(cd.inspectionAttDt)}</td>
                 </tr>
               </tbody>
@@ -595,7 +595,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                   <td className="val">{v(vd.subVendor)}</td>
                 </tr>
                 <tr>
-                  <td className="lbl">Contact:</td>
+                  <td className="lbl">Contact Person:</td>
                   <td className="val">{v(vd.contact)}</td>
                 </tr>
                 <tr>
@@ -657,19 +657,25 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         </tr>
       </thead>
       <tbody>
-        {pageItems.map((item: any, i: number) => (
-          <tr key={i} >
-            <td style={{textAlign:"center"}}>{v(item.poLineNo)}</td>
-            <td style={{ textAlign: "center" }}>{v(item.description)}</td>
-            <td style={{ textAlign: "center" }}>{v(item.drgOrHeatNo)}</td>
-            <td style={{textAlign:"center"}}>{v(item.qtyOffered)}</td>
-            <td style={{textAlign:"center"}}>{v(item.qtyInspected)}</td>
-            <td style={{textAlign:"center"}}>{v(item.qtyAccepted)}</td>
-            <td style={{textAlign:"center"}}>{v(item.qtyHold)}</td>
-            <td style={{textAlign:"center"}}>{v(item.qtyReject)}</td>
-            <td style={{textAlign:"center"}}>{v(item.inspectionType)}</td>
+        {pageItems.length === 0 ? (
+          <tr>
+            <td colSpan={9}>&nbsp;</td>
           </tr>
-        ))}
+        ) : (
+          pageItems.map((item: any, i: number) => (
+            <tr key={i} >
+              <td style={{textAlign:"center"}}>{v(item.poLineNo)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.description)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.drgOrHeatNo)}</td>
+              <td style={{textAlign:"center"}}>{v(item.qtyOffered)}</td>
+              <td style={{textAlign:"center"}}>{v(item.qtyInspected)}</td>
+              <td style={{textAlign:"center"}}>{v(item.qtyAccepted)}</td>
+              <td style={{textAlign:"center"}}>{v(item.qtyHold)}</td>
+              <td style={{textAlign:"center"}}>{v(item.qtyReject)}</td>
+              <td style={{textAlign:"center"}}>{v(item.inspectionType)}</td>
+            </tr>
+          ))
+        )}
       </tbody>
     </table>
   );
@@ -746,15 +752,21 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         </tr>
       </thead>
       <tbody>
-        {pageCalib.map((c: any, i: number) => (
-          <tr key={i}>
-            <td className="val" style={{textAlign:"center"}}>{v(c.equipment)}</td>
-            <td className="val" style={{textAlign:"center"}}>{v(c.idNumber)}</td>
-            <td className="val" style={{textAlign:"center"}}>{fmtDate(c.calibrationDate)}</td>
-            <td className="val" style={{textAlign:"center"}}>{fmtDate(c.dueDate)}</td>
-            <td className="val" style={{textAlign:"center"}}>{v(c.nablCertified)}</td>
+        {pageCalib.length === 0 ? (
+          <tr>
+            <td className="val" colSpan={5}>&nbsp;</td>
           </tr>
-        ))}
+        ) : (
+          pageCalib.map((c: any, i: number) => (
+            <tr key={i}>
+              <td className="val" style={{textAlign:"center"}}>{v(c.equipment)}</td>
+              <td className="val" style={{textAlign:"center"}}>{v(c.idNumber)}</td>
+              <td className="val" style={{textAlign:"center"}}>{fmtDate(c.calibrationDate)}</td>
+              <td className="val" style={{textAlign:"center"}}>{fmtDate(c.dueDate)}</td>
+              <td className="val" style={{textAlign:"center"}}>{v(c.nablCertified)}</td>
+            </tr>
+          ))
+        )}
       </tbody>
     </table>
   );
@@ -1097,6 +1109,14 @@ activityChunks.forEach((chunk, index) => {
           const isFirstItem = pageItems[0] === items[0];
           const isFirstRefs = pageRefs[0] === refs[0];
           const isFirstCalib = pageCalib[0] === calib[0];
+          const shouldShowItems = pageItems.length > 0 || (isFirstPage && items.length === 0);
+          const shouldShowActivities =
+            pageActivities.length > 0 ||
+            (isFirstPage && !report.inspectionActivities?.trim());
+          const shouldShowCalib = pageCalib.length > 0 || (isFirstPage && calib.length === 0);
+          const shouldShowConclusion =
+            pageConclusion.length > 0 ||
+            (isFirstPage && !report.conclusion?.trim());
 
           return (
             <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
@@ -1105,16 +1125,16 @@ activityChunks.forEach((chunk, index) => {
                 <div className="report-body">
                   {isFirstPage && renderJobDetailsSection()}
                   {showClientVendor && renderClientVendorSection()}
-                  {pageItems.length > 0 && renderItemsTableSection(pageItems, isFirstItem)}
-                  {pageActivities.length > 0 && renderActivitiesSection(
+                  {shouldShowItems && renderItemsTableSection(pageItems, isFirstPage || isFirstItem)}
+                  {shouldShowActivities && renderActivitiesSection(
                     pageActivities.map(a => a.text).join(""),
-                    !pageActivities[0].isContinuation
+                    !pageActivities[0]?.isContinuation
                   )}
                   {pageRefs.length > 0 && renderRefsSection(pageRefs, isFirstRefs)}
-                  {pageCalib.length > 0 && renderCalibSection(pageCalib, isFirstCalib)}
-                  {pageConclusion.length > 0 && renderConclusionSection(
+                  {shouldShowCalib && renderCalibSection(pageCalib, isFirstPage || isFirstCalib)}
+                  {shouldShowConclusion && renderConclusionSection(
                     pageConclusion.map(c => c.text).join(""),
-                    !pageConclusion[0].isContinuation
+                    !pageConclusion[0]?.isContinuation
                   )}
                 </div>
                   {renderSignatures()}
