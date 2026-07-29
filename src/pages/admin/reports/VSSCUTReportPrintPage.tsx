@@ -360,7 +360,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                     borderLeft: "1px solid #000",
                   }}
                 >
-                  Job Description: {v(report.jobDescription) || "-"}
+                  Job Description: {v(report.jobDescription)}
                 </div>
               </div>
             </td>
@@ -369,19 +369,17 @@ export const VSSCUTReportPrintPage: React.FC = () => {
             <td className="val">
               Report Date:{" "}
               <span style={{ fontWeight: "300" }}>
-                {fmtDate(report.reportDate) || "-"}
+                {fmtDate(report.reportDate)}
               </span>
             </td>
             <td className="val">
               Weld Joint No.:{" "}
-              <span style={{ fontWeight: "300" }}>
-                {v(report.weldJointNo) || "-"}
-              </span>
+              <span style={{ fontWeight: "300" }}>{v(report.weldJointNo)}</span>
             </td>
             <td className="val">
               Thickness:{" "}
               <span style={{ fontWeight: "300" }}>
-                {v(report.thicknessOfJob) || "-"}
+                {v(report.thicknessOfJob)}
               </span>
             </td>
           </tr>
@@ -389,19 +387,17 @@ export const VSSCUTReportPrintPage: React.FC = () => {
             <td className="val">
               Surface Condition:{" "}
               <span style={{ fontWeight: "300" }}>
-                {v(report.surfaceCondition) || "-"}
+                {v(report.surfaceCondition)}
               </span>
             </td>
             <td className="val">
               Customer:{" "}
-              <span style={{ fontWeight: "300" }}>
-                {v(report.customer) || "-"}
-              </span>
+              <span style={{ fontWeight: "300" }}>{v(report.customer)}</span>
             </td>
             <td className="val">
               Period:{" "}
               <span style={{ fontWeight: "300" }}>
-                {v(report.periodOfInspection) || "-"}
+                {v(report.periodOfInspection)}
               </span>
             </td>
           </tr>
@@ -414,27 +410,25 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 }}
               >
                 Material:{" "}
-                <span style={{ fontWeight: "300" }}>
-                  {v(report.material) || "-"}
-                </span>
+                <span style={{ fontWeight: "300" }}>{v(report.material)}</span>
               </div>
               <div style={{ padding: "2px 6px" }}>
                 Equipment:{" "}
                 <span style={{ fontWeight: "300" }}>
-                  {v(report.equipmentUsed) || "-"}
+                  {v(report.equipmentUsed)}
                 </span>
               </div>
             </td>
             <td className="val">
               Technique:{" "}
               <span style={{ fontWeight: "300" }}>
-                {v(report.scanningTechnique) || "-"}
+                {v(report.scanningTechnique)}
               </span>
             </td>
             <td className="val">
               Stage:{" "}
               <span style={{ fontWeight: "300" }}>
-                {v(report.stageOfInspection) || "-"}
+                {v(report.stageOfInspection)}
               </span>
             </td>
           </tr>
@@ -447,27 +441,23 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 }}
               >
                 Couplant:{" "}
-                <span style={{ fontWeight: "300" }}>
-                  {v(report.couplant) || "-"}
-                </span>
+                <span style={{ fontWeight: "300" }}>{v(report.couplant)}</span>
               </div>
               <div style={{ padding: "2px 6px" }}>
                 Datum:{" "}
                 <span style={{ fontWeight: "300" }}>
-                  {v(report.referenceDatum) || "-"}
+                  {v(report.referenceDatum)}
                 </span>
               </div>
             </td>
             <td className="val">
               Area Scanned:{" "}
-              <span style={{ fontWeight: "300" }}>
-                {v(report.areaScanned) || "-"}
-              </span>
+              <span style={{ fontWeight: "300" }}>{v(report.areaScanned)}</span>
             </td>
             <td className="val">
               Acceptance Std:{" "}
               <span style={{ fontWeight: "300" }}>
-                {v(report.acceptanceStandard) || "-"}
+                {v(report.acceptanceStandard)}
               </span>
             </td>
           </tr>
@@ -476,24 +466,20 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               <span style={{ fontWeight: "bold" }}>Test Setup:</span>
               <br />
               Angle Range:{" "}
-              <span style={{ fontWeight: "350" }}>
-                {v(ts.angleRange) || "-"}
-              </span>{" "}
+              <span style={{ fontWeight: "350" }}>{v(ts.angleRange)}</span>{" "}
               <br /> Normal:{" "}
-              <span style={{ fontWeight: "350" }}>
-                {v(ts.normalRange) || "-"}
-              </span>
+              <span style={{ fontWeight: "350" }}>{v(ts.normalRange)}</span>
             </td>
             <td className="val">
               <span style={{ fontWeight: "bold" }}>Standard Cal Block:</span>
               <br />
               Angle:{" "}
               <span style={{ fontWeight: "350" }}>
-                {v(ts.standardCalBlock?.angle) || "-"}
+                {v(ts.standardCalBlock?.angle)}
               </span>{" "}
               <br /> Normal:{" "}
               <span style={{ fontWeight: "350" }}>
-                {v(ts.standardCalBlock?.normal) || "-"}
+                {v(ts.standardCalBlock?.normal)}
               </span>
             </td>
             <td className="val">
@@ -501,12 +487,12 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               <br />
               Angle:{" "}
               <span style={{ fontWeight: "350" }}>
-                {v(ts.identificationNoOfRefBlock?.angle) || "-"}
+                {v(ts.identificationNoOfRefBlock?.angle)}
               </span>{" "}
               <br />
               Normal:{" "}
               <span style={{ fontWeight: "350" }}>
-                {v(ts.identificationNoOfRefBlock?.normal) || "-"}
+                {v(ts.identificationNoOfRefBlock?.normal)}
               </span>
             </td>
           </tr>
@@ -524,17 +510,13 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           <tr>
             <td className="val" style={{ width: "33.3%" }}>
               Frequency:{" "}
-              <span style={{ fontWeight: "300" }}>
-                {v(apc.frequency) || "-"}
-              </span>
+              <span style={{ fontWeight: "300" }}>{v(apc.frequency)}</span>
             </td>
             <td className="val" style={{ width: "33.3%" }}>
-              Size:{" "}
-              <span style={{ fontWeight: "300" }}>{v(apc.size) || "-"}</span>
+              Size: <span style={{ fontWeight: "300" }}>{v(apc.size)}</span>
             </td>
             <td className="val" style={{ width: "33.4%" }}>
-              Type:{" "}
-              <span style={{ fontWeight: "300" }}>{v(apc.type) || "-"}</span>
+              Type: <span style={{ fontWeight: "300" }}>{v(apc.type)}</span>
             </td>
           </tr>
         </tbody>
@@ -545,9 +527,9 @@ export const VSSCUTReportPrintPage: React.FC = () => {
         <thead>
           <tr>
             <th style={{ width: "16%" }}>Sr. Nos.</th>
-            <th colSpan={4}>{v(apc.probe45SerialNo) || "-"}</th>
-            <th colSpan={4}>{v(apc.probe60SerialNo) || "-"}</th>
-            <th colSpan={4}>{v(apc.probe70SerialNo) || "-"}</th>
+            <th colSpan={4}>{v(apc.probe45SerialNo)}</th>
+            <th colSpan={4}>{v(apc.probe60SerialNo)}</th>
+            <th colSpan={4}>{v(apc.probe70SerialNo)}</th>
           </tr>
           <tr>
             <th>Scanning</th>
@@ -575,8 +557,8 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 const cell = (ct[pm] as any)?.[key] ?? {};
                 return (
                   <React.Fragment key={pm + "_" + key}>
-                    <td>{v(cell.bp) || "-"}</td>
-                    <td>{v(cell.fsh) || "-"}</td>
+                    <td>{v(cell.bp)}</td>
+                    <td>{v(cell.fsh)}</td>
                   </React.Fragment>
                 );
               })}
@@ -586,7 +568,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
             <td className="lbl">DAC dB</td>
             {PROBE_MODES.map((pm) => (
               <td key={pm + "_dac"} colSpan={2} style={{ fontWeight: 600 }}>
-                {v((ct[pm] as any)?.dacDb) || "-"}
+                {v((ct[pm] as any)?.dacDb)}
               </td>
             ))}
           </tr>
@@ -594,7 +576,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
             <td className="lbl">Scanning dB</td>
             {PROBE_MODES.map((pm) => (
               <td key={pm + "_scan"} colSpan={2} style={{ fontWeight: 600 }}>
-                {v((ct[pm] as any)?.scanningDb) || "-"}
+                {v((ct[pm] as any)?.scanningDb)}
               </td>
             ))}
           </tr>
@@ -612,56 +594,45 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           <tr>
             <td className="val" style={{ width: "33.3%" }}>
               Probe S. No / Type:{" "}
-              <span style={{ fontWeight: "300" }}>
-                {v(npc.probeType) || "-"}
-              </span>
+              <span style={{ fontWeight: "300" }}>{v(npc.probeType)}</span>
             </td>
             <td className="val" style={{ width: "33.3%" }}>
               Frequency:{" "}
-              <span style={{ fontWeight: "300" }}>
-                {v(npc.frequency) || "-"}
-              </span>
+              <span style={{ fontWeight: "300" }}>{v(npc.frequency)}</span>
             </td>
             <td className="val" style={{ width: "33.4%" }}>
-              Size:{" "}
-              <span style={{ fontWeight: "300" }}>{v(npc.size) || "-"}</span>
+              Size: <span style={{ fontWeight: "300" }}>{v(npc.size)}</span>
             </td>
           </tr>
           <tr>
             <td className="val">
               Skip:{" "}
               <span style={{ fontWeight: "300" }}>
-                {v(npc.skip) || "-"} BP – {v(npc.bp) || "-"}
+                {v(npc.skip)} BP – {v(npc.bp)}
               </span>
             </td>
 
             <td className="val">
               DAC dB:
-              <span style={{ fontWeight: "300" }}>{v(npc.dacDb) || "-"}</span>
+              <span style={{ fontWeight: "300" }}>{v(npc.dacDb)}</span>
             </td>
 
             <td className="val">
               Scanning dB:{" "}
-              <span style={{ fontWeight: "300" }}>
-                {v(npc.scanningDb) || "-"}
-              </span>
+              <span style={{ fontWeight: "300" }}>{v(npc.scanningDb)}</span>
             </td>
           </tr>
           <tr>
             <td className="val" colSpan={3}>
               Disposition:{" "}
-              <span style={{ fontWeight: "300" }}>
-                {v(report.disposition) || "-"}
-              </span>
+              <span style={{ fontWeight: "300" }}>{v(report.disposition)}</span>
             </td>
           </tr>
 
           <tr>
             <td className="val" colSpan={3}>
               Remarks (If any):{" "}
-              <span style={{ fontWeight: "300" }}>
-                {v(report.evaluation) || "-"}
-              </span>
+              <span style={{ fontWeight: "300" }}>{v(report.evaluation)}</span>
             </td>
           </tr>
         </tbody>

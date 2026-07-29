@@ -591,11 +591,21 @@ export const UTReportFormPage: React.FC = () => {
           couplant: eqCouplant,
           basicCalibrationBlock: eqBasicCalib,
         },
-        searchUnitDetails: searchUnits.map((u) => ({
-          ...u,
-          frequency:
-            u.frequency === "Other" ? u.frequencyCustom || "" : u.frequency,
-        })),
+        searchUnitDetails: searchUnits
+          .filter(
+            (u) =>
+              u.model.trim() ||
+              u.angle.trim() ||
+              u.srNo.trim() ||
+              u.crystalSize.trim() ||
+              u.waveMode.trim() ||
+              u.frequency.trim()
+          )
+          .map((u) => ({
+            ...u,
+            frequency:
+              u.frequency === "Other" ? u.frequencyCustom || "" : u.frequency,
+          })),
         techniqueDetails: {
           utMethod: resolve(utMethod, utMethodCustom),
           referenceCalibrationBlock: resolve(

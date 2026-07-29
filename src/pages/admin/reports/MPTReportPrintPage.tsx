@@ -438,16 +438,14 @@ export const MPTReportPrintPage = () => {
             </td>
           </tr>
           <tr>
-            <td>Name: {v(inspectors[0]?.name) || "-"}</td>
-            <td>Name: {v(fs.customer?.name) || "-"}</td>
-            <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
+            <td>Name: {v(inspectors[0]?.name)}</td>
+            <td>Name: {v(fs.customer?.name)}</td>
+            <td>Name: {v(fs.clientOrTPI?.name)}</td>
           </tr>
           <tr>
             <td>{v(inspectors[0]?.qualification) || "MT NDE Level II"}</td>
-            <td>Designation: {v((fs.customer as any)?.designation) || "-"}</td>
-            <td>
-              Designation: {v((fs.clientOrTPI as any)?.designation) || "-"}
-            </td>
+            <td>Designation: {v((fs.customer as any)?.designation)}</td>
+            <td>Designation: {v((fs.clientOrTPI as any)?.designation)}</td>
           </tr>
           <tr>
             <td style={{ height: "60px" }}>Signature:-</td>
@@ -455,9 +453,9 @@ export const MPTReportPrintPage = () => {
             <td>Signature:-</td>
           </tr>
           <tr>
-            <td>Date: {fmtDate(inspectors[0]?.date) || "-"}</td>
-            <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
-            <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
+            <td>Date: {fmtDate(inspectors[0]?.date)}</td>
+            <td>Date: {fmtDate(fs.customer?.date)}</td>
+            <td>Date: {fmtDate(fs.clientOrTPI?.date)}</td>
           </tr>
         </tbody>
       </table>
@@ -517,7 +515,7 @@ export const MPTReportPrintPage = () => {
                 color: "#999",
               }}
             >
-              No observations recorded.
+              No data available
             </td>
           </tr>
         ) : (
@@ -563,59 +561,55 @@ export const MPTReportPrintPage = () => {
           </tr>
           <tr>
             <td className="lbl">Customer:</td>
-            <td className="val">{v(jd.customer) || "-"}</td>
+            <td className="val">{v(jd.customer)}</td>
             <td className="lbl">Report No.:</td>
-            <td className="val">{v(report.reportNo) || "-"}</td>
+            <td className="val">{v(report.reportNo)}</td>
           </tr>
           <tr>
             <td className="lbl">Client:</td>
-            <td className="val">{v(jd.client) || "-"}</td>
+            <td className="val">{v(jd.client)}</td>
             <td className="lbl">Report Date:</td>
-            <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
+            <td className="val">{fmtDate(jd.reportDate)}</td>
           </tr>
           <tr>
             <td className="lbl">Project:</td>
-            <td className="val">{v(jd.project) || "-"}</td>
+            <td className="val">{v(jd.project)}</td>
             <td className="lbl">Inspection Date:</td>
             <td className="val">
-              {dateRange(jd.inspectionDate, jd.inspectionEndDate) || "-"}
+              {dateRange(jd.inspectionDate, jd.inspectionEndDate)}
             </td>
           </tr>
           <tr>
             <td className="lbl">Reference Std.:</td>
-            <td className="val">
-              {standards.length > 0 ? standards.join(", ") : "-"}
-            </td>
+            <td className="val">{standards.join(", ")}</td>
 
             <td className="lbl">Material:</td>
-            <td className="val">{v(jd.material) || "-"}</td>
+            <td className="val">{v(jd.material)}</td>
           </tr>
           <tr>
             <td className="lbl">Acceptance Criteria:</td>
-            <td className="val">
-              {acceptance.length > 0 ? acceptance.join(", ") : "-"}
-            </td>
+            <td className="val">{acceptance.join(", ")}</td>
 
             <td className="lbl">Thickness:</td>
-            <td className="val">{v(jd.thickness) || "-"}</td>
+            <td className="val">{v(jd.thickness)}</td>
           </tr>
           <tr>
             <td className="lbl">Stage of Inspection:</td>
-            <td className="val">{v(jd.stageOfInspection) || "-"}</td>
+            <td className="val">{v(jd.stageOfInspection)}</td>
 
             <td className="lbl">Surface condition:</td>
-            <td className="val">{v(jd.surfaceCondition) || "-"}</td>
+            <td className="val">{v(jd.surfaceCondition)}</td>
           </tr>
           <tr>
             <td className="lbl">Extent of Examination:</td>
-            <td className="val">{v(jd.extentOfExamination) || "-"}</td>
+            <td className="val">{v(jd.extentOfExamination)}</td>
 
             <td className="lbl">Welding Process:</td>
-            <td className="val">{v(jd.weldingProcess) || "-"}</td>
+            <td className="val">{v(jd.weldingProcess)}</td>
           </tr>
           <tr>
             <td className="lbl">Type of Joint:</td>
-            <td className="val">{v(jd.typeOfJoint) || "-"}</td>
+            <td className="val">{v(jd.typeOfJoint)}</td>
           </tr>
         </tbody>
       </table>
@@ -636,21 +630,21 @@ export const MPTReportPrintPage = () => {
           </tr>
           <tr>
             <td className="lbl">Equipment Type:</td>
-            <td className="val">{v(eq.equipmentType) || "-"}</td>
+            <td className="val">{v(eq.equipmentType)}</td>
             <td className="lbl">Sr. No.:</td>
-            <td className="val">{v(eq.srNo) || "-"}</td>
+            <td className="val">{v(eq.srNo)}</td>
           </tr>
           <tr>
             <td className="lbl">Make:</td>
-            <td className="val">{v(eq.make) || "-"}</td>
+            <td className="val">{v(eq.make)}</td>
             <td className="lbl">Calibration due:</td>
-            <td className="val">{fmtDate(eq.calibrationDue) || "-"}</td>
+            <td className="val">{fmtDate(eq.calibrationDue)}</td>
           </tr>
           <tr>
             <td className="lbl">Spacing:</td>
-            <td className="val">{v(eq.yokeSpacing) || "-"}</td>
+            <td className="val">{v(eq.yokeSpacing)}</td>
             <td className="lbl">Pie Gauge Calibration:</td>
-            <td className="val">{v(eq.pieGaugeCalibration) || "-"}</td>
+            <td className="val">{v(eq.pieGaugeCalibration)}</td>
           </tr>
         </tbody>
       </table>
@@ -677,15 +671,15 @@ export const MPTReportPrintPage = () => {
           </tr>
           <tr>
             <td className="lbl">Black Ink:</td>
-            <td className="val">{v(md.blackInk?.manufacturer) || "-"}</td>
-            <td className="val">{v(md.blackInk?.batchNo) || "-"}</td>
-            <td className="val">{v(md.blackInk?.expiryDate) || "-"}</td>
+            <td className="val">{v(md.blackInk?.manufacturer)}</td>
+            <td className="val">{v(md.blackInk?.batchNo)}</td>
+            <td className="val">{v(md.blackInk?.expiryDate)}</td>
           </tr>
           <tr>
             <td className="lbl">White Contrast:</td>
-            <td className="val">{v(md.whiteContrast?.manufacturer) || "-"}</td>
-            <td className="val">{v(md.whiteContrast?.batchNo) || "-"}</td>
-            <td className="val">{v(md.whiteContrast?.expiryDate) || "-"}</td>
+            <td className="val">{v(md.whiteContrast?.manufacturer)}</td>
+            <td className="val">{v(md.whiteContrast?.batchNo)}</td>
+            <td className="val">{v(md.whiteContrast?.expiryDate)}</td>
           </tr>
         </tbody>
       </table>
@@ -708,37 +702,35 @@ export const MPTReportPrintPage = () => {
           </tr>
           <tr>
             <td className="lbl">Method:</td>
-            <td className="val">{v(me.method) || "-"}</td>
+            <td className="val">{v(me.method)}</td>
             <td className="lbl">Light Intensity:</td>
-            <td className="val">{v(me.lightIntensity) || "-"}</td>
+            <td className="val">{v(me.lightIntensity)}</td>
             <td className="lbl">Magnetization Type:</td>
-            <td className="val">{v(me.magnetizationType) || "-"}</td>
+            <td className="val">{v(me.magnetizationType)}</td>
           </tr>
           <tr>
             <td className="lbl">Magnetizing Method:</td>
-            <td className="val">{v(me.magnetizingMethod) || "-"}</td>
+            <td className="val">{v(me.magnetizingMethod)}</td>
             <td className="lbl">Light Equip. Used:</td>
-            <td className="val">{v(me.lightEquipmentUsed) || "-"}</td>
+            <td className="val">{v(me.lightEquipmentUsed)}</td>
             <td className="lbl">Bath Concentration:</td>
-            <td className="val">{v(me.bathConcentration) || "-"}</td>
+            <td className="val">{v(me.bathConcentration)}</td>
           </tr>
           <tr>
             <td className="lbl">Demagnetization:</td>
-            <td className="val">{v(me.demagnetization) || "-"}</td>
+            <td className="val">{v(me.demagnetization)}</td>
             <td className="lbl">Post Cleaning:</td>
-            <td className="val">{v(me.postCleaning) || "-"}</td>
+            <td className="val">{v(me.postCleaning)}</td>
             <td className="lbl">Gauss Meter Reading:</td>
-            <td className="val">{v(me.gaussMeterReading) || "-"}</td>
+            <td className="val">{v(me.gaussMeterReading)}</td>
           </tr>
           <tr>
             <td className="lbl">Current:</td>
-            <td className="val">{v(me.current) || "-"}</td>
+            <td className="val">{v(me.current)}</td>
             <td className="lbl">Current Type:</td>
-            <td className="val">{v(me.currentType) || "-"}</td>
+            <td className="val">{v(me.currentType)}</td>
             <td className="lbl">Verified by:</td>
-            <td className="val">
-              {v(me.magneticFieldDirectionVerifiedBy) || "-"}
-            </td>
+            <td className="val">{v(me.magneticFieldDirectionVerifiedBy)}</td>
           </tr>
         </tbody>
       </table>
@@ -930,7 +922,7 @@ export const MPTReportPrintPage = () => {
                 b.type === "obs-row",
             )
             .map((b) => b.item);
-          const hasObsTable = pageObs.length > 0;
+          const hasObsTable = pageObs.length > 0 || isFirstPage;
 
           return (
             <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>

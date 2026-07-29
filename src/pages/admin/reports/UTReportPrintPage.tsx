@@ -112,8 +112,8 @@ const PRINT_STYLES = `
   .report-footer-wrap .sign-table tr:first-child td { border-top: none; }
 
 
-  .calib-table { width: 100%; border-collapse: collapse; table-layout: auto; }
-  .calib-table td, .calib-table th { border: 1.2px solid #000; padding: 4px; font-size: 11px; text-align: left; vertical-align: middle; }
+  .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .calib-table td, .calib-table th { border: 1.2px solid #000; padding: 4px; font-size: 11px; text-align: left; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; word-break: break-word; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
   .calib-table td.section-hdr { text-align: left; }
   .footer { background: #f8fafc; padding: 5px 10px; font-size: 11px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
@@ -238,7 +238,15 @@ export const UTReportPrintPage: React.FC = () => {
 
   const jd = report.jobDetails ?? {};
   const eq = report.equipmentDetails ?? {};
-  const units = (report as any).searchUnitDetails ?? [];
+  const units = ((report as any).searchUnitDetails ?? []).filter(
+    (u: any) =>
+      u.model?.trim() ||
+      u.angle?.trim() ||
+      u.srNo?.trim() ||
+      u.crystalSize?.trim() ||
+      u.waveMode?.trim() ||
+      u.frequency?.trim(),
+  );
   const td = report.techniqueDetails ?? {};
   const apc = report.angleProbeCalibration ?? {};
   const obs = report.observations ?? [];
@@ -289,21 +297,21 @@ export const UTReportPrintPage: React.FC = () => {
               National Industrial Inspection And Training
             </td>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-              {v(jd.customer) || "-"}
+              {v(jd.customer)}
             </td>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-              {v(jd.client) || "-"}
+              {v(jd.client)}
             </td>
           </tr>
           <tr>
-            <td>Name: {v(inspector.name) || "-"}</td>
-            <td>Name: {v((jd as any).customerRepresentative) || "-"}</td>
-            <td>Name: {v((jd as any).clientRepresentative) || "-"}</td>
+            <td>Name: {v(inspector.name)}</td>
+            <td>Name: {v((jd as any).customerRepresentative)}</td>
+            <td>Name: {v((jd as any).clientRepresentative)}</td>
           </tr>
           <tr>
             <td>{v(inspector.designation) || "UT NDE Level II"}</td>
-            <td>Designation: {v((jd as any).customerDesignation) || "-"}</td>
-            <td>Designation: {v((jd as any).clientDesignation) || "-"}</td>
+            <td>Designation: {v((jd as any).customerDesignation)}</td>
+            <td>Designation: {v((jd as any).clientDesignation)}</td>
           </tr>
           <tr>
             <td style={{ height: "40px" }}>Signature:-</td>
@@ -368,12 +376,9 @@ export const UTReportPrintPage: React.FC = () => {
               colSpan={7}
               style={{
                 textAlign: "center",
-                padding: "6px",
-                fontSize: "11px",
-                color: "#999",
               }}
             >
-              No observations recorded.
+              No data available
             </td>
           </tr>
         ) : (
@@ -381,22 +386,18 @@ export const UTReportPrintPage: React.FC = () => {
             <tr key={i}>
               <td style={{ textAlign: "center" }}>{o.srNo}</td>
 
-              <td>{v(o.jobDescription) || "-"}</td>
+              <td>{v(o.jobDescription)}</td>
+
+              <td style={{ textAlign: "center" }}>{v(o.drawingOrJointNo)}</td>
+
+              <td style={{ textAlign: "center" }}>{v(o.size)}</td>
+
+              <td style={{ textAlign: "center" }}>{v(o.quantity)}</td>
+
+              <td style={{ textAlign: "center" }}>{v(o.interpretation)}</td>
 
               <td style={{ textAlign: "center" }}>
-                {v(o.drawingOrJointNo) || "-"}
-              </td>
-
-              <td style={{ textAlign: "center" }}>{v(o.size) || "-"}</td>
-
-              <td style={{ textAlign: "center" }}>{v(o.quantity) || "-"}</td>
-
-              <td style={{ textAlign: "center" }}>
-                {v(o.interpretation) || "-"}
-              </td>
-
-              <td style={{ textAlign: "center" }}>
-                {v(o.evaluation || o.remark || o.result) || "-"}
+                {v(o.evaluation || o.remark || o.result)}
               </td>
             </tr>
           ))
@@ -432,10 +433,17 @@ export const UTReportPrintPage: React.FC = () => {
   // Angle Probe Calibration — rendered on page 2 to prevent page-1 overflow
   const calibSection = (
     <table className="calib-table mt-n1">
+      <colgroup>
+        <col style={{ width: "20%" }} />
+        <col style={{ width: "20%" }} />
+        <col style={{ width: "20%" }} />
+        <col style={{ width: "20%" }} />
+        <col style={{ width: "20%" }} />
+      </colgroup>
       <tbody>
         <tr>
           <td colSpan={5} className="section-hdr">
-            5. ANGLE PROBE CALIBRATION DETAIL
+            5. CALIBRATION DETAIL
           </td>
         </tr>
         <tr>
@@ -443,7 +451,7 @@ export const UTReportPrintPage: React.FC = () => {
             className="col-hdr"
             style={{ whiteSpace: "nowrap", textAlign: "center" }}
           >
-            Angle Probe Calibration Detail
+            Angle Probe
           </td>
           {calibAngles.map((a) => (
             <td
@@ -470,8 +478,7 @@ export const UTReportPrintPage: React.FC = () => {
             </td>
             {calibAngles.map((a) => (
               <td key={a.label} style={{ textAlign: "center" }}>
-                {v((a.data as Record<string, string> | undefined)?.[row.key]) ||
-                  "-"}
+                {v((a.data as Record<string, string> | undefined)?.[row.key])}
               </td>
             ))}
           </tr>
@@ -501,22 +508,22 @@ export const UTReportPrintPage: React.FC = () => {
           </tr>
           <tr>
             <td className="lbl">Customer:</td>
-            <td className="val">{v(jd.customer) || "-"}</td>
+            <td className="val">{v(jd.customer)}</td>
             <td className="lbl">Report No.:</td>
-            <td className="val">{v(report.reportNo) || "-"}</td>
+            <td className="val">{v(report.reportNo)}</td>
           </tr>
           <tr>
             <td className="lbl">Client:</td>
-            <td className="val">{v(jd.client) || "-"}</td>
+            <td className="val">{v(jd.client)}</td>
             <td className="lbl">Report Date:</td>
-            <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
+            <td className="val">{fmtDate(jd.reportDate)}</td>
           </tr>
           <tr>
             <td className="lbl">Project:</td>
-            <td className="val">{v(jd.project) || "-"}</td>
+            <td className="val">{v(jd.project)}</td>
             <td className="lbl">Inspection Date:</td>
             <td className="val">
-              {fmtDate(jd.inspectionDate) || "-"}
+              {fmtDate(jd.inspectionDate)}
               {jd.inspectionEndDate
                 ? ` to ${fmtDate(jd.inspectionEndDate)}`
                 : ""}
@@ -524,32 +531,32 @@ export const UTReportPrintPage: React.FC = () => {
           </tr>
           <tr>
             <td className="lbl">Reference Std.:</td>
-            <td className="val">{v(jd.referenceStd) || "-"}</td>
+            <td className="val">{v(jd.referenceStd)}</td>
             <td className="lbl">Material:</td>
-            <td className="val">{v(jd.material) || "-"}</td>
+            <td className="val">{v(jd.material)}</td>
           </tr>
           <tr>
             <td className="lbl">Acceptance Criteria:</td>
-            <td className="val">{v(jd.acceptanceCriteria) || "-"}</td>
+            <td className="val">{v(jd.acceptanceCriteria)}</td>
             <td className="lbl">Thickness:</td>
-            <td className="val">{v(jd.thickness) || "-"}</td>
+            <td className="val">{v(jd.thickness)}</td>
           </tr>
           <tr>
             <td className="lbl">Stage of Inspection:</td>
-            <td className="val">{v(jd.stageOfInspection) || "-"}</td>
+            <td className="val">{v(jd.stageOfInspection)}</td>
             <td className="lbl">Surface Condition:</td>
-            <td className="val">{v(jd.surfaceCondition) || "-"}</td>
+            <td className="val">{v(jd.surfaceCondition)}</td>
           </tr>
           <tr>
             <td className="lbl">Extent of Examination:</td>
-            <td className="val">{v(jd.extentOfExamination) || "-"}</td>
+            <td className="val">{v(jd.extentOfExamination)}</td>
             <td className="lbl">Surface Temperature:</td>
-            <td className="val">{v(jd.surfaceTemperature) || "-"}</td>
+            <td className="val">{v(jd.surfaceTemperature)}</td>
           </tr>
           <tr>
             <td className="lbl">Type of Joint:</td>
             <td colSpan={3} className="val">
-              {v(jd.typeOfJoint) || "-"}
+              {v(jd.typeOfJoint)}
             </td>
           </tr>
         </tbody>
@@ -575,25 +582,25 @@ export const UTReportPrintPage: React.FC = () => {
         </tr>
         <tr>
           <td className="lbl">Equip. Type:</td>
-          <td className="val">{v(eq.equipmentType) || "-"}</td>
+          <td className="val">{v(eq.equipmentType)}</td>
           <td className="lbl">Sr. No.:</td>
-          <td className="val">{v(eq.srNo) || "-"}</td>
+          <td className="val">{v(eq.srNo)}</td>
           <td className="lbl">Make:</td>
-          <td className="val">{v(eq.make) || "-"}</td>
+          <td className="val">{v(eq.make)}</td>
         </tr>
         <tr>
           <td className="lbl">Calibration Due:</td>
           <td className="val">{fmtDate(eq.calibrationDue)}</td>
           <td className="lbl">Couplant:</td>
-          <td className="val">{v(eq.couplant) || "-"}</td>
+          <td className="val">{v(eq.couplant)}</td>
           <td className="lbl">Basic Calibration Block:</td>
-          <td className="val">{v(eq.basicCalibrationBlock) || "-"}</td>
+          <td className="val">{v(eq.basicCalibrationBlock)}</td>
         </tr>
       </tbody>
     </table>
   );
 
-  const renderSearchTable = (rows: any[], title: string) => (
+  const renderSearchTable = (rows: any[] = [], title: string) => (
     <table className="report-table mt-n1">
       <tbody>
         <tr>
@@ -601,6 +608,7 @@ export const UTReportPrintPage: React.FC = () => {
             {title}
           </td>
         </tr>
+
         <tr>
           <td className="col-hdr" style={{ width: "20%", textAlign: "center" }}>
             Search Unit / Model
@@ -621,16 +629,31 @@ export const UTReportPrintPage: React.FC = () => {
             Frequency
           </td>
         </tr>
-        {(rows.length > 0 ? rows : [{}]).map((u: any, i: any) => (
-          <tr key={i} style={{ height: "20px", textAlign: "center" }}>
-            <td>{v(u.model) || "-"}</td>
-            <td>{v(u.angle) || "-"}</td>
-            <td>{v(u.srNo) || "-"}</td>
-            <td>{v(u.crystalSize) || "-"}</td>
-            <td>{v(u.waveMode) || "-"}</td>
-            <td>{v(u.frequency) || "-"}</td>
+
+        {rows.length === 0 ? (
+          <tr>
+            <td
+              colSpan={6}
+              className="val"
+              style={{
+                textAlign: "center",
+              }}
+            >
+              No data available
+            </td>
           </tr>
-        ))}
+        ) : (
+          rows.map((u: any, i: number) => (
+            <tr key={i} style={{ height: "20px", textAlign: "center" }}>
+              <td>{v(u.model)}</td>
+              <td>{v(u.angle)}</td>
+              <td>{v(u.srNo)}</td>
+              <td>{v(u.crystalSize)}</td>
+              <td>{v(u.waveMode)}</td>
+              <td>{v(u.frequency)}</td>
+            </tr>
+          ))
+        )}
       </tbody>
     </table>
   );
@@ -651,20 +674,20 @@ export const UTReportPrintPage: React.FC = () => {
         </tr>
         <tr>
           <td className="lbl">UT Method:</td>
-          <td className="val">{v(td.utMethod) || "-"}</td>
+          <td className="val">{v(td.utMethod)}</td>
           <td className="lbl">Reference Calibration Block:</td>
-          <td className="val">{v(td.referenceCalibrationBlock) || "-"}</td>
+          <td className="val">{v(td.referenceCalibrationBlock)}</td>
         </tr>
         <tr>
           <td className="lbl">UT Calibration Method:</td>
-          <td className="val">{v(td.utCalibrationMethod) || "-"}</td>
+          <td className="val">{v(td.utCalibrationMethod)}</td>
           <td className="lbl">Scanning dB:</td>
-          <td className="val">{v(td.scanningDb) || "-"}</td>
+          <td className="val">{v(td.scanningDb)}</td>
         </tr>
         <tr>
           <td className="lbl">Scanning Sensitivity:</td>
           <td className="val" colSpan={3}>
-            {v(td.scanningSensitivity) || "-"}
+            {v(td.scanningSensitivity)}
           </td>
         </tr>
       </tbody>
@@ -681,9 +704,9 @@ export const UTReportPrintPage: React.FC = () => {
 
   const estimateObsRowHeight = (o: any): number => {
     const baseHeight = 6.5; // mm for single-line row
-    const desc = o.jobDescription || "-";
-    const interp = o.interpretation || "-";
-    const evalText = o.evaluation || o.remark || o.result || "-";
+    const desc = o.jobDescription;
+    const interp = o.interpretation;
+    const evalText = o.evaluation || o.remark || o.result;
     const maxLen = Math.max(desc.length, interp.length, evalText.length);
     const lines = Math.max(1, Math.ceil(maxLen / 30));
     return baseHeight + (lines - 1) * 4.5;
@@ -875,7 +898,7 @@ export const UTReportPrintPage: React.FC = () => {
             </button>
           </div>
         )}
-        {pages.map(({ pageBlocks }, i) => {
+        {pages.map(({ isFirstPage, pageBlocks }, i) => {
           const hasJob = pageBlocks.some((b) => b.type === "job");
 
           const hasEquipment = pageBlocks.some((b) => b.type === "equipment");
@@ -895,6 +918,9 @@ export const UTReportPrintPage: React.FC = () => {
           const isSearchContd =
             searchRows.length > 0 && searchRows[0] !== units[0];
 
+          const shouldShowSearch =
+            searchRows.length > 0 || (isFirstPage && units.length === 0);
+
           // Re-added the wrapper as per instructions
           return (
             <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
@@ -905,7 +931,7 @@ export const UTReportPrintPage: React.FC = () => {
 
                   {hasEquipment && renderEquipmentSection()}
 
-                  {searchRows.length > 0 &&
+                  {shouldShowSearch &&
                     renderSearchTable(
                       searchRows,
                       isSearchContd

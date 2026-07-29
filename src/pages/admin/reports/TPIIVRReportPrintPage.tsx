@@ -365,7 +365,10 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   const vd = report.vendorDetails ?? {};
   const ev = report.extraVisit ?? {};
   const items = report.inspectionItems ?? [];
-  const refs = report.referenceDocuments ?? [];
+  const refs = (report.referenceDocuments ?? []).filter(
+    (doc: any) =>
+      doc.document?.trim() || doc.referenceNumber?.trim() || doc.revNo?.trim(),
+  );
   const calib = report.calibrationStatus ?? [];
   const sigs = report.signatures ?? {};
 
@@ -387,9 +390,9 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       </div>
       <div className="footer-meta">
         I.R. No: <span>{v(report.irNo)}</span>
-        &nbsp;|&nbsp; IR Rev.: <span>{v(report.irRev) || "-"}</span>
+        &nbsp;|&nbsp; IR Rev.: <span>{v(report.irRev)}</span>
         &nbsp;|&nbsp; Format No: <span>NIIT-16 Rev.01</span>
-        &nbsp;|&nbsp; Date: <span>{fmtDate(report.dtOfInspection) || "-"}</span>
+        &nbsp;|&nbsp; Date: <span>{fmtDate(report.dtOfInspection)}</span>
       </div>
     </>
   );
@@ -428,23 +431,23 @@ export const TPIIVRReportPrintPage: React.FC = () => {
           </tr>
           <tr>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-              {v(vd.vendor) || "-"}
+              {v(vd.vendor)}
             </td>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
               National Industrial Inspection And Training
             </td>
           </tr>
           <tr>
-            <td>Name: {v(sigs.vendor?.name) || "-"}</td>
-            <td>Name: {v(sigs.niit?.name) || "-"}</td>
+            <td>Name: {v(sigs.vendor?.name)}</td>
+            <td>Name: {v(sigs.niit?.name)}</td>
           </tr>
           <tr>
             <td style={{ height: "60px" }}>Signature:-</td>
             <td style={{ height: "60px" }}>Signature:-</td>
           </tr>
           <tr>
-            <td>Date: {fmtDate(sigs.vendor?.date) || "-"}</td>
-            <td>Date: {fmtDate(sigs.niit?.date) || "-"}</td>
+            <td>Date: {fmtDate(sigs.vendor?.date)}</td>
+            <td>Date: {fmtDate(sigs.niit?.date)}</td>
           </tr>
         </tbody>
       </table>
@@ -477,11 +480,11 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               <span style={{ fontSize: "10px", fontWeight: 600 }}>
                 IR Rev.:{" "}
               </span>
-              {v(report.irRev) || "-"}
+              {v(report.irRev)}
             </td>
             <td className="lbl">Dt. of Inspection:</td>
             <td className="val" style={{ fontWeight: 600 }}>
-              {fmtDate(report.dtOfInspection) || "-"}
+              {fmtDate(report.dtOfInspection)}
             </td>
           </tr>
         </tbody>
@@ -497,33 +500,33 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         <tbody>
           <tr>
             <td className="lbl">Client:</td>
-            <td className="val">{v(report.client) || "-"}</td>
+            <td className="val">{v(report.client)}</td>
             <td className="lbl">Inspection location:</td>
-            <td className="val">{v(report.inspectionLocation) || "-"}</td>
+            <td className="val">{v(report.inspectionLocation)}</td>
           </tr>
           <tr>
             <td className="lbl">Project:</td>
-            <td className="val">{v(report.project) || "-"}</td>
+            <td className="val">{v(report.project)}</td>
             <td className="lbl">Appd. QAP No.:</td>
-            <td className="val">{v(report.appdQapNo) || "-"}</td>
+            <td className="val">{v(report.appdQapNo)}</td>
           </tr>
           <tr>
             <td className="lbl">Client PO No.:</td>
-            <td className="val">{v(report.clientPoNo) || "-"}</td>
+            <td className="val">{v(report.clientPoNo)}</td>
             <td className="lbl">Appd. QAP Dt.:</td>
-            <td className="val">{fmtDate(report.appdQapDt) || "-"}</td>
+            <td className="val">{fmtDate(report.appdQapDt)}</td>
           </tr>
           <tr>
             <td className="lbl">PO Amed. No.:</td>
-            <td className="val">{v(report.poAmedNo) || "-"}</td>
+            <td className="val">{v(report.poAmedNo)}</td>
             <td className="lbl">Part Name:</td>
-            <td className="val">{v(report.partName) || "-"}</td>
+            <td className="val">{v(report.partName)}</td>
           </tr>
           <tr>
             <td className="lbl">PO Date:</td>
-            <td className="val">{fmtDate(report.poDate) || "-"}</td>
+            <td className="val">{fmtDate(report.poDate)}</td>
             <td className="lbl">Inspection Stage:</td>
-            <td className="val">{v(report.inspectionStage) || "-"}</td>
+            <td className="val">{v(report.inspectionStage)}</td>
           </tr>
         </tbody>
       </table>
@@ -551,19 +554,19 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               <tbody>
                 <tr>
                   <td className="lbl">Ref:</td>
-                  <td className="val">{v(cd.ref) || "-"}</td>
+                  <td className="val">{v(cd.ref)}</td>
                 </tr>
                 <tr>
-                  <td className="lbl">Contact:</td>
-                  <td className="val">{v(cd.contact) || "-"}</td>
+                  <td className="lbl">Contact Person:</td>
+                  <td className="val">{v(cd.contact)}</td>
                 </tr>
                 <tr>
                   <td className="lbl">Call Date:</td>
-                  <td className="val">{fmtDate(cd.callDate) || "-"}</td>
+                  <td className="val">{fmtDate(cd.callDate)}</td>
                 </tr>
                 <tr>
-                  <td className="lbl">Inspection Att. Date:</td>
-                  <td className="val">{fmtDate(cd.inspectionAttDt) || "-"}</td>
+                  <td className="lbl">Inspection Att.</td>
+                  <td className="val">{fmtDate(cd.inspectionAttDt)}</td>
                 </tr>
               </tbody>
             </table>
@@ -583,19 +586,19 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               <tbody>
                 <tr>
                   <td className="lbl">Vendor:</td>
-                  <td className="val">{v(vd.vendor) || "-"}</td>
+                  <td className="val">{v(vd.vendor)}</td>
                 </tr>
                 <tr>
                   <td className="lbl">Sub Vendor:</td>
-                  <td className="val">{v(vd.subVendor) || "-"}</td>
+                  <td className="val">{v(vd.subVendor)}</td>
                 </tr>
                 <tr>
-                  <td className="lbl">Contact:</td>
-                  <td className="val">{v(vd.contact) || "-"}</td>
+                  <td className="lbl">Contact Person:</td>
+                  <td className="val">{v(vd.contact)}</td>
                 </tr>
                 <tr>
                   <td className="lbl">Phone:</td>
-                  <td className="val">{v(vd.phone) || "-"}</td>
+                  <td className="val">{v(vd.phone)}</td>
                 </tr>
               </tbody>
             </table>
@@ -610,8 +613,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               whiteSpace: "normal",
             }}
           >
-            <strong>Extra Visit / Date:</strong> {v(ev.date) || "-"}
-            &nbsp;&nbsp; <strong>Comment:</strong> {v(ev.comment) || "-"}
+            <strong>Extra Visit / Date:</strong> {v(ev.date)}
+            &nbsp;&nbsp; <strong>Comment:</strong> {v(ev.comment)}
           </td>
         </tr>
       </tbody>
@@ -680,29 +683,27 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         </tr>
       </thead>
       <tbody>
-        {pageItems.map((item: any, i: number) => (
-          <tr key={i}>
-            <td style={{ textAlign: "center" }}>{v(item.poLineNo) || "-"}</td>
-            <td style={{ textAlign: "center" }}>
-              {v(item.description) || "-"}
-            </td>
-            <td style={{ textAlign: "center" }}>
-              {v(item.drgOrHeatNo) || "-"}
-            </td>
-            <td style={{ textAlign: "center" }}>{v(item.qtyOffered) || "-"}</td>
-            <td style={{ textAlign: "center" }}>
-              {v(item.qtyInspected) || "-"}
-            </td>
-            <td style={{ textAlign: "center" }}>
-              {v(item.qtyAccepted) || "-"}
-            </td>
-            <td style={{ textAlign: "center" }}>{v(item.qtyHold) || "-"}</td>
-            <td style={{ textAlign: "center" }}>{v(item.qtyReject) || "-"}</td>
-            <td style={{ textAlign: "center" }}>
-              {v(item.inspectionType) || "-"}
+        {pageItems.length === 0 ? (
+          <tr>
+            <td colSpan={9} style={{ textAlign: "center" }}>
+              No probe data available
             </td>
           </tr>
-        ))}
+        ) : (
+          pageItems.map((item: any, i: number) => (
+            <tr key={i}>
+              <td style={{ textAlign: "center" }}>{v(item.poLineNo)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.description)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.drgOrHeatNo)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.qtyOffered)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.qtyInspected)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.qtyAccepted)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.qtyHold)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.qtyReject)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.inspectionType)}</td>
+            </tr>
+          ))
+        )}
       </tbody>
     </table>
   );
@@ -723,13 +724,13 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       </thead>
       <tbody>
         <tr>
-          <td className="activities-box">{v(text) || "-"}</td>
+          <td className="activities-box">{v(text)}</td>
         </tr>
       </tbody>
     </table>
   );
 
-  const renderRefsSection = (pageRefs: any[], isFirstChunk: boolean) => (
+  const renderRefsSection = (pageRefs: any[] = [], isFirstChunk: boolean) => (
     <table
       className="report-table mt-n1"
       style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
@@ -739,14 +740,16 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         <col style={{ width: "50%" }} />
         <col style={{ width: "20%" }} />
       </colgroup>
+
       <thead>
         <tr>
           <td colSpan={3} className="section-hdr">
             {isFirstChunk
               ? "5. REFERENCE DOCUMENTS FOR INSPECTION"
-              : "REFERENCE DOCUMENTS FOR INSPECTION (Contd.)"}
+              : "5. REFERENCE DOCUMENTS FOR INSPECTION (Contd.)"}
           </td>
         </tr>
+
         <tr>
           <td className="col-hdr" style={{ textAlign: "center" }}>
             Document
@@ -759,23 +762,36 @@ export const TPIIVRReportPrintPage: React.FC = () => {
           </td>
         </tr>
       </thead>
+
       <tbody>
-        {pageRefs.map((doc: any, i: number) => (
-          <tr key={i}>
+        {pageRefs.length === 0 ? (
+          <tr>
             <td
-              className="lbl"
-              style={{ fontWeight: 500, textAlign: "center" }}
+              className="val"
+              colSpan={3}
+              style={{
+                textAlign: "center",
+                padding: "8px",
+              }}
             >
-              {v(doc.document) || "-"}
-            </td>
-            <td className="val" style={{ textAlign: "center" }}>
-              {v(doc.referenceNumber) || "-"}
-            </td>
-            <td className="val" style={{ textAlign: "center" }}>
-              {v(doc.revNo) || "-"}
+              No data available
             </td>
           </tr>
-        ))}
+        ) : (
+          pageRefs.map((doc: any, i: number) => (
+            <tr key={i}>
+              <td className="val" style={{ textAlign: "center" }}>
+                {v(doc.document)}
+              </td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {v(doc.referenceNumber)}
+              </td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {v(doc.revNo)}
+              </td>
+            </tr>
+          ))
+        )}
       </tbody>
     </table>
   );
@@ -823,25 +839,33 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         </tr>
       </thead>
       <tbody>
-        {pageCalib.map((c: any, i: number) => (
-          <tr key={i}>
-            <td className="val" style={{ textAlign: "center" }}>
-              {v(c.equipment) || "-"}
-            </td>
-            <td className="val" style={{ textAlign: "center" }}>
-              {v(c.idNumber) || "-"}
-            </td>
-            <td className="val" style={{ textAlign: "center" }}>
-              {fmtDate(c.calibrationDate) || "-"}
-            </td>
-            <td className="val" style={{ textAlign: "center" }}>
-              {fmtDate(c.dueDate) || "-"}
-            </td>
-            <td className="val" style={{ textAlign: "center" }}>
-              {v(c.nablCertified) || "-"}
+        {pageCalib.length === 0 ? (
+          <tr>
+            <td className="val" colSpan={5} style={{ textAlign: "center" }}>
+              No data available
             </td>
           </tr>
-        ))}
+        ) : (
+          pageCalib.map((c: any, i: number) => (
+            <tr key={i}>
+              <td className="val" style={{ textAlign: "center" }}>
+                {v(c.equipment)}
+              </td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {v(c.idNumber)}
+              </td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {fmtDate(c.calibrationDate)}
+              </td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {fmtDate(c.dueDate)}
+              </td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {v(c.nablCertified)}
+              </td>
+            </tr>
+          ))
+        )}
       </tbody>
     </table>
   );
@@ -859,7 +883,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         </tr>
         <tr>
           <td className="val" style={{ padding: "8px", minHeight: "40px" }}>
-            {v(text) || "-"}
+            {v(text)}
           </td>
         </tr>
       </tbody>
@@ -1201,6 +1225,18 @@ export const TPIIVRReportPrintPage: React.FC = () => {
           const isFirstItem = pageItems[0] === items[0];
           const isFirstRefs = pageRefs[0] === refs[0];
           const isFirstCalib = pageCalib[0] === calib[0];
+          const shouldShowItems =
+            pageItems.length > 0 || (isFirstPage && items.length === 0);
+          const shouldShowActivities =
+            pageActivities.length > 0 ||
+            (isFirstPage && !report.inspectionActivities?.trim());
+          const shouldShowRefs =
+            pageRefs.length > 0 || (isFirstPage && refs.length === 0);
+          const shouldShowCalib =
+            pageCalib.length > 0 || (isFirstPage && calib.length === 0);
+          const shouldShowConclusion =
+            pageConclusion.length > 0 ||
+            (isFirstPage && !report.conclusion?.trim());
 
           return (
             <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
@@ -1209,21 +1245,24 @@ export const TPIIVRReportPrintPage: React.FC = () => {
                 <div className="report-body">
                   {isFirstPage && renderJobDetailsSection()}
                   {showClientVendor && renderClientVendorSection()}
-                  {pageItems.length > 0 &&
-                    renderItemsTableSection(pageItems, isFirstItem)}
-                  {pageActivities.length > 0 &&
+                  {shouldShowItems &&
+                    renderItemsTableSection(
+                      pageItems,
+                      isFirstPage || isFirstItem,
+                    )}
+                  {shouldShowActivities &&
                     renderActivitiesSection(
                       pageActivities.map((a) => a.text).join(""),
-                      !pageActivities[0].isContinuation,
+                      !pageActivities[0]?.isContinuation,
                     )}
-                  {pageRefs.length > 0 &&
-                    renderRefsSection(pageRefs, isFirstRefs)}
-                  {pageCalib.length > 0 &&
-                    renderCalibSection(pageCalib, isFirstCalib)}
-                  {pageConclusion.length > 0 &&
+                  {shouldShowRefs &&
+                    renderRefsSection(pageRefs, isFirstPage || isFirstRefs)}
+                  {shouldShowCalib &&
+                    renderCalibSection(pageCalib, isFirstPage || isFirstCalib)}
+                  {shouldShowConclusion &&
                     renderConclusionSection(
                       pageConclusion.map((c) => c.text).join(""),
-                      !pageConclusion[0].isContinuation,
+                      !pageConclusion[0]?.isContinuation,
                     )}
                 </div>
                 {renderSignatures()}

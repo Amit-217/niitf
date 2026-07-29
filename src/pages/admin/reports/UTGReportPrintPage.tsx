@@ -176,7 +176,9 @@ export const UTGReportPrintPage: React.FC = () => {
     if (!id) return;
     const fetcher = isPublic ? getPublicUTGReportById : getUTGReportById;
     fetcher(id)
-      .then((res: any) => setReport((res as any).data ?? res))
+      .then((res: any) =>
+        setReport(res?.data?.data ?? res?.data ?? res?.report ?? res),
+      )
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
   }, [id, isPublic]);
@@ -262,7 +264,8 @@ export const UTGReportPrintPage: React.FC = () => {
   const SIGNATURES_HEIGHT = 48; // mm
 
   const SEARCH_UNIT_ROW_HEIGHT = 6;
-  const searchUnitHeight = sud.length > 0 ? sud.length * SEARCH_UNIT_ROW_HEIGHT : 6;
+  const searchUnitHeight =
+    sud.length > 0 ? sud.length * SEARCH_UNIT_ROW_HEIGHT : 6;
   // 108 is base for Title + Job + Equip + Technique + Search Header
   const FIXED_SECTIONS_HEIGHT = 108 + searchUnitHeight;
 
@@ -272,11 +275,7 @@ export const UTGReportPrintPage: React.FC = () => {
     const thickness = o.measuredThickness || "";
     const evalText = o.evaluation || o.remark || o.result || "";
 
-    const maxLen = Math.max(
-      itemName.length,
-      thickness.length,
-      evalText.length
-    );
+    const maxLen = Math.max(itemName.length, thickness.length, evalText.length);
 
     const lines = Math.max(1, Math.ceil(maxLen / 32));
     return baseHeight + (lines - 1) * 3.2;
@@ -285,7 +284,7 @@ export const UTGReportPrintPage: React.FC = () => {
   type ContentBlock = { type: "obs-row"; item: any; height: number };
 
   const blocks: ContentBlock[] = [];
-  obs.forEach((o:any) => {
+  obs.forEach((o: any) => {
     blocks.push({
       type: "obs-row",
       item: o,
@@ -303,7 +302,8 @@ export const UTGReportPrintPage: React.FC = () => {
 
   while (currentBlockIndex < blocks.length) {
     const isFirstPage = pages.length === 0;
-    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT;
+    let availableHeight =
+      PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT;
 
     if (isFirstPage) {
       availableHeight -= FIXED_SECTIONS_HEIGHT;
@@ -327,8 +327,8 @@ export const UTGReportPrintPage: React.FC = () => {
         break;
       }
 
-        pageBlocks.push(block);
-        accumulatedHeight += blockHeight;
+      pageBlocks.push(block);
+      accumulatedHeight += blockHeight;
       if (block.type === "obs-row") {
         hasObsTable = true;
       }
@@ -346,15 +346,20 @@ export const UTGReportPrintPage: React.FC = () => {
     });
   }
 
+  if (pages.length === 0) {
+    pages.push({
+      isFirstPage: true,
+      pageBlocks: [],
+    });
+  }
+
   const renderHeader = () => (
     <div className="rpt-header">
       <div className="logo-box">
         <img src="/logo.jpeg" alt="NIIT Logo" />
       </div>
       <div className="hdr-center">
-        <div className="org">
-          National Industrial Inspection and Training
-        </div>
+        <div className="org">National Industrial Inspection and Training</div>
         <div className="sub">
           THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING | NDT
           CONSULTANCY
@@ -365,7 +370,7 @@ export const UTGReportPrintPage: React.FC = () => {
       </div>
     </div>
   );
-  const sudCount = sud.length;
+
   const renderObsTable = (data: any[], title: string) => (
     <table className="obs-table mt-n1">
       <colgroup>
@@ -381,35 +386,37 @@ export const UTGReportPrintPage: React.FC = () => {
           </td>
         </tr>
         <tr>
-          <th style={{textAlign: "center"}}>Sr. No.</th>
-          <th style={{textAlign: "center"}}>Item Name</th>
-          <th style={{textAlign: "center"}}>Measured Thickness</th>
-          <th style={{textAlign: "center"}}>Evaluation</th>
+          <th style={{ textAlign: "center" }}>Sr. No.</th>
+          <th style={{ textAlign: "center" }}>Item Name</th>
+          <th style={{ textAlign: "center" }}>Measured Thickness</th>
+          <th style={{ textAlign: "center" }}>Evaluation</th>
         </tr>
       </thead>
       <tbody>
-        
-        {data.length === 0 && sudCount === 0 ? (
+        {data.length === 0 ? (
           <tr>
             <td
               colSpan={4}
               style={{
                 textAlign: "center",
-                padding: "6px",
-                fontSize: "11px",
-                color: "#999",
               }}
             >
-              No observations recorded.
+              No data available
             </td>
           </tr>
         ) : (
           data.map((o: any, i: number) => (
             <tr key={i}>
               <td style={{ textAlign: "center" }}>{v(o.srNo) || i + 1}</td>
-              <td style={{textAlign: "left",paddingLeft:"10px"}}>{v(o.itemName) || "-"}</td>
-              <td style={{textAlign: "left",paddingLeft:"10px"}}>{v(o.measuredThickness) || "-"}</td>
-              <td style={{ textAlign: "center" }}>{v(o.evaluation || o.remark || o.result) || "-"}</td>
+              <td style={{ textAlign: "left", paddingLeft: "10px" }}>
+                {v(o.itemName)}
+              </td>
+              <td style={{ textAlign: "left", paddingLeft: "10px" }}>
+                {v(o.measuredThickness)}
+              </td>
+              <td style={{ textAlign: "center" }}>
+                {v(o.evaluation || o.remark || o.result)}
+              </td>
             </tr>
           ))
         )}
@@ -467,17 +474,17 @@ export const UTGReportPrintPage: React.FC = () => {
             </td>
           </tr>
           <tr>
-            <td>Name: {v(inspector.name) || "-"}</td>
-            <td>Name: {v(fs.customer?.name) || "-"}</td>
-            <td>Name: {v(fs.clientOrTPI?.name) || "-"}</td>
+            <td>Name: {v(inspector.name)}</td>
+            <td>Name: {v(fs.customer?.name)}</td>
+            <td>Name: {v(fs.clientOrTPI?.name)}</td>
           </tr>
           <tr>
             <td>
               {v(inspector.qualification) || "UT NDE Level II"}
               {inspector.designation ? ` / ${inspector.designation}` : ""}
             </td>
-            <td>Designation:- {v(fs.customer?.designation) || "-"}</td>
-            <td>Designation:- {v(fs.clientOrTPI?.designation) || "-"}</td>
+            <td>Designation:- {v(fs.customer?.designation)}</td>
+            <td>Designation:- {v(fs.clientOrTPI?.designation)}</td>
           </tr>
           <tr>
             <td style={{ height: 60 }}>Signature:-</td>
@@ -485,9 +492,9 @@ export const UTGReportPrintPage: React.FC = () => {
             <td style={{ height: 60 }}>Signature:-</td>
           </tr>
           <tr>
-            <td>Date: {fmtDate(inspector.date) || "-"}</td>
-            <td>Date: {fmtDate(fs.customer?.date) || "-"}</td>
-            <td>Date: {fmtDate(fs.clientOrTPI?.date) || "-"}</td>
+            <td>Date: {fmtDate(inspector.date)}</td>
+            <td>Date: {fmtDate(fs.customer?.date)}</td>
+            <td>Date: {fmtDate(fs.clientOrTPI?.date)}</td>
           </tr>
         </tbody>
       </table>
@@ -514,51 +521,50 @@ export const UTGReportPrintPage: React.FC = () => {
           </tr>
           <tr>
             <td className="lbl">Customer:</td>
-            <td className="val">{v(jd.customer) || "-"}</td>
+            <td className="val">{v(jd.customer)}</td>
             <td className="lbl">Report No.:</td>
-            <td className="val">{v(report.reportNo) || "-"}</td>
+            <td className="val">{v(report.reportNo)}</td>
           </tr>
           <tr>
             <td className="lbl">Client:</td>
-            <td className="val">{v(jd.client) || "-"}</td>
+            <td className="val">{v(jd.client)}</td>
             <td className="lbl">Report Date:</td>
-            <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
+            <td className="val">{fmtDate(jd.reportDate)}</td>
           </tr>
           <tr>
             <td className="lbl">Project:</td>
-            <td className="val">{v(jd.project) || "-"}</td>
+            <td className="val">{v(jd.project)}</td>
             <td className="lbl">Inspection Date:</td>
             <td className="val">
               {fmtDate(jd.inspectionDate)}
               {jd.inspectionEndDate
                 ? ` To ${fmtDate(jd.inspectionEndDate)}`
                 : ""}
-              {!jd.inspectionDate && "-"}
             </td>
           </tr>
           <tr>
             <td className="lbl">Reference Std.:</td>
             <td className="val" colSpan={3}>
-              {v(jd.referenceStd) || "-"}
+              {v(jd.referenceStd)}
             </td>
           </tr>
           <tr>
             <td className="lbl">Acceptance Criteria:</td>
-            <td className="val">{v(jd.acceptanceCriteria) || "-"}</td>
+            <td className="val">{v(jd.acceptanceCriteria)}</td>
             <td className="lbl">Material:</td>
-            <td className="val">{v(jd.material) || "-"}</td>
+            <td className="val">{v(jd.material)}</td>
           </tr>
           <tr>
             <td className="lbl">Stage of Inspection:</td>
-            <td className="val">{v(jd.stageOfInspection) || "-"}</td>
+            <td className="val">{v(jd.stageOfInspection)}</td>
             <td className="lbl">Surface Condition:</td>
-            <td className="val">{v(jd.surfaceCondition) || "-"}</td>
+            <td className="val">{v(jd.surfaceCondition)}</td>
           </tr>
           <tr>
             <td className="lbl">Extent of Examination:</td>
-            <td className="val">{v(jd.extentOfExamination) || "-"}</td>
+            <td className="val">{v(jd.extentOfExamination)}</td>
             <td className="lbl">Surface Temperature:</td>
-            <td className="val">{v(jd.surfaceTemperature) || "-"}</td>
+            <td className="val">{v(jd.surfaceTemperature)}</td>
           </tr>
         </tbody>
       </table>
@@ -579,21 +585,21 @@ export const UTGReportPrintPage: React.FC = () => {
           </tr>
           <tr>
             <td className="lbl">Equip. Type:</td>
-            <td className="val">{v(eq.equipmentType) || "-"}</td>
+            <td className="val">{v(eq.equipmentType)}</td>
             <td className="lbl">Sr. No.:</td>
-            <td className="val">{v(eq.srNo) || "-"}</td>
+            <td className="val">{v(eq.srNo)}</td>
           </tr>
           <tr>
             <td className="lbl">Make:</td>
-            <td className="val">{v(eq.make) || "-"}</td>
+            <td className="val">{v(eq.make)}</td>
             <td className="lbl">Calibration Due:</td>
-            <td className="val">{fmtDate(eq.calibrationDue) || "-"}</td>
+            <td className="val">{fmtDate(eq.calibrationDue)}</td>
           </tr>
           <tr>
             <td className="lbl">Couplant:</td>
-            <td className="val">{v(eq.couplant) || "-"}</td>
+            <td className="val">{v(eq.couplant)}</td>
             <td className="lbl">Basic Calibration Block:</td>
-            <td className="val">{v(eq.basicCalibrationBlock) || "-"}</td>
+            <td className="val">{v(eq.basicCalibrationBlock)}</td>
           </tr>
         </tbody>
       </table>
@@ -607,22 +613,40 @@ export const UTGReportPrintPage: React.FC = () => {
             </td>
           </tr>
           <tr>
-            <td className="col-hdr" style={{ width: "22%", textAlign: "center"}}>
+            <td
+              className="col-hdr"
+              style={{ width: "22%", textAlign: "center" }}
+            >
               Search Unit / Model
             </td>
-            <td className="col-hdr" style={{ width: "12%", textAlign: "center" }}>
+            <td
+              className="col-hdr"
+              style={{ width: "12%", textAlign: "center" }}
+            >
               Angle
             </td>
-            <td className="col-hdr" style={{ width: "18%", textAlign: "center" ,}}>
+            <td
+              className="col-hdr"
+              style={{ width: "18%", textAlign: "center" }}
+            >
               Sr. No.
             </td>
-            <td className="col-hdr" style={{ width: "18%", textAlign: "center" }}>
+            <td
+              className="col-hdr"
+              style={{ width: "18%", textAlign: "center" }}
+            >
               Crystal Size
             </td>
-            <td className="col-hdr" style={{ width: "15%", textAlign: "center" }}>
+            <td
+              className="col-hdr"
+              style={{ width: "15%", textAlign: "center" }}
+            >
               Wave Mode
             </td>
-            <td className="col-hdr" style={{ width: "15%", textAlign: "center" }}>
+            <td
+              className="col-hdr"
+              style={{ width: "15%", textAlign: "center" }}
+            >
               Frequency
             </td>
           </tr>
@@ -632,18 +656,17 @@ export const UTGReportPrintPage: React.FC = () => {
                 colSpan={6}
                 style={{
                   textAlign: "center",
-                  padding: "4px",
-                  color: "#999",
-                  fontSize: "11px",
                 }}
               >
-                No search units recorded.
+                No data available
               </td>
             </tr>
           ) : (
             sud.map((u: any, i: number) => (
               <tr key={i}>
-                <td style={{ paddingLeft: "8px" }}>{v(u.searchUnit || u.model)}</td>
+                <td style={{ paddingLeft: "8px" }}>
+                  {v(u.searchUnit || u.model)}
+                </td>
                 <td style={{ textAlign: "center" }}>{v(u.angle)}</td>
                 <td style={{ textAlign: "center" }}>{v(u.srNo)}</td>
                 <td style={{ textAlign: "center" }}>{v(u.crystalSize)}</td>
@@ -669,7 +692,7 @@ export const UTGReportPrintPage: React.FC = () => {
           </tr>
           <tr>
             <td className="lbl">UT Method:</td>
-            <td className="val">{v(td.utMethod) || "-"}</td>
+            <td className="val">{v(td.utMethod)}</td>
           </tr>
         </tbody>
       </table>
@@ -734,9 +757,12 @@ export const UTGReportPrintPage: React.FC = () => {
       >
         {pages.map(({ isFirstPage, pageBlocks }, i) => {
           const pageObs = pageBlocks
-            .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
+            .filter(
+              (b): b is Extract<ContentBlock, { type: "obs-row" }> =>
+                b.type === "obs-row",
+            )
             .map((b) => b.item);
-          const hasObsTable = pageObs.length > 0;
+          const hasObsTable = pageObs.length > 0 || isFirstPage;
           const isFirstObs = pageObs[0] === obs[0];
 
           return (
@@ -748,7 +774,9 @@ export const UTGReportPrintPage: React.FC = () => {
                   {hasObsTable &&
                     renderObsTable(
                       pageObs,
-                      isFirstObs ? "5. OBSERVATIONS" : "5. OBSERVATIONS (Contd.)"
+                      isFirstObs
+                        ? "5. OBSERVATIONS"
+                        : "5. OBSERVATIONS (Contd.)",
                     )}
                   <Signatures />
                 </div>

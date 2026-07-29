@@ -441,11 +441,13 @@ export const TPIIVRFormPage: React.FC = () => {
           })),
         inspectionActivities,
         conclusion: resolve(conclusion, conclusionOther) || undefined,
-        referenceDocuments: refDocs.map((d) => ({
-          document: d.document,
-          referenceNumber: d.referenceNumber,
-          revNo: d.revNo,
-        })),
+        referenceDocuments: refDocs
+          .filter((d) => d.document.trim() || d.referenceNumber.trim() || d.revNo.trim())
+          .map((d) => ({
+            document: d.document,
+            referenceNumber: d.referenceNumber,
+            revNo: d.revNo,
+          })),
         calibrationStatus: calibRows
           .filter((c) => c.equipment.trim())
           .map((c) => ({
@@ -700,7 +702,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Contact *</label>
+                <label className={labelClass}>Contact Person *</label>
                 <input
                   type="text"
                   value={clientContact}
@@ -719,7 +721,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Inspection Att. Date *</label>
+                <label className={labelClass}>Inspection Att.</label>
                 <input
                   type="date"
                   value={inspAttDt}
@@ -756,7 +758,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Contact *</label>
+                <label className={labelClass}>Contact Person*</label>
                 <input
                   type="text"
                   value={vendorContact}
@@ -1025,7 +1027,7 @@ export const TPIIVRFormPage: React.FC = () => {
       {/* ── Inspection Activities & Conclusion ── */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>
-          Inspection Activities &amp; Conclusion
+          Inspection Activities
         </h2>
         <div className="space-y-4">
           <div>
@@ -1042,18 +1044,7 @@ export const TPIIVRFormPage: React.FC = () => {
               placeholder="Describe inspection activities performed..."
             />
           </div>
-          <div>
-            <label className={labelClass}>Conclusion *</label>
-            <input
-              type="text"
-              value={conclusion}
-              onChange={(e) => setConclusion(e.target.value)}
-              placeholder="Enter conclusion"
-              className={`w-full rounded-md border px-3 py-2 ${
-                hasError("conclusion") ? "border-red-500" : "border-gray-300"
-              }`}
-            />
-          </div>
+        
         </div>
       </div>
 
@@ -1284,9 +1275,31 @@ export const TPIIVRFormPage: React.FC = () => {
                     )}
                   </td>
                 </tr>
+                
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+       <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>
+          Conclusion
+        </h2>
+        <div className="space-y-4">
+          
+          <div>
+            <label className={labelClass}>Conclusion *</label>
+            <input
+              type="text"
+              value={conclusion}
+              onChange={(e) => setConclusion(e.target.value)}
+              placeholder="Enter conclusion"
+              className={`w-full rounded-md border px-3 py-2 ${
+                hasError("conclusion") ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+          </div>
         </div>
       </div>
 

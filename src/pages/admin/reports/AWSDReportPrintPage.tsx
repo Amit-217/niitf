@@ -404,47 +404,47 @@ export const AWSDReportPrintPage: React.FC = () => {
             <td className="lbl">Report No.</td>
             <td className="val">{v(report.reportNo || report.id)}</td>
             <td className="lbl">Project</td>
-            <td className="val">{v(report.project) || "-"}</td>
+            <td className="val">{v(report.project)}</td>
           </tr>
           <tr>
             <td className="lbl">Date of Inspection</td>
             <td className="val">{fmtDate(report.dateOfInspection)}</td>
             <td className="lbl">Job Description</td>
-            <td className="val">{v(report.jobDescription) || "-"}</td>
+            <td className="val">{v(report.jobDescription)}</td>
             <td className="lbl">Drawing.no</td>
-            <td className="val">{v(report.drawingNo) || "-"}</td>
+            <td className="val">{v(report.drawingNo)}</td>
           </tr>
           <tr>
             <td className="lbl">Calibration. Block</td>
-            <td className="val">{v(report.calibrationBlock) || "-"}</td>
+            <td className="val">{v(report.calibrationBlock)}</td>
             <td className="lbl">QTY of Jts.</td>
-            <td className="val">{v(report.qtyOfJts) || "-"}</td>
+            <td className="val">{v(report.qtyOfJts)}</td>
             <td className="lbl">Flaw Detector/Sr. No.</td>
-            <td className="val">{v(report.flawDetectorSrNo) || "-"}</td>
+            <td className="val">{v(report.flawDetectorSrNo)}</td>
           </tr>
           <tr>
             <td className="lbl">Welding Process</td>
-            <td className="val">{v(report.weldingProcess) || "-"}</td>
+            <td className="val">{v(report.weldingProcess)}</td>
             <td className="lbl">Machine Calibration</td>
-            <td className="val">{v(report.machineCalibration) || "-"}</td>
+            <td className="val">{v(report.machineCalibration)}</td>
             <td className="lbl">Surface Condition</td>
-            <td className="val">{v(report.surfaceCondition) || "-"}</td>
+            <td className="val">{v(report.surfaceCondition)}</td>
           </tr>
           <tr>
             <td className="lbl">P.O. No.</td>
-            <td className="val">{v(report.poNo) || "-"}</td>
+            <td className="val">{v(report.poNo)}</td>
             <td className="lbl">Couplant</td>
-            <td className="val">{v(report.couplant) || "-"}</td>
+            <td className="val">{v(report.couplant)}</td>
             <td className="lbl">Stage of inspection</td>
-            <td className="val">{v(report.stageOfInspection) || "-"}</td>
+            <td className="val">{v(report.stageOfInspection)}</td>
           </tr>
           <tr>
             <td className="lbl">Material</td>
-            <td className="val">{v(report.material) || "-"}</td>
+            <td className="val">{v(report.material)}</td>
             <td className="lbl">QAP NO.</td>
-            <td className="val">{v(report.qapNo) || "-"}</td>
+            <td className="val">{v(report.qapNo)}</td>
             <td className="lbl">Acc. Standard</td>
-            <td className="val">{v(report.accStandard) || "-"}</td>
+            <td className="val">{v(report.accStandard)}</td>
           </tr>
         </tbody>
       </table>
@@ -461,15 +461,23 @@ export const AWSDReportPrintPage: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>{v(report.probe) || "-"}</td>
-            <td>{v(report.probeAngle) || "-"}</td>
-            <td>{v(report.frequency) || "-"}</td>
-            <td>{v(report.range) || "-"}</td>
-            <td>{v(report.scanningSensitivity) || "-"}</td>
-            <td>{v(report.referenceDb) || "-"}</td>
-            <td>{v(report.scanningDb) || "-"}</td>
-          </tr>
+          {!report.probe ? (
+            <tr>
+              <td colSpan={7} style={{ textAlign: "center" }}>
+                No probe data available
+              </td>
+            </tr>
+          ) : (
+            <tr>
+              <td>{v(report.probe)}</td>
+              <td>{v(report.probeAngle)}</td>
+              <td>{v(report.frequency)}</td>
+              <td>{v(report.range)}</td>
+              <td>{v(report.scanningSensitivity)}</td>
+              <td>{v(report.referenceDb)}</td>
+              <td>{v(report.scanningDb)}</td>
+            </tr>
+          )}
         </tbody>
       </table>
     </>
@@ -611,24 +619,24 @@ export const AWSDReportPrintPage: React.FC = () => {
       <tbody>
         {chunk.map((o: any, i: number) => (
           <tr key={i} style={{ height: "20px" }}>
-            <td>{v(o.serialNo) || "-"}</td>
-            <td>{v(o.jointDetails) || "-"}</td>
-            <td>{v(o.drawingNoPartNo) || "-"}</td>
-            <td>{v(o.jobThickness) || "-"}</td>
-            <td>{v(o.partNo) || "-"}</td>
-            <td>{v(o.transducerAngle) || "-"}</td>
-            <td>{v(o.jointNo) || "-"}</td>
-            <td>{v(o.decibels?.indicationLevelA) || "-"}</td>
-            <td>{v(o.decibels?.referenceLevelB) || "-"}</td>
-            <td>{v(o.decibels?.attenuationFactorC) || "-"}</td>
-            <td>{v(o.decibels?.indicationRatingD) || "-"}</td>
-            <td>{v(o.discontinuity?.length) || "-"}</td>
-            <td>{v(o.discontinuity?.angularDistance) || "-"}</td>
-            <td>{v(o.discontinuity?.depthFromASurface) || "-"}</td>
-            <td>{v(o.discontinuity?.distanceX) || "-"}</td>
-            <td>{v(o.discontinuity?.distanceY) || "-"}</td>
-            <td>{v(o.discontinuityEvaluation) || "-"}</td>
-            <td>{v(o.remarks) || "-"}</td>
+            <td>{v(o.serialNo)}</td>
+            <td>{v(o.jointDetails)}</td>
+            <td>{v(o.drawingNoPartNo)}</td>
+            <td>{v(o.jobThickness)}</td>
+            <td>{v(o.partNo)}</td>
+            <td>{v(o.transducerAngle)}</td>
+            <td>{v(o.jointNo)}</td>
+            <td>{v(o.decibels?.indicationLevelA)}</td>
+            <td>{v(o.decibels?.referenceLevelB)}</td>
+            <td>{v(o.decibels?.attenuationFactorC)}</td>
+            <td>{v(o.decibels?.indicationRatingD)}</td>
+            <td>{v(o.discontinuity?.length)}</td>
+            <td>{v(o.discontinuity?.angularDistance)}</td>
+            <td>{v(o.discontinuity?.depthFromASurface)}</td>
+            <td>{v(o.discontinuity?.distanceX)}</td>
+            <td>{v(o.discontinuity?.distanceY)}</td>
+            <td>{v(o.discontinuityEvaluation)}</td>
+            <td>{v(o.remarks)}</td>
           </tr>
         ))}
       </tbody>
@@ -661,14 +669,14 @@ export const AWSDReportPrintPage: React.FC = () => {
             <td style={{ fontWeight: 600, fontSize: "11px" }}></td>
           </tr> */}
           <tr>
-            <td>Name: {v(cert.inspectedBy) || "-"}</td>
-            <td>Name: {v(cert.authorizedBy) || "-"}</td>
-            <td>Name: {v(cert.reviewedBy) || "-"}</td>
+            <td>Name: {v(cert.inspectedBy)}</td>
+            <td>Name: {v(cert.authorizedBy)}</td>
+            <td>Name: {v(cert.reviewedBy)}</td>
           </tr>
           <tr>
             <td>{v(cert.year) || "ASNT NDT Level-II - UT"}</td>
-            <td>Designation: {v(cert.custDesignation) || "-"}</td>
-            <td>Designation: {v(cert.clientDesignation) || "-"}</td>
+            <td>Designation: {v(cert.custDesignation)}</td>
+            <td>Designation: {v(cert.clientDesignation)}</td>
           </tr>
           <tr>
             <td style={{ height: "40px" }}>Signature:-</td>
