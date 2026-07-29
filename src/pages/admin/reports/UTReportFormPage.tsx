@@ -599,7 +599,7 @@ export const UTReportFormPage: React.FC = () => {
               u.srNo.trim() ||
               u.crystalSize.trim() ||
               u.waveMode.trim() ||
-              u.frequency.trim()
+              u.frequency.trim(),
           )
           .map((u) => ({
             ...u,
@@ -780,7 +780,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Client *</label>
+            <label className={labelClass}>Client</label>
             <input
               type="text"
               value={jobClient}
@@ -789,7 +789,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Report Date *</label>
+            <label className={labelClass}>Report Date</label>
             <input
               type="date"
               value={jobReportDate}
@@ -798,7 +798,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Project *</label>
+            <label className={labelClass}>Project</label>
             <input
               type="text"
               value={jobProject}
@@ -808,7 +808,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection Start Date *</label>
+            <label className={labelClass}>Inspection Start Date</label>
             <input
               type="date"
               value={jobInspectionDate}
@@ -817,7 +817,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection End Date *</label>
+            <label className={labelClass}>Inspection End Date</label>
             <input
               type="date"
               value={jobInspectionEndDate}
@@ -826,7 +826,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Reference Std. *</label>
+            <label className={labelClass}>Reference Std.</label>
             <SelectWithCustom
               value={jobRefStd}
               onChange={setJobRefStd}
@@ -844,7 +844,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Acceptance Criteria *</label>
+            <label className={labelClass}>Acceptance Criteria</label>
             <SelectWithCustom
               value={jobAcceptance}
               onChange={setJobAcceptance}
@@ -862,7 +862,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Stage of Inspection *</label>
+            <label className={labelClass}>Stage of Inspection</label>
             <select
               value={jobStage}
               onChange={(e) => setJobStage(e.target.value)}
@@ -876,7 +876,7 @@ export const UTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Material *</label>
+            <label className={labelClass}>Material</label>
             <input
               type="text"
               value={jobMaterial}
@@ -886,7 +886,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Extent of Examination *</label>
+            <label className={labelClass}>Extent of Examination</label>
             <SelectWithCustom
               value={jobExtent}
               onChange={setJobExtent}
@@ -902,7 +902,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Thickness *</label>
+            <label className={labelClass}>Thickness</label>
             <input
               type="text"
               value={jobThickness}
@@ -912,7 +912,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Type of Joint *</label>
+            <label className={labelClass}>Type of Joint</label>
             <select
               value={jobJointType}
               onChange={(e) => setJobJointType(e.target.value)}
@@ -926,7 +926,7 @@ export const UTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Surface Condition *</label>
+            <label className={labelClass}>Surface Condition</label>
             <select
               value={jobSurface}
               onChange={(e) => setJobSurface(e.target.value)}
@@ -939,7 +939,7 @@ export const UTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Surface Temperature *</label>
+            <label className={labelClass}>Surface Temperature</label>
             <select
               value={jobSurfaceTemp}
               onChange={(e) => setJobSurfaceTemp(e.target.value)}
@@ -958,7 +958,7 @@ export const UTReportFormPage: React.FC = () => {
         <h2 className={sectionTitleClass}>Equipment Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Equipment Type *</label>
+            <label className={labelClass}>Equipment Type</label>
             <SelectWithCustom
               value={eqType}
               onChange={setEqType}
@@ -975,7 +975,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Sr. No. *</label>
+            <label className={labelClass}>Sr. No.</label>
             <input
               type="text"
               value={eqSrNo}
@@ -985,7 +985,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Make *</label>
+            <label className={labelClass}>Make</label>
             <SelectWithCustom
               value={eqMake}
               onChange={setEqMake}
@@ -996,7 +996,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Calibration Due *</label>
+            <label className={labelClass}>Calibration Due</label>
             <input
               type="text"
               value={eqCalibDue}
@@ -1006,7 +1006,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Couplant *</label>
+            <label className={labelClass}>Couplant</label>
             <select
               value={eqCouplant}
               onChange={(e) => setEqCouplant(e.target.value)}
@@ -1021,7 +1021,7 @@ export const UTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Basic Calibration Block *</label>
+            <label className={labelClass}>Basic Calibration Block</label>
             <select
               value={eqBasicCalib}
               onChange={(e) => setEqBasicCalib(e.target.value)}
@@ -1059,22 +1059,22 @@ export const UTReportFormPage: React.FC = () => {
             <thead>
               <tr className="bg-gray-50 text-xs text-gray-600 uppercase">
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Model *
+                  Model
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Angle *
+                  Angle
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Sr. No. *
+                  Sr. No.
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Crystal Size *
+                  Crystal Size
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
                   Wave Mode
                 </th>
                 <th className="border border-gray-200 px-2 py-2 text-left">
-                  Frequency *
+                  Frequency
                 </th>
                 <th className="border border-gray-200 px-2 py-2 w-8"></th>
               </tr>
@@ -1205,7 +1205,7 @@ export const UTReportFormPage: React.FC = () => {
         <h2 className={sectionTitleClass}>Technique Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>UT Method *</label>
+            <label className={labelClass}>UT Method</label>
             <SelectWithCustom
               value={utMethod}
               onChange={setUtMethod}
@@ -1216,7 +1216,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Reference Calibration Block *</label>
+            <label className={labelClass}>Reference Calibration Block</label>
             <SelectWithCustom
               value={refCalibBlock}
               onChange={setRefCalibBlock}
@@ -1227,7 +1227,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>UT Calibration Method *</label>
+            <label className={labelClass}>UT Calibration Method</label>
             <select
               value={utCalibMethod}
               onChange={(e) => setUtCalibMethod(e.target.value)}
@@ -1240,7 +1240,7 @@ export const UTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Scanning dB *</label>
+            <label className={labelClass}>Scanning dB</label>
             <input
               type="text"
               value={scanningDb}
@@ -1250,7 +1250,7 @@ export const UTReportFormPage: React.FC = () => {
             />
           </div>
           <div className="sm:col-span-2">
-            <label className={labelClass}>Scanning Sensitivity *</label>
+            <label className={labelClass}>Scanning Sensitivity</label>
             <SelectWithCustom
               value={scanningSens}
               onChange={setScanningSens}
@@ -1291,11 +1291,11 @@ export const UTReportFormPage: React.FC = () => {
             <tbody>
               {(
                 [
-                  { key: "range", label: "Range *" },
-                  { key: "point1", label: "1st Point *" },
-                  { key: "point2", label: "2nd Point *" },
-                  { key: "point3", label: "3rd Point *" },
-                  { key: "refDb", label: "Ref dB *" },
+                  { key: "range", label: "Range " },
+                  { key: "point1", label: "1st Point " },
+                  { key: "point2", label: "2nd Point " },
+                  { key: "point3", label: "3rd Point " },
+                  { key: "refDb", label: "Ref dB " },
                 ] as { key: keyof CalibRow; label: string }[]
               ).map((row) => (
                 <tr key={row.key} className="hover:bg-gray-50">
@@ -1338,7 +1338,7 @@ export const UTReportFormPage: React.FC = () => {
               "",
             )}
           >
-            Observations *
+            Observations
           </h2>
           <button
             type="button"
@@ -1487,7 +1487,7 @@ export const UTReportFormPage: React.FC = () => {
       {/* <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Conclusion</h2>
         <div>
-          <label className={labelClass}>Conclusion *</label>
+          <label className={labelClass}>Conclusion</label>
           <SelectWithCustom
             value={conclusion}
             onChange={setConclusion}
@@ -1539,7 +1539,7 @@ export const UTReportFormPage: React.FC = () => {
                   )}
                   <div className="space-y-2">
                     <div>
-                      <label className={labelClass}>Name *</label>
+                      <label className={labelClass}>Name</label>
                       <select
                         value={insp.name}
                         onChange={(e) =>
@@ -1556,7 +1556,7 @@ export const UTReportFormPage: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className={labelClass}>Qualification *</label>
+                      <label className={labelClass}>Qualification</label>
                       <input
                         type="text"
                         value={insp.qualification}
@@ -1573,7 +1573,7 @@ export const UTReportFormPage: React.FC = () => {
                       />
                     </div>
                     {/* <div>
-                      <label className={labelClass}>Designation *</label>
+                      <label className={labelClass}>Designation</label>
                       <input
                         type="text"
                         value={insp.designation}
@@ -1600,7 +1600,7 @@ export const UTReportFormPage: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>Date *</label>
+                      <label className={labelClass}>Date</label>
                       <input
                         type="date"
                         value={insp.date}
@@ -1630,7 +1630,7 @@ export const UTReportFormPage: React.FC = () => {
             </p>
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Name *</label>
+                <label className={labelClass}>Name</label>
                 <input
                   type="text"
                   value={custName}
@@ -1639,7 +1639,7 @@ export const UTReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Designation *</label>
+                <label className={labelClass}>Designation</label>
                 <input
                   type="text"
                   value={custDesig}
@@ -1657,7 +1657,7 @@ export const UTReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Date *</label>
+                <label className={labelClass}>Date</label>
                 <input
                   type="date"
                   value={custDate}
@@ -1678,7 +1678,7 @@ export const UTReportFormPage: React.FC = () => {
             </p>
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Name *</label>
+                <label className={labelClass}>Name</label>
                 <input
                   type="text"
                   value={clientName}
@@ -1687,7 +1687,7 @@ export const UTReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Designation *</label>
+                <label className={labelClass}>Designation</label>
                 <input
                   type="text"
                   value={clientDesig}
@@ -1705,7 +1705,7 @@ export const UTReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Date *</label>
+                <label className={labelClass}>Date</label>
                 <input
                   type="date"
                   value={clientDate}

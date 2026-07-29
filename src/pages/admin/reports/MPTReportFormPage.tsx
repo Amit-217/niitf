@@ -671,9 +671,7 @@ export const MPTReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass} htmlFor="reportNo">
-              Report No. {isEditMode ? "" : "(Auto-generated)"}
-            </label>
+            <label className={labelClass} htmlFor="reportNo">Report No. {isEditMode ? "" : "(Auto-generated)"}</label>
             <input
               id="reportNo"
               type="text"
@@ -701,9 +699,7 @@ export const MPTReportFormPage: React.FC = () => {
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass} htmlFor="jobCustomer">
-              Customer
-            </label>
+            <label className={labelClass} htmlFor="jobCustomer">Customer</label>
             <input
               id="jobCustomer"
               type="text"
@@ -713,9 +709,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobClient">
-              Client
-            </label>
+            <label className={labelClass} htmlFor="jobClient">Client</label>
             <input
               id="jobClient"
               type="text"
@@ -725,9 +719,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobProject">
-              Project
-            </label>
+            <label className={labelClass} htmlFor="jobProject">Project</label>
             <input
               id="jobProject"
               type="text"
@@ -737,9 +729,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobReportDate">
-              Report Date
-            </label>
+            <label className={labelClass} htmlFor="jobReportDate">Report Date</label>
             <input
               id="jobReportDate"
               type="date"
@@ -749,9 +739,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobInspectionDate">
-              Inspection Start Date
-            </label>
+            <label className={labelClass} htmlFor="jobInspectionDate">Inspection Start Date</label>
             <input
               id="jobInspectionDate"
               type="date"
@@ -761,9 +749,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobInspectionEndDate">
-              Inspection End Date
-            </label>
+            <label className={labelClass} htmlFor="jobInspectionEndDate">Inspection End Date</label>
             <input
               id="jobInspectionEndDate"
               type="date"
@@ -773,9 +759,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobReferenceStd">
-              Reference Std.
-            </label>
+            <label className={labelClass} htmlFor="jobReferenceStd">Reference Std.</label>
             <SelectWithOther
               id="jobReferenceStd"
               value={jobReferenceStd}
@@ -788,9 +772,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobAcceptanceCriteria">
-              Acceptance Criteria
-            </label>
+            <label className={labelClass} htmlFor="jobAcceptanceCriteria">Acceptance Criteria</label>
             <SelectWithOther
               id="jobAcceptanceCriteria"
               value={jobAcceptanceCriteria}
@@ -809,9 +791,7 @@ export const MPTReportFormPage: React.FC = () => {
           </div>
 
           <div>
-            <label className={labelClass} htmlFor="jobStage">
-              Stage of Inspection
-            </label>
+            <label className={labelClass} htmlFor="jobStage">Stage of Inspection</label>
             <select
               id="jobStage"
               value={jobStageOfInspection}
@@ -826,9 +806,7 @@ export const MPTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobExt">
-              Extent of Examination
-            </label>
+            <label className={labelClass} htmlFor="jobExt">Extent of Examination</label>
             <SelectWithOther
               id="jobExt"
               value={jobExtentOfExamination}
@@ -846,9 +824,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobThickness">
-              Thickness
-            </label>
+            <label className={labelClass} htmlFor="jobThickness">Thickness</label>
             <input
               id="jobThickness"
               type="text"
@@ -860,9 +836,7 @@ export const MPTReportFormPage: React.FC = () => {
           </div>
 
           <div>
-            <label className={labelClass} htmlFor="jobMaterial">
-              Material
-            </label>
+            <label className={labelClass} htmlFor="jobMaterial">Material</label>
             <input
               id="jobMaterial"
               type="text"
@@ -874,9 +848,7 @@ export const MPTReportFormPage: React.FC = () => {
           </div>
 
           <div>
-            <label className={labelClass} htmlFor="jobTypeOfJoint">
-              Type of Joint
-            </label>
+            <label className={labelClass} htmlFor="jobTypeOfJoint">Type of Joint</label>
             <select
               id="jobTypeOfJoint"
               value={jobTypeOfJoint}
@@ -891,9 +863,7 @@ export const MPTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobSurface">
-              Surface Condition
-            </label>
+            <label className={labelClass} htmlFor="jobSurface">Surface Condition</label>
             <input
               id="jobSurface"
               type="text"
@@ -904,9 +874,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="jobWelding">
-              Welding Process
-            </label>
+            <label className={labelClass} htmlFor="jobWelding">Welding Process</label>
             <select
               id="jobWelding"
               value={jobWeldingProcess}
@@ -930,9 +898,7 @@ export const MPTReportFormPage: React.FC = () => {
         <h2 className={sectionTitleClass}>Equipment Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass} htmlFor="eqType">
-              Equipment Type
-            </label>
+            <label className={labelClass} htmlFor="eqType">Equipment Type</label>
             <select
               id="eqType"
               value={eqType}
@@ -947,9 +913,7 @@ export const MPTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass} htmlFor="eqSrNo">
-              Sr. No.
-            </label>
+            <label className={labelClass} htmlFor="eqSrNo">Sr. No.</label>
             <input
               id="eqSrNo"
               type="text"
@@ -960,9 +924,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="eqMake">
-              Make
-            </label>
+            <label className={labelClass} htmlFor="eqMake">Make</label>
             <SelectWithOther
               id="eqMake"
               value={eqMake}
@@ -974,9 +936,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="eqCalibration">
-              Calibration Due
-            </label>
+            <label className={labelClass} htmlFor="eqCalibration">Calibration Due</label>
             <input
               id="eqCalibration"
               type="date"
@@ -986,9 +946,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="eqYoke">
-              Spacing
-            </label>
+            <label className={labelClass} htmlFor="eqYoke">Spacing</label>
             <input
               id="eqYoke"
               type="text"
@@ -999,9 +957,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="eqPie">
-              Pie Gauge Calibration
-            </label>
+            <label className={labelClass} htmlFor="eqPie">Pie Gauge Calibration</label>
             <select
               id="eqPie"
               value={eqPieGauge}
@@ -1113,9 +1069,7 @@ export const MPTReportFormPage: React.FC = () => {
         <h2 className={sectionTitleClass}>Method Description</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass} htmlFor="method">
-              Method
-            </label>
+            <label className={labelClass} htmlFor="method">Method</label>
             <select
               id="method"
               value={method}
@@ -1128,9 +1082,7 @@ export const MPTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass} htmlFor="lightIntensity">
-              Light Intensity
-            </label>
+            <label className={labelClass} htmlFor="lightIntensity">Light Intensity</label>
 
             <div className="relative">
               <input
@@ -1158,9 +1110,7 @@ export const MPTReportFormPage: React.FC = () => {
             </div>
           </div>
           <div>
-            <label className={labelClass} htmlFor="magType">
-              Magnetization Type
-            </label>
+            <label className={labelClass} htmlFor="magType">Magnetization Type</label>
             <select
               id="magType"
               value={magnetizationType}
@@ -1174,9 +1124,7 @@ export const MPTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass} htmlFor="lightEquip">
-              Light Equipment Used
-            </label>
+            <label className={labelClass} htmlFor="lightEquip">Light Equipment Used</label>
             <select
               id="lightEquip"
               value={lightEquipUsed}
@@ -1189,9 +1137,7 @@ export const MPTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass} htmlFor="magMethod">
-              Magnetizing Method
-            </label>
+            <label className={labelClass} htmlFor="magMethod">Magnetizing Method</label>
             <select
               id="magMethod"
               value={magnetizingMethod}
@@ -1206,9 +1152,7 @@ export const MPTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass} htmlFor="bathConc">
-              Bath Concentration
-            </label>
+            <label className={labelClass} htmlFor="bathConc">Bath Concentration</label>
             <SelectWithOther
               id="bathConc"
               value={bathConcentration}
@@ -1220,9 +1164,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="demag">
-              Demagnetization
-            </label>
+            <label className={labelClass} htmlFor="demag">Demagnetization</label>
             <select
               id="demag"
               value={demagnetization}
@@ -1235,9 +1177,7 @@ export const MPTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass} htmlFor="magFieldVerify">
-              Magnetic Field Direction Verified By
-            </label>
+            <label className={labelClass} htmlFor="magFieldVerify">Magnetic Field Direction Verified By</label>
             <select
               id="magFieldVerify"
               value={magFieldVerifiedBy}
@@ -1250,9 +1190,7 @@ export const MPTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass} htmlFor="gaussMeter">
-              Gauss Meter Reading
-            </label>
+            <label className={labelClass} htmlFor="gaussMeter">Gauss Meter Reading</label>
             <input
               id="gaussMeter"
               type="text"
@@ -1263,9 +1201,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="current">
-              Current
-            </label>
+            <label className={labelClass} htmlFor="current">Current</label>
             <input
               id="current"
               type="text"
@@ -1276,9 +1212,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="currentType">
-              Current Type
-            </label>
+            <label className={labelClass} htmlFor="currentType">Current Type</label>
             <SelectWithOther
               id="currentType"
               value={currentType}
@@ -1290,9 +1224,7 @@ export const MPTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass} htmlFor="postCleaning">
-              Post Cleaning
-            </label>
+            <label className={labelClass} htmlFor="postCleaning">Post Cleaning</label>
             <select
               id="postCleaning"
               value={postCleaning}
@@ -1467,9 +1399,7 @@ export const MPTReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Conclusion</h2>
         <div className="max-w-2xl">
-          <label className={labelClass} htmlFor="conclusion">
-            Conclusion
-          </label>
+          <label className={labelClass} htmlFor="conclusion">Conclusion</label>
           <SelectWithOther
             id="conclusion"
             value={conclusion}
@@ -1544,7 +1474,7 @@ export const MPTReportFormPage: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className={labelClass}>Qualification *</label>
+                      <label className={labelClass}>Qualification</label>
                       <input
                         type="text"
                         value={insp.qualification}
@@ -1561,7 +1491,7 @@ export const MPTReportFormPage: React.FC = () => {
                       />
                     </div>
                     {/* <div>
-                      <label className={labelClass}>Designation *</label>
+                      <label className={labelClass}>Designation</label>
                       <input
                         type="text"
                         value={insp.designation}
@@ -1588,7 +1518,7 @@ export const MPTReportFormPage: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>Date *</label>
+                      <label className={labelClass}>Date</label>
                       <input
                         type="date"
                         value={insp.date}

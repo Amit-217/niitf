@@ -442,7 +442,10 @@ export const TPIIVRFormPage: React.FC = () => {
         inspectionActivities,
         conclusion: resolve(conclusion, conclusionOther) || undefined,
         referenceDocuments: refDocs
-          .filter((d) => d.document.trim() || d.referenceNumber.trim() || d.revNo.trim())
+          .filter(
+            (d) =>
+              d.document.trim() || d.referenceNumber.trim() || d.revNo.trim(),
+          )
           .map((d) => ({
             document: d.document,
             referenceNumber: d.referenceNumber,
@@ -528,7 +531,7 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>IR Rev. *</label>
+            <label className={labelClass}>IR Rev.</label>
             <input
               type="text"
               value={irRev}
@@ -538,7 +541,7 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Date of Inspection *</label>
+            <label className={labelClass}>Date of Inspection</label>
             <input
               type="date"
               value={dtOfInspection}
@@ -563,7 +566,7 @@ export const TPIIVRFormPage: React.FC = () => {
         <h2 className={sectionTitleClass}>Job Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Client *</label>
+            <label className={labelClass}>Client</label>
             <input
               type="text"
               value={client}
@@ -573,7 +576,7 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection Location *</label>
+            <label className={labelClass}>Inspection Location</label>
             <input
               type="text"
               value={inspectionLocation}
@@ -583,7 +586,7 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Project *</label>
+            <label className={labelClass}>Project</label>
             <input
               type="text"
               value={project}
@@ -593,7 +596,7 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Appd. QAP No. *</label>
+            <label className={labelClass}>Appd. QAP No.</label>
             <input
               type="text"
               value={appdQapNo}
@@ -603,7 +606,7 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Client PO No. *</label>
+            <label className={labelClass}>Client PO No.</label>
             <input
               type="text"
               value={clientPoNo}
@@ -613,7 +616,7 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Appd. QAP Date *</label>
+            <label className={labelClass}>Appd. QAP Date</label>
             <input
               type="date"
               value={appdQapDt}
@@ -622,7 +625,7 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>PO Amed. No. *</label>
+            <label className={labelClass}>PO Amed. No.</label>
             <input
               type="text"
               value={poAmedNo}
@@ -632,7 +635,7 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Part Name *</label>
+            <label className={labelClass}>Part Name</label>
             <input
               type="text"
               value={partName}
@@ -642,7 +645,7 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>PO Date *</label>
+            <label className={labelClass}>PO Date</label>
             <input
               type="date"
               value={poDate}
@@ -651,7 +654,7 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Inspection Stage *</label>
+            <label className={labelClass}>Inspection Stage</label>
             <SelectWithOther
               value={inspectionStage}
               onChange={setInspectionStage}
@@ -685,7 +688,7 @@ export const TPIIVRFormPage: React.FC = () => {
             </p>
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Ref *</label>
+                <label className={labelClass}>Ref</label>
                 <SelectWithOther
                   value={clientRef}
                   onChange={setClientRef}
@@ -702,7 +705,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Contact Person *</label>
+                <label className={labelClass}>Contact Person</label>
                 <input
                   type="text"
                   value={clientContact}
@@ -712,7 +715,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Call Date *</label>
+                <label className={labelClass}>Call Date</label>
                 <input
                   type="date"
                   value={callDate}
@@ -738,7 +741,7 @@ export const TPIIVRFormPage: React.FC = () => {
             </p>
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Vendor *</label>
+                <label className={labelClass}>Vendor</label>
                 <input
                   type="text"
                   value={vendor}
@@ -748,7 +751,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Sub Vendor *</label>
+                <label className={labelClass}>Sub Vendor</label>
                 <input
                   type="text"
                   value={subVendor}
@@ -758,7 +761,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Contact Person*</label>
+                <label className={labelClass}>Contact Person</label>
                 <input
                   type="text"
                   value={vendorContact}
@@ -768,7 +771,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Phone *</label>
+                <label className={labelClass}>Phone</label>
                 <input
                   type="text"
                   value={vendorPhone}
@@ -783,7 +786,7 @@ export const TPIIVRFormPage: React.FC = () => {
         {/* Extra Visit */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           <div>
-            <label className={labelClass}>Extra Visit / Date *</label>
+            <label className={labelClass}>Extra Visit / Date</label>
             <input
               type="text"
               value={extraVisitDate}
@@ -797,7 +800,7 @@ export const TPIIVRFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Comment *</label>
+            <label className={labelClass}>Comment</label>
             <input
               type="text"
               value={extraVisitComment}
@@ -817,7 +820,7 @@ export const TPIIVRFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
-            Inspection Items <span className="text-red-500 font-bold">*</span>
+            Inspection Items
           </h2>
           <button
             type="button"
@@ -1026,12 +1029,10 @@ export const TPIIVRFormPage: React.FC = () => {
 
       {/* ── Inspection Activities & Conclusion ── */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>
-          Inspection Activities
-        </h2>
+        <h2 className={sectionTitleClass}>Inspection Activities</h2>
         <div className="space-y-4">
           <div>
-            <label className={labelClass}>Inspection Activities *</label>
+            <label className={labelClass}>Inspection Activities</label>
             <textarea
               value={inspectionActivities}
               onChange={(e) => setInspectionActivities(e.target.value)}
@@ -1044,7 +1045,6 @@ export const TPIIVRFormPage: React.FC = () => {
               placeholder="Describe inspection activities performed..."
             />
           </div>
-        
         </div>
       </div>
 
@@ -1053,7 +1053,6 @@ export const TPIIVRFormPage: React.FC = () => {
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
             Reference Documents for Inspection{" "}
-            <span className="text-red-500 font-bold">*</span>
           </h2>
           <button
             type="button"
@@ -1275,21 +1274,17 @@ export const TPIIVRFormPage: React.FC = () => {
                     )}
                   </td>
                 </tr>
-                
               ))}
             </tbody>
           </table>
         </div>
       </div>
 
-       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>
-          Conclusion
-        </h2>
+      <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>Conclusion</h2>
         <div className="space-y-4">
-          
           <div>
-            <label className={labelClass}>Conclusion *</label>
+            <label className={labelClass}>Conclusion</label>
             <input
               type="text"
               value={conclusion}
@@ -1314,7 +1309,7 @@ export const TPIIVRFormPage: React.FC = () => {
             </p>
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Vendor Name *</label>
+                <label className={labelClass}>Vendor Name</label>
                 <input
                   type="text"
                   value={vendor}
@@ -1327,7 +1322,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Date *</label>
+                <label className={labelClass}>Date</label>
                 <input
                   type="date"
                   value={vendorSignDate}
@@ -1348,7 +1343,7 @@ export const TPIIVRFormPage: React.FC = () => {
             </p>
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Name *</label>
+                <label className={labelClass}>Name</label>
                 <select
                   value={niitSignName}
                   onChange={(e) => setNiitSignName(e.target.value)}
@@ -1363,7 +1358,7 @@ export const TPIIVRFormPage: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className={labelClass}>Date *</label>
+                <label className={labelClass}>Date</label>
                 <input
                   type="date"
                   value={niitSignDate}
