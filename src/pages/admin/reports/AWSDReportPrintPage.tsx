@@ -6,7 +6,10 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { getAWSDReportById, getPublicAWSDReportById } from "../../../api/customerApi";
+import {
+  getAWSDReportById,
+  getPublicAWSDReportById,
+} from "../../../api/customerApi";
 
 // ───────── Print Styles ─────────────────────────────────────────────────────────────
 
@@ -261,7 +264,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       const trigger = async () => {
         try {
           await document.fonts.ready;
-        } catch (_) { }
+        } catch (_) {}
         requestAnimationFrame(() => {
           setTimeout(() => {
             window.print();
@@ -401,47 +404,47 @@ export const AWSDReportPrintPage: React.FC = () => {
             <td className="lbl">Report No.</td>
             <td className="val">{v(report.reportNo || report.id)}</td>
             <td className="lbl">Project</td>
-            <td className="val">{v(report.project)}</td>
+            <td className="val">{v(report.project) || "-"}</td>
           </tr>
           <tr>
             <td className="lbl">Date of Inspection</td>
             <td className="val">{fmtDate(report.dateOfInspection)}</td>
             <td className="lbl">Job Description</td>
-            <td className="val">{v(report.jobDescription)}</td>
+            <td className="val">{v(report.jobDescription) || "-"}</td>
             <td className="lbl">Drawing.no</td>
-            <td className="val">{v(report.drawingNo)}</td>
+            <td className="val">{v(report.drawingNo) || "-"}</td>
           </tr>
           <tr>
             <td className="lbl">Calibration. Block</td>
-            <td className="val">{v(report.calibrationBlock)}</td>
+            <td className="val">{v(report.calibrationBlock) || "-"}</td>
             <td className="lbl">QTY of Jts.</td>
-            <td className="val">{v(report.qtyOfJts)}</td>
+            <td className="val">{v(report.qtyOfJts) || "-"}</td>
             <td className="lbl">Flaw Detector/Sr. No.</td>
-            <td className="val">{v(report.flawDetectorSrNo)}</td>
+            <td className="val">{v(report.flawDetectorSrNo) || "-"}</td>
           </tr>
           <tr>
             <td className="lbl">Welding Process</td>
-            <td className="val">{v(report.weldingProcess)}</td>
+            <td className="val">{v(report.weldingProcess) || "-"}</td>
             <td className="lbl">Machine Calibration</td>
-            <td className="val">{v(report.machineCalibration)}</td>
+            <td className="val">{v(report.machineCalibration) || "-"}</td>
             <td className="lbl">Surface Condition</td>
-            <td className="val">{v(report.surfaceCondition)}</td>
+            <td className="val">{v(report.surfaceCondition) || "-"}</td>
           </tr>
           <tr>
             <td className="lbl">P.O. No.</td>
-            <td className="val">{v(report.poNo)}</td>
+            <td className="val">{v(report.poNo) || "-"}</td>
             <td className="lbl">Couplant</td>
-            <td className="val">{v(report.couplant)}</td>
+            <td className="val">{v(report.couplant) || "-"}</td>
             <td className="lbl">Stage of inspection</td>
-            <td className="val">{v(report.stageOfInspection)}</td>
+            <td className="val">{v(report.stageOfInspection) || "-"}</td>
           </tr>
           <tr>
             <td className="lbl">Material</td>
-            <td className="val">{v(report.material)}</td>
+            <td className="val">{v(report.material) || "-"}</td>
             <td className="lbl">QAP NO.</td>
-            <td className="val">{v(report.qapNo)}</td>
+            <td className="val">{v(report.qapNo) || "-"}</td>
             <td className="lbl">Acc. Standard</td>
-            <td className="val">{v(report.accStandard)}</td>
+            <td className="val">{v(report.accStandard) || "-"}</td>
           </tr>
         </tbody>
       </table>
@@ -459,13 +462,13 @@ export const AWSDReportPrintPage: React.FC = () => {
         </thead>
         <tbody>
           <tr>
-            <td>{v(report.probe)}</td>
-            <td>{v(report.probeAngle)}</td>
-            <td>{v(report.frequency)}</td>
-            <td>{v(report.range)}</td>
-            <td>{v(report.scanningSensitivity)}</td>
-            <td>{v(report.referenceDb)}</td>
-            <td>{v(report.scanningDb)}</td>
+            <td>{v(report.probe) || "-"}</td>
+            <td>{v(report.probeAngle) || "-"}</td>
+            <td>{v(report.frequency) || "-"}</td>
+            <td>{v(report.range) || "-"}</td>
+            <td>{v(report.scanningSensitivity) || "-"}</td>
+            <td>{v(report.referenceDb) || "-"}</td>
+            <td>{v(report.scanningDb) || "-"}</td>
           </tr>
         </tbody>
       </table>
@@ -608,24 +611,24 @@ export const AWSDReportPrintPage: React.FC = () => {
       <tbody>
         {chunk.map((o: any, i: number) => (
           <tr key={i} style={{ height: "20px" }}>
-            <td>{v(o.serialNo)}</td>
-            <td>{v(o.jointDetails)}</td>
-            <td>{v(o.drawingNoPartNo)}</td>
-            <td>{v(o.jobThickness)}</td>
-            <td>{v(o.partNo)}</td>
-            <td>{v(o.transducerAngle)}</td>
-            <td>{v(o.jointNo)}</td>
-            <td>{v(o.decibels?.indicationLevelA)}</td>
-            <td>{v(o.decibels?.referenceLevelB)}</td>
-            <td>{v(o.decibels?.attenuationFactorC)}</td>
-            <td>{v(o.decibels?.indicationRatingD)}</td>
-            <td>{v(o.discontinuity?.length)}</td>
-            <td>{v(o.discontinuity?.angularDistance)}</td>
-            <td>{v(o.discontinuity?.depthFromASurface)}</td>
-            <td>{v(o.discontinuity?.distanceX)}</td>
-            <td>{v(o.discontinuity?.distanceY)}</td>
-            <td>{v(o.discontinuityEvaluation)}</td>
-            <td>{v(o.remarks)}</td>
+            <td>{v(o.serialNo) || "-"}</td>
+            <td>{v(o.jointDetails) || "-"}</td>
+            <td>{v(o.drawingNoPartNo) || "-"}</td>
+            <td>{v(o.jobThickness) || "-"}</td>
+            <td>{v(o.partNo) || "-"}</td>
+            <td>{v(o.transducerAngle) || "-"}</td>
+            <td>{v(o.jointNo) || "-"}</td>
+            <td>{v(o.decibels?.indicationLevelA) || "-"}</td>
+            <td>{v(o.decibels?.referenceLevelB) || "-"}</td>
+            <td>{v(o.decibels?.attenuationFactorC) || "-"}</td>
+            <td>{v(o.decibels?.indicationRatingD) || "-"}</td>
+            <td>{v(o.discontinuity?.length) || "-"}</td>
+            <td>{v(o.discontinuity?.angularDistance) || "-"}</td>
+            <td>{v(o.discontinuity?.depthFromASurface) || "-"}</td>
+            <td>{v(o.discontinuity?.distanceX) || "-"}</td>
+            <td>{v(o.discontinuity?.distanceY) || "-"}</td>
+            <td>{v(o.discontinuityEvaluation) || "-"}</td>
+            <td>{v(o.remarks) || "-"}</td>
           </tr>
         ))}
       </tbody>

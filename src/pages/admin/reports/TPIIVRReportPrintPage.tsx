@@ -249,10 +249,7 @@ const fmtDate = (d?: string | null) => {
   return `${String(dt.getDate()).padStart(2, "0")}.${String(dt.getMonth() + 1).padStart(2, "0")}.${dt.getFullYear()}`;
 };
 
-const splitTextIntoChunks = (
-  text: string,
-  charsPerChunk: number = 900
-) => {
+const splitTextIntoChunks = (text: string, charsPerChunk: number = 900) => {
   if (!text) return [];
 
   const chunks: string[] = [];
@@ -390,9 +387,9 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       </div>
       <div className="footer-meta">
         I.R. No: <span>{v(report.irNo)}</span>
-        &nbsp;|&nbsp; IR Rev.: <span>{v(report.irRev)}</span>
+        &nbsp;|&nbsp; IR Rev.: <span>{v(report.irRev) || "-"}</span>
         &nbsp;|&nbsp; Format No: <span>NIIT-16 Rev.01</span>
-        &nbsp;|&nbsp; Date: <span>{fmtDate(report.dtOfInspection)}</span>
+        &nbsp;|&nbsp; Date: <span>{fmtDate(report.dtOfInspection) || "-"}</span>
       </div>
     </>
   );
@@ -403,9 +400,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         <img src="/logo.jpeg" alt="NIIT Logo" />
       </div>
       <div className="hdr-center">
-        <div className="org">
-          National Industrial Inspection and Training
-        </div>
+        <div className="org">National Industrial Inspection and Training</div>
         <div className="sub">
           THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING | NDT
           CONSULTANCY
@@ -482,11 +477,11 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               <span style={{ fontSize: "10px", fontWeight: 600 }}>
                 IR Rev.:{" "}
               </span>
-              {v(report.irRev)}
+              {v(report.irRev) || "-"}
             </td>
             <td className="lbl">Dt. of Inspection:</td>
             <td className="val" style={{ fontWeight: 600 }}>
-              {fmtDate(report.dtOfInspection)}
+              {fmtDate(report.dtOfInspection) || "-"}
             </td>
           </tr>
         </tbody>
@@ -502,33 +497,33 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         <tbody>
           <tr>
             <td className="lbl">Client:</td>
-            <td className="val">{v(report.client)}</td>
+            <td className="val">{v(report.client) || "-"}</td>
             <td className="lbl">Inspection location:</td>
-            <td className="val">{v(report.inspectionLocation)}</td>
+            <td className="val">{v(report.inspectionLocation) || "-"}</td>
           </tr>
           <tr>
             <td className="lbl">Project:</td>
-            <td className="val">{v(report.project)}</td>
+            <td className="val">{v(report.project) || "-"}</td>
             <td className="lbl">Appd. QAP No.:</td>
-            <td className="val">{v(report.appdQapNo)}</td>
+            <td className="val">{v(report.appdQapNo) || "-"}</td>
           </tr>
           <tr>
             <td className="lbl">Client PO No.:</td>
-            <td className="val">{v(report.clientPoNo)}</td>
+            <td className="val">{v(report.clientPoNo) || "-"}</td>
             <td className="lbl">Appd. QAP Dt.:</td>
-            <td className="val">{fmtDate(report.appdQapDt)}</td>
+            <td className="val">{fmtDate(report.appdQapDt) || "-"}</td>
           </tr>
           <tr>
             <td className="lbl">PO Amed. No.:</td>
-            <td className="val">{v(report.poAmedNo)}</td>
+            <td className="val">{v(report.poAmedNo) || "-"}</td>
             <td className="lbl">Part Name:</td>
-            <td className="val">{v(report.partName)}</td>
+            <td className="val">{v(report.partName) || "-"}</td>
           </tr>
           <tr>
             <td className="lbl">PO Date:</td>
-            <td className="val">{fmtDate(report.poDate)}</td>
+            <td className="val">{fmtDate(report.poDate) || "-"}</td>
             <td className="lbl">Inspection Stage:</td>
-            <td className="val">{v(report.inspectionStage)}</td>
+            <td className="val">{v(report.inspectionStage) || "-"}</td>
           </tr>
         </tbody>
       </table>
@@ -556,19 +551,19 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               <tbody>
                 <tr>
                   <td className="lbl">Ref:</td>
-                  <td className="val">{v(cd.ref)}</td>
+                  <td className="val">{v(cd.ref) || "-"}</td>
                 </tr>
                 <tr>
                   <td className="lbl">Contact:</td>
-                  <td className="val">{v(cd.contact)}</td>
+                  <td className="val">{v(cd.contact) || "-"}</td>
                 </tr>
                 <tr>
                   <td className="lbl">Call Date:</td>
-                  <td className="val">{fmtDate(cd.callDate)}</td>
+                  <td className="val">{fmtDate(cd.callDate) || "-"}</td>
                 </tr>
                 <tr>
                   <td className="lbl">Inspection Att. Date:</td>
-                  <td className="val">{fmtDate(cd.inspectionAttDt)}</td>
+                  <td className="val">{fmtDate(cd.inspectionAttDt) || "-"}</td>
                 </tr>
               </tbody>
             </table>
@@ -588,19 +583,19 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               <tbody>
                 <tr>
                   <td className="lbl">Vendor:</td>
-                  <td className="val">{v(vd.vendor)}</td>
+                  <td className="val">{v(vd.vendor) || "-"}</td>
                 </tr>
                 <tr>
                   <td className="lbl">Sub Vendor:</td>
-                  <td className="val">{v(vd.subVendor)}</td>
+                  <td className="val">{v(vd.subVendor) || "-"}</td>
                 </tr>
                 <tr>
                   <td className="lbl">Contact:</td>
-                  <td className="val">{v(vd.contact)}</td>
+                  <td className="val">{v(vd.contact) || "-"}</td>
                 </tr>
                 <tr>
                   <td className="lbl">Phone:</td>
-                  <td className="val">{v(vd.phone)}</td>
+                  <td className="val">{v(vd.phone) || "-"}</td>
                 </tr>
               </tbody>
             </table>
@@ -615,8 +610,8 @@ export const TPIIVRReportPrintPage: React.FC = () => {
               whiteSpace: "normal",
             }}
           >
-            <strong>Extra Visit / Date:</strong> {v(ev.date)}
-            &nbsp;&nbsp; <strong>Comment:</strong> {v(ev.comment)}
+            <strong>Extra Visit / Date:</strong> {v(ev.date) || "-"}
+            &nbsp;&nbsp; <strong>Comment:</strong> {v(ev.comment) || "-"}
           </td>
         </tr>
       </tbody>
@@ -628,46 +623,84 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       <thead>
         <tr>
           <td colSpan={9} className="section-hdr">
-            {isFirstChunk ? "3. INSPECTION ITEMS" : "3. INSPECTION ITEMS (Contd.)"}
+            {isFirstChunk
+              ? "3. INSPECTION ITEMS"
+              : "3. INSPECTION ITEMS (Contd.)"}
           </td>
         </tr>
         <tr>
-          <td className="col-hdr" style={{ width: "8%",textAlign:"center" }} rowSpan={2}>
+          <td
+            className="col-hdr"
+            style={{ width: "8%", textAlign: "center" }}
+            rowSpan={2}
+          >
             PO Line No.
           </td>
-          <td className="col-hdr" style={{ width: "24%", textAlign: "center" }} rowSpan={2}>
+          <td
+            className="col-hdr"
+            style={{ width: "24%", textAlign: "center" }}
+            rowSpan={2}
+          >
             Description
           </td>
-          <td className="col-hdr" style={{ width: "16%", textAlign: "center" }} rowSpan={2}>
+          <td
+            className="col-hdr"
+            style={{ width: "16%", textAlign: "center" }}
+            rowSpan={2}
+          >
             Drg No. / Heat No.
           </td>
           <td className="col-hdr" colSpan={5} style={{ textAlign: "center" }}>
             Quantity in Nos.
           </td>
-          <td className="col-hdr" style={{ width: "14%", textAlign: "center"}} rowSpan={2}>
+          <td
+            className="col-hdr"
+            style={{ width: "14%", textAlign: "center" }}
+            rowSpan={2}
+          >
             Insp. Type
           </td>
         </tr>
         <tr>
-          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>Offered</td>
-          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>Inspected</td>
-          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>Accepted</td>
-          <td className="col-hdr" style={{ width: "7%", textAlign: "center" }}>Hold</td>
-          <td className="col-hdr" style={{ width: "7%", textAlign: "center" }}>Reject</td>
+          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>
+            Offered
+          </td>
+          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>
+            Inspected
+          </td>
+          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>
+            Accepted
+          </td>
+          <td className="col-hdr" style={{ width: "7%", textAlign: "center" }}>
+            Hold
+          </td>
+          <td className="col-hdr" style={{ width: "7%", textAlign: "center" }}>
+            Reject
+          </td>
         </tr>
       </thead>
       <tbody>
         {pageItems.map((item: any, i: number) => (
-          <tr key={i} >
-            <td style={{textAlign:"center"}}>{v(item.poLineNo)}</td>
-            <td style={{ textAlign: "center" }}>{v(item.description)}</td>
-            <td style={{ textAlign: "center" }}>{v(item.drgOrHeatNo)}</td>
-            <td style={{textAlign:"center"}}>{v(item.qtyOffered)}</td>
-            <td style={{textAlign:"center"}}>{v(item.qtyInspected)}</td>
-            <td style={{textAlign:"center"}}>{v(item.qtyAccepted)}</td>
-            <td style={{textAlign:"center"}}>{v(item.qtyHold)}</td>
-            <td style={{textAlign:"center"}}>{v(item.qtyReject)}</td>
-            <td style={{textAlign:"center"}}>{v(item.inspectionType)}</td>
+          <tr key={i}>
+            <td style={{ textAlign: "center" }}>{v(item.poLineNo) || "-"}</td>
+            <td style={{ textAlign: "center" }}>
+              {v(item.description) || "-"}
+            </td>
+            <td style={{ textAlign: "center" }}>
+              {v(item.drgOrHeatNo) || "-"}
+            </td>
+            <td style={{ textAlign: "center" }}>{v(item.qtyOffered) || "-"}</td>
+            <td style={{ textAlign: "center" }}>
+              {v(item.qtyInspected) || "-"}
+            </td>
+            <td style={{ textAlign: "center" }}>
+              {v(item.qtyAccepted) || "-"}
+            </td>
+            <td style={{ textAlign: "center" }}>{v(item.qtyHold) || "-"}</td>
+            <td style={{ textAlign: "center" }}>{v(item.qtyReject) || "-"}</td>
+            <td style={{ textAlign: "center" }}>
+              {v(item.inspectionType) || "-"}
+            </td>
           </tr>
         ))}
       </tbody>
@@ -675,24 +708,32 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   const renderActivitiesSection = (text: string, isFirstChunk: boolean) => (
-    <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+    <table
+      className="report-table mt-n1"
+      style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+    >
       <thead>
         <tr>
           <td className="section-hdr">
-            {isFirstChunk ? "4. INSPECTION ACTIVITIES" : "INSPECTION ACTIVITIES (Contd.)"}
+            {isFirstChunk
+              ? "4. INSPECTION ACTIVITIES"
+              : "INSPECTION ACTIVITIES (Contd.)"}
           </td>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td className="activities-box">{v(text) || " "}</td>
+          <td className="activities-box">{v(text) || "-"}</td>
         </tr>
       </tbody>
     </table>
   );
 
   const renderRefsSection = (pageRefs: any[], isFirstChunk: boolean) => (
-    <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+    <table
+      className="report-table mt-n1"
+      style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+    >
       <colgroup>
         <col style={{ width: "30%" }} />
         <col style={{ width: "50%" }} />
@@ -701,21 +742,38 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       <thead>
         <tr>
           <td colSpan={3} className="section-hdr">
-            {isFirstChunk ? "5. REFERENCE DOCUMENTS FOR INSPECTION" : "REFERENCE DOCUMENTS FOR INSPECTION (Contd.)"}
+            {isFirstChunk
+              ? "5. REFERENCE DOCUMENTS FOR INSPECTION"
+              : "REFERENCE DOCUMENTS FOR INSPECTION (Contd.)"}
           </td>
         </tr>
         <tr>
-          <td className="col-hdr" style={{textAlign:"center"}}>Document</td>
-          <td className="col-hdr"style={{textAlign:"center"}}>Reference Number</td>
-          <td className="col-hdr"style={{textAlign:"center"}}>Rev. No.</td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Document
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Reference Number
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Rev. No.
+          </td>
         </tr>
       </thead>
       <tbody>
         {pageRefs.map((doc: any, i: number) => (
           <tr key={i}>
-            <td className="lbl" style={{ fontWeight: 500,textAlign:"center" }}>{v(doc.document)}</td>
-            <td className="val" style={{textAlign:"center"}}>{v(doc.referenceNumber)}</td>
-            <td className="val"style={{textAlign:"center"}}>{v(doc.revNo)}</td>
+            <td
+              className="lbl"
+              style={{ fontWeight: 500, textAlign: "center" }}
+            >
+              {v(doc.document) || "-"}
+            </td>
+            <td className="val" style={{ textAlign: "center" }}>
+              {v(doc.referenceNumber) || "-"}
+            </td>
+            <td className="val" style={{ textAlign: "center" }}>
+              {v(doc.revNo) || "-"}
+            </td>
           </tr>
         ))}
       </tbody>
@@ -723,7 +781,10 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   const renderCalibSection = (pageCalib: any[], isFirstChunk: boolean) => (
-    <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+    <table
+      className="report-table mt-n1"
+      style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+    >
       <colgroup>
         <col style={{ width: "28%" }} />
         <col style={{ width: "18%" }} />
@@ -733,26 +794,52 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       </colgroup>
       <thead>
         <tr>
-          <td colSpan={5} className="section-hdr" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
-            {isFirstChunk ? "6. CALIBRATION STATUS OF INSTRUMENTS" : "6. CALIBRATION STATUS OF INSTRUMENTS (Contd.)"}
+          <td
+            colSpan={5}
+            className="section-hdr"
+            style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+          >
+            {isFirstChunk
+              ? "6. CALIBRATION STATUS OF INSTRUMENTS"
+              : "6. CALIBRATION STATUS OF INSTRUMENTS (Contd.)"}
           </td>
         </tr>
         <tr>
-          <td className="col-hdr" style={{textAlign:"center"}}>Equipment / Instrument</td>
-          <td className="col-hdr" style={{textAlign:"center"}}>I.D. Number</td>
-          <td className="col-hdr" style={{textAlign:"center"}}>Calibration Date</td>
-          <td className="col-hdr" style={{textAlign:"center"}}>Due Date</td>
-          <td className="col-hdr" style={{textAlign:"center"}}>NABL Certified</td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Equipment / Instrument
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            I.D. Number
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Calibration Date
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Due Date
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            NABL Certified
+          </td>
         </tr>
       </thead>
       <tbody>
         {pageCalib.map((c: any, i: number) => (
           <tr key={i}>
-            <td className="val" style={{textAlign:"center"}}>{v(c.equipment)}</td>
-            <td className="val" style={{textAlign:"center"}}>{v(c.idNumber)}</td>
-            <td className="val" style={{textAlign:"center"}}>{fmtDate(c.calibrationDate)}</td>
-            <td className="val" style={{textAlign:"center"}}>{fmtDate(c.dueDate)}</td>
-            <td className="val" style={{textAlign:"center"}}>{v(c.nablCertified)}</td>
+            <td className="val" style={{ textAlign: "center" }}>
+              {v(c.equipment) || "-"}
+            </td>
+            <td className="val" style={{ textAlign: "center" }}>
+              {v(c.idNumber) || "-"}
+            </td>
+            <td className="val" style={{ textAlign: "center" }}>
+              {fmtDate(c.calibrationDate) || "-"}
+            </td>
+            <td className="val" style={{ textAlign: "center" }}>
+              {fmtDate(c.dueDate) || "-"}
+            </td>
+            <td className="val" style={{ textAlign: "center" }}>
+              {v(c.nablCertified) || "-"}
+            </td>
           </tr>
         ))}
       </tbody>
@@ -760,7 +847,10 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   const renderConclusionSection = (text: string, isFirstChunk: boolean) => (
-    <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+    <table
+      className="report-table mt-n1"
+      style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+    >
       <tbody>
         <tr>
           <td className="section-hdr">
@@ -777,14 +867,13 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   // Dynamic pagination block layout engine
-const PAGE_HEIGHT_LIMIT = 288;
+  const PAGE_HEIGHT_LIMIT = 288;
 
-const HEADER_HEIGHT = 28;
-const FOOTER_HEIGHT = 20;
-const SIGNATURES_HEIGHT = 48;
+  const HEADER_HEIGHT = 28;
+  const FOOTER_HEIGHT = 20;
+  const SIGNATURES_HEIGHT = 48;
 
-const FIXED_SECTIONS_HEIGHT = 40;
-
+  const FIXED_SECTIONS_HEIGHT = 40;
 
   const estimateItemRowHeight = (item: any) => {
     const baseHeight = 2; // mm
@@ -801,10 +890,7 @@ const FIXED_SECTIONS_HEIGHT = 40;
     return baseHeight + (lines - 1) * 2.1; // Adjusted to account for baseHeight already including first line
   };
 
-  const splitTextByRenderedHeight = (
-    text: string,
-    maxHeightMm: number
-  ) => {
+  const splitTextByRenderedHeight = (text: string, maxHeightMm: number) => {
     if (!text) return [];
 
     const pxPerMm = 5.83;
@@ -868,24 +954,24 @@ const FIXED_SECTIONS_HEIGHT = 40;
         height: number;
         isContinuation?: boolean;
       }
-  | {
-      type: "ref-row";
-      item: any;
-      height: number;
-      isContinuation?: boolean;
-    }
-  | {
-      type: "calib-row";
-      item: any;
-      height: number;
-      isContinuation?: boolean;
-    }
-  | {
-      type: "conclusion";
-      text: string;
-      height: number;
-      isContinuation?: boolean;
-    };
+    | {
+        type: "ref-row";
+        item: any;
+        height: number;
+        isContinuation?: boolean;
+      }
+    | {
+        type: "calib-row";
+        item: any;
+        height: number;
+        isContinuation?: boolean;
+      }
+    | {
+        type: "conclusion";
+        text: string;
+        height: number;
+        isContinuation?: boolean;
+      };
 
   const blocks: ContentBlock[] = [];
   blocks.push({
@@ -901,20 +987,19 @@ const FIXED_SECTIONS_HEIGHT = 40;
     });
   });
 
- 
-const activityChunks = splitTextByRenderedHeight(
-  report.inspectionActivities || "",
-  20
-);
+  const activityChunks = splitTextByRenderedHeight(
+    report.inspectionActivities || "",
+    20,
+  );
 
-activityChunks.forEach((chunk, index) => {
-  blocks.push({
-    type: "activities",
-    text: chunk,
-    height: 20,
-    isContinuation: index > 0,
+  activityChunks.forEach((chunk, index) => {
+    blocks.push({
+      type: "activities",
+      text: chunk,
+      height: 20,
+      isContinuation: index > 0,
+    });
   });
-});
   refs.forEach((doc: any) => {
     blocks.push({
       type: "ref-row",
@@ -948,17 +1033,17 @@ activityChunks.forEach((chunk, index) => {
   const pages: PageDescriptor[] = [];
   let currentBlockIndex = 0;
 
- // mm
+  // mm
 
   while (currentBlockIndex < blocks.length) {
     const isFirstPage = pages.length === 0;
     // Signatures are rendered on every page, so reduce available height by signature height on all pages
-   let availableHeight =
-  PAGE_HEIGHT_LIMIT -
-  HEADER_HEIGHT -
-  FOOTER_HEIGHT -
-  SIGNATURES_HEIGHT -
-  10;
+    let availableHeight =
+      PAGE_HEIGHT_LIMIT -
+      HEADER_HEIGHT -
+      FOOTER_HEIGHT -
+      SIGNATURES_HEIGHT -
+      10;
     if (isFirstPage) {
       availableHeight -= FIXED_SECTIONS_HEIGHT;
     }
@@ -978,16 +1063,28 @@ activityChunks.forEach((chunk, index) => {
       if (block.type === "item-row" && !hasItemsHeader) {
         blockHeight += 18;
       }
-      if (block.type === "activities" && !hasActivitiesHeader && !block.isContinuation) {
+      if (
+        block.type === "activities" &&
+        !hasActivitiesHeader &&
+        !block.isContinuation
+      ) {
         blockHeight += 8;
       }
       if (block.type === "ref-row" && !hasRefsHeader && !block.isContinuation) {
         blockHeight += 12;
       }
-      if (block.type === "calib-row" && !hasCalibHeader && !block.isContinuation) {
+      if (
+        block.type === "calib-row" &&
+        !hasCalibHeader &&
+        !block.isContinuation
+      ) {
         blockHeight += 12;
       }
-      if (block.type === "conclusion" && !hasConclusionHeader && !block.isContinuation) {
+      if (
+        block.type === "conclusion" &&
+        !hasConclusionHeader &&
+        !block.isContinuation
+      ) {
         blockHeight += 8;
       }
 
@@ -1071,27 +1168,34 @@ activityChunks.forEach((chunk, index) => {
         style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
       >
         {pages.map(({ isFirstPage, pageBlocks }, i) => {
-          const showClientVendor = pageBlocks.some((b) => b.type === "client-vendor");
+          const showClientVendor = pageBlocks.some(
+            (b) => b.type === "client-vendor",
+          );
           const pageItems = pageBlocks
-            .filter((b): b is Extract<ContentBlock, { type: "item-row" }> => b.type === "item-row")
+            .filter(
+              (b): b is Extract<ContentBlock, { type: "item-row" }> =>
+                b.type === "item-row",
+            )
             .map((b) => b.item);
           const pageActivities = pageBlocks.filter(
-            (
-              b
-            ): b is Extract<ContentBlock, { type: "activities" }> =>
-              b.type === "activities"
+            (b): b is Extract<ContentBlock, { type: "activities" }> =>
+              b.type === "activities",
           );
           const pageRefs = pageBlocks
-            .filter((b): b is Extract<ContentBlock, { type: "ref-row" }> => b.type === "ref-row")
+            .filter(
+              (b): b is Extract<ContentBlock, { type: "ref-row" }> =>
+                b.type === "ref-row",
+            )
             .map((b) => b.item);
           const pageCalib = pageBlocks
-            .filter((b): b is Extract<ContentBlock, { type: "calib-row" }> => b.type === "calib-row")
+            .filter(
+              (b): b is Extract<ContentBlock, { type: "calib-row" }> =>
+                b.type === "calib-row",
+            )
             .map((b) => b.item);
           const pageConclusion = pageBlocks.filter(
-            (
-              b
-            ): b is Extract<ContentBlock, { type: "conclusion" }> =>
-              b.type === "conclusion"
+            (b): b is Extract<ContentBlock, { type: "conclusion" }> =>
+              b.type === "conclusion",
           );
 
           const isFirstItem = pageItems[0] === items[0];
@@ -1105,20 +1209,24 @@ activityChunks.forEach((chunk, index) => {
                 <div className="report-body">
                   {isFirstPage && renderJobDetailsSection()}
                   {showClientVendor && renderClientVendorSection()}
-                  {pageItems.length > 0 && renderItemsTableSection(pageItems, isFirstItem)}
-                  {pageActivities.length > 0 && renderActivitiesSection(
-                    pageActivities.map(a => a.text).join(""),
-                    !pageActivities[0].isContinuation
-                  )}
-                  {pageRefs.length > 0 && renderRefsSection(pageRefs, isFirstRefs)}
-                  {pageCalib.length > 0 && renderCalibSection(pageCalib, isFirstCalib)}
-                  {pageConclusion.length > 0 && renderConclusionSection(
-                    pageConclusion.map(c => c.text).join(""),
-                    !pageConclusion[0].isContinuation
-                  )}
+                  {pageItems.length > 0 &&
+                    renderItemsTableSection(pageItems, isFirstItem)}
+                  {pageActivities.length > 0 &&
+                    renderActivitiesSection(
+                      pageActivities.map((a) => a.text).join(""),
+                      !pageActivities[0].isContinuation,
+                    )}
+                  {pageRefs.length > 0 &&
+                    renderRefsSection(pageRefs, isFirstRefs)}
+                  {pageCalib.length > 0 &&
+                    renderCalibSection(pageCalib, isFirstCalib)}
+                  {pageConclusion.length > 0 &&
+                    renderConclusionSection(
+                      pageConclusion.map((c) => c.text).join(""),
+                      !pageConclusion[0].isContinuation,
+                    )}
                 </div>
-                  {renderSignatures()}
-                
+                {renderSignatures()}
               </div>
               <div className="print-page-foot">
                 <ReportFooter />

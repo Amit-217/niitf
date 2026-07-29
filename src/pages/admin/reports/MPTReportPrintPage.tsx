@@ -400,9 +400,7 @@ export const MPTReportPrintPage = () => {
         <img src="/logo.jpeg" alt="NIIT Logo" />
       </div>
       <div className="hdr-center">
-        <div className="org">
-          National Industrial Inspection and Training
-        </div>
+        <div className="org">National Industrial Inspection and Training</div>
         <div className="sub">
           THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING | NDT
           CONSULTANCY
@@ -435,7 +433,9 @@ export const MPTReportPrintPage = () => {
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
               {v(jd.customer)}
             </td>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.client)}</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              {v(jd.client)}
+            </td>
           </tr>
           <tr>
             <td>Name: {v(inspectors[0]?.name) || "-"}</td>
@@ -444,9 +444,7 @@ export const MPTReportPrintPage = () => {
           </tr>
           <tr>
             <td>{v(inspectors[0]?.qualification) || "MT NDE Level II"}</td>
-            <td>
-              Designation: {v((fs.customer as any)?.designation) || "-"}
-            </td>
+            <td>Designation: {v((fs.customer as any)?.designation) || "-"}</td>
             <td>
               Designation: {v((fs.clientOrTPI as any)?.designation) || "-"}
             </td>
@@ -484,60 +482,64 @@ export const MPTReportPrintPage = () => {
           </td>
         </tr>
         <tr>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Sr.</td>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Job Description</td>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Drg No. / Joint No.</td>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Size</td>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Qty(Nos)</td>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Interpretation</td>
-          <td className="col-hdr"style={{ textAlign: "center" }}>Evaluation</td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Sr.
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Job Description
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Drg No. / Joint No.
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Size
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Qty(Nos)
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Interpretation
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Evaluation
+          </td>
         </tr>
       </thead>
       <tbody>
-  {data.length === 0 ? (
-    <tr>
-      <td
-        colSpan={7}
-        style={{
-          textAlign: "center",
-          padding: "6px",
-          fontSize: "11px",
-          color: "#999",
-        }}
-      >
-        No observations recorded.
-      </td>
-    </tr>
-  ) : (
-    data.map((o, i) => (
-      <tr key={i}>
-        <td style={{ textAlign: "center" }}>{o.srNo}</td>
+        {data.length === 0 ? (
+          <tr>
+            <td
+              colSpan={7}
+              style={{
+                textAlign: "center",
+                padding: "6px",
+                fontSize: "11px",
+                color: "#999",
+              }}
+            >
+              No observations recorded.
+            </td>
+          </tr>
+        ) : (
+          data.map((o, i) => (
+            <tr key={i}>
+              <td style={{ textAlign: "center" }}>{o.srNo}</td>
 
-        <td>{v(o.jobDescription)}</td>
+              <td>{v(o.jobDescription)}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {v(o.drawingOrJointNo)}
-        </td>
+              <td style={{ textAlign: "center" }}>{v(o.drawingOrJointNo)}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {v(o.size)}
-        </td>
+              <td style={{ textAlign: "center" }}>{v(o.size)}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {o.quantity ?? ""}
-        </td>
+              <td style={{ textAlign: "center" }}>{o.quantity ?? ""}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {v(o.interpretation)}
-        </td>
+              <td style={{ textAlign: "center" }}>{v(o.interpretation)}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {v(getEvaluation(o))}
-        </td>
-      </tr>
-    ))
-  )}
-</tbody>
+              <td style={{ textAlign: "center" }}>{v(getEvaluation(o))}</td>
+            </tr>
+          ))
+        )}
+      </tbody>
     </table>
   );
 
@@ -580,34 +582,34 @@ export const MPTReportPrintPage = () => {
             </td>
           </tr>
           <tr>
-             <td className="lbl">Reference Std.:</td>
+            <td className="lbl">Reference Std.:</td>
             <td className="val">
-              {standards.length > 0 ? standards.join(", ") : "Not specified"}
+              {standards.length > 0 ? standards.join(", ") : "-"}
             </td>
-            
+
             <td className="lbl">Material:</td>
             <td className="val">{v(jd.material) || "-"}</td>
           </tr>
           <tr>
-             <td className="lbl">Acceptance Criteria:</td>
+            <td className="lbl">Acceptance Criteria:</td>
             <td className="val">
-              {acceptance.length > 0 ? acceptance.join(", ") : "Not specified"}
+              {acceptance.length > 0 ? acceptance.join(", ") : "-"}
             </td>
-            
+
             <td className="lbl">Thickness:</td>
             <td className="val">{v(jd.thickness) || "-"}</td>
           </tr>
           <tr>
             <td className="lbl">Stage of Inspection:</td>
             <td className="val">{v(jd.stageOfInspection) || "-"}</td>
-           
+
             <td className="lbl">Surface condition:</td>
             <td className="val">{v(jd.surfaceCondition) || "-"}</td>
           </tr>
           <tr>
             <td className="lbl">Extent of Examination:</td>
             <td className="val">{v(jd.extentOfExamination) || "-"}</td>
-            
+
             <td className="lbl">Welding Process:</td>
             <td className="val">{v(jd.weldingProcess) || "-"}</td>
           </tr>
@@ -744,148 +746,125 @@ export const MPTReportPrintPage = () => {
   );
 
   // Dynamic pagination block layout engine
-const PAGE_HEIGHT_LIMIT = 286; // mm
-const HEADER_HEIGHT = 28; // mm
-const FOOTER_HEIGHT = 22; // mm
-const FIXED_SECTIONS_HEIGHT = 135; // mm
-const OBS_HEADER_HEIGHT = 12; // mm
-const SIGNATURES_HEIGHT = 38; // mm
+  const PAGE_HEIGHT_LIMIT = 286; // mm
+  const HEADER_HEIGHT = 28; // mm
+  const FOOTER_HEIGHT = 22; // mm
+  const FIXED_SECTIONS_HEIGHT = 135; // mm
+  const OBS_HEADER_HEIGHT = 12; // mm
+  const SIGNATURES_HEIGHT = 38; // mm
 
-// visually around 5 normal rows on first page
-const FIRST_PAGE_OBS_HEIGHT_LIMIT = 38;
+  // visually around 5 normal rows on first page
+  const FIRST_PAGE_OBS_HEIGHT_LIMIT = 38;
 
-// hard safety cap
-const MAX_FIRST_PAGE_OBS = 5;
+  // hard safety cap
+  const MAX_FIRST_PAGE_OBS = 5;
 
-const estimateObsRowHeight = (o: any) => {
-  const baseHeight = 6.5;
+  const estimateObsRowHeight = (o: any) => {
+    const baseHeight = 6.5;
 
-  const desc = o.jobDescription || "";
-  const interp = o.interpretation || "";
-  const evalText = o.evaluation || o.result || o.remark || "";
+    const desc = o.jobDescription || "";
+    const interp = o.interpretation || "";
+    const evalText = o.evaluation || o.result || o.remark || "";
 
-  // estimate by longest column
-  const maxLen = Math.max(
-    desc.length,
-    interp.length,
-    evalText.length
-  );
+    // estimate by longest column
+    const maxLen = Math.max(desc.length, interp.length, evalText.length);
 
-  // approximate wrapped lines
-  const lines = Math.max(1, Math.ceil(maxLen / 30));
+    // approximate wrapped lines
+    const lines = Math.max(1, Math.ceil(maxLen / 30));
 
-  return baseHeight + (lines - 1) * 4.5;
-};
+    return baseHeight + (lines - 1) * 4.5;
+  };
 
-type ContentBlock =
-  | {
-      type: "obs-row";
-      item: any;
-      height: number;
-    };
+  type ContentBlock = {
+    type: "obs-row";
+    item: any;
+    height: number;
+  };
 
-const blocks: ContentBlock[] = [];
+  const blocks: ContentBlock[] = [];
 
-obs.forEach((o) => {
-  blocks.push({
-    type: "obs-row",
-    item: o,
-    height: estimateObsRowHeight(o),
+  obs.forEach((o) => {
+    blocks.push({
+      type: "obs-row",
+      item: o,
+      height: estimateObsRowHeight(o),
+    });
   });
-});
 
-type PageDescriptor = {
-  isFirstPage: boolean;
-  pageBlocks: ContentBlock[];
-};
+  type PageDescriptor = {
+    isFirstPage: boolean;
+    pageBlocks: ContentBlock[];
+  };
 
-const pages: PageDescriptor[] = [];
+  const pages: PageDescriptor[] = [];
 
-let currentBlockIndex = 0;
-
-while (currentBlockIndex < blocks.length) {
-  const isFirstPage = pages.length === 0;
-
-  // base available area
-  let availableHeight =
-    PAGE_HEIGHT_LIMIT -
-    HEADER_HEIGHT -
-    FOOTER_HEIGHT -
-    SIGNATURES_HEIGHT;
-
-  // first page fixed sections
-  if (isFirstPage) {
-    availableHeight -= FIXED_SECTIONS_HEIGHT;
-
-    // keep footer breathing space
-    availableHeight -= 8;
-
-    // visually max around 5 normal rows
-    availableHeight = Math.min(
-      availableHeight,
-      FIRST_PAGE_OBS_HEIGHT_LIMIT
-    );
-  }
-
-  const pageBlocks: ContentBlock[] = [];
-
-  let accumulatedHeight = 0;
-  let hasObsTable = false;
+  let currentBlockIndex = 0;
 
   while (currentBlockIndex < blocks.length) {
-    // hard row limit for first page
-    if (
-      isFirstPage &&
-      pageBlocks.length >= MAX_FIRST_PAGE_OBS
-    ) {
-      break;
+    const isFirstPage = pages.length === 0;
+
+    // base available area
+    let availableHeight =
+      PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT;
+
+    // first page fixed sections
+    if (isFirstPage) {
+      availableHeight -= FIXED_SECTIONS_HEIGHT;
+
+      // keep footer breathing space
+      availableHeight -= 8;
+
+      // visually max around 5 normal rows
+      availableHeight = Math.min(availableHeight, FIRST_PAGE_OBS_HEIGHT_LIMIT);
     }
 
-    const block = blocks[currentBlockIndex];
+    const pageBlocks: ContentBlock[] = [];
 
-    let blockHeight = block.height;
+    let accumulatedHeight = 0;
+    let hasObsTable = false;
 
-    // add table header once
-    if (
-      block.type === "obs-row" &&
-      !hasObsTable
-    ) {
-      blockHeight += OBS_HEADER_HEIGHT;
+    while (currentBlockIndex < blocks.length) {
+      // hard row limit for first page
+      if (isFirstPage && pageBlocks.length >= MAX_FIRST_PAGE_OBS) {
+        break;
+      }
+
+      const block = blocks[currentBlockIndex];
+
+      let blockHeight = block.height;
+
+      // add table header once
+      if (block.type === "obs-row" && !hasObsTable) {
+        blockHeight += OBS_HEADER_HEIGHT;
+      }
+
+      // move to next page if height exceeds
+      if (accumulatedHeight + blockHeight > availableHeight) {
+        break;
+      }
+
+      pageBlocks.push(block);
+
+      accumulatedHeight += blockHeight;
+
+      if (block.type === "obs-row") {
+        hasObsTable = true;
+      }
+
+      currentBlockIndex++;
     }
 
-    // move to next page if height exceeds
-    if (
-      accumulatedHeight + blockHeight >
-      availableHeight
-    ) {
-      break;
+    // safety fallback for giant row
+    if (pageBlocks.length === 0 && currentBlockIndex < blocks.length) {
+      pageBlocks.push(blocks[currentBlockIndex]);
+      currentBlockIndex++;
     }
 
-    pageBlocks.push(block);
-
-    accumulatedHeight += blockHeight;
-
-    if (block.type === "obs-row") {
-      hasObsTable = true;
-    }
-
-    currentBlockIndex++;
+    pages.push({
+      isFirstPage,
+      pageBlocks,
+    });
   }
-
-  // safety fallback for giant row
-  if (
-    pageBlocks.length === 0 &&
-    currentBlockIndex < blocks.length
-  ) {
-    pageBlocks.push(blocks[currentBlockIndex]);
-    currentBlockIndex++;
-  }
-
-  pages.push({
-    isFirstPage,
-    pageBlocks,
-  });
-}
 
   if (pages.length === 0) {
     pages.push({ isFirstPage: true, pageBlocks: [] });
@@ -946,7 +925,10 @@ while (currentBlockIndex < blocks.length) {
       >
         {pages.map(({ isFirstPage, pageBlocks }, i) => {
           const pageObs = pageBlocks
-            .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
+            .filter(
+              (b): b is Extract<ContentBlock, { type: "obs-row" }> =>
+                b.type === "obs-row",
+            )
             .map((b) => b.item);
           const hasObsTable = pageObs.length > 0;
 
@@ -956,7 +938,13 @@ while (currentBlockIndex < blocks.length) {
                 {renderHeader()}
                 <div className="report-body">
                   {isFirstPage && fixedSections}
-                  {hasObsTable && renderObsTable(pageObs, isFirstPage ? "5. OBSERVATIONS" : "5. OBSERVATIONS (Contd.)")}
+                  {hasObsTable &&
+                    renderObsTable(
+                      pageObs,
+                      isFirstPage
+                        ? "5. OBSERVATIONS"
+                        : "5. OBSERVATIONS (Contd.)",
+                    )}
                   {renderSignatures()}
                 </div>
               </div>
