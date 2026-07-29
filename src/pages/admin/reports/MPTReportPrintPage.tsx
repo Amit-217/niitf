@@ -948,7 +948,7 @@ while (currentBlockIndex < blocks.length) {
           const pageObs = pageBlocks
             .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
             .map((b) => b.item);
-          const hasObsTable = pageObs.length > 0;
+          const hasObsTable = pageObs.length > 0 || isFirstPage;
 
           return (
             <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>

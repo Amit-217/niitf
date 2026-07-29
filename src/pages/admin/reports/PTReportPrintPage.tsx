@@ -808,6 +808,13 @@ export const PTReportPrintPage: React.FC = () => {
     });
   }
 
+  if (pages.length === 0) {
+    pages.push({
+      isFirstPage: true,
+      pageBlocks: [],
+    });
+  }
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
@@ -869,7 +876,7 @@ export const PTReportPrintPage: React.FC = () => {
           const pageObs = pageBlocks
             .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
             .map((b) => b.item);
-          const hasObsTable = pageObs.length > 0;
+          const hasObsTable = pageObs.length > 0 || isFirstPage;
 
           return (
             <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>

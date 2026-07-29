@@ -176,7 +176,7 @@ export const UTGReportPrintPage: React.FC = () => {
     if (!id) return;
     const fetcher = isPublic ? getPublicUTGReportById : getUTGReportById;
     fetcher(id)
-      .then((res: any) => setReport((res as any).data ?? res))
+      .then((res: any) => setReport(res?.data?.data ?? res?.data ?? res?.report ?? res))
       .catch(() => setReport(null))
       .finally(() => setLoading(false));
   }, [id, isPublic]);
@@ -346,6 +346,13 @@ export const UTGReportPrintPage: React.FC = () => {
     });
   }
 
+  if (pages.length === 0) {
+    pages.push({
+      isFirstPage: true,
+      pageBlocks: [],
+    });
+  }
+
   const renderHeader = () => (
     <div className="rpt-header">
       <div className="logo-box">
@@ -365,7 +372,7 @@ export const UTGReportPrintPage: React.FC = () => {
       </div>
     </div>
   );
-  const sudCount = sud.length;
+
   const renderObsTable = (data: any[], title: string) => (
     <table className="obs-table mt-n1">
       <colgroup>
@@ -389,7 +396,7 @@ export const UTGReportPrintPage: React.FC = () => {
       </thead>
       <tbody>
         
-        {data.length === 0 && sudCount === 0 ? (
+        {data.length === 0 ? (
           <tr>
             <td
               colSpan={4}
@@ -736,7 +743,7 @@ export const UTGReportPrintPage: React.FC = () => {
           const pageObs = pageBlocks
             .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
             .map((b) => b.item);
-          const hasObsTable = pageObs.length > 0;
+          const hasObsTable = pageObs.length > 0 || isFirstPage;
           const isFirstObs = pageObs[0] === obs[0];
 
           return (

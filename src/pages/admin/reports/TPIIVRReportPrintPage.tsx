@@ -717,13 +717,19 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         </tr>
       </thead>
       <tbody>
-        {pageRefs.map((doc: any, i: number) => (
-          <tr key={i}>
-            <td className="lbl" style={{ fontWeight: 500,textAlign:"center" }}>{v(doc.document)}</td>
-            <td className="val" style={{textAlign:"center"}}>{v(doc.referenceNumber)}</td>
-            <td className="val"style={{textAlign:"center"}}>{v(doc.revNo)}</td>
+        {pageRefs.length === 0 ? (
+          <tr>
+            <td colSpan={3} >&nbsp;</td>
           </tr>
-        ))}
+        ) : (
+          pageRefs.map((doc: any, i: number) => (
+            <tr key={i}>
+              <td className="lbl" style={{ fontWeight: 500,textAlign:"center" }}>{v(doc.document)}</td>
+              <td className="val" style={{textAlign:"center"}}>{v(doc.referenceNumber)}</td>
+              <td className="val"style={{textAlign:"center"}}>{v(doc.revNo)}</td>
+            </tr>
+          ))
+        )}
       </tbody>
     </table>
   );
@@ -1113,6 +1119,7 @@ activityChunks.forEach((chunk, index) => {
           const shouldShowActivities =
             pageActivities.length > 0 ||
             (isFirstPage && !report.inspectionActivities?.trim());
+          const shouldShowRefs = pageRefs.length > 0 || (isFirstPage && refs.length === 0);
           const shouldShowCalib = pageCalib.length > 0 || (isFirstPage && calib.length === 0);
           const shouldShowConclusion =
             pageConclusion.length > 0 ||
@@ -1130,7 +1137,7 @@ activityChunks.forEach((chunk, index) => {
                     pageActivities.map(a => a.text).join(""),
                     !pageActivities[0]?.isContinuation
                   )}
-                  {pageRefs.length > 0 && renderRefsSection(pageRefs, isFirstRefs)}
+                  {shouldShowRefs && renderRefsSection(pageRefs, isFirstPage || isFirstRefs)}
                   {shouldShowCalib && renderCalibSection(pageCalib, isFirstPage || isFirstCalib)}
                   {shouldShowConclusion && renderConclusionSection(
                     pageConclusion.map(c => c.text).join(""),
