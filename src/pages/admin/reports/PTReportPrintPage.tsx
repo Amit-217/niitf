@@ -426,17 +426,19 @@ export const PTReportPrintPage: React.FC = () => {
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
               {v(jd.customer)}
             </td>
-            <td style={{ fontWeight: 600, fontSize: "11px" }}>{v(jd.client)}</td>
+            <td style={{ fontWeight: 600, fontSize: "11px" }}>
+              {v(jd.client)}
+            </td>
           </tr>
           <tr>
-            <td>Name: {v(inspector.name) || "-"}</td>
-            <td>Name: {v((jd as any).customerRepresentative) || "-"}</td>
-            <td>Name: {v((jd as any).clientRepresentative) || "-"}</td>
+            <td>Name: {v(inspector.name)}</td>
+            <td>Name: {v((jd as any).customerRepresentative)}</td>
+            <td>Name: {v((jd as any).clientRepresentative)}</td>
           </tr>
           <tr>
             <td>{v(inspector.designation) || "PT NDE Level II"}</td>
-            <td>Designation: {v((jd as any).customerDesignation) || "-"}</td>
-            <td>Designation: {v((jd as any).clientDesignation) || "-"}</td>
+            <td>Designation: {v((jd as any).customerDesignation)}</td>
+            <td>Designation: {v((jd as any).clientDesignation)}</td>
           </tr>
           <tr>
             <td style={{ height: "60px" }}>Signature:-</td>
@@ -475,7 +477,8 @@ export const PTReportPrintPage: React.FC = () => {
             Sr.
           </td>
           <td className="col-hdr" style={{ textAlign: "center" }}>
-            Job Description</td>
+            Job Description
+          </td>
           <td className="col-hdr" style={{ textAlign: "center" }}>
             Drg No. / Joint No.
           </td>
@@ -492,54 +495,37 @@ export const PTReportPrintPage: React.FC = () => {
         </tr>
       </thead>
       <tbody>
-  {data.length === 0 ? (
-    <tr>
-      <td
-        colSpan={7}
-        style={{
-          textAlign: "center",
-          padding: "6px",
-          fontSize: "11px",
-          color: "#999",
-        }}
-      >
-        No observations recorded.
-      </td>
-    </tr>
-  ) : (
-    data.map((o, i) => (
-      <tr key={i}>
-        <td style={{ textAlign: "center" }}>
-          {o.srNo}
-        </td>
+        {data.length === 0 ? (
+          <tr>
+            <td
+              colSpan={7}
+              style={{
+                textAlign: "center",
+              }}
+            >
+              No data available
+            </td>
+          </tr>
+        ) : (
+          data.map((o, i) => (
+            <tr key={i}>
+              <td style={{ textAlign: "center" }}>{o.srNo}</td>
 
-        <td>
-          {v(o.jobDescription)}
-        </td>
+              <td>{v(o.jobDescription)}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {v(o.drawingOrJointNo)}
-        </td>
+              <td style={{ textAlign: "center" }}>{v(o.drawingOrJointNo)}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {v(o.size)}
-        </td>
+              <td style={{ textAlign: "center" }}>{v(o.size)}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {o.quantity ?? ""}
-        </td>
+              <td style={{ textAlign: "center" }}>{o.quantity ?? ""}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {v(o.interpretation)}
-        </td>
+              <td style={{ textAlign: "center" }}>{v(o.interpretation)}</td>
 
-        <td style={{ textAlign: "center" }}>
-          {v(o.evaluation)}
-        </td>
-      </tr>
-    ))
-  )}
-</tbody>
+              <td style={{ textAlign: "center" }}>{v(o.evaluation)}</td>
+            </tr>
+          ))
+        )}
+      </tbody>
     </table>
   );
 
@@ -573,54 +559,50 @@ export const PTReportPrintPage: React.FC = () => {
             <td className="lbl">Client:</td>
             <td className="val">{v(jd.client)}</td>
             <td className="lbl">Report Date:</td>
-            <td className="val">{fmtDate(jd.reportDate) || "-"}</td>
+            <td className="val">{fmtDate(jd.reportDate)}</td>
           </tr>
           <tr>
             <td className="lbl">Project:</td>
-            <td className="val">{v(jd.project) || "-"}</td>
-            
+            <td className="val">{v(jd.project)}</td>
+
             <td className="lbl">Inspection Date:</td>
             <td className="val">
-              {dateRange(jd.inspectionDate, jd.inspectionEndDate) || "-"}
+              {dateRange(jd.inspectionDate, jd.inspectionEndDate)}
             </td>
           </tr>
           <tr>
             <td className="lbl">Reference standard:</td>
-            <td className="val">
-              {standards.length > 0 ? standards.join(", ") : "Not specified"}
-            </td>
-           
+            <td className="val">{standards.join(", ")}</td>
+
             <td className="lbl">Material:</td>
-            <td className="val">{v(jd.material) || "-"}</td>
+            <td className="val">{v(jd.material)}</td>
           </tr>
           <tr>
-             <td className="lbl">Acceptance Criteria:</td>
-            <td className="val">
-              {acceptance.length > 0 ? acceptance.join(", ") : "Not specified"}
-            </td>
-           
+            <td className="lbl">Acceptance Criteria:</td>
+            <td className="val">{acceptance.join(", ")}</td>
+
             <td className="lbl">Thickness:</td>
-            <td className="val">{v(jd.thickness) || "-"}</td>
+            <td className="val">{v(jd.thickness)}</td>
           </tr>
           <tr>
-             <td className="lbl">Stage of Inspection:</td>
-            <td className="val">{v(jd.stageOfInspection) || "-"}</td>
-            
+            <td className="lbl">Stage of Inspection:</td>
+            <td className="val">{v(jd.stageOfInspection)}</td>
+
             <td className="lbl">Surface condition:</td>
-            <td className="val">{v(jd.surfaceCondition) || "-"}</td>
+            <td className="val">{v(jd.surfaceCondition)}</td>
           </tr>
           <tr>
             <td className="lbl">Extent of Examination:</td>
-            <td className="val">{v(jd.extentOfExamination) || "-"}</td>
-            
+            <td className="val">{v(jd.extentOfExamination)}</td>
+
             <td className="lbl">Welding Process:</td>
-            <td className="val">{v(jd.weldingProcess) || "-"}</td>
+            <td className="val">{v(jd.weldingProcess)}</td>
           </tr>
           <tr>
             <td className="lbl">Type of Joint:</td>
-            <td className="val">{v(jd.typeOfJoint) || "-"}</td>
+            <td className="val">{v(jd.typeOfJoint)}</td>
             <td className="lbl">Surface Temperature:</td>
-            <td className="val">{v(jd.surfaceTemperature) || "-"}</td>
+            <td className="val">{v(jd.surfaceTemperature)}</td>
           </tr>
         </tbody>
       </table>
@@ -742,8 +724,7 @@ export const PTReportPrintPage: React.FC = () => {
     return baseHeight + (lines - 1) * 4.5;
   };
 
-  type ContentBlock =
-    | { type: "obs-row"; item: any; height: number };
+  type ContentBlock = { type: "obs-row"; item: any; height: number };
 
   const blocks: ContentBlock[] = [];
   obs.forEach((o) => {
@@ -767,7 +748,8 @@ export const PTReportPrintPage: React.FC = () => {
   while (currentBlockIndex < blocks.length) {
     const isFirstPage = pages.length === 0;
     // Signatures are rendered on every page, so reduce available height by signature height on all pages
-    let availableHeight = PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT;
+    let availableHeight =
+      PAGE_HEIGHT_LIMIT - HEADER_HEIGHT - FOOTER_HEIGHT - SIGNATURES_HEIGHT;
     if (isFirstPage) {
       availableHeight -= FIXED_SECTIONS_HEIGHT;
     }
@@ -874,7 +856,10 @@ export const PTReportPrintPage: React.FC = () => {
       >
         {pages.map(({ isFirstPage, pageBlocks }, i) => {
           const pageObs = pageBlocks
-            .filter((b): b is Extract<ContentBlock, { type: "obs-row" }> => b.type === "obs-row")
+            .filter(
+              (b): b is Extract<ContentBlock, { type: "obs-row" }> =>
+                b.type === "obs-row",
+            )
             .map((b) => b.item);
           const hasObsTable = pageObs.length > 0 || isFirstPage;
 
@@ -884,7 +869,13 @@ export const PTReportPrintPage: React.FC = () => {
                 {renderHeader()}
                 <div className="report-body">
                   {isFirstPage && fixedSections}
-                  {hasObsTable && renderObsTable(pageObs, isFirstPage ? "5. OBSERVATIONS" : "5. OBSERVATIONS (Contd.)")}
+                  {hasObsTable &&
+                    renderObsTable(
+                      pageObs,
+                      isFirstPage
+                        ? "5. OBSERVATIONS"
+                        : "5. OBSERVATIONS (Contd.)",
+                    )}
                   {renderSignatures()}
                 </div>
               </div>

@@ -622,9 +622,7 @@ export const PTReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>
-              Report No. {isEditMode ? "" : "(Auto-generated)"}
-            </label>
+            <label className={labelClass}>Report No. {isEditMode ? "" : "(Auto-generated)"}</label>
             <input
               type="text"
               value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
@@ -859,9 +857,7 @@ export const PTReportFormPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className={labelClass}>
-              Excess Penetrant Removal Method
-            </label>
+            <label className={labelClass}>Excess Penetrant Removal Method</label>
             <select
               value={removalMethod}
               onChange={(e) => setRemovalMethod(e.target.value)}
@@ -1294,7 +1290,7 @@ export const PTReportFormPage: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className={labelClass}>Qualification *</label>
+                      <label className={labelClass}>Qualification</label>
                       <input
                         type="text"
                         value={insp.qualification}
@@ -1311,7 +1307,7 @@ export const PTReportFormPage: React.FC = () => {
                       />
                     </div>
                     {/* <div>
-                      <label className={labelClass}>Designation *</label>
+                      <label className={labelClass}>Designation</label>
                       <input
                         type="text"
                         value={insp.designation}
@@ -1338,7 +1334,7 @@ export const PTReportFormPage: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>Date *</label>
+                      <label className={labelClass}>Date</label>
                       <input
                         type="date"
                         value={insp.date}

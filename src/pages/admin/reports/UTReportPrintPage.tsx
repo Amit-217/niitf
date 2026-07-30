@@ -238,7 +238,15 @@ export const UTReportPrintPage: React.FC = () => {
 
   const jd = report.jobDetails ?? {};
   const eq = report.equipmentDetails ?? {};
-  const units = (report as any).searchUnitDetails ?? [];
+  const units = ((report as any).searchUnitDetails ?? []).filter(
+    (u: any) =>
+      u.model?.trim() ||
+      u.angle?.trim() ||
+      u.srNo?.trim() ||
+      u.crystalSize?.trim() ||
+      u.waveMode?.trim() ||
+      u.frequency?.trim(),
+  );
   const td = report.techniqueDetails ?? {};
   const apc = report.angleProbeCalibration ?? {};
   const obs = report.observations ?? [];
@@ -296,14 +304,14 @@ export const UTReportPrintPage: React.FC = () => {
             </td>
           </tr>
           <tr>
-            <td>Name: {v(inspector.name) || "-"}</td>
-            <td>Name: {v((jd as any).customerRepresentative) || "-"}</td>
-            <td>Name: {v((jd as any).clientRepresentative) || "-"}</td>
+            <td>Name: {v(inspector.name)}</td>
+            <td>Name: {v((jd as any).customerRepresentative)}</td>
+            <td>Name: {v((jd as any).clientRepresentative)}</td>
           </tr>
           <tr>
             <td>{v(inspector.designation) || "UT NDE Level II"}</td>
-            <td>Designation: {v((jd as any).customerDesignation) || "-"}</td>
-            <td>Designation: {v((jd as any).clientDesignation) || "-"}</td>
+            <td>Designation: {v((jd as any).customerDesignation)}</td>
+            <td>Designation: {v((jd as any).clientDesignation)}</td>
           </tr>
           <tr>
             <td style={{ height: "40px" }}>Signature:-</td>
@@ -368,12 +376,9 @@ export const UTReportPrintPage: React.FC = () => {
               colSpan={7}
               style={{
                 textAlign: "center",
-                padding: "6px",
-                fontSize: "11px",
-                color: "#999",
               }}
             >
-              No observations recorded.
+              No data available
             </td>
           </tr>
         ) : (
@@ -387,7 +392,7 @@ export const UTReportPrintPage: React.FC = () => {
 
               <td style={{ textAlign: "center" }}>{v(o.size)}</td>
 
-              <td style={{ textAlign: "center" }}>{o.quantity ?? ""}</td>
+              <td style={{ textAlign: "center" }}>{v(o.quantity)}</td>
 
               <td style={{ textAlign: "center" }}>{v(o.interpretation)}</td>
 
@@ -446,7 +451,7 @@ export const UTReportPrintPage: React.FC = () => {
             className="col-hdr"
             style={{ whiteSpace: "nowrap", textAlign: "center" }}
           >
-            Angle Probe 
+            Angle Probe
           </td>
           {calibAngles.map((a) => (
             <td
@@ -595,7 +600,7 @@ export const UTReportPrintPage: React.FC = () => {
     </table>
   );
 
-  const renderSearchTable = (rows: any[], title: string) => (
+  const renderSearchTable = (rows: any[] = [], title: string) => (
     <table className="report-table mt-n1">
       <tbody>
         <tr>
@@ -603,6 +608,7 @@ export const UTReportPrintPage: React.FC = () => {
             {title}
           </td>
         </tr>
+
         <tr>
           <td className="col-hdr" style={{ width: "20%", textAlign: "center" }}>
             Search Unit / Model
@@ -623,16 +629,31 @@ export const UTReportPrintPage: React.FC = () => {
             Frequency
           </td>
         </tr>
-        {(rows.length > 0 ? rows : [{}]).map((u: any, i: any) => (
-          <tr key={i} style={{ height: "20px", textAlign: "center" }}>
-            <td>{v(u.model)}</td>
-            <td>{v(u.angle)}</td>
-            <td>{v(u.srNo)}</td>
-            <td>{v(u.crystalSize)}</td>
-            <td>{v(u.waveMode)}</td>
-            <td>{v(u.frequency)}</td>
+
+        {rows.length === 0 ? (
+          <tr>
+            <td
+              colSpan={6}
+              className="val"
+              style={{
+                textAlign: "center",
+              }}
+            >
+              No data available
+            </td>
           </tr>
-        ))}
+        ) : (
+          rows.map((u: any, i: number) => (
+            <tr key={i} style={{ height: "20px", textAlign: "center" }}>
+              <td>{v(u.model)}</td>
+              <td>{v(u.angle)}</td>
+              <td>{v(u.srNo)}</td>
+              <td>{v(u.crystalSize)}</td>
+              <td>{v(u.waveMode)}</td>
+              <td>{v(u.frequency)}</td>
+            </tr>
+          ))
+        )}
       </tbody>
     </table>
   );
@@ -683,9 +704,9 @@ export const UTReportPrintPage: React.FC = () => {
 
   const estimateObsRowHeight = (o: any): number => {
     const baseHeight = 6.5; // mm for single-line row
-    const desc = o.jobDescription || "";
-    const interp = o.interpretation || "";
-    const evalText = o.evaluation || o.remark || o.result || "";
+    const desc = o.jobDescription;
+    const interp = o.interpretation;
+    const evalText = o.evaluation || o.remark || o.result;
     const maxLen = Math.max(desc.length, interp.length, evalText.length);
     const lines = Math.max(1, Math.ceil(maxLen / 30));
     return baseHeight + (lines - 1) * 4.5;
@@ -767,7 +788,6 @@ export const UTReportPrintPage: React.FC = () => {
 
     const pageBlocks: ContentBlock[] = [];
     let accumulatedHeight = 0;
-
     let hasSearchTable = false;
     let hasObsTable = false;
 
@@ -835,50 +855,50 @@ export const UTReportPrintPage: React.FC = () => {
         }}
       >
         {!isPublic && (
-        <div
-          className="no-print"
-          style={{
-            position: "fixed",
-            top: 12,
-            right: 16,
-            zIndex: 100,
-            display: "flex",
-            gap: 8,
-          }}
-        >
-          <button
-            onClick={() => setBwMode((b) => !b)}
+          <div
+            className="no-print"
             style={{
-              padding: "7px 16px",
-              background: bwMode ? "#374151" : "#185FA5",
-              color: "#fff",
-              border: "none",
-              borderRadius: 6,
-              cursor: "pointer",
-              fontSize: 13,
-              fontWeight: 600,
+              position: "fixed",
+              top: 12,
+              right: 16,
+              zIndex: 100,
+              display: "flex",
+              gap: 8,
             }}
           >
-            {bwMode ? "Color Mode" : "B&W Mode"}
-          </button>
-          <button
-            onClick={() => window.print()}
-            style={{
-              padding: "7px 16px",
-              background: "#16a34a",
-              color: "#fff",
-              border: "none",
-              borderRadius: 6,
-              cursor: "pointer",
-              fontSize: 13,
-              fontWeight: 600,
-            }}
-          >
-            Print
-          </button>
-        </div>
+            <button
+              onClick={() => setBwMode((b) => !b)}
+              style={{
+                padding: "7px 16px",
+                background: bwMode ? "#374151" : "#185FA5",
+                color: "#fff",
+                border: "none",
+                borderRadius: 6,
+                cursor: "pointer",
+                fontSize: 13,
+                fontWeight: 600,
+              }}
+            >
+              {bwMode ? "Color Mode" : "B&W Mode"}
+            </button>
+            <button
+              onClick={() => window.print()}
+              style={{
+                padding: "7px 16px",
+                background: "#16a34a",
+                color: "#fff",
+                border: "none",
+                borderRadius: 6,
+                cursor: "pointer",
+                fontSize: 13,
+                fontWeight: 600,
+              }}
+            >
+              Print
+            </button>
+          </div>
         )}
-        {pages.map(({ pageBlocks }, i) => {
+        {pages.map(({ isFirstPage, pageBlocks }, i) => {
           const hasJob = pageBlocks.some((b) => b.type === "job");
 
           const hasEquipment = pageBlocks.some((b) => b.type === "equipment");
@@ -898,6 +918,9 @@ export const UTReportPrintPage: React.FC = () => {
           const isSearchContd =
             searchRows.length > 0 && searchRows[0] !== units[0];
 
+          const shouldShowSearch =
+            searchRows.length > 0 || (isFirstPage && units.length === 0);
+
           // Re-added the wrapper as per instructions
           return (
             <div className={`print-page${bwMode ? " bw" : ""}`} key={i}>
@@ -908,7 +931,7 @@ export const UTReportPrintPage: React.FC = () => {
 
                   {hasEquipment && renderEquipmentSection()}
 
-                  {searchRows.length > 0 &&
+                  {shouldShowSearch &&
                     renderSearchTable(
                       searchRows,
                       isSearchContd

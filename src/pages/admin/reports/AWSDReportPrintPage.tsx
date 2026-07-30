@@ -6,7 +6,10 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { getAWSDReportById, getPublicAWSDReportById } from "../../../api/customerApi";
+import {
+  getAWSDReportById,
+  getPublicAWSDReportById,
+} from "../../../api/customerApi";
 
 // ───────── Print Styles ─────────────────────────────────────────────────────────────
 
@@ -261,7 +264,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       const trigger = async () => {
         try {
           await document.fonts.ready;
-        } catch (_) { }
+        } catch (_) {}
         requestAnimationFrame(() => {
           setTimeout(() => {
             window.print();
@@ -458,15 +461,23 @@ export const AWSDReportPrintPage: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>{v(report.probe)}</td>
-            <td>{v(report.probeAngle)}</td>
-            <td>{v(report.frequency)}</td>
-            <td>{v(report.range)}</td>
-            <td>{v(report.scanningSensitivity)}</td>
-            <td>{v(report.referenceDb)}</td>
-            <td>{v(report.scanningDb)}</td>
-          </tr>
+          {!report.probe ? (
+            <tr>
+              <td colSpan={7} style={{ textAlign: "center" }}>
+                No probe data available
+              </td>
+            </tr>
+          ) : (
+            <tr>
+              <td>{v(report.probe)}</td>
+              <td>{v(report.probeAngle)}</td>
+              <td>{v(report.frequency)}</td>
+              <td>{v(report.range)}</td>
+              <td>{v(report.scanningSensitivity)}</td>
+              <td>{v(report.referenceDb)}</td>
+              <td>{v(report.scanningDb)}</td>
+            </tr>
+          )}
         </tbody>
       </table>
     </>
@@ -658,14 +669,14 @@ export const AWSDReportPrintPage: React.FC = () => {
             <td style={{ fontWeight: 600, fontSize: "11px" }}></td>
           </tr> */}
           <tr>
-            <td>Name: {v(cert.inspectedBy) || "-"}</td>
-            <td>Name: {v(cert.authorizedBy) || "-"}</td>
-            <td>Name: {v(cert.reviewedBy) || "-"}</td>
+            <td>Name: {v(cert.inspectedBy)}</td>
+            <td>Name: {v(cert.authorizedBy)}</td>
+            <td>Name: {v(cert.reviewedBy)}</td>
           </tr>
           <tr>
             <td>{v(cert.year) || "ASNT NDT Level-II - UT"}</td>
-            <td>Designation: {v(cert.custDesignation) || "-"}</td>
-            <td>Designation: {v(cert.clientDesignation) || "-"}</td>
+            <td>Designation: {v(cert.custDesignation)}</td>
+            <td>Designation: {v(cert.clientDesignation)}</td>
           </tr>
           <tr>
             <td style={{ height: "40px" }}>Signature:-</td>

@@ -249,10 +249,7 @@ const fmtDate = (d?: string | null) => {
   return `${String(dt.getDate()).padStart(2, "0")}.${String(dt.getMonth() + 1).padStart(2, "0")}.${dt.getFullYear()}`;
 };
 
-const splitTextIntoChunks = (
-  text: string,
-  charsPerChunk: number = 900
-) => {
+const splitTextIntoChunks = (text: string, charsPerChunk: number = 900) => {
   if (!text) return [];
 
   const chunks: string[] = [];
@@ -368,7 +365,10 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   const vd = report.vendorDetails ?? {};
   const ev = report.extraVisit ?? {};
   const items = report.inspectionItems ?? [];
-  const refs = report.referenceDocuments ?? [];
+  const refs = (report.referenceDocuments ?? []).filter(
+    (doc: any) =>
+      doc.document?.trim() || doc.referenceNumber?.trim() || doc.revNo?.trim(),
+  );
   const calib = report.calibrationStatus ?? [];
   const sigs = report.signatures ?? {};
 
@@ -403,9 +403,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         <img src="/logo.jpeg" alt="NIIT Logo" />
       </div>
       <div className="hdr-center">
-        <div className="org">
-          National Industrial Inspection and Training
-        </div>
+        <div className="org">National Industrial Inspection and Training</div>
         <div className="sub">
           THIRD PARTY INSPECTION | NDT SERVICES &amp; NDT TRAINING | NDT
           CONSULTANCY
@@ -433,23 +431,23 @@ export const TPIIVRReportPrintPage: React.FC = () => {
           </tr>
           <tr>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
-              {v(vd.vendor) || "-"}
+              {v(vd.vendor)}
             </td>
             <td style={{ fontWeight: 600, fontSize: "11px" }}>
               National Industrial Inspection And Training
             </td>
           </tr>
           <tr>
-            <td>Name: {v(sigs.vendor?.name) || "-"}</td>
-            <td>Name: {v(sigs.niit?.name) || "-"}</td>
+            <td>Name: {v(sigs.vendor?.name)}</td>
+            <td>Name: {v(sigs.niit?.name)}</td>
           </tr>
           <tr>
             <td style={{ height: "60px" }}>Signature:-</td>
             <td style={{ height: "60px" }}>Signature:-</td>
           </tr>
           <tr>
-            <td>Date: {fmtDate(sigs.vendor?.date) || "-"}</td>
-            <td>Date: {fmtDate(sigs.niit?.date) || "-"}</td>
+            <td>Date: {fmtDate(sigs.vendor?.date)}</td>
+            <td>Date: {fmtDate(sigs.niit?.date)}</td>
           </tr>
         </tbody>
       </table>
@@ -628,51 +626,81 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       <thead>
         <tr>
           <td colSpan={9} className="section-hdr">
-            {isFirstChunk ? "3. INSPECTION ITEMS" : "3. INSPECTION ITEMS (Contd.)"}
+            {isFirstChunk
+              ? "3. INSPECTION ITEMS"
+              : "3. INSPECTION ITEMS (Contd.)"}
           </td>
         </tr>
         <tr>
-          <td className="col-hdr" style={{ width: "8%",textAlign:"center" }} rowSpan={2}>
+          <td
+            className="col-hdr"
+            style={{ width: "8%", textAlign: "center" }}
+            rowSpan={2}
+          >
             PO Line No.
           </td>
-          <td className="col-hdr" style={{ width: "24%", textAlign: "center" }} rowSpan={2}>
+          <td
+            className="col-hdr"
+            style={{ width: "24%", textAlign: "center" }}
+            rowSpan={2}
+          >
             Description
           </td>
-          <td className="col-hdr" style={{ width: "16%", textAlign: "center" }} rowSpan={2}>
+          <td
+            className="col-hdr"
+            style={{ width: "16%", textAlign: "center" }}
+            rowSpan={2}
+          >
             Drg No. / Heat No.
           </td>
           <td className="col-hdr" colSpan={5} style={{ textAlign: "center" }}>
             Quantity in Nos.
           </td>
-          <td className="col-hdr" style={{ width: "14%", textAlign: "center"}} rowSpan={2}>
+          <td
+            className="col-hdr"
+            style={{ width: "14%", textAlign: "center" }}
+            rowSpan={2}
+          >
             Insp. Type
           </td>
         </tr>
         <tr>
-          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>Offered</td>
-          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>Inspected</td>
-          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>Accepted</td>
-          <td className="col-hdr" style={{ width: "7%", textAlign: "center" }}>Hold</td>
-          <td className="col-hdr" style={{ width: "7%", textAlign: "center" }}>Reject</td>
+          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>
+            Offered
+          </td>
+          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>
+            Inspected
+          </td>
+          <td className="col-hdr" style={{ width: "8%", textAlign: "center" }}>
+            Accepted
+          </td>
+          <td className="col-hdr" style={{ width: "7%", textAlign: "center" }}>
+            Hold
+          </td>
+          <td className="col-hdr" style={{ width: "7%", textAlign: "center" }}>
+            Reject
+          </td>
         </tr>
       </thead>
       <tbody>
         {pageItems.length === 0 ? (
           <tr>
-            <td colSpan={9}>&nbsp;</td>
+            <td colSpan={9} style={{ textAlign: "center" }}>
+              No probe data available
+            </td>
           </tr>
         ) : (
           pageItems.map((item: any, i: number) => (
-            <tr key={i} >
-              <td style={{textAlign:"center"}}>{v(item.poLineNo)}</td>
+            <tr key={i}>
+              <td style={{ textAlign: "center" }}>{v(item.poLineNo)}</td>
               <td style={{ textAlign: "center" }}>{v(item.description)}</td>
               <td style={{ textAlign: "center" }}>{v(item.drgOrHeatNo)}</td>
-              <td style={{textAlign:"center"}}>{v(item.qtyOffered)}</td>
-              <td style={{textAlign:"center"}}>{v(item.qtyInspected)}</td>
-              <td style={{textAlign:"center"}}>{v(item.qtyAccepted)}</td>
-              <td style={{textAlign:"center"}}>{v(item.qtyHold)}</td>
-              <td style={{textAlign:"center"}}>{v(item.qtyReject)}</td>
-              <td style={{textAlign:"center"}}>{v(item.inspectionType)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.qtyOffered)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.qtyInspected)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.qtyAccepted)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.qtyHold)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.qtyReject)}</td>
+              <td style={{ textAlign: "center" }}>{v(item.inspectionType)}</td>
             </tr>
           ))
         )}
@@ -681,52 +709,86 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   const renderActivitiesSection = (text: string, isFirstChunk: boolean) => (
-    <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+    <table
+      className="report-table mt-n1"
+      style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+    >
       <thead>
         <tr>
           <td className="section-hdr">
-            {isFirstChunk ? "4. INSPECTION ACTIVITIES" : "INSPECTION ACTIVITIES (Contd.)"}
+            {isFirstChunk
+              ? "4. INSPECTION ACTIVITIES"
+              : "INSPECTION ACTIVITIES (Contd.)"}
           </td>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td className="activities-box">{v(text) || " "}</td>
+          <td className="activities-box">{v(text)}</td>
         </tr>
       </tbody>
     </table>
   );
 
-  const renderRefsSection = (pageRefs: any[], isFirstChunk: boolean) => (
-    <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+  const renderRefsSection = (pageRefs: any[] = [], isFirstChunk: boolean) => (
+    <table
+      className="report-table mt-n1"
+      style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+    >
       <colgroup>
         <col style={{ width: "30%" }} />
         <col style={{ width: "50%" }} />
         <col style={{ width: "20%" }} />
       </colgroup>
+
       <thead>
         <tr>
           <td colSpan={3} className="section-hdr">
-            {isFirstChunk ? "5. REFERENCE DOCUMENTS FOR INSPECTION" : "REFERENCE DOCUMENTS FOR INSPECTION (Contd.)"}
+            {isFirstChunk
+              ? "5. REFERENCE DOCUMENTS FOR INSPECTION"
+              : "5. REFERENCE DOCUMENTS FOR INSPECTION (Contd.)"}
           </td>
         </tr>
+
         <tr>
-          <td className="col-hdr" style={{textAlign:"center"}}>Document</td>
-          <td className="col-hdr"style={{textAlign:"center"}}>Reference Number</td>
-          <td className="col-hdr"style={{textAlign:"center"}}>Rev. No.</td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Document
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Reference Number
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Rev. No.
+          </td>
         </tr>
       </thead>
+
       <tbody>
         {pageRefs.length === 0 ? (
           <tr>
-            <td colSpan={3} >&nbsp;</td>
+            <td
+              className="val"
+              colSpan={3}
+              style={{
+                textAlign: "center",
+                padding: "8px",
+              }}
+            >
+              No data available
+            </td>
           </tr>
         ) : (
           pageRefs.map((doc: any, i: number) => (
             <tr key={i}>
-              <td className="lbl" style={{ fontWeight: 500,textAlign:"center" }}>{v(doc.document)}</td>
-              <td className="val" style={{textAlign:"center"}}>{v(doc.referenceNumber)}</td>
-              <td className="val"style={{textAlign:"center"}}>{v(doc.revNo)}</td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {v(doc.document)}
+              </td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {v(doc.referenceNumber)}
+              </td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {v(doc.revNo)}
+              </td>
             </tr>
           ))
         )}
@@ -735,7 +797,10 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   const renderCalibSection = (pageCalib: any[], isFirstChunk: boolean) => (
-    <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+    <table
+      className="report-table mt-n1"
+      style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+    >
       <colgroup>
         <col style={{ width: "28%" }} />
         <col style={{ width: "18%" }} />
@@ -745,31 +810,59 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       </colgroup>
       <thead>
         <tr>
-          <td colSpan={5} className="section-hdr" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
-            {isFirstChunk ? "6. CALIBRATION STATUS OF INSTRUMENTS" : "6. CALIBRATION STATUS OF INSTRUMENTS (Contd.)"}
+          <td
+            colSpan={5}
+            className="section-hdr"
+            style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+          >
+            {isFirstChunk
+              ? "6. CALIBRATION STATUS OF INSTRUMENTS"
+              : "6. CALIBRATION STATUS OF INSTRUMENTS (Contd.)"}
           </td>
         </tr>
         <tr>
-          <td className="col-hdr" style={{textAlign:"center"}}>Equipment / Instrument</td>
-          <td className="col-hdr" style={{textAlign:"center"}}>I.D. Number</td>
-          <td className="col-hdr" style={{textAlign:"center"}}>Calibration Date</td>
-          <td className="col-hdr" style={{textAlign:"center"}}>Due Date</td>
-          <td className="col-hdr" style={{textAlign:"center"}}>NABL Certified</td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Equipment / Instrument
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            I.D. Number
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Calibration Date
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            Due Date
+          </td>
+          <td className="col-hdr" style={{ textAlign: "center" }}>
+            NABL Certified
+          </td>
         </tr>
       </thead>
       <tbody>
         {pageCalib.length === 0 ? (
           <tr>
-            <td className="val" colSpan={5}>&nbsp;</td>
+            <td className="val" colSpan={5} style={{ textAlign: "center" }}>
+              No data available
+            </td>
           </tr>
         ) : (
           pageCalib.map((c: any, i: number) => (
             <tr key={i}>
-              <td className="val" style={{textAlign:"center"}}>{v(c.equipment)}</td>
-              <td className="val" style={{textAlign:"center"}}>{v(c.idNumber)}</td>
-              <td className="val" style={{textAlign:"center"}}>{fmtDate(c.calibrationDate)}</td>
-              <td className="val" style={{textAlign:"center"}}>{fmtDate(c.dueDate)}</td>
-              <td className="val" style={{textAlign:"center"}}>{v(c.nablCertified)}</td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {v(c.equipment)}
+              </td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {v(c.idNumber)}
+              </td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {fmtDate(c.calibrationDate)}
+              </td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {fmtDate(c.dueDate)}
+              </td>
+              <td className="val" style={{ textAlign: "center" }}>
+                {v(c.nablCertified)}
+              </td>
             </tr>
           ))
         )}
@@ -778,7 +871,10 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   const renderConclusionSection = (text: string, isFirstChunk: boolean) => (
-    <table className="report-table mt-n1" style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>
+    <table
+      className="report-table mt-n1"
+      style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+    >
       <tbody>
         <tr>
           <td className="section-hdr">
@@ -787,7 +883,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
         </tr>
         <tr>
           <td className="val" style={{ padding: "8px", minHeight: "40px" }}>
-            {v(text) || "-"}
+            {v(text)}
           </td>
         </tr>
       </tbody>
@@ -795,14 +891,13 @@ export const TPIIVRReportPrintPage: React.FC = () => {
   );
 
   // Dynamic pagination block layout engine
-const PAGE_HEIGHT_LIMIT = 288;
+  const PAGE_HEIGHT_LIMIT = 288;
 
-const HEADER_HEIGHT = 28;
-const FOOTER_HEIGHT = 20;
-const SIGNATURES_HEIGHT = 48;
+  const HEADER_HEIGHT = 28;
+  const FOOTER_HEIGHT = 20;
+  const SIGNATURES_HEIGHT = 48;
 
-const FIXED_SECTIONS_HEIGHT = 40;
-
+  const FIXED_SECTIONS_HEIGHT = 40;
 
   const estimateItemRowHeight = (item: any) => {
     const baseHeight = 2; // mm
@@ -819,10 +914,7 @@ const FIXED_SECTIONS_HEIGHT = 40;
     return baseHeight + (lines - 1) * 2.1; // Adjusted to account for baseHeight already including first line
   };
 
-  const splitTextByRenderedHeight = (
-    text: string,
-    maxHeightMm: number
-  ) => {
+  const splitTextByRenderedHeight = (text: string, maxHeightMm: number) => {
     if (!text) return [];
 
     const pxPerMm = 5.83;
@@ -886,24 +978,24 @@ const FIXED_SECTIONS_HEIGHT = 40;
         height: number;
         isContinuation?: boolean;
       }
-  | {
-      type: "ref-row";
-      item: any;
-      height: number;
-      isContinuation?: boolean;
-    }
-  | {
-      type: "calib-row";
-      item: any;
-      height: number;
-      isContinuation?: boolean;
-    }
-  | {
-      type: "conclusion";
-      text: string;
-      height: number;
-      isContinuation?: boolean;
-    };
+    | {
+        type: "ref-row";
+        item: any;
+        height: number;
+        isContinuation?: boolean;
+      }
+    | {
+        type: "calib-row";
+        item: any;
+        height: number;
+        isContinuation?: boolean;
+      }
+    | {
+        type: "conclusion";
+        text: string;
+        height: number;
+        isContinuation?: boolean;
+      };
 
   const blocks: ContentBlock[] = [];
   blocks.push({
@@ -919,20 +1011,19 @@ const FIXED_SECTIONS_HEIGHT = 40;
     });
   });
 
- 
-const activityChunks = splitTextByRenderedHeight(
-  report.inspectionActivities || "",
-  20
-);
+  const activityChunks = splitTextByRenderedHeight(
+    report.inspectionActivities || "",
+    20,
+  );
 
-activityChunks.forEach((chunk, index) => {
-  blocks.push({
-    type: "activities",
-    text: chunk,
-    height: 20,
-    isContinuation: index > 0,
+  activityChunks.forEach((chunk, index) => {
+    blocks.push({
+      type: "activities",
+      text: chunk,
+      height: 20,
+      isContinuation: index > 0,
+    });
   });
-});
   refs.forEach((doc: any) => {
     blocks.push({
       type: "ref-row",
@@ -966,17 +1057,17 @@ activityChunks.forEach((chunk, index) => {
   const pages: PageDescriptor[] = [];
   let currentBlockIndex = 0;
 
- // mm
+  // mm
 
   while (currentBlockIndex < blocks.length) {
     const isFirstPage = pages.length === 0;
     // Signatures are rendered on every page, so reduce available height by signature height on all pages
-   let availableHeight =
-  PAGE_HEIGHT_LIMIT -
-  HEADER_HEIGHT -
-  FOOTER_HEIGHT -
-  SIGNATURES_HEIGHT -
-  10;
+    let availableHeight =
+      PAGE_HEIGHT_LIMIT -
+      HEADER_HEIGHT -
+      FOOTER_HEIGHT -
+      SIGNATURES_HEIGHT -
+      10;
     if (isFirstPage) {
       availableHeight -= FIXED_SECTIONS_HEIGHT;
     }
@@ -996,16 +1087,28 @@ activityChunks.forEach((chunk, index) => {
       if (block.type === "item-row" && !hasItemsHeader) {
         blockHeight += 18;
       }
-      if (block.type === "activities" && !hasActivitiesHeader && !block.isContinuation) {
+      if (
+        block.type === "activities" &&
+        !hasActivitiesHeader &&
+        !block.isContinuation
+      ) {
         blockHeight += 8;
       }
       if (block.type === "ref-row" && !hasRefsHeader && !block.isContinuation) {
         blockHeight += 12;
       }
-      if (block.type === "calib-row" && !hasCalibHeader && !block.isContinuation) {
+      if (
+        block.type === "calib-row" &&
+        !hasCalibHeader &&
+        !block.isContinuation
+      ) {
         blockHeight += 12;
       }
-      if (block.type === "conclusion" && !hasConclusionHeader && !block.isContinuation) {
+      if (
+        block.type === "conclusion" &&
+        !hasConclusionHeader &&
+        !block.isContinuation
+      ) {
         blockHeight += 8;
       }
 
@@ -1089,38 +1192,48 @@ activityChunks.forEach((chunk, index) => {
         style={{ background: "#e9eef5", minHeight: "100vh", padding: "16px" }}
       >
         {pages.map(({ isFirstPage, pageBlocks }, i) => {
-          const showClientVendor = pageBlocks.some((b) => b.type === "client-vendor");
+          const showClientVendor = pageBlocks.some(
+            (b) => b.type === "client-vendor",
+          );
           const pageItems = pageBlocks
-            .filter((b): b is Extract<ContentBlock, { type: "item-row" }> => b.type === "item-row")
+            .filter(
+              (b): b is Extract<ContentBlock, { type: "item-row" }> =>
+                b.type === "item-row",
+            )
             .map((b) => b.item);
           const pageActivities = pageBlocks.filter(
-            (
-              b
-            ): b is Extract<ContentBlock, { type: "activities" }> =>
-              b.type === "activities"
+            (b): b is Extract<ContentBlock, { type: "activities" }> =>
+              b.type === "activities",
           );
           const pageRefs = pageBlocks
-            .filter((b): b is Extract<ContentBlock, { type: "ref-row" }> => b.type === "ref-row")
+            .filter(
+              (b): b is Extract<ContentBlock, { type: "ref-row" }> =>
+                b.type === "ref-row",
+            )
             .map((b) => b.item);
           const pageCalib = pageBlocks
-            .filter((b): b is Extract<ContentBlock, { type: "calib-row" }> => b.type === "calib-row")
+            .filter(
+              (b): b is Extract<ContentBlock, { type: "calib-row" }> =>
+                b.type === "calib-row",
+            )
             .map((b) => b.item);
           const pageConclusion = pageBlocks.filter(
-            (
-              b
-            ): b is Extract<ContentBlock, { type: "conclusion" }> =>
-              b.type === "conclusion"
+            (b): b is Extract<ContentBlock, { type: "conclusion" }> =>
+              b.type === "conclusion",
           );
 
           const isFirstItem = pageItems[0] === items[0];
           const isFirstRefs = pageRefs[0] === refs[0];
           const isFirstCalib = pageCalib[0] === calib[0];
-          const shouldShowItems = pageItems.length > 0 || (isFirstPage && items.length === 0);
+          const shouldShowItems =
+            pageItems.length > 0 || (isFirstPage && items.length === 0);
           const shouldShowActivities =
             pageActivities.length > 0 ||
             (isFirstPage && !report.inspectionActivities?.trim());
-          const shouldShowRefs = pageRefs.length > 0 || (isFirstPage && refs.length === 0);
-          const shouldShowCalib = pageCalib.length > 0 || (isFirstPage && calib.length === 0);
+          const shouldShowRefs =
+            pageRefs.length > 0 || (isFirstPage && refs.length === 0);
+          const shouldShowCalib =
+            pageCalib.length > 0 || (isFirstPage && calib.length === 0);
           const shouldShowConclusion =
             pageConclusion.length > 0 ||
             (isFirstPage && !report.conclusion?.trim());
@@ -1132,20 +1245,27 @@ activityChunks.forEach((chunk, index) => {
                 <div className="report-body">
                   {isFirstPage && renderJobDetailsSection()}
                   {showClientVendor && renderClientVendorSection()}
-                  {shouldShowItems && renderItemsTableSection(pageItems, isFirstPage || isFirstItem)}
-                  {shouldShowActivities && renderActivitiesSection(
-                    pageActivities.map(a => a.text).join(""),
-                    !pageActivities[0]?.isContinuation
-                  )}
-                  {shouldShowRefs && renderRefsSection(pageRefs, isFirstPage || isFirstRefs)}
-                  {shouldShowCalib && renderCalibSection(pageCalib, isFirstPage || isFirstCalib)}
-                  {shouldShowConclusion && renderConclusionSection(
-                    pageConclusion.map(c => c.text).join(""),
-                    !pageConclusion[0]?.isContinuation
-                  )}
+                  {shouldShowItems &&
+                    renderItemsTableSection(
+                      pageItems,
+                      isFirstPage || isFirstItem,
+                    )}
+                  {shouldShowActivities &&
+                    renderActivitiesSection(
+                      pageActivities.map((a) => a.text).join(""),
+                      !pageActivities[0]?.isContinuation,
+                    )}
+                  {shouldShowRefs &&
+                    renderRefsSection(pageRefs, isFirstPage || isFirstRefs)}
+                  {shouldShowCalib &&
+                    renderCalibSection(pageCalib, isFirstPage || isFirstCalib)}
+                  {shouldShowConclusion &&
+                    renderConclusionSection(
+                      pageConclusion.map((c) => c.text).join(""),
+                      !pageConclusion[0]?.isContinuation,
+                    )}
                 </div>
-                  {renderSignatures()}
-                
+                {renderSignatures()}
               </div>
               <div className="print-page-foot">
                 <ReportFooter />

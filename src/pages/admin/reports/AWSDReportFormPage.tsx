@@ -1213,7 +1213,7 @@ export const AWSDReportFormPage: React.FC = () => {
                   )}
                   <div className="space-y-2">
                     <div>
-                      <label className={labelClass}>Name *</label>
+                      <label className={labelClass}>Name</label>
                       <select
                         value={insp.name}
                         onChange={(e) =>
@@ -1230,7 +1230,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className={labelClass}>Qualification *</label>
+                      <label className={labelClass}>Qualification</label>
                       <input
                         type="text"
                         value={insp.qualification}
@@ -1247,7 +1247,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       />
                     </div>
                     {/* <div>
-                      <label className={labelClass}>Designation *</label>
+                      <label className={labelClass}>Designation</label>
                       <input
                         type="text"
                         value={insp.designation}
@@ -1274,7 +1274,7 @@ export const AWSDReportFormPage: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>Date *</label>
+                      <label className={labelClass}>Date</label>
                       <input
                         type="date"
                         value={insp.date}
@@ -1310,7 +1310,7 @@ export const AWSDReportFormPage: React.FC = () => {
             />
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Name *</label>
+                <label className={labelClass}>Name</label>
                 <input
                   type="text"
                   value={custName}
@@ -1319,7 +1319,7 @@ export const AWSDReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Designation *</label>
+                <label className={labelClass}>Designation</label>
                 <input
                   type="text"
                   value={custDesig}
@@ -1337,7 +1337,7 @@ export const AWSDReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Date *</label>
+                <label className={labelClass}>Date</label>
                 <input
                   type="date"
                   value={custDate}
@@ -1366,7 +1366,7 @@ export const AWSDReportFormPage: React.FC = () => {
             />
             <div className="space-y-2">
               <div>
-                <label className={labelClass}>Name *</label>
+                <label className={labelClass}>Name</label>
                 <input
                   type="text"
                   value={clientName}
@@ -1375,7 +1375,7 @@ export const AWSDReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Designation *</label>
+                <label className={labelClass}>Designation</label>
                 <input
                   type="text"
                   value={clientDesig}
@@ -1393,7 +1393,7 @@ export const AWSDReportFormPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className={labelClass}>Date *</label>
+                <label className={labelClass}>Date</label>
                 <input
                   type="date"
                   value={clientDate}
