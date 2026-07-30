@@ -642,9 +642,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>
-              Report No. {isEditMode ? "" : "(Auto-generated)"}
-            </label>
+            <label className={labelClass}>Report No. {isEditMode ? "" : "(Auto-generated)"}</label>
             <input
               type="text"
               value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
@@ -882,9 +880,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>
-              Standard Cal Block — For Normal
-            </label>
+            <label className={labelClass}>Standard Cal Block — For Normal</label>
             <input
               type="text"
               value={tsCalBlockNormal}
@@ -894,9 +890,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>
-              Idtn. No of Ref Block — For Angle
-            </label>
+            <label className={labelClass}>Idtn. No of Ref Block — For Angle</label>
 
             <SelectWithCustom
               value={tsRefBlockAngle}
@@ -908,9 +902,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>
-              Idtn. No of Ref Block — For Normal
-            </label>
+            <label className={labelClass}>Idtn. No of Ref Block — For Normal</label>
             <SelectWithCustom
               value={tsRefBlockNormal}
               onChange={setTsRefBlockNormal}
