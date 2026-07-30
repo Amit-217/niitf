@@ -645,7 +645,7 @@ export const CustomerDetailPage = () => {
               state: { customerId: id },
             })
           }
-          className="relative flex flex-col items-start p-5 rounded-2xl border-2 border-dashed border-violet-300 bg-violet-50/30 hover:bg-violet-50/60 transition-all text-left shadow-sm hover:shadow-md"
+          className="relative flex flex-col items-start p-5 rounded-2xl border-2 border-gray-200 hover:border-gray-300 transition-all text-left shadow-sm hover:shadow-md"
         >
           <div className="p-2.5 rounded-xl mb-3 bg-violet-100 text-violet-600">
             <FilePlus size={20} />
