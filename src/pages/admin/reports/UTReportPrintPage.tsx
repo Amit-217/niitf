@@ -56,7 +56,7 @@ const PRINT_STYLES = `
   .hdr-center .org { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase; }
   .hdr-center .sub { font-size: 10px; color: #374151; margin-top: 2px; line-height: 1.4; }
   .hdr-center .iso { font-size: 10px; color: #0C447C; font-weight: 700; margin-top: 2px; }
-  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 9px; text-align: center; padding: 1px 8px 3px 8px; }
+  .footer-meta { background: #185FA5; color: #d7e8fb; font-size: 10px; text-align: center; padding: 3px 8px; }
   .footer-meta span { color: #fff; font-weight: 700; }
   /* B&W mode */
   .bw .rpt-header { background: #fff !important; border-bottom: none !important; }
@@ -116,7 +116,7 @@ const PRINT_STYLES = `
   .calib-table td, .calib-table th { border: 1.2px solid #000; padding: 4px; font-size: 11px; text-align: left; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; word-break: break-word; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; }
   .calib-table td.section-hdr { text-align: left; }
-  .footer { background: #f8fafc; padding: 5px 10px; font-size: 11px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .footer { background: #f8fafc; padding: 6px 10px; font-size: 11px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 `;
@@ -410,8 +410,8 @@ export const UTReportPrintPage: React.FC = () => {
     <>
       <div className="footer">
         <div className="footer-text-block">
-          Corp Office: 1st Floor, Plot No.PAP 3/28, Behind BSNL Office, MIDC,
-          Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
+          Corp Off.: Royal Corner, Off. No. 106, 1st Floor, Near Monika Lawan's Jalochi Road, Baramati 413102 | Ph: 9860186056 / 7875154431
+
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com

@@ -134,8 +134,8 @@ const PRINT_STYLES = `
   .footer {
     font-family: Arial, Helvetica, sans-serif !important;
     background: #f8fafc !important;
-    padding: 4px 10px !important;
-    font-size: 12px !important;
+    padding: 6px 10px !important;
+    font-size: 11px !important;
     color: #4b5563 !important;
     margin-top: 8px;
     border-top: 3px solid #185FA5 !important;
@@ -147,7 +147,7 @@ const PRINT_STYLES = `
     font-family: Arial, Helvetica, sans-serif !important;
     background: #185FA5 !important;
     color: #d7e8fb !important;
-    font-size: 9px !important;
+    font-size: 10px !important;
     text-align: center !important;
     padding: 3px 8px !important;
     border: none !important;
@@ -264,7 +264,7 @@ export const AWSDReportPrintPage: React.FC = () => {
       const trigger = async () => {
         try {
           await document.fonts.ready;
-        } catch (_) {}
+        } catch (_) { }
         requestAnimationFrame(() => {
           setTimeout(() => {
             window.print();
@@ -697,8 +697,8 @@ export const AWSDReportPrintPage: React.FC = () => {
     <>
       <div className="footer">
         <div className="footer-text-block" style={{ flex: 1 }}>
-          Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office, MIDC,
-          Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
+          Corp Off.: Royal Corner, Off. No. 106, 1st Floor, Near Monika Lawan's Jalochi Road, Baramati 413102 | Ph: 9860186056 / 7875154431
+
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com

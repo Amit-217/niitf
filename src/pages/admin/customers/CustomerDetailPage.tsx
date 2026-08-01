@@ -29,7 +29,6 @@ import {
   Ruler,
   ClipboardList,
   GitBranch,
-  Search,
 } from "lucide-react";
 import {
   getCustomerById,
@@ -225,8 +224,6 @@ export const CustomerDetailPage = () => {
   const [newInvoicePage, setNewInvoicePage] = useState(1);
   const [newInvoiceLimit, setNewInvoiceLimit] = useState(10);
   const [newInvoicesPageTotal, setNewInvoicesPageTotal] = useState(0);
-  const [newInvoiceSearch, setNewInvoiceSearch] = useState("");
-  const [newInvoiceStatusFilter, setNewInvoiceStatusFilter] = useState("");
 
   const [countsLoaded, setCountsLoaded] = useState(false);
 
@@ -394,8 +391,6 @@ export const CustomerDetailPage = () => {
         customerId: id,
         page: newInvoicePage,
         limit: newInvoiceLimit,
-        search: newInvoiceSearch || undefined,
-        status: newInvoiceStatusFilter || undefined,
       });
       const body: any = res;
       const data = body?.data?.data || body?.data || body || [];
@@ -409,7 +404,7 @@ export const CustomerDetailPage = () => {
     } finally {
       setNewInvoicesLoading(false);
     }
-  }, [id, newInvoicePage, newInvoiceLimit, newInvoiceSearch, newInvoiceStatusFilter]);
+  }, [id, newInvoicePage, newInvoiceLimit]);
 
   useEffect(() => {
     fetchCustomer();
@@ -428,10 +423,10 @@ export const CustomerDetailPage = () => {
     setQuotationPage(1);
     setQuotations([]);
   }, [quotationTypeFilter]);
-  // Reset new invoice page when search or filter changes
+  // Reset new invoice page when tab changes
   useEffect(() => {
     setNewInvoicePage(1);
-  }, [newInvoiceSearch, newInvoiceStatusFilter]);
+  }, [activeTab]);
 
   // Lazy-fetch report data when Reports tab is active and a sub-type is selected
   useEffect(() => {
@@ -451,7 +446,7 @@ export const CustomerDetailPage = () => {
   // Lazy-fetch new invoices when New Invoice tab is active
   useEffect(() => {
     if (activeTab === "newInvoice") fetchNewInvoices();
-  }, [activeTab, newInvoicePage, newInvoiceLimit, newInvoiceSearch, newInvoiceStatusFilter, fetchNewInvoices]);
+  }, [activeTab, newInvoicePage, newInvoiceLimit, fetchNewInvoices]);
 
   // Keep history state in sync so browser back button restores the correct tab/inspection
   useEffect(() => {
@@ -718,11 +713,9 @@ export const CustomerDetailPage = () => {
           onClick={() => {
             const newTab = activeTab === "newInvoice" ? null : "newInvoice";
             setActiveTab(newTab);
-            if (newTab !== "reports") setReportSubType(null);
-            if (newTab !== "quotations") {
-              setQuotationStatusFilter(null);
-              setQuotationTypeFilter(null);
-            }
+            setReportSubType(null);
+            setQuotationStatusFilter(null);
+            setQuotationTypeFilter(null);
           }}
           className={`relative flex flex-col items-start p-5 rounded-2xl border-2 transition-all text-left shadow-sm hover:shadow-md ${
             activeTab === "newInvoice"
@@ -1385,166 +1378,128 @@ export const CustomerDetailPage = () => {
           )}
 
           {activeTab === "newInvoice" && (
-            <div>
-              {/* Search & Filter bar */}
-              <div className="mx-5 mt-4 mb-2 flex flex-col sm:flex-row gap-3">
-                <div className="relative flex-1">
-                  <Search
-                    size={16}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search by invoice no..."
-                    value={newInvoiceSearch}
-                    onChange={(e) => {
-                      setNewInvoiceSearch(e.target.value);
+            <div className="mx-5 mb-5 mt-2 rounded-xl border border-gray-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-gray-50 border-b border-gray-200">
+                      {[
+                        "Invoice No",
+                        "Date",
+                        "Grand Total",
+                        "Status",
+                        "Actions",
+                      ].map((h) => (
+                        <th
+                          key={h}
+                          className="px-4 py-3 text-left font-semibold text-gray-600"
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {newInvoicesLoading ? (
+                      <tr>
+                        <td
+                          colSpan={5}
+                          className="px-4 py-10 text-center text-gray-400"
+                        >
+                          <Loader2
+                            className="animate-spin inline mr-2"
+                            size={16}
+                          />{" "}
+                          Loading...
+                        </td>
+                      </tr>
+                    ) : newInvoices.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={5}
+                          className="px-4 py-10 text-center text-gray-400"
+                        >
+                          No new invoices found.
+                        </td>
+                      </tr>
+                    ) : (
+                      newInvoices.map((inv) => (
+                        <tr
+                          key={inv._id}
+                          className="hover:bg-gray-50 transition-colors"
+                        >
+                          <td className="px-4 py-3 font-medium text-primary-700">
+                            <div className="flex items-center gap-2">
+                              <FileText
+                                size={14}
+                                className="text-primary-400"
+                              />
+                              {inv.invoiceNo}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-gray-600">
+                            {fmt(inv.date)}
+                          </td>
+                          <td className="px-4 py-3 font-semibold text-gray-900">
+                            ₹{(inv.grandTotal || inv.totalAmount || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${inv.status === "Final" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"}`}
+                            >
+                              {inv.status || "Draft"}
+                            </span>
+                          </td>
+                          <td className="px-1 py-3 text-left">
+                            <div className="flex items-center gap-2 justify-start">
+                              <button
+                                onClick={() =>
+                                  navigate(`/admin/new-invoices/${inv._id}/print`)
+                                }
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                              >
+                                <Eye size={15} />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  navigate(`/admin/new-invoices/${inv._id}/edit`)
+                                }
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
+                              >
+                                <Pencil size={15} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteNewInvoice(inv._id)}
+                                className="p-1.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                              >
+                                <Trash2 size={15} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              {newInvoices.length > 0 && (
+                <div className="px-4 py-3 border-t border-gray-100">
+                  <Pagination
+                    page={newInvoicePage}
+                    totalPages={Math.max(
+                      1,
+                      Math.ceil(newInvoicesPageTotal / newInvoiceLimit),
+                    )}
+                    total={newInvoicesPageTotal}
+                    limit={newInvoiceLimit}
+                    onPageChange={setNewInvoicePage}
+                    onLimitChange={(l) => {
+                      setNewInvoiceLimit(l);
                       setNewInvoicePage(1);
                     }}
-                    className="input-field pl-9 w-full"
                   />
                 </div>
-                <select
-                  value={newInvoiceStatusFilter}
-                  onChange={(e) => {
-                    setNewInvoiceStatusFilter(e.target.value);
-                    setNewInvoicePage(1);
-                  }}
-                  className="input-field w-full sm:w-44"
-                >
-                  <option value="">All Statuses</option>
-                  <option value="Draft">Draft</option>
-                  <option value="Final">Final</option>
-                </select>
-              </div>
-
-              {/* Table / List */}
-              <div className="mx-5 mb-5 mt-2 rounded-xl border border-gray-200 overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-gray-50 border-b border-gray-200">
-                        {[
-                          "Invoice No",
-                          "Date",
-                          "Grand Total",
-                          "Status",
-                          "Actions",
-                        ].map((h) => (
-                          <th
-                            key={h}
-                            className={`px-4 py-3 font-semibold text-gray-600 ${h === "Grand Total" ? "text-right" : h === "Status" || h === "Actions" ? "text-center" : "text-left"}`}
-                          >
-                            {h}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {newInvoicesLoading ? (
-                        <tr>
-                          <td
-                            colSpan={5}
-                            className="px-4 py-10 text-center text-gray-400"
-                          >
-                            <Loader2
-                              className="animate-spin inline mr-2"
-                              size={16}
-                            />{" "}
-                            Loading...
-                          </td>
-                        </tr>
-                      ) : newInvoices.length === 0 ? (
-                        <tr>
-                          <td
-                            colSpan={5}
-                            className="px-4 py-10 text-center text-gray-400"
-                          >
-                            No new invoices found.
-                          </td>
-                        </tr>
-                      ) : (
-                        newInvoices.map((inv) => (
-                          <tr
-                            key={inv._id}
-                            className="hover:bg-gray-50 transition-colors"
-                          >
-                            <td className="px-4 py-3 font-medium text-primary-700">
-                              <div className="flex items-center gap-2">
-                                <FileText
-                                  size={14}
-                                  className="text-primary-400"
-                                />
-                                {inv.invoiceNo}
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-gray-600">
-                              {fmt(inv.date)}
-                            </td>
-                            <td className="px-4 py-3 text-right font-semibold text-gray-900">
-                              ₹{(inv.grandTotal || inv.totalAmount || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <span
-                                className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${inv.status === "Final" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"}`}
-                              >
-                                {inv.status || "Draft"}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center justify-center gap-2">
-                                <button
-                                  onClick={() =>
-                                    navigate(`/admin/new-invoices/${inv._id}/print`)
-                                  }
-                                  title="View / Print"
-                                  className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                                >
-                                  <Eye size={15} />
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    navigate(`/admin/new-invoices/${inv._id}/edit`)
-                                  }
-                                  title="Edit"
-                                  className="p-1.5 rounded-lg text-gray-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
-                                >
-                                  <Pencil size={15} />
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteNewInvoice(inv._id)}
-                                  title="Delete"
-                                  className="p-1.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
-                                >
-                                  <Trash2 size={15} />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-                {newInvoices.length > 0 && (
-                  <div className="px-4 py-3 border-t border-gray-100">
-                    <Pagination
-                      page={newInvoicePage}
-                      totalPages={Math.max(
-                        1,
-                        Math.ceil(newInvoicesPageTotal / newInvoiceLimit),
-                      )}
-                      total={newInvoicesPageTotal}
-                      limit={newInvoiceLimit}
-                      onPageChange={setNewInvoicePage}
-                      onLimitChange={(l) => {
-                        setNewInvoiceLimit(l);
-                        setNewInvoicePage(1);
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           )}
         </div>

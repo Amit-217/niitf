@@ -175,6 +175,7 @@ export const InvoiceFormPage: React.FC = () => {
 
   const locationCustomerId =
     (location.state as { customerId?: string } | null)?.customerId || "";
+  const fromCustomerPage = Boolean(locationCustomerId);
 
   const [form, setForm] = useState<typeof defaultForm>({
     ...defaultForm,
@@ -417,7 +418,11 @@ export const InvoiceFormPage: React.FC = () => {
       if (andPrint && savedId) {
         navigate(`${basePath}/invoices/${savedId}/print?autoprint=true`);
       } else {
-        navigate(`${basePath}/invoices`);
+        if (fromCustomerPage) {
+          navigate(`${basePath}/customers/${locationCustomerId}`);
+        } else {
+          navigate(`${basePath}/invoices`);
+        }
       }
     } catch (err: any) {
       toast.error(err?.message || "Failed to save invoice");
@@ -1035,7 +1040,13 @@ export const InvoiceFormPage: React.FC = () => {
       {/* Fixed Footer Actions */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 px-6 py-3 flex items-center justify-end gap-3 shadow-lg">
         <button
-          onClick={() => navigate(`${basePath}/invoices`)}
+          onClick={() => {
+            if (fromCustomerPage) {
+              navigate(`${basePath}/customers/${locationCustomerId}`);
+            } else {
+              navigate(`${basePath}/invoices`);
+            }
+          }}
           className="px-5 py-2 rounded-lg border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition-colors"
         >
           Cancel

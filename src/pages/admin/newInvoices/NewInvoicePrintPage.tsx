@@ -164,7 +164,7 @@ function fmtDate(d?: string | null) {
 }
 
 function fmtNum(n?: number | null) {
-  if (n === undefined || n === null || isNaN(Number(n))) return "—";
+  if (n === undefined || n === null || isNaN(Number(n))) return "ï¿½";
   return Number(n).toLocaleString("en-IN", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -255,7 +255,7 @@ export const NewInvoicePrintPage: React.FC = () => {
 
   const hsnMap: Record<string, { taxable: number }> = {};
   items.forEach((it) => {
-    const code = it.hsnSac || "—";
+    const code = it.hsnSac || " ";
     if (!hsnMap[code]) hsnMap[code] = { taxable: 0 };
     hsnMap[code].taxable += it.amount || 0;
   });
@@ -276,7 +276,7 @@ export const NewInvoicePrintPage: React.FC = () => {
         ? "30 Days"
         : data.paymentMode === "45 Days"
           ? "45 Days"
-          : data.paymentMode || "—";
+          : data.paymentMode || "";
 
   const InvoiceHeader = () => (
     <div className="rpt-header">
@@ -299,11 +299,12 @@ export const NewInvoicePrintPage: React.FC = () => {
   const InvoiceFooter = () => (
     <>
       <div className="inv-foot">
-        Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office, MIDC,
-        Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
+        Reg. Office: Royal Corner, Office No. 106, 1st Floor, Near Monika Lawan's Jalochi Road, Baramati 413102
+
+        | Ph: +91 9860186056 / +91 7875154431
         <br />
-        Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
-        www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
+        Website:
+        www.niitindt.com | Email: niitinspection@gmail.com | niit004@gmail.com | info@niitndt.com
         <br />
         Powered by: Viplora Tech
       </div>
@@ -368,17 +369,15 @@ export const NewInvoicePrintPage: React.FC = () => {
                         National Industrial Inspection And Training
                       </div>
                       <div style={{ fontSize: 13, lineHeight: 1.2 }}>
-                        Plot NO-PAP-3/28 Behind BSNL Office
+                        Royal Corner Office No. 106 1st Floor Near Monika Lawanâ€™s, Jalochi Road Baramati 413102
                         <br />
-                        MIDC, Baramati Pin -413133
-                        <br />
-                        GST No.: 27ABJPK8603R1ZY
+                        GST No.: 27AYWPK1581A1ZA
                         <br />
                         State: Maharashtra Code: 27
                         <br />
-                        CONTACT: 8600508524, 7875154431
+                        CONTACT: +91 9860186056 / +91 7875154431
                         <br />
-                        E-Mail: niit004@gmail.com
+                        E-Mail: niitinspection@gmail.com
                       </div>
                     </td>
                   </tr>
@@ -410,7 +409,7 @@ export const NewInvoicePrintPage: React.FC = () => {
                         style={{ fontSize: 14, marginBottom: 1 }}
                       >
                         {" "}
-                        {customer?.companyName || "—"}
+                        {customer?.companyName || "ï¿½"}
                       </span>
                       {customer?.address && (
                         <div
@@ -697,7 +696,7 @@ export const NewInvoicePrintPage: React.FC = () => {
           <tr key={`${startIndex}-${idx}`}>
             <td className="items-td-center">{startIndex + idx + 1}</td>
             <td className="items-td red">{it.description}</td>
-            <td className="items-td-center">{it.hsnSac || "—"}</td>
+            <td className="items-td-center">{it.hsnSac || "ï¿½"}</td>
             <td className="items-td-center">
               {it.quantity} {it.unit || "Nos"}.
             </td>
@@ -874,9 +873,9 @@ export const NewInvoicePrintPage: React.FC = () => {
         <tr>
           <td className="cell" style={{ fontSize: 13 }}>
             <span style={{ fontStyle: "italic" }}>
-              Total Amounts Chargeable (In word) –{" "}
+              Total Amounts Chargeable (In word): {" "}
             </span>
-            <span className="amount-words">{data.amountInWords || "—"}</span>
+            <span className="amount-words">{data.amountInWords || " "}</span>
           </td>
         </tr>
       </tbody>
@@ -1016,16 +1015,16 @@ export const NewInvoicePrintPage: React.FC = () => {
             </div>
             <div>
               <span>
-                Bank : {data.bankDetails?.bankName || "State Bank of India"}
+                Bank : {data.bankDetails?.bankName || "The Federal Bank Limited"}
               </span>
               <span style={{ marginLeft: "20px" }}>
-                A/c No.: {data.bankDetails?.accountNumber || "35005963456"}
+                A/c No.: {data.bankDetails?.accountNumber || "21300200007648"}
               </span>
             </div>
             <div>
-              <span>Branch: {data.bankDetails?.branch || "Baramati MIDC"}</span>
+              <span>Branch: {data.bankDetails?.branch || "Baramati"}</span>
               <span style={{ marginLeft: "20px" }}>
-                IFSC: {data.bankDetails?.ifscCode || "SBIN0014727"}
+                IFSC: {data.bankDetails?.ifscCode || "FDRL0002130"}
               </span>
             </div>
           </td>

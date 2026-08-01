@@ -61,10 +61,10 @@ const defaultForm = {
   taxAmountInWords: "",
   status: "Draft",
   bankDetails: {
-    bankName: "State Bank of India",
-    accountNumber: "35005963456",
-    ifscCode: "SBIN0014727",
-    branch: "Baramati MIDC",
+    bankName: "The Federal Bank Limited",
+    accountNumber: "21300200007648",
+    ifscCode: "FDRL0002130",
+    branch: "Baramati",
   },
   notes:
     "We declare that this invoice shows the actual price of the testing work described and that all particulars are true and correct.",
@@ -137,6 +137,7 @@ export const NewInvoiceFormPage: React.FC = () => {
 
   const locationCustomerId =
     (location.state as { customerId?: string } | null)?.customerId || "";
+  const fromCustomerPage = Boolean(locationCustomerId);
 
   const [form, setForm] = useState<typeof defaultForm>({
     ...defaultForm,
@@ -368,7 +369,11 @@ export const NewInvoiceFormPage: React.FC = () => {
       if (andPrint && savedId) {
         navigate(`${basePath}/new-invoices/${savedId}/print?autoprint=true`);
       } else {
-        navigate(`${basePath}/new-invoices`);
+        if (fromCustomerPage) {
+          navigate(`${basePath}/customers/${locationCustomerId}`);
+        } else {
+          navigate(`${basePath}/new-invoices`);
+        }
       }
     } catch (err: any) {
       toast.error(err?.message || "Failed to save new invoice");
@@ -858,7 +863,13 @@ export const NewInvoiceFormPage: React.FC = () => {
       {/* Fixed Footer Actions */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 px-6 py-3 flex items-center justify-end gap-3 shadow-lg">
         <button
-          onClick={() => navigate(`${basePath}/new-invoices`)}
+          onClick={() => {
+            if (fromCustomerPage) {
+              navigate(`${basePath}/customers/${locationCustomerId}`);
+            } else {
+              navigate(`${basePath}/new-invoices`);
+            }
+          }}
           className="px-5 py-2 rounded-lg border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition-colors"
         >
           Cancel

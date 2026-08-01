@@ -374,10 +374,9 @@ export const MPTReportPrintPage = () => {
     <>
       <div className="footer">
         <div className="footer-text-block">
-          Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office, MIDC,
-          Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
+          Corp Off.: Royal Corner, Off. No. 106, 1st Floor, Near Monika Lawan's Jalochi Road, Baramati 413102 | Ph: 9860186056 / 7875154431
           <br />
-          Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
+          Reg. Off.: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
           <br />
           Powered by: Viplora Tech
