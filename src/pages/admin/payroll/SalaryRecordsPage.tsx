@@ -45,6 +45,7 @@ interface AttendanceSummary {
   absentDays: number;
   leaveDays: number;
   holidayDays: number;
+  cutoffDays: number;
   notMarkedDays: number;
   daysInMonth: number;
   payableDays: number;
@@ -207,16 +208,18 @@ export const SalaryRecordsPage = () => {
     const absentDays = counts.ABSENT || 0;
     const leaveDays = counts.LEAVE || 0;
     const holidayDays = counts.HOLIDAY || 0;
-    const markedDays = presentDays + absentDays + leaveDays + holidayDays;
+    const cutoffDays = counts.CUTOFF || 0;
+    const markedDays = presentDays + absentDays + leaveDays + holidayDays + cutoffDays;
 
     return {
       presentDays,
       absentDays,
       leaveDays,
       holidayDays,
+      cutoffDays,
       notMarkedDays: Math.max(0, daysInMonth - markedDays),
       daysInMonth,
-      payableDays: presentDays + leaveDays + holidayDays,
+      payableDays: presentDays + leaveDays + holidayDays + cutoffDays,
     };
   };
 
@@ -455,6 +458,11 @@ export const SalaryRecordsPage = () => {
                               <span className="px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 text-[10px] font-black border border-sky-100">
                                 H {summary.holidayDays}
                               </span>
+                              {summary.cutoffDays > 0 && (
+                                <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black border border-purple-100">
+                                  CO {summary.cutoffDays}
+                                </span>
+                              )}
                               <span className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 text-[10px] font-black border border-gray-200">
                                 NM {summary.notMarkedDays}
                               </span>
