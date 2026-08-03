@@ -109,7 +109,7 @@ const PRINT_STYLES = `
   .calib-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #000; }
   .calib-table td, .calib-table th { border: 1px solid #000; padding: 3px; font-size: 11px; text-align: center; vertical-align: middle; }
   .calib-table th { background: #E6F1FB; color: #0C447C; font-weight: 700; text-align: center; }
-  .footer { background: #f8fafc; padding: 4px 10px; font-size: 11px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
+  .footer { background: #f8fafc; padding: 6px 10px; font-size: 11px; color: #4b5563; margin-top: 8px; border-top: 3px solid #185FA5; line-height: 1.4; display: flex; align-items: center; gap: 8px; }
   .footer-text-block { flex: 1; text-align: center; }
   .qr-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 `;
@@ -239,8 +239,8 @@ export const VSSCUTReportPrintPage: React.FC = () => {
     <>
       <div className="footer">
         <div className="footer-text-block">
-          Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office, MIDC,
-          Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
+          Corp Off.: Royal Corner, Off. No. 106, 1st Floor, Near Monika Lawan's Jalochi Road, Baramati 413102 | Ph: 9860186056 / 7875154431
+
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com

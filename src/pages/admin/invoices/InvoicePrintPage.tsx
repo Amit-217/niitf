@@ -299,8 +299,9 @@ export const InvoicePrintPage: React.FC = () => {
   const InvoiceFooter = () => (
     <>
       <div className="inv-foot">
-        Corp Office: 1st Floor, Plot No.PAP-3/28, Behind BSNL Office, MIDC,
-        Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
+        Corp Office: Royal Corner, Office No. 106, 1st Floor, Near Monika Lawan's Jalochi Road, Baramati 413102
+
+        | Ph: +91 9860186056 / +91 7875154431
         <br />
         Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
         www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
@@ -368,9 +369,8 @@ export const InvoicePrintPage: React.FC = () => {
                         National Industrial Inspection And Training
                       </div>
                       <div style={{ fontSize: 13, lineHeight: 1.2 }}>
-                        Plot NO-PAP-3/28 Behind BSNL Office
-                        <br />
-                        MIDC, Baramati Pin -413133
+                        Royal Corner Office No. 106 1st Floor Near Monika Lawan’s, Jalochi Road Baramati 413102
+
                         <br />
                         GST No.: 27ABJPK8603R1ZY
                         <br />
