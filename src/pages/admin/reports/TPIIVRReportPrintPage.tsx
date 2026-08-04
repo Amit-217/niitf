@@ -380,7 +380,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
           Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
-          www.niitindt.com | Email: niit04@gmail.com | info@niitindt.com
+          www.niitndt.com | Email: niit04@gmail.com | info@niitindt.com
           <br />
           Powered by: Viplora Tech
         </div>
