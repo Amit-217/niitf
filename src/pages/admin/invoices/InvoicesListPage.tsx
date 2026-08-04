@@ -16,10 +16,7 @@ import { Pagination } from "../../../components/Pagination";
 
 const STATUS_COLORS: Record<string, string> = {
   Draft: "bg-gray-100 text-gray-600",
-  Sent: "bg-blue-100 text-blue-700",
-  Paid: "bg-green-100 text-green-700",
-  Partial: "bg-yellow-100 text-yellow-700",
-  Cancelled: "bg-red-100 text-red-700",
+  Final: "bg-blue-100 text-blue-700",
 };
 
 const fmt = (d?: string | null) =>
@@ -139,7 +136,7 @@ export const InvoicesListPage: React.FC = () => {
           className="input-field w-full sm:w-44"
         >
           <option value="">All Statuses</option>
-          {["Draft", "Sent", "Paid", "Partial", "Cancelled"].map((s) => (
+          {["Draft", "Final"].map((s) => (
             <option key={s} value={s}>
               {s}
             </option>
