@@ -667,7 +667,7 @@ export const AWSDReportFormPage: React.FC = () => {
               <option>Oil</option>
               <option>Grease</option>
               <option>Oil+ Grease</option>
-              <option>Starch</option>
+              <option>Starch Powder + Water</option>
             </select>
           </div>
           <div>

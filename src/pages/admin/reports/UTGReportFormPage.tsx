@@ -383,6 +383,7 @@ export const UTGReportFormPage: React.FC = () => {
           "Oil",
           "Oil + Grease",
           "Grease",
+          "Starch Powder + Water",
           "Other",
         ]);
         setEqCouplant(coup);
@@ -611,7 +612,9 @@ export const UTGReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Report No. {isEditMode ? "" : "(Auto-generated)"}</label>
+            <label className={labelClass}>
+              Report No. {isEditMode ? "" : "(Auto-generated)"}
+            </label>
             <input
               type="text"
               value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
@@ -835,7 +838,13 @@ export const UTGReportFormPage: React.FC = () => {
               onChange={setEqCouplant}
               otherValue={eqCouplantOther}
               onOtherChange={setEqCouplantOther}
-              options={["Oil", "Oil + Grease", "Grease", "Other"]}
+              options={[
+                "Oil",
+                "Oil + Grease",
+                "Grease",
+                "Starch Powder + Water",
+                "Other",
+              ]}
               error={hasError("eqCouplant")}
             />
           </div>

@@ -284,6 +284,7 @@ export const VSSCUTReportFormPage: React.FC = () => {
           "Oil",
           "Grease",
           "Oil + Grease",
+          "Starch Powder + Water",
           "Other",
         ]);
         setCouplant(co);
@@ -642,7 +643,9 @@ export const VSSCUTReportFormPage: React.FC = () => {
       <div className={sectionClass}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Report No. {isEditMode ? "" : "(Auto-generated)"}</label>
+            <label className={labelClass}>
+              Report No. {isEditMode ? "" : "(Auto-generated)"}
+            </label>
             <input
               type="text"
               value={isEditMode ? reportNo : "NIIT/... (Auto-generated)"}
@@ -801,7 +804,13 @@ export const VSSCUTReportFormPage: React.FC = () => {
               onChange={setCouplant}
               customValue={couplantCustom}
               onCustomChange={setCouplantCustom}
-              options={["Oil", "Grease", "Oil + Grease", "Other"]}
+              options={[
+                "Oil",
+                "Grease",
+                "Oil + Grease",
+                "Starch Powder + Water",
+                "Other",
+              ]}
               error={hasError("couplant")}
             />
           </div>
@@ -880,7 +889,9 @@ export const VSSCUTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Standard Cal Block — For Normal</label>
+            <label className={labelClass}>
+              Standard Cal Block — For Normal
+            </label>
             <input
               type="text"
               value={tsCalBlockNormal}
@@ -890,7 +901,9 @@ export const VSSCUTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Idtn. No of Ref Block — For Angle</label>
+            <label className={labelClass}>
+              Idtn. No of Ref Block — For Angle
+            </label>
 
             <SelectWithCustom
               value={tsRefBlockAngle}
@@ -902,7 +915,9 @@ export const VSSCUTReportFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className={labelClass}>Idtn. No of Ref Block — For Normal</label>
+            <label className={labelClass}>
+              Idtn. No of Ref Block — For Normal
+            </label>
             <SelectWithCustom
               value={tsRefBlockNormal}
               onChange={setTsRefBlockNormal}
@@ -1078,7 +1093,10 @@ export const VSSCUTReportFormPage: React.FC = () => {
                   {PROBE_MODES.map((pm) => (
                     <React.Fragment key={pm}>
                       {(["bp", "fsh"] as const).map((field) => (
-                        <td key={field} className={`border p-0 ${errors[`calibTable_${pm}_${key}_${field}`] && !calibTable[pm][key][field].trim() ? "border-red-400 bg-red-50" : "border-gray-300"}`}>
+                        <td
+                          key={field}
+                          className={`border p-0 ${errors[`calibTable_${pm}_${key}_${field}`] && !calibTable[pm][key][field].trim() ? "border-red-400 bg-red-50" : "border-gray-300"}`}
+                        >
                           <input
                             type="text"
                             value={calibTable[pm][key][field]}
