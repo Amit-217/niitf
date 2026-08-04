@@ -304,7 +304,7 @@ export const NewInvoicePrintPage: React.FC = () => {
         | Ph: +91 9860186056 / +91 7875154431
         <br />
         Website:
-        www.niitindt.com | Email: niitinspection@gmail.com | niit004@gmail.com | info@niitndt.com
+        www.niitndt.com | Email: niitinspection@gmail.com | niit004@gmail.com | info@niitndt.com
         <br />
         Powered by: Viplora Tech
       </div>
