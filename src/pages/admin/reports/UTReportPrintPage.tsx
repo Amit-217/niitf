@@ -414,7 +414,7 @@ export const UTReportPrintPage: React.FC = () => {
           Jalochi Road, Baramati 413102 | Ph: 9860186056 / 7875154431
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
-          www.niitndt.com | Email: niit04@gmail.com | info@niitindt.com
+          www.niitndt.com | Email: niit004@gmail.com | info@niitndt.com
           <br />
           Powered by: Viplora Tech
         </div>

@@ -380,7 +380,7 @@ export const TPIIVRReportPrintPage: React.FC = () => {
           Baramati, Dist-Pune 413133 | Ph: +91 9860186056, +91 7875154431
           <br />
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
-          www.niitndt.com | Email: niit04@gmail.com | info@niitindt.com
+          www.niitndt.com | Email: niit004@gmail.com | info@niitndt.com
           <br />
           Powered by: Viplora Tech
         </div>
@@ -869,6 +869,44 @@ export const TPIIVRReportPrintPage: React.FC = () => {
       </tbody>
     </table>
   );
+ const renderConclusionSection = (
+  text: string,
+  isFirstChunk: boolean
+) => (
+  <table
+    className="report-table mt-n1"
+    style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+  >
+    <thead>
+      <tr>
+        <td className="section-hdr">
+          {isFirstChunk
+            ? "7. CONCLUSION"
+            : "7. CONCLUSION (Contd.)"}
+        </td>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+          <td
+      style={{
+        padding: "8px",
+        fontSize: "11px",
+        minHeight: "35px",
+        height: "35px",
+        textAlign: "center",
+        verticalAlign: "middle",
+        whiteSpace: text ? "pre-wrap" : "normal",
+        wordBreak: "break-word",
+      }}
+    >
+      {text?.trim() ? text : "No conclusion available"}
+    </td>
+      </tr>
+    </tbody>
+  </table>
+);
 
   // Dynamic pagination block layout engine
   const PAGE_HEIGHT_LIMIT = 288;
