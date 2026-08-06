@@ -42,18 +42,8 @@ interface SubmissionData {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
 ];
 
 function fmtDate(d: string | Date) {
@@ -95,9 +85,9 @@ const PRINT_STYLES = `
 
 const BLUE = "#0C447C";
 
-// ── Certificate Page Component ────────────────────────────────────────────────
+// ── Attendance Certificate Page Component ─────────────────────────────────────
 
-export const CertificatePrintPage: React.FC = () => {
+export const AttendanceCertificatePrintPage: React.FC = () => {
   const { testId, submissionId } = useParams<{
     testId: string;
     submissionId: string;
@@ -145,48 +135,19 @@ export const CertificatePrintPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-        }}
-      >
-        <Loader2
-          size={36}
-          style={{ animation: "spin 1s linear infinite", color: BLUE }}
-        />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
+        <Loader2 size={36} style={{ animation: "spin 1s linear infinite", color: BLUE }} />
       </div>
     );
   }
 
   if (error || !test || !submission) {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-          gap: 16,
-        }}
-      >
-        <p style={{ color: "#dc2626", fontWeight: 600 }}>
-          {error || "Certificate not found."}
-        </p>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", gap: 16 }}>
+        <p style={{ color: "#dc2626", fontWeight: 600 }}>{error || "Certificate not found."}</p>
         <button
           onClick={() => navigate(-1)}
-          style={{
-            padding: "8px 20px",
-            background: "#374151",
-            color: "#fff",
-            border: "none",
-            borderRadius: 8,
-            cursor: "pointer",
-            fontWeight: 600,
-          }}
+          style={{ padding: "8px 20px", background: "#374151", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}
         >
           ← Go Back
         </button>
@@ -194,32 +155,28 @@ export const CertificatePrintPage: React.FC = () => {
     );
   }
 
-  // ── Compute certificate values ────────────────────────────────────────────
+  // ── Compute certificate values ─────────────────────────────────────────────
   const issuedAt = new Date(submission.submittedAt || Date.now());
-  const expiryAt = new Date(issuedAt);
-  expiryAt.setFullYear(expiryAt.getFullYear() + 5);
 
   let seq = "01";
   if (submission.submissionId) {
     const m = String(submission.submissionId).match(/(\d+)$/);
     if (m) seq = String(parseInt(m[1], 10)).padStart(2, "0");
   }
-  const methodCode = ndtMethodCode(
-    test.ndtMethod || test.questionPaper?.subject || "",
-  );
+  const methodCode = ndtMethodCode(test.ndtMethod || test.questionPaper?.subject || "");
   const levelCode = (test.ndtLevel || "Level II").replace(/^Level\s+/i, "");
   const yy = String(issuedAt.getFullYear()).slice(-2);
-  const certNo = `NIIT/${methodCode}-${levelCode}/${yy}/${seq}`;
+  // Attendance cert number uses "ATT" prefix to distinguish from pass cert
+  const certNo = `NIIT/ATT-${methodCode}-${levelCode}/${yy}/${seq}`;
 
   const ndtMethod = test.ndtMethod || test.questionPaper?.subject || "-";
   const ndtLevel = test.ndtLevel || "Level II";
   const ndtTech = test.ndtTechnique || "-";
-  const ndtLimits = test.limitations || "-";
 
   const studentName = "MR. " + submission.student.fullName.toUpperCase();
   const signatoryName = test.signatoryName1 || "Mr. B. R. Lohar";
 
-  // ── Render ──────────────────────────────────────────────────────────────────
+  // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <div className="cert-wrapper">
@@ -237,61 +194,31 @@ export const CertificatePrintPage: React.FC = () => {
       >
         <button
           onClick={() => navigate(-1)}
-          style={{
-            padding: "8px 16px",
-            background: "#374151",
-            color: "#fff",
-            border: "none",
-            borderRadius: 8,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
-          }}
+          style={{ padding: "8px 16px", background: "#374151", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600 }}
         >
           ← Back
         </button>
         <button
           onClick={() => {
-            // Trigger browser's Save as PDF dialog
             const originalTitle = document.title;
-            document.title = `Certificate_${submission?.student?.studentId || 'download'}`;
+            document.title = `NIIT_Attendance_Certificate_${submission?.student?.studentId || 'download'}`;
             window.print();
             document.title = originalTitle;
           }}
-          style={{
-            padding: "7px 16px",
-            background: "#16a34a",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
-          }}
+          style={{ padding: "7px 16px", background: "#16a34a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 600 }}
         >
           🖨 Print
         </button>
         <button
           onClick={() => {
-            // Set the page title so the saved PDF gets a proper filename
             const originalTitle = document.title;
-            document.title = `NIIT_NDT_Certificate_${submission?.student?.studentId || 'student'}`;
-            // Brief timeout so browser uses the new title for the PDF filename
+            document.title = `NIIT_Attendance_Certificate_${submission?.student?.studentId || 'student'}`;
             setTimeout(() => {
               window.print();
               document.title = originalTitle;
             }, 100);
           }}
-          style={{
-            padding: "7px 16px",
-            background: BLUE,
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
-          }}
+          style={{ padding: "7px 16px", background: BLUE, color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 600 }}
         >
           ⬇ Download PDF
         </button>
@@ -312,54 +239,15 @@ export const CertificatePrintPage: React.FC = () => {
         }}
       >
         {/* Outer border 3px */}
-        <div
-          style={{
-            position: "absolute",
-            top: "6.35mm",
-            left: "6.35mm",
-            right: "6.35mm",
-            bottom: "6.35mm",
-            border: `3px solid ${BLUE}`,
-            pointerEvents: "none",
-            zIndex: 10,
-          }}
-        />
+        <div style={{ position: "absolute", top: "6.35mm", left: "6.35mm", right: "6.35mm", bottom: "6.35mm", border: `3px solid ${BLUE}`, pointerEvents: "none", zIndex: 10 }} />
         {/* Inner border 0.7px */}
-        <div
-          style={{
-            position: "absolute",
-            top: "8.47mm",
-            left: "8.47mm",
-            right: "8.47mm",
-            bottom: "8.47mm",
-            border: `0.7px solid ${BLUE}`,
-            pointerEvents: "none",
-            zIndex: 10,
-          }}
-        />
+        <div style={{ position: "absolute", top: "8.47mm", left: "8.47mm", right: "8.47mm", bottom: "8.47mm", border: `0.7px solid ${BLUE}`, pointerEvents: "none", zIndex: 10 }} />
 
         {/* Footer */}
-        <div
-          style={{
-            position: "absolute",
-            left: "8.47mm",
-            right: "8.47mm",
-            bottom: "8.47mm",
-          }}
-        >
-          <div
-            style={{ borderTop: `1.5px solid ${BLUE}`, marginBottom: "1.5mm" }}
-          />
-          <p
-            style={{
-              textAlign: "center",
-              fontSize: "13px",
-              color: "#444",
-              margin: 0,
-            }}
-          >
-            3rd Floor, Plot No. P&amp;T 12/B, Behind BSNL Office, MIDC,
-            Ambarnath – 421135
+        <div style={{ position: "absolute", left: "8.47mm", right: "8.47mm", bottom: "8.47mm" }}>
+          <div style={{ borderTop: `1.5px solid ${BLUE}`, marginBottom: "1.5mm" }} />
+          <p style={{ textAlign: "center", fontSize: "13px", color: "#444", margin: 0 }}>
+            3rd Floor, Plot No. P&amp;T 12/B, Behind BSNL Office, MIDC, Ambarnath – 421135
           </p>
         </div>
 
@@ -378,14 +266,7 @@ export const CertificatePrintPage: React.FC = () => {
           }}
         >
           {/* 1. Logo */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginBottom: "2mm",
-              marginTop: "-2mm",
-            }}
-          >
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "2mm", marginTop: "-2mm" }}>
             <img
               src="/logo.jpeg"
               alt="NIIT Logo"
@@ -395,42 +276,19 @@ export const CertificatePrintPage: React.FC = () => {
 
           {/* 2. Info Table — left, 60% width */}
           <div style={{ width: "60%", marginBottom: "4mm" }}>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                border: `1px solid ${BLUE}`,
-                fontSize: "14px",
-              }}
-            >
+            <table style={{ width: "100%", borderCollapse: "collapse", border: `1px solid ${BLUE}`, fontSize: "14px" }}>
               <tbody>
                 {(
                   [
-                    ["Date Of Certification", fmtDate(issuedAt)],
-                    ["Date Of Expiration", fmtDate(expiryAt)],
+                    ["Date Of Attendance", fmtDate(issuedAt)],
                     ["Certificate No.", certNo],
                   ] as [string, string][]
                 ).map(([lbl, val], i) => (
                   <tr key={i}>
-                    <td
-                      style={{
-                        padding: "2px 6px",
-                        fontWeight: 700,
-                        borderTop: i > 0 ? `0.5px solid ${BLUE}` : "none",
-                        borderRight: `0.5px solid ${BLUE}`,
-                        width: "45%",
-                        verticalAlign: "middle",
-                      }}
-                    >
+                    <td style={{ padding: "2px 6px", fontWeight: 700, borderTop: i > 0 ? `0.5px solid ${BLUE}` : "none", borderRight: `0.5px solid ${BLUE}`, width: "45%", verticalAlign: "middle" }}>
                       {lbl}
                     </td>
-                    <td
-                      style={{
-                        padding: "2px 6px",
-                        borderTop: i > 0 ? `0.5px solid ${BLUE}` : "none",
-                        verticalAlign: "middle",
-                      }}
-                    >
+                    <td style={{ padding: "2px 6px", borderTop: i > 0 ? `0.5px solid ${BLUE}` : "none", verticalAlign: "middle" }}>
                       {val}
                     </td>
                   </tr>
@@ -439,108 +297,67 @@ export const CertificatePrintPage: React.FC = () => {
             </table>
           </div>
 
-          {/* 3. Title Block with blue divider lines */}
+          {/* 3. Title Block */}
           <div style={{ marginBottom: "4mm" }}>
-            <div
-              style={{ borderTop: `2px solid ${BLUE}`, marginBottom: "3px" }}
-            />
-            <p
-              style={{
-                textAlign: "center",
-                fontWeight: 700,
-                fontSize: "24px",
-                color: BLUE,
-                margin: "3px 0 2px",
-                letterSpacing: "0.5px",
-              }}
-            >
+            <div style={{ borderTop: `2px solid ${BLUE}`, marginBottom: "3px" }} />
+            <p style={{ textAlign: "center", fontWeight: 700, fontSize: "24px", color: BLUE, margin: "3px 0 2px", letterSpacing: "0.5px" }}>
               NATIONAL INDUSTRIAL INSPECTION AND TRAINING
             </p>
-            <p
-              style={{
-                textAlign: "center",
-                fontWeight: 700,
-                fontSize: "21px",
-                color: BLUE,
-                margin: "0 0 3px",
-                letterSpacing: "1px",
-              }}
-            >
-              NDT CERTIFICATE
+            <p style={{ textAlign: "center", fontWeight: 700, fontSize: "21px", color: BLUE, margin: "0 0 3px", letterSpacing: "1px" }}>
+              ATTENDANCE CERTIFICATE
             </p>
             <div style={{ borderBottom: `2px solid ${BLUE}` }} />
           </div>
 
           {/* 4. Body Paragraph */}
-          <p
-            style={{
-              fontSize: "14px",
-              color: "#222",
-              textAlign: "justify",
-              lineHeight: "1.6",
-              margin: "0 0 4mm",
-            }}
-          >
-            This is to certify that the Individual named below has successfully
-            completed experience, training and examination requirements in
-            accordance with the provisions of M/s National Industrial Inspection
-            and Training's NDT written practice for the Qualification and
-            Certification of NDT personnel NIIT/WP/01 Rev. 03
+          <p style={{ fontSize: "14px", color: "#222", textAlign: "justify", lineHeight: "1.6", margin: "0 0 4mm" }}>
+            This is to certify that the individual named below has successfully attended the training and
+            examination conducted by National Industrial Inspection and Training (NIIT) in accordance with
+            the organization's written practice for qualification and certification of NDT personnel
+            (NIIT/WP/01 Rev.03).
           </p>
 
-          {/* 5. Name of Individual */}
+          {/* 4b. Note box */}
           <div
             style={{
-              display: "flex",
-              alignItems: "flex-end",
-              gap: "6px",
+              border: `1px solid ${BLUE}`,
+              background: "#f0f6ff",
+              padding: "6px 10px",
               marginBottom: "4mm",
+              borderRadius: "2px",
             }}
           >
-            <span
-              style={{
-                fontSize: "14px",
-                fontWeight: 600,
-                whiteSpace: "nowrap",
-              }}
-            >
+            <p style={{ fontSize: "13px", color: "#333", lineHeight: "1.55", margin: 0, fontStyle: "italic" }}>
+              <strong>Please note:</strong> This certificate acknowledges attendance only. The candidate has not met
+              the qualifying requirements for certification and therefore has not been certified in the NDT
+              method(s) listed below.
+            </p>
+          </div>
+
+          {/* 5. Name of Individual */}
+          <div style={{ display: "flex", alignItems: "flex-end", gap: "6px", marginBottom: "4mm" }}>
+            <span style={{ fontSize: "14px", fontWeight: 600, whiteSpace: "nowrap" }}>
               Name of Individual :
             </span>
             <div style={{ flex: 1 }}>
               <span style={{ fontWeight: 700, fontSize: "16px", color: BLUE }}>
                 {studentName}
               </span>
-              <div
-                style={{ borderBottom: `1px solid #222`, marginTop: "1px" }}
-              />
+              <div style={{ borderBottom: `1px solid #222`, marginTop: "1px" }} />
             </div>
           </div>
 
-          {/* 6. Is hereby certified */}
+          {/* 6. NDT Table header label */}
           <p style={{ fontSize: "14px", color: "#222", margin: "0 0 3mm" }}>
-            Is hereby certified to perform the following Nondestructive Testing
-            Method(s)
+            The following NDT training and examination was attended:
           </p>
 
-          {/* 7. NDT Methods Table — blue header */}
+          {/* 7. NDT Methods Table */}
           <div style={{ marginBottom: "4mm" }}>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                fontSize: "14px",
-              }}
-            >
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
               <thead>
                 <tr>
-                  {(
-                    [
-                      "NDT Method",
-                      "NDT Level",
-                      "NDT Technique",
-                      "Limitations (if any)",
-                    ] as const
-                  ).map((h, i) => (
+                  {(["NDT Method", "Applied Level", "NDT Technique", "Status"] as const).map((h, i) => (
                     <th
                       key={h}
                       style={{
@@ -549,14 +366,7 @@ export const CertificatePrintPage: React.FC = () => {
                         textAlign: "center",
                         padding: "5px 4px",
                         border: `0.8px solid ${BLUE}`,
-                        width:
-                          i === 0
-                            ? "35%"
-                            : i === 1
-                              ? "20%"
-                              : i === 2
-                                ? "25%"
-                                : "20%",
+                        width: i === 0 ? "35%" : i === 1 ? "20%" : i === 2 ? "25%" : "20%",
                       }}
                     >
                       {h}
@@ -566,14 +376,15 @@ export const CertificatePrintPage: React.FC = () => {
               </thead>
               <tbody>
                 <tr>
-                  {[ndtMethod, ndtLevel, ndtTech, ndtLimits].map((val, i) => (
+                  {[ndtMethod, ndtLevel, ndtTech, "Attended"].map((val, i) => (
                     <td
                       key={i}
                       style={{
                         textAlign: "center",
                         padding: "5px 4px",
                         fontSize: "14px",
-                        color: "#222",
+                        color: i === 3 ? "#b45309" : "#222",
+                        fontWeight: i === 3 ? 700 : 400,
                         border: `0.8px solid ${BLUE}`,
                       }}
                     >
@@ -585,29 +396,17 @@ export const CertificatePrintPage: React.FC = () => {
             </table>
           </div>
 
-          {/* 8. ASNT Statement — light shaded background */}
-          <div
-            style={{
-              padding: "6px 10px",
-              marginBottom: "5mm",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "14px",
-                color: "#222",
-                textAlign: "justify",
-                lineHeight: "1.55",
-                margin: 0,
-              }}
-            >
-              This company written practice intends to meet or exceed the
-              requirements of ASNT published document SNT-TC-1A: 2024 as it
-              applied to NDT performed by this company.
+          {/* 8. Disclaimer paragraph */}
+          <div style={{ padding: "6px 10px", marginBottom: "5mm" }}>
+            <p style={{ fontSize: "14px", color: "#222", textAlign: "justify", lineHeight: "1.55", margin: 0 }}>
+              The holder of this certificate participated in the training program and examination conducted
+              by National Industrial Inspection and Training. This certificate does not constitute
+              certification or authorization to perform Nondestructive Testing independently under
+              SNT-TC-1A or any employer's written practice.
             </p>
           </div>
 
-          {/* 9. Certifying Authority Box — right-aligned 68% */}
+          {/* 9. Certifying Authority Box — same as pass cert */}
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <div
               style={{
@@ -621,16 +420,10 @@ export const CertificatePrintPage: React.FC = () => {
             >
               {/* Top: signatory 1 */}
               <div style={{ padding: "7px 8px 0" }}>
-                <p style={{ margin: "0 0 2px" }}>
-                  Certified on behalf of the Certifying Authority –
-                </p>
-                <p style={{ margin: "0 0 3px" }}>
-                  M/s National Industrial Inspection and Training
-                </p>
+                <p style={{ margin: "0 0 2px" }}>Certified on behalf of the Certifying Authority –</p>
+                <p style={{ margin: "0 0 3px" }}>M/s National Industrial Inspection and Training</p>
                 <p style={{ margin: "0 0 20px" }}>Sign. :</p>
-                <p style={{ fontWeight: 700, margin: "0 0 6px" }}>
-                  Name : {signatoryName}
-                </p>
+                <p style={{ fontWeight: 700, margin: "0 0 6px" }}>Name : {signatoryName}</p>
               </div>
 
               {/* Divider */}
@@ -638,22 +431,12 @@ export const CertificatePrintPage: React.FC = () => {
 
               {/* Bottom: Bajirao T. Kadam */}
               <div style={{ padding: "7px 8px" }}>
-                <p style={{ margin: "0 0 2px" }}>
-                  M/s&nbsp;National Industrial Inspection and Training
-                </p>
+                <p style={{ margin: "0 0 2px" }}>M/s&nbsp;National Industrial Inspection and Training</p>
                 <p style={{ margin: "0 0 3px" }}>Designated Level III</p>
                 <p style={{ margin: "0 0 20px" }}>Sign. :</p>
-                <p style={{ fontWeight: 700, margin: "0 0 3px" }}>
-                  Name : Mr. Bajirao T. Kadam
-                </p>
-                <p style={{ fontWeight: 700, margin: "0 0 3px" }}>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ASNT Level
-                  III)
-                </p>
-                <p style={{ fontWeight: 700, margin: 0 }}>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Certificate
-                  No: 212306
-                </p>
+                <p style={{ fontWeight: 700, margin: "0 0 3px" }}>Name : Mr. Bajirao T. Kadam</p>
+                <p style={{ fontWeight: 700, margin: "0 0 3px" }}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ASNT Level III)</p>
+                <p style={{ fontWeight: 700, margin: 0 }}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Certificate No: 212306</p>
               </div>
             </div>
           </div>

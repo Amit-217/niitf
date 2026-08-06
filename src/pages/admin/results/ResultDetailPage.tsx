@@ -13,8 +13,10 @@ import {
   Eye,
   Clock,
   RefreshCw,
+  Send,
 } from "lucide-react";
 import { getTestResultsForAdmin } from "../../../api/assignedTestApi";
+import api from "../../../api/axios";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -53,6 +55,7 @@ interface TestInfo {
   batch: { _id: string; batchId: string; batchName: string };
   scheduledAt: string;
   duration?: number;
+  isResultReleased?: boolean;
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -83,6 +86,8 @@ export const ResultDetailPage: React.FC = () => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [summary, setSummary] = useState<ResultsSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isResultReleased, setIsResultReleased] = useState(false);
+  const [releasing, setReleasing] = useState(false);
 
   const fetchResults = () => {
     if (!testId) return;
@@ -90,6 +95,7 @@ export const ResultDetailPage: React.FC = () => {
     (getTestResultsForAdmin(testId) as any)
       .then((res: any) => {
         setTestInfo(res.test || null);
+        setIsResultReleased(res.test?.isResultReleased || false);
         setSubmissions(res.submissions || []);
         setSummary(res.summary || null);
       })
@@ -100,6 +106,41 @@ export const ResultDetailPage: React.FC = () => {
   useEffect(() => {
     fetchResults();
   }, [testId]);
+
+  const handleReleaseResults = async () => {
+    if (!testInfo || isResultReleased || releasing) return;
+
+    // Check if effective status is completed
+    const now = Date.now();
+    const start = new Date(testInfo.scheduledAt).getTime();
+    const durationMs = (testInfo.duration || testInfo.questionPaper?.duration || 60) * 60 * 1000;
+    const isCompleted = now >= start + durationMs;
+
+    if (!isCompleted) {
+      toast.error("Cannot release results. The test is not completed yet.");
+      return;
+    }
+
+    const ok = window.confirm(
+      "Release results now? This will send result emails with certificates to passed students."
+    );
+    if (!ok) return;
+
+    setReleasing(true);
+    try {
+      const res: any = await api.post(
+        `/assigned-tests/${testInfo._id}/release-result`
+      );
+      setIsResultReleased(true);
+      toast.success(
+        `Results released! Emails sent to ${res?.emailsSent ?? 0} student(s).`
+      );
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to release results.");
+    } finally {
+      setReleasing(false);
+    }
+  };
 
   const effectiveDuration = testInfo?.duration || testInfo?.questionPaper?.duration;
 
@@ -132,7 +173,7 @@ export const ResultDetailPage: React.FC = () => {
         <>
           {/* Test info header */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100">
+            <div className="px-5 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-start gap-3">
                 <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white flex-shrink-0">
                   <BarChart2 size={18} />
@@ -146,6 +187,29 @@ export const ResultDetailPage: React.FC = () => {
                     {testInfo.batch?.batchName} ({testInfo.batch?.batchId})
                   </p>
                 </div>
+              </div>
+
+              {/* Release results actions */}
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                {isResultReleased ? (
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl shadow-sm">
+                    <CheckCircle2 size={13} />
+                    Results Released
+                  </span>
+                ) : (
+                  <button
+                    onClick={handleReleaseResults}
+                    disabled={releasing}
+                    className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 rounded-xl shadow-sm hover:shadow transition-all disabled:opacity-50"
+                  >
+                    {releasing ? (
+                      <Loader2 size={13} className="animate-spin" />
+                    ) : (
+                      <Send size={13} />
+                    )}
+                    {releasing ? "Releasing..." : "Release Results"}
+                  </button>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 bg-gray-50">
@@ -292,15 +356,40 @@ export const ResultDetailPage: React.FC = () => {
 
                         {/* Actions */}
                         <td className="px-4 py-3 text-center">
-                          <button
-                            onClick={() => navigate(`/admin/results/${testId}/${sub._id}`)}
-                            disabled={sub.status === "InProgress"}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                            title={sub.status === "InProgress" ? "Student hasn't submitted yet" : "View question paper with answers"}
-                          >
-                            <Eye size={12} />
-                            View Paper
-                          </button>
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              onClick={() => navigate(`/admin/results/${testId}/${sub._id}`)}
+                              disabled={sub.status === "InProgress"}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                              title={sub.status === "InProgress" ? "Student hasn't submitted yet" : "View question paper with answers"}
+                            >
+                              <Eye size={12} />
+                              View Paper
+                            </button>
+
+{sub.status !== 'InProgress' && (
+                               <>
+                                 {sub.isPassed && (
+                                   <button
+                                     onClick={() => navigate(`/admin/assign-tests/${testId}/certificate/${sub._id}`)}
+                                     title="View & Download Certificate"
+                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors"
+                                   >
+                                     <Eye size={12} /> Certificate
+                                   </button>
+                                 )}
+                                 {!sub.isPassed && (
+                                   <button
+                                     onClick={() => navigate(`/admin/assign-tests/${testId}/attendance-certificate/${sub._id}`)}
+                                     title="View & Download Attendance Certificate"
+                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition-colors"
+                                   >
+                                     <Eye size={12} /> Attendance Certificate
+                                   </button>
+                                 )}
+                               </>
+                             )}
+                          </div>
                         </td>
                       </tr>
                     ))}

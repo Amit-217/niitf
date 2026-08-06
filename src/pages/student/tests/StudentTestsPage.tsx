@@ -49,12 +49,9 @@ const StudentTestsPage: React.FC = () => {
     const getAction = (t: MyTest) => {
         const sub = t.submission;
         const status = getEffectiveStatus(t);
-        // Submitted — only show View Result if results have been released
+        // Submitted — always allow viewing result immediately after submission
         if (sub?.status === 'Submitted' || sub?.status === 'TimedOut') {
-            if (t.isResultReleased) {
-                return { type: 'button', label: 'View Result', onClick: () => navigate(`/student/tests/${t._id}/result`), style: 'bg-gray-100 text-gray-700 hover:bg-gray-200' } as const;
-            }
-            return { type: 'pending' } as const;
+            return { type: 'button', label: 'View Result', onClick: () => navigate(`/student/tests/${t._id}/result`), style: 'bg-gray-100 text-gray-700 hover:bg-gray-200' } as const;
         }
         // Ongoing — allow attending
         if (status === 'Ongoing') {
@@ -156,8 +153,8 @@ const StudentTestsPage: React.FC = () => {
                                     </span>
                                 </div>
 
-                                {isSubmitted && t.submission && t.isResultReleased && (
-                                    <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-4">
+                                {isSubmitted && t.submission && (
+                                    <div className="mt-3 pt-3 border-t border-gray-100 flex flex-wrap items-center gap-4">
                                         <span className={`flex items-center gap-1.5 text-sm font-semibold ${t.submission.isPassed ? 'text-green-600' : 'text-red-600'}`}>
                                             {t.submission.isPassed ? <CheckCircle size={14} /> : <XCircle size={14} />}
                                             {t.submission.isPassed ? 'Passed' : 'Failed'}
@@ -168,12 +165,11 @@ const StudentTestsPage: React.FC = () => {
                                         <span className="text-sm text-gray-600">
                                             {t.submission.percentage}%
                                         </span>
-                                    </div>
-                                )}
-                                {isSubmitted && !t.isResultReleased && (
-                                    <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-1.5 text-sm text-yellow-700">
-                                        <Hourglass size={13} />
-                                        <span>Result pending — awaiting admin release</span>
+                                        {!t.isResultReleased && (
+                                            <span className="flex items-center gap-1 text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 px-2 py-0.5 rounded-full">
+                                                <Hourglass size={11} /> Awaiting admin release
+                                            </span>
+                                        )}
                                     </div>
                                 )}
 

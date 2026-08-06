@@ -63,6 +63,7 @@ import { QuestionPapersPage } from "./pages/admin/questionPapers/QuestionPapersP
 import { QuestionPaperFormPage } from "./pages/admin/questionPapers/QuestionPaperFormPage";
 import { AssignTestPage } from "./pages/admin/assignedTests/AssignTestPage";
 import { CertificatePrintPage } from "./pages/admin/assignedTests/CertificatePrintPage";
+import { AttendanceCertificatePrintPage } from "./pages/admin/assignedTests/AttendanceCertificatePrintPage";
 import { ResultsPage } from "./pages/admin/results/ResultsPage";
 import { ResultDetailPage } from "./pages/admin/results/ResultDetailPage";
 import { SubmissionReviewPage } from "./pages/admin/results/SubmissionReviewPage";
@@ -469,6 +470,16 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
               <CertificatePrintPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Attendance Certificate Print Page (for failed students) */}
+        <Route
+          path="/admin/assign-tests/:testId/attendance-certificate/:submissionId"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
+              <AttendanceCertificatePrintPage />
             </ProtectedRoute>
           }
         />

@@ -612,6 +612,17 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
                 </button>
               ))}
             <button
+              onClick={() => {
+                onClose();
+                navigate(`/admin/results/${test._id}`);
+              }}
+              title="Open Full Details Page"
+              className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition-colors"
+            >
+              <Eye size={12} />
+              Full Details
+            </button>
+            <button
               onClick={onClose}
               className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
             >
@@ -746,7 +757,7 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
                         Submitted
                       </th>
                       <th className="text-center px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Certificate
+                        Actions
                       </th>
                     </tr>
                   </thead>
@@ -805,21 +816,46 @@ const ViewResultsModal: React.FC<ResultsModalProps> = ({ test, onClose }) => {
                           {s.submittedAt ? formatDateTime(s.submittedAt) : "—"}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          {s.isPassed && s.status !== "InProgress" ? (
+                          <div className="flex items-center justify-center gap-2">
                             <button
-                              onClick={() =>
-                                navigate(
-                                  `/admin/assign-tests/${test._id}/certificate/${s._id}`,
-                                )
-                              }
-                              title="View Certificate"
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors"
+                              onClick={() => navigate(`/admin/results/${test._id}/${s._id}`)}
+                              disabled={s.status === "InProgress"}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                              title={s.status === "InProgress" ? "Student hasn't submitted yet" : "View question paper with answers"}
                             >
-                              <Eye size={12} /> View
+                              <Eye size={12} /> Paper
                             </button>
-                          ) : (
-                            <span className="text-xs text-gray-300">—</span>
-                          )}
+
+{s.status !== "InProgress" && (
+                               <>
+                                 {s.isPassed ? (
+                                   <button
+                                     onClick={() =>
+                                       navigate(
+                                         `/admin/assign-tests/${test._id}/certificate/${s._id}`,
+                                       )
+                                     }
+                                     title="View Certificate"
+                                     className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors"
+                                   >
+                                     <Eye size={12} /> Certificate
+                                   </button>
+                                 ) : (
+                                   <button
+                                     onClick={() =>
+                                       navigate(
+                                         `/admin/assign-tests/${test._id}/attendance-certificate/${s._id}`,
+                                       )
+                                     }
+                                     title="View Attendance Certificate"
+                                     className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition-colors"
+                                   >
+                                     <Eye size={12} /> Attendance Certificate
+                                   </button>
+                                 )}
+                               </>
+                             )}
+                          </div>
                         </td>
                       </tr>
                     ))}

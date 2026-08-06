@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ClipboardList, CheckCircle, Clock, TrendingUp, ChevronRight, CalendarDays } from 'lucide-react';
+import { ClipboardList, CheckCircle, XCircle, Clock, TrendingUp, ChevronRight, CalendarDays, Trophy, BarChart2 } from 'lucide-react';
 import { getMyTests, MyTest } from '../../../api/studentTestApi';
 import { toast } from 'react-toastify';
 
@@ -59,6 +59,11 @@ const StudentDashboard: React.FC = () => {
         return s === 'Ongoing' || (s === 'Upcoming' && !t.submission);
     }).slice(0, 5);
 
+    // Recent results — completed and submitted, newest first
+    const recentResults = [...completed]
+        .sort((a, b) => new Date(b.submission?.submittedAt || 0).getTime() - new Date(a.submission?.submittedAt || 0).getTime())
+        .slice(0, 5);
+
     return (
         <div className="space-y-6">
             {/* Welcome */}
@@ -91,7 +96,7 @@ const StudentDashboard: React.FC = () => {
             {/* Upcoming / Active tests */}
             <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
                 <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <h2 className="font-semibold text-gray-900">Upcoming & Active Tests</h2>
+                    <h2 className="font-semibold text-gray-900">Upcoming &amp; Active Tests</h2>
                     <button
                         onClick={() => navigate('/student/tests')}
                         className="text-sm text-indigo-600 hover:underline flex items-center gap-1"
@@ -136,6 +141,60 @@ const StudentDashboard: React.FC = () => {
                     </ul>
                 )}
             </div>
+
+            {/* Recent Test Results */}
+            {recentResults.length > 0 && (
+                <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                    <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <BarChart2 size={16} className="text-indigo-500" />
+                            <h2 className="font-semibold text-gray-900">Recent Test Results</h2>
+                        </div>
+                        <button
+                            onClick={() => navigate('/student/tests')}
+                            className="text-sm text-indigo-600 hover:underline flex items-center gap-1"
+                        >
+                            View all <ChevronRight size={14} />
+                        </button>
+                    </div>
+                    <ul className="divide-y divide-gray-100">
+                        {recentResults.map((t) => {
+                            const sub = t.submission!;
+                            return (
+                                <li key={t._id} className="px-5 py-4 flex flex-wrap items-center gap-4">
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-gray-900 truncate">{t.questionPaper.title}</p>
+                                        <div className="flex flex-wrap items-center gap-3 mt-1">
+                                            {/* Pass/Fail badge */}
+                                            <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border ${sub.isPassed ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
+                                                {sub.isPassed ? <Trophy size={10} /> : <XCircle size={10} />}
+                                                {sub.isPassed ? 'Passed' : 'Failed'}
+                                            </span>
+                                            <span className="text-xs text-gray-600">
+                                                Score: <strong>{sub.score}/{sub.totalMarks}</strong>
+                                            </span>
+                                            <span className="text-xs text-gray-600">
+                                                {sub.percentage}%
+                                            </span>
+                                            {!t.isResultReleased && (
+                                                <span className="text-xs text-yellow-700 bg-yellow-50 border border-yellow-100 px-2 py-0.5 rounded-full">
+                                                    Awaiting release
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => navigate(`/student/tests/${t._id}/result`)}
+                                        className="flex-shrink-0 px-3 py-1.5 bg-gray-100 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-200 transition-colors"
+                                    >
+                                        View Result
+                                    </button>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
+            )}
         </div>
     );
 };
