@@ -48,92 +48,92 @@ const REPORT_TYPES: {
   bgNum: string;
   dotColor: string;
 }[] = [
-  {
-    key: "mpt",
-    label: "MPT",
-    fullLabel: "Magnetic Particle Testing",
-    icon: Magnet,
-    color: "bg-rose-50",
-    textColor: "text-rose-600",
-    borderColor: "border-rose-200",
-    bgNum: "bg-rose-100",
-    dotColor: "bg-rose-600",
-  },
-  {
-    key: "pt",
-    label: "PT",
-    fullLabel: "Liquid Penetrant Testing",
-    icon: Droplets,
-    color: "bg-blue-50",
-    textColor: "text-blue-600",
-    borderColor: "border-blue-200",
-    bgNum: "bg-blue-100",
-    dotColor: "bg-blue-600",
-  },
-  {
-    key: "ut",
-    label: "UT",
-    fullLabel: "Ultrasonic Testing",
-    icon: Waves,
-    color: "bg-violet-50",
-    textColor: "text-violet-600",
-    borderColor: "border-violet-200",
-    bgNum: "bg-violet-100",
-    dotColor: "bg-violet-600",
-  },
-  {
-    key: "vssc-ut",
-    label: "VSSC-UT",
-    fullLabel: "VSSC Ultrasonic Testing",
-    icon: Satellite,
-    color: "bg-amber-50",
-    textColor: "text-amber-600",
-    borderColor: "border-amber-200",
-    bgNum: "bg-amber-100",
-    dotColor: "bg-amber-600",
-  },
-  {
-    key: "utg",
-    label: "UTG",
-    fullLabel: "UT Thickness Gauging",
-    icon: Ruler,
-    color: "bg-teal-50",
-    textColor: "text-teal-600",
-    borderColor: "border-teal-200",
-    bgNum: "bg-teal-100",
-    dotColor: "bg-teal-600",
-  },
-  {
-    key: "tpi-ivr",
-    label: "TPI IVR",
-    fullLabel: "Inspection Visit Report",
-    icon: ClipboardList,
-    color: "bg-cyan-50",
-    textColor: "text-cyan-600",
-    borderColor: "border-cyan-200",
-    bgNum: "bg-cyan-100",
-    dotColor: "bg-cyan-600",
-  },
-  {
-    key: "awsd",
-    label: "AWS D1.1",
-    fullLabel: "UT of Welds (AWS D1.1)",
-    icon: GitBranch,
-    color: "bg-orange-50",
-    textColor: "text-orange-600",
-    borderColor: "border-orange-200",
-    bgNum: "bg-orange-100",
-    dotColor: "bg-orange-600",
-  },
-];
+    {
+      key: "mpt",
+      label: "MPT",
+      fullLabel: "Magnetic Particle Testing",
+      icon: Magnet,
+      color: "bg-rose-50",
+      textColor: "text-rose-600",
+      borderColor: "border-rose-200",
+      bgNum: "bg-rose-100",
+      dotColor: "bg-rose-600",
+    },
+    {
+      key: "pt",
+      label: "PT",
+      fullLabel: "Liquid Penetrant Testing",
+      icon: Droplets,
+      color: "bg-blue-50",
+      textColor: "text-blue-600",
+      borderColor: "border-blue-200",
+      bgNum: "bg-blue-100",
+      dotColor: "bg-blue-600",
+    },
+    {
+      key: "ut",
+      label: "UT",
+      fullLabel: "Ultrasonic Testing",
+      icon: Waves,
+      color: "bg-violet-50",
+      textColor: "text-violet-600",
+      borderColor: "border-violet-200",
+      bgNum: "bg-violet-100",
+      dotColor: "bg-violet-600",
+    },
+    {
+      key: "vssc-ut",
+      label: "VSSC-UT",
+      fullLabel: "VSSC Ultrasonic Testing",
+      icon: Satellite,
+      color: "bg-amber-50",
+      textColor: "text-amber-600",
+      borderColor: "border-amber-200",
+      bgNum: "bg-amber-100",
+      dotColor: "bg-amber-600",
+    },
+    {
+      key: "utg",
+      label: "UTG",
+      fullLabel: "UT Thickness Gauging",
+      icon: Ruler,
+      color: "bg-teal-50",
+      textColor: "text-teal-600",
+      borderColor: "border-teal-200",
+      bgNum: "bg-teal-100",
+      dotColor: "bg-teal-600",
+    },
+    {
+      key: "tpi-ivr",
+      label: "TPI IVR",
+      fullLabel: "Inspection Visit Report",
+      icon: ClipboardList,
+      color: "bg-cyan-50",
+      textColor: "text-cyan-600",
+      borderColor: "border-cyan-200",
+      bgNum: "bg-cyan-100",
+      dotColor: "bg-cyan-600",
+    },
+    {
+      key: "awsd",
+      label: "AWS D1.1",
+      fullLabel: "UT of Welds (AWS D1.1)",
+      icon: GitBranch,
+      color: "bg-orange-50",
+      textColor: "text-orange-600",
+      borderColor: "border-orange-200",
+      bgNum: "bg-orange-100",
+      dotColor: "bg-orange-600",
+    },
+  ];
 
 const fmt = (d?: string | null) =>
   d
     ? new Date(d).toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
     : "—";
 
 const fetchCount = async (type: ReportType) => {
@@ -177,6 +177,7 @@ export const ReportsListPage = () => {
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [searchType, setSearchType] = useState("all");
   const [status, setStatus] = useState<string>("");
   const [page, setPage] = useState(1);
   const [counts, setCounts] = useState<Record<ReportType, number>>({
@@ -209,7 +210,7 @@ export const ReportsListPage = () => {
     setIsLoading(true);
     try {
       let res: any;
-      const params = { page, limit, search, status };
+      const params = { page, limit, search, searchType, status };
 
       switch (activeTab) {
         case "mpt":
@@ -246,7 +247,7 @@ export const ReportsListPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [activeTab, page, limit, search, status]);
+  }, [activeTab, page, limit, search, searchType, status]);
 
   useEffect(() => {
     fetchReports();
@@ -277,6 +278,7 @@ export const ReportsListPage = () => {
 
   const clearFilters = () => {
     setSearch("");
+    setSearchType("all");
     setStatus("");
     setPage(1);
   };
@@ -332,11 +334,10 @@ export const ReportsListPage = () => {
                 setPage(1);
                 setStatus("");
               }}
-              className={`group relative p-4 rounded-2xl border-2 transition-all flex flex-col items-start gap-2 text-left ${
-                isActive
+              className={`group relative p-4 rounded-2xl border-2 transition-all flex flex-col items-start gap-2 text-left ${isActive
                   ? `${rt.borderColor} bg-white shadow-xl shadow-gray-200/50 ring-4 ring-gray-950/5`
                   : "border-gray-100 bg-white/60 hover:border-gray-200 hover:bg-white"
-              }`}
+                }`}
             >
               <div
                 className={`p-2.5 rounded-xl transition-all group-hover:scale-110 duration-300 ${rt.color} ${rt.textColor}`}
@@ -382,10 +383,22 @@ export const ReportsListPage = () => {
               setSearch(e.target.value);
               setPage(1);
             }}
-            placeholder="Search reports by customer or report number..."
+            placeholder="Search by customer name or report number..."
             className="input-field pl-9 w-full"
           />
         </div>
+        {/* <select
+          value={searchType}
+          onChange={(e) => {
+            setSearchType(e.target.value);
+            setPage(1);
+          }}
+          className="input-field w-full sm:w-40"
+        >
+          <option value="all">All Fields</option>
+          <option value="customer">Customer</option>
+          <option value="reportNo">Report No</option>
+        </select> */}
         <select
           value={status}
           onChange={(e) => {
@@ -398,7 +411,7 @@ export const ReportsListPage = () => {
           <option value="draft">Draft</option>
           <option value="final">Final</option>
         </select>
-        {(search || status) && (
+        {(search || searchType !== "all" || status) && (
           <button
             onClick={clearFilters}
             className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors whitespace-nowrap"
@@ -471,9 +484,9 @@ export const ReportsListPage = () => {
                     <td className="px-4 py-3 text-gray-600">
                       {fmt(
                         r.dateOfInspection ||
-                          r.jobDetails?.reportDate ||
-                          r.dtOfInspection ||
-                          r.reportDate,
+                        r.jobDetails?.reportDate ||
+                        r.dtOfInspection ||
+                        r.reportDate,
                       )}
                     </td>
                     <td className="px-4 py-3 text-gray-600">
@@ -484,11 +497,10 @@ export const ReportsListPage = () => {
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          r.status === "final"
+                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${r.status === "final"
                             ? "bg-green-100 text-green-700"
                             : "bg-yellow-100 text-yellow-700"
-                        }`}
+                          }`}
                       >
                         {r.status === "final" ? "Final" : "Draft"}
                       </span>

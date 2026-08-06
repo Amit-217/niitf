@@ -262,7 +262,7 @@ export interface MPTReport extends MPTReportPayload {
 
 // â”€â”€â”€ Report API Functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-export const getMPTReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
+export const getMPTReports = (params?: { customerId?: string; page?: number; limit?: number; search?: string; searchType?: string; status?: string }) =>
   api.get('/reports/mpt', { params });
 
 export const getMPTReportById = (id: string) =>
@@ -440,7 +440,7 @@ export interface UTReport extends UTReportPayload {
   createdAt: string;
 }
 
-export const getPTReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
+export const getPTReports = (params?: { customerId?: string; page?: number; limit?: number; search?: string; searchType?: string; status?: string }) =>
   api.get('/reports/pt', { params });
 
 export const getPTReportById = (id: string) =>
@@ -455,7 +455,7 @@ export const updatePTReport = (id: string, data: Partial<PTReportPayload>) =>
 export const deletePTReport = (id: string) =>
   api.delete(`/reports/pt/${id}`);
 
-export const getUTReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
+export const getUTReports = (params?: { customerId?: string; page?: number; limit?: number; search?: string; searchType?: string; status?: string }) =>
   api.get('/reports/ut', { params });
 
 export const getUTReportById = (id: string) =>
@@ -470,7 +470,7 @@ export const updateUTReport = (id: string, data: Partial<UTReportPayload>) =>
 export const deleteUTReport = (id: string) =>
   api.delete(`/reports/ut/${id}`);
 
-export const getVSSCUTReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
+export const getVSSCUTReports = (params?: { customerId?: string; page?: number; limit?: number; search?: string; searchType?: string; status?: string }) =>
   api.get('/reports/vssc-ut', { params });
 
 export interface VSSCUTSkipRow { bp?: string; mm?: string; fsh?: string; }
@@ -618,7 +618,7 @@ export interface UTGReport extends UTGReportPayload {
   createdAt: string;
 }
 
-export const getUTGReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
+export const getUTGReports = (params?: { customerId?: string; page?: number; limit?: number; search?: string; searchType?: string; status?: string }) =>
   api.get('/reports/utg', { params });
 
 export const getUTGReportById = (id: string) =>
@@ -699,7 +699,7 @@ export interface TPIIVRReport extends TPIIVRReportPayload {
   createdAt: string;
 }
 
-export const getTPIIVRReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
+export const getTPIIVRReports = (params?: { customerId?: string; page?: number; limit?: number; search?: string; searchType?: string; status?: string }) =>
   api.get('/reports/tpi-ivr', { params });
 
 export const getTPIIVRReportById = (id: string) =>
@@ -788,7 +788,7 @@ export interface AWSDReport extends AWSDReportPayload {
   createdAt: string;
 }
 
-export const getAWSDReports = (params?: { customerId?: string; page?: number; limit?: number }) =>
+export const getAWSDReports = (params?: { customerId?: string; page?: number; limit?: number; search?: string; searchType?: string; status?: string }) =>
   api.get('/reports/awsd', { params });
 
 export const getAWSDReportById = (id: string) =>

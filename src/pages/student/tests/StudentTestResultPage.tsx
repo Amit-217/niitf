@@ -100,7 +100,7 @@ const StudentTestResultPage: React.FC = () => {
                 correctOptionIndex: q.correctOptionIndex,
                 selectedOptionIndex: ans?.selectedOptionIndex ?? null,
                 type: 'direct',
-                marks: q.marks || 1,
+                marks: q.marks ?? 1,
                 isCorrect: ans?.selectedOptionIndex == null ? null : correct,
             });
         } else if (q.type === 'passage') {

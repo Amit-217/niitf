@@ -166,22 +166,16 @@ export const MyTasksPage = () => {
     if (!selectedTask || !comment.trim()) return;
     setSubmitting(true);
     try {
-      if (statusDraft !== selectedTask.status) {
-        if (statusDraft === "COMPLETED") {
-          await api.patch(`/tasks/${selectedTask._id}/complete`, {
-            completionNote: comment,
-          });
-        } else {
-          await api.patch(`/tasks/${selectedTask._id}`, {
-            status: statusDraft,
-          });
-        }
+      if (statusDraft === "COMPLETED") {
+        await api.patch(`/tasks/${selectedTask._id}/complete`, {
+          completionNote: comment,
+        });
+      } else {
+        await submitTaskUpdate(selectedTask._id, {
+          date: new Date().toISOString().split("T")[0],
+          comment,
+        });
       }
-
-      await submitTaskUpdate(selectedTask._id, {
-        date: new Date().toISOString().split("T")[0],
-        comment,
-      });
 
       toast.success("Update submitted!");
       setComment("");

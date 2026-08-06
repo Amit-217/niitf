@@ -120,7 +120,7 @@ export const createNewInvoice = (data: NewInvoicePayload) => {
     return api.post('/new-invoices', data);
 };
 
-export const getAllNewInvoices = (params?: { customerId?: string; status?: string; limit?: number; page?: number; search?: string }) => {
+export const getAllNewInvoices = (params?: { customerId?: string; status?: string; limit?: number; page?: number; search?: string; financialYear?: string }) => {
     return api.get('/new-invoices', { params });
 };
 

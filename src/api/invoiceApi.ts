@@ -4,7 +4,7 @@ export const createInvoice = (data: any) => {
     return api.post('/invoices', data);
 };
 
-export const getAllInvoices = (params?: { customerId?: string; status?: string; limit?: number; page?: number; search?: string }) => {
+export const getAllInvoices = (params?: { customerId?: string; status?: string; limit?: number; page?: number; search?: string; financialYear?: string }) => {
     return api.get('/invoices', { params });
 };
 

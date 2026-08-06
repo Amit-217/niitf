@@ -22,10 +22,10 @@ const STATUS_COLORS: Record<string, string> = {
 const fmt = (d?: string | null) =>
   d
     ? new Date(d).toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
     : "—";
 
 const fmtAmount = (n?: number) =>
@@ -39,11 +39,30 @@ export const InvoicesListPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [financialYear, setFinancialYear] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const getFinancialYearOptions = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const currentFYStartYear = month >= 4 ? year : year - 1;
+    const options: { value: string; label: string }[] = [];
+    // Grow dropdown by one option each year.
+    // First FY available: 2026-27.
+    const count = currentFYStartYear - 2026 + 1;
+    for (let i = 0; i < count; i++) {
+      const startYear = 2026 + i;
+      const endYear = startYear + 1;
+      const fy = `${String(startYear).slice(-2)}-${String(endYear).slice(-2)}`;
+      options.push({ value: fy, label: fy });
+    }
+    return options;
+  };
 
   const fetchData = useCallback(async () => {
     try {
@@ -53,6 +72,7 @@ export const InvoicesListPage: React.FC = () => {
         limit,
         search: search || undefined,
         status: statusFilter || undefined,
+        financialYear: financialYear || undefined,
       });
       const body: any = res;
       const data = body?.data?.data || body?.data || body || [];
@@ -65,7 +85,7 @@ export const InvoicesListPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [page, limit, search, statusFilter]);
+  }, [page, limit, search, statusFilter, financialYear]);
 
   useEffect(() => {
     fetchData();
@@ -103,7 +123,7 @@ export const InvoicesListPage: React.FC = () => {
         <button
           onClick={() => navigate(`${basePath}/invoices/new`)}
           className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-200 hover:shadow-violet-300"
-          // className="w-full flex items-center justify-center gap-2 p-2.5 "
+        // className="w-full flex items-center justify-center gap-2 p-2.5 "
         >
           <Plus size={16} /> New Invoice
         </button>
@@ -118,7 +138,7 @@ export const InvoicesListPage: React.FC = () => {
           />
           <input
             type="text"
-            placeholder="Search by invoice no or customer..."
+            placeholder="Search by invoice no, ID, customer or date..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -139,6 +159,21 @@ export const InvoicesListPage: React.FC = () => {
           {["Draft", "Final"].map((s) => (
             <option key={s} value={s}>
               {s}
+            </option>
+          ))}
+        </select>
+        <select
+          value={financialYear}
+          onChange={(e) => {
+            setFinancialYear(e.target.value);
+            setPage(1);
+          }}
+          className="input-field w-full sm:w-36"
+        >
+          <option value="">All Fin-Years</option>
+          {getFinancialYearOptions().map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
             </option>
           ))}
         </select>
