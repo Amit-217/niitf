@@ -57,6 +57,10 @@ const StudentTestsPage: React.FC = () => {
         if (status === 'Ongoing') {
             return { type: 'button', label: 'Attend Exam', onClick: () => navigate(`/student/tests/${t._id}/take`), style: 'bg-indigo-600 text-white hover:bg-indigo-700' } as const;
         }
+        // Completed with submission but results pending
+        if (status === 'Completed' && sub) {
+            return { type: 'pending' } as const;
+        }
         // Completed without submission — absent
         if (status === 'Completed') {
             return { type: 'absent' } as const;
