@@ -382,17 +382,17 @@ export const TPIIVRReportPrintPage: React.FC = () => {
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitndt.com | Email: niit004@gmail.com | info@niitndt.com
           <br />
-          Powered by: Viplora Tech
+          niitinspection@gmail.com
         </div>
         <div className="qr-wrap">
           <QRCodeSVG value={qrUrl} size={48} />
         </div>
       </div>
       <div className="footer-meta">
-        I.R. No: <span>{v(report.irNo)}</span>
+        Format No: <span>NIIT-16 Rev.01</span>
         &nbsp;|&nbsp; IR Rev.: <span>{v(report.irRev)}</span>
-        &nbsp;|&nbsp; Format No: <span>NIIT-16 Rev.01</span>
-        &nbsp;|&nbsp; Date: <span>{fmtDate(report.dtOfInspection)}</span>
+        
+        &nbsp;|&nbsp;<span>Powered by: Viplora Tech</span>
       </div>
     </>
   );

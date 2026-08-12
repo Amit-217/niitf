@@ -434,7 +434,7 @@ export const UTGReportPrintPage: React.FC = () => {
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitndt.com | Email: niit004@gmail.com | info@niitndt.com
           <br />
-          Powered by: Viplora Tech
+          niitinspection@gmail.com
         </div>
         <div className="qr-wrap">
           <QRCodeSVG value={qrUrl} size={48} />
@@ -443,7 +443,7 @@ export const UTGReportPrintPage: React.FC = () => {
       <div className="footer-meta">
         Format No: <span>FMT-NDT-UTG-01</span>
         &nbsp;|&nbsp; Rev. No: <span>00</span>
-        &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
+        &nbsp;|&nbsp;  <span>Powered by: Viplora Tech</span>
       </div>
     </>
   );

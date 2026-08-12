@@ -703,16 +703,16 @@ export const AWSDReportPrintPage: React.FC = () => {
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitndt.com | Email: niit004@gmail.com | info@niitndt.com
           <br />
-          Powered by: Viplora Tech
+          niitinspection@gmail.com
         </div>
         <div className="qr-wrap" style={{ flexShrink: 0 }}>
           <QRCodeSVG value={qrUrl} size={42} />
         </div>
       </div>
       <div className="footer-meta">
-        Format No: <span>FMT-NDT-AWSD-01</span>
+        Format No: <span>FMT-NDT-AWS D1.1</span>
         &nbsp;|&nbsp; Rev. No: <span>00</span>
-        &nbsp;|&nbsp; Report Date: <span>{fmtDate(report.reportDate)}</span>
+        &nbsp;|&nbsp; <span>Powered by: Viplora Tech</span>
       </div>
     </>
   );

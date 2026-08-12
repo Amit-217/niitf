@@ -770,7 +770,7 @@ export const PTReportFormPage: React.FC = () => {
               error={hasError("jobExtent")}
             />
           </div>
-          <div>
+          {/* <div>
             <label className={labelClass}>Thickness</label>
             <input
               type="text"
@@ -779,7 +779,7 @@ export const PTReportFormPage: React.FC = () => {
               className={fc("jobThickness")}
               placeholder="e.g. 6, 12 & 16 MM"
             />
-          </div>
+          </div> */}
           <div>
             <label className={labelClass}>Type of Joint</label>
             <select

@@ -823,7 +823,7 @@ export const MPTReportFormPage: React.FC = () => {
               error={hasError("jobExtentOfExamination")}
             />
           </div>
-          <div>
+          {/* <div>
             <label className={labelClass} htmlFor="jobThickness">Thickness</label>
             <input
               id="jobThickness"
@@ -833,7 +833,7 @@ export const MPTReportFormPage: React.FC = () => {
               className={fc("jobThickness")}
               placeholder="e.g. As per Drawing"
             />
-          </div>
+          </div> */}
 
           <div>
             <label className={labelClass} htmlFor="jobMaterial">Material</label>

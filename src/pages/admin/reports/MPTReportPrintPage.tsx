@@ -380,7 +380,7 @@ export const MPTReportPrintPage = () => {
           Reg. Off.: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitndt.com | Email: niit004@gmail.com | info@niitndt.com
           <br />
-          Powered by: Viplora Tech
+          niitinspection@gmail.com
         </div>
         <div className="qr-wrap">
           <QRCodeSVG value={qrUrl} size={48} />
@@ -389,7 +389,7 @@ export const MPTReportPrintPage = () => {
       <div className="footer-meta">
         Format No: <span>FMT-NDT-MPT-01</span>
         &nbsp;|&nbsp; Rev. No: <span>00</span>
-        &nbsp;|&nbsp; Report Date: <span>{fmtDate(jd.reportDate)}</span>
+        &nbsp;|&nbsp; <span>Powered By: Viplora Tech</span> 
       </div>
     </>
   );
@@ -490,7 +490,7 @@ export const MPTReportPrintPage = () => {
             Drg No. / Joint No.
           </td>
           <td className="col-hdr" style={{ textAlign: "center" }}>
-            Size
+            Thickness
           </td>
           <td className="col-hdr" style={{ textAlign: "center" }}>
             Qty(Nos)
@@ -590,24 +590,25 @@ export const MPTReportPrintPage = () => {
             <td className="lbl">Acceptance Criteria:</td>
             <td className="val">{acceptance.join(", ")}</td>
 
-            <td className="lbl">Thickness:</td>
-            <td className="val">{v(jd.thickness)}</td>
-          </tr>
-          <tr>
+            {/* <td className="lbl">Thickness:</td>
+            <td className="val">{v(jd.thickness)}</td> */}
             <td className="lbl">Stage of Inspection:</td>
             <td className="val">{v(jd.stageOfInspection)}</td>
+          </tr>
+          <tr>
+            
 
             <td className="lbl">Surface condition:</td>
             <td className="val">{v(jd.surfaceCondition)}</td>
-          </tr>
-          <tr>
             <td className="lbl">Extent of Examination:</td>
             <td className="val">{v(jd.extentOfExamination)}</td>
 
-            <td className="lbl">Welding Process:</td>
-            <td className="val">{v(jd.weldingProcess)}</td>
           </tr>
           <tr>
+            
+            <td className="lbl">Welding Process:</td>
+            <td className="val">{v(jd.weldingProcess)}</td>
+         
             <td className="lbl">Type of Joint:</td>
             <td className="val">{v(jd.typeOfJoint)}</td>
           </tr>

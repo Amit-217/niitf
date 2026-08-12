@@ -245,7 +245,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
           Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
           www.niitndt.com | Email: niit004@gmail.com | info@niitndt.com
           <br />
-          Powered by: Viplora Tech
+           niitinspection@gmail.com
         </div>
         <div className="qr-wrap">
           <QRCodeSVG value={qrUrl} size={48} />
@@ -254,7 +254,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
       <div className="footer-meta">
         Format No: <span>FMT-NDT-VSSC-UT-01</span>
         &nbsp;|&nbsp; Rev. No: <span>00</span>
-        &nbsp;|&nbsp; Report Date: <span>{fmtDate(report.reportDate)}</span>
+        &nbsp;|&nbsp; <span>Powered by: Viplora Tech</span>
       </div>
     </>
   );
@@ -343,7 +343,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
               <div style={{ display: "flex" }}>
                 <div
                   style={{
-                    width: "50%",
+                    width: "36%",
                     padding: "4px 6px",
                     fontWeight: 700,
                     fontSize: "12px",
@@ -353,7 +353,7 @@ export const VSSCUTReportPrintPage: React.FC = () => {
                 </div>
                 <div
                   style={{
-                    width: "50%",
+                    width: "64%",
                     padding: "4px 6px",
                     fontWeight: 700,
                     fontSize: "12px",

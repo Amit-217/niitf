@@ -901,7 +901,7 @@ export const UTReportFormPage: React.FC = () => {
               ]}
             />
           </div>
-          <div>
+          {/* <div>
             <label className={labelClass}>Thickness</label>
             <input
               type="text"
@@ -910,7 +910,7 @@ export const UTReportFormPage: React.FC = () => {
               className={fc("jobThickness")}
               placeholder="e.g. 6,12 & 16 MM"
             />
-          </div>
+          </div> */}
           <div>
             <label className={labelClass}>Type of Joint</label>
             <select

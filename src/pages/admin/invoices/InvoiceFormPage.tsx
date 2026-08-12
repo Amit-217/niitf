@@ -27,6 +27,24 @@ const emptyItem = () => ({
   amount: 0,
 });
 
+type InvoiceLineItem = ReturnType<typeof emptyItem>;
+
+const textValue = (value: unknown) =>
+  typeof value === "string" ? value.trim() : "";
+
+const isValidLineItem = (it: InvoiceLineItem) =>
+  Boolean(textValue(it.description)) &&
+  Number(it.quantity) > 0 &&
+  Number(it.unitPrice) > 0;
+
+const hasLineItemInput = (it: InvoiceLineItem) =>
+  Boolean(
+    textValue(it.description) ||
+      textValue(it.hsnSac) ||
+      Number(it.quantity) !== 1 ||
+      Number(it.unitPrice) > 0,
+  );
+
 const defaultForm = {
   customerId: "",
   customerName: "",
@@ -336,66 +354,37 @@ export const InvoiceFormPage: React.FC = () => {
       items: prev.items.filter((_, i) => i !== idx),
     }));
 
+  const validateRequiredFields = () => {
+    const e: Record<string, boolean> = {};
+
+    if (!form.customerId) e.customerId = true;
+
+    const hasValidItem = form.items.some(isValidLineItem);
+    if (!hasValidItem) e.items = true;
+
+    form.items.forEach((it, i) => {
+      const shouldValidateRow =
+        hasLineItemInput(it) || (!hasValidItem && i === 0);
+      if (!shouldValidateRow) return;
+
+      if (!textValue(it.description)) e[`item_${i}_description`] = true;
+      if (Number(it.quantity) <= 0) e[`item_${i}_quantity`] = true;
+      if (Number(it.unitPrice) <= 0) e[`item_${i}_unitPrice`] = true;
+    });
+
+    return e;
+  };
+
   const handleSave = async (andPrint = false) => {
-    if (!form.customerName && !form.customerId) {
-      toast.error("Please enter a customer");
+    const requiredErrors = validateRequiredFields();
+    if (Object.keys(requiredErrors).length > 0) {
+      setErrors(requiredErrors);
+      toast.error(
+        "Please select a customer and add at least one line item with amount > 0.",
+      );
       return;
     }
-    if (form.items.length === 0 || form.items.every((it) => !it.description)) {
-      toast.error("Add at least one line item");
-      return;
-    }
-
-    if (form.status === "Final") {
-      const e: Record<string, boolean> = {};
-      const mt = (v: string) => !v?.trim();
-
-      // Invoice Details
-      if (!form.customerId) e.customerId = true;
-      if (!form.date) e.date = true;
-      if (!form.paymentMode) e.paymentMode = true;
-      if (form.paymentMode === "Other" && mt(form.paymentModeCustom))
-        e.paymentModeCustom = true;
-
-      // Reference Information
-      if (mt(form.deliveryNote)) e.deliveryNote = true;
-      if (!form.deliveryNoteDate) e.deliveryNoteDate = true;
-      if (mt(form.supplierRef)) e.supplierRef = true;
-      if (mt(form.buyerOrderNo)) e.buyerOrderNo = true;
-      if (!form.buyerOrderDate) e.buyerOrderDate = true;
-      if (mt(form.documentNo)) e.documentNo = true;
-      if (mt(form.dispatchedThrough)) e.dispatchedThrough = true;
-      if (mt(form.destination)) e.destination = true;
-      if (mt(form.otherReferences)) e.otherReferences = true;
-      if (mt(form.termsOfDelivery)) e.termsOfDelivery = true;
-
-      // Line items — every row must have description and unitPrice > 0
-      form.items.forEach((it, i) => {
-        if (!it.description.trim()) e[`item_${i}_description`] = true;
-        if (!it.hsnSac.trim()) e[`item_${i}_hsnSac`] = true;
-        if (it.unitPrice <= 0) e[`item_${i}_unitPrice`] = true;
-      });
-      if (form.items.length === 0) e.items = true;
-
-      // Bank Details
-      if (mt(form.bankDetails.bankName)) e["bankDetails.bankName"] = true;
-      if (mt(form.bankDetails.accountNumber))
-        e["bankDetails.accountNumber"] = true;
-      if (mt(form.bankDetails.ifscCode)) e["bankDetails.ifscCode"] = true;
-      if (mt(form.bankDetails.branch)) e["bankDetails.branch"] = true;
-
-      // Declaration
-      if (mt(form.notes)) e.notes = true;
-
-      if (Object.keys(e).length > 0) {
-        setErrors(e);
-        toast.error("Please fill all required fields before saving as Final.");
-        return;
-      }
-      setErrors({});
-    } else {
-      setErrors({});
-    }
+    setErrors({});
 
     setIsSaving(true);
     try {
@@ -403,8 +392,15 @@ export const InvoiceFormPage: React.FC = () => {
         ...form,
         quotationId: form.quotationId || null,
         items: form.items
-          .filter((it) => it.description)
-          .map((it, i) => ({ ...it, srNo: i + 1 })),
+          .filter(isValidLineItem)
+          .map((it, i) => ({
+            ...it,
+            description: textValue(it.description),
+            hsnSac: textValue(it.hsnSac),
+            quantity: Number(it.quantity),
+            unitPrice: Number(it.unitPrice),
+            srNo: i + 1,
+          })),
       };
       let savedId = id;
       if (isEdit && id) {
@@ -729,8 +725,8 @@ export const InvoiceFormPage: React.FC = () => {
                   </td>
                   <td className="px-1 py-2">
                     <input
-                      className={`input-field w-full${errors[`item_${idx}_hsnSac`] && !it.hsnSac.trim() ? " border-red-400 bg-red-50 focus:ring-red-400" : ""}`}
-                      value={it.hsnSac}
+                      className="input-field w-full"
+                      value={it.hsnSac || ""}
                       onChange={(e) =>
                         updateItem(idx, "hsnSac", e.target.value)
                       }
@@ -741,7 +737,7 @@ export const InvoiceFormPage: React.FC = () => {
                     <input
                       type="number"
                       min="1"
-                      className="input-field w-full"
+                      className={`input-field w-full${errors[`item_${idx}_quantity`] && Number(it.quantity) <= 0 ? " border-red-400 bg-red-50 focus:ring-red-400" : ""}`}
                       value={it.quantity}
                       onChange={(e) =>
                         updateItem(idx, "quantity", Number(e.target.value))

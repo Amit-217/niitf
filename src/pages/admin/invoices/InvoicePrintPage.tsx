@@ -369,8 +369,7 @@ export const InvoicePrintPage: React.FC = () => {
                         National Industrial Inspection And Training
                       </div>
                       <div style={{ fontSize: 13, lineHeight: 1.2 }}>
-                        Royal Corner Office No. 106 1st Floor Near Monika Lawan’s, Jalochi Road Baramati 413102
-
+                        A/p - Kuthare, Tal - Patan, Dist-Satara 415112
                         <br />
                         GST No.: 27ABJPK8603R1ZY
                         <br />

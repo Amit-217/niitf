@@ -430,7 +430,7 @@ export const QuotationPrintPage: React.FC = () => {
         | Ph: +91 9860186056 / +91 7875154431
         <br />
         Reg. Office: A/p - Kuthare, Tal - Patan, Dist-Satara 415112 | Website:
-        www.niitndt.com | Email: niit004@gmail.com | info@niitndt.com
+        www.niitndt.com | Email: niit004@gmail.com | info@niitndt.com | niitinspection@gmail.com
         <br />
         Powered by: Viplora Tech
       </div>
