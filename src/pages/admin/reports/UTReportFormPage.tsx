@@ -142,6 +142,11 @@ const emptyInspector = (): InspRow => ({
 export const UTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const basePath = location.pathname.startsWith("/employee")
+    ? "/employee"
+    : location.pathname.startsWith("/supervisor")
+      ? "/supervisor"
+      : "/admin";
   const { id } = useParams<{ id?: string }>();
   const isEditMode = Boolean(id);
   const state = location.state as {
@@ -663,9 +668,9 @@ export const UTReportFormPage: React.FC = () => {
 
       toast.success(`UT Report saved as ${status}.`);
       if (state?.from === "reports-list") {
-        navigate("/admin/reports");
+        navigate(`${basePath}/reports`);
       } else {
-        navigate(`/admin/customers/${customerId}`, {
+        navigate(`${basePath}/customers/${customerId}`, {
           state: { activeTab: "reports", reportSubType: "ut" },
         });
       }

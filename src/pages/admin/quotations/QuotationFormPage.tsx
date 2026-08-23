@@ -24,6 +24,11 @@ export const QuotationFormPage: React.FC = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const basePath = location.pathname.startsWith("/employee")
+    ? "/employee"
+    : location.pathname.startsWith("/supervisor")
+      ? "/supervisor"
+      : "/admin";
   const locationState = location.state as {
     customerId?: string;
     from?: string;
@@ -455,15 +460,15 @@ export const QuotationFormPage: React.FC = () => {
 
       // Navigate back to where the user came from
       if (locationState?.from === "quotations-list") {
-        navigate("/admin/quotations", { state: { activeTab: type } });
+        navigate(`${basePath}/quotations`, { state: { activeTab: type } });
       } else {
         const customerId = formData.customerId || locationState?.customerId;
         if (customerId) {
-          navigate(`/admin/customers/${customerId}`, {
+          navigate(`${basePath}/customers/${customerId}`, {
             state: { activeTab: "quotations" },
           });
         } else {
-          navigate("/admin/quotations", { state: { activeTab: type } });
+          navigate(`${basePath}/quotations`, { state: { activeTab: type } });
         }
       }
     } catch (err: any) {
@@ -485,7 +490,7 @@ export const QuotationFormPage: React.FC = () => {
     <div className="p-6 max-w-7xl mx-auto pb-32">
       <div className="flex items-center gap-3 mb-6">
         <button
-          onClick={() => navigate("/admin/quotations", { state: { activeTab: type } })}
+          onClick={() => navigate(`${basePath}/quotations`, { state: { activeTab: type } })}
           className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 text-gray-600" />
@@ -1250,7 +1255,7 @@ export const QuotationFormPage: React.FC = () => {
         <div className="fixed bottom-0 left-0 lg:left-64 right-0 p-4 bg-white border-t border-gray-200 shadow-xl z-10 flex justify-end gap-3 rounded-none lg:rounded-bl-[2rem] transition-all">
           <button
             type="button"
-            onClick={() => navigate("/admin/quotations", { state: { activeTab: type } })}
+            onClick={() => navigate(`${basePath}/quotations`, { state: { activeTab: type } })}
             className="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 flex items-center gap-2"
           >
             <Ban size={18} /> Cancel

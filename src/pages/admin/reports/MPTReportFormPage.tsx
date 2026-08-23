@@ -105,6 +105,11 @@ const emptyInspector = (): InspRow => ({
 export const MPTReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const basePath = location.pathname.startsWith("/employee")
+    ? "/employee"
+    : location.pathname.startsWith("/supervisor")
+      ? "/supervisor"
+      : "/admin";
   const { id } = useParams<{ id?: string }>();
   const isEditMode = Boolean(id);
   const state = location.state as {
@@ -616,9 +621,9 @@ export const MPTReportFormPage: React.FC = () => {
 
       toast.success(`MPT Report ${id ? "updated" : "saved"} as ${status}.`);
       if (state?.from === "reports-list") {
-        navigate("/admin/reports");
+        navigate(`${basePath}/reports`);
       } else {
-        navigate(`/admin/customers/${customerId}`, {
+        navigate(`${basePath}/customers/${customerId}`, {
           state: { activeTab: "reports", reportSubType: "mpt" },
         });
       }

@@ -494,6 +494,7 @@ export const DashboardLayout: React.FC = () => {
               },
             ],
           },
+          customerManagementGroup,
         ]
       : [customerManagementGroup];
 

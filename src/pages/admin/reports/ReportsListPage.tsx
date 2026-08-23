@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   FileBarChart2,
@@ -191,6 +191,12 @@ export const ReportsListPage = () => {
   });
   const [limit, setLimit] = useState(10);
   const navigate = useNavigate();
+  const location = useLocation();
+  const basePath = location.pathname.startsWith("/employee")
+    ? "/employee"
+    : location.pathname.startsWith("/supervisor")
+      ? "/supervisor"
+      : "/admin";
 
   // Fetch counts for all report types on mount
   useEffect(() => {
@@ -309,7 +315,7 @@ export const ReportsListPage = () => {
 
         <button
           onClick={() =>
-            navigate(`/admin/reports/${activeTab}/new`, {
+            navigate(`${basePath}/reports/${activeTab}/new`, {
               state: { from: "reports-list" },
             })
           }
@@ -510,7 +516,7 @@ export const ReportsListPage = () => {
                         <button
                           onClick={() =>
                             navigate(
-                              `/admin/reports/${activeTab}/${r._id}/print`,
+                              `${basePath}/reports/${activeTab}/${r._id}/print`,
                             )
                           }
                           className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
@@ -521,7 +527,7 @@ export const ReportsListPage = () => {
                         <button
                           onClick={() =>
                             navigate(
-                              `/admin/reports/${activeTab}/${r._id}/edit`,
+                              `${basePath}/reports/${activeTab}/${r._id}/edit`,
                               { state: { from: "reports-list" } },
                             )
                           }

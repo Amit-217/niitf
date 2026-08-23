@@ -173,7 +173,11 @@ export const NewInvoiceFormPage: React.FC = () => {
   const userStr = localStorage.getItem("user");
   const role = userStr ? JSON.parse(userStr)?.role : "EMPLOYEE";
   const basePath =
-    role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : "/employee";
+    role === "ADMIN" || role === "SUPER_ADMIN"
+      ? "/admin"
+      : role === "SUPERVISOR"
+        ? "/supervisor"
+        : "/employee";
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);

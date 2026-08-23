@@ -136,6 +136,11 @@ const emptyInspector = (): InspRow => ({
 export const AWSDReportFormPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const basePath = location.pathname.startsWith("/employee")
+    ? "/employee"
+    : location.pathname.startsWith("/supervisor")
+      ? "/supervisor"
+      : "/admin";
   const { id } = useParams<{ id?: string }>();
   const isEditMode = Boolean(id);
   const state = location.state as {
@@ -484,9 +489,9 @@ export const AWSDReportFormPage: React.FC = () => {
       }
       toast.success(`AWS D1.1 UT Report saved as ${status}.`);
       if (state?.from === "reports-list") {
-        navigate("/admin/reports");
+        navigate(`${basePath}/reports`);
       } else {
-        navigate(`/admin/customers/${customerId}`, {
+        navigate(`${basePath}/customers/${customerId}`, {
           state: { activeTab: "reports", reportSubType: "awsd" },
         });
       }

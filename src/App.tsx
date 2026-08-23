@@ -389,6 +389,32 @@ function App() {
           <Route path="attendance" element={<AttendancePage />} />
           <Route path="attendance/history" element={<AttendanceHistoryPage />} />
           <Route path="payroll/overtime" element={<OvertimePage />} />
+          <Route path="customers" element={<CustomersPage />} />
+          <Route path="customers/:id" element={<CustomerDetailPage />} />
+          <Route path="quotations" element={<QuotationsListPage />} />
+          <Route path="quotations/:type/new" element={<QuotationFormPage />} />
+          <Route path="quotations/:type/:id/edit" element={<QuotationFormPage />} />
+          <Route path="invoices" element={<InvoicesListPage />} />
+          <Route path="invoices/new" element={<InvoiceFormPage />} />
+          <Route path="invoices/:id/edit" element={<InvoiceFormPage />} />
+          <Route path="new-invoices" element={<NewInvoicesListPage />} />
+          <Route path="new-invoices/new" element={<NewInvoiceFormPage />} />
+          <Route path="new-invoices/:id/edit" element={<NewInvoiceFormPage />} />
+          <Route path="reports" element={<ReportsListPage />} />
+          <Route path="reports/mpt/new" element={<MPTReportFormPage />} />
+          <Route path="reports/mpt/:id/edit" element={<MPTReportFormPage />} />
+          <Route path="reports/pt/new" element={<PTReportFormPage />} />
+          <Route path="reports/pt/:id/edit" element={<PTReportFormPage />} />
+          <Route path="reports/ut/new" element={<UTReportFormPage />} />
+          <Route path="reports/ut/:id/edit" element={<UTReportFormPage />} />
+          <Route path="reports/vssc-ut/new" element={<VSSCUTReportFormPage />} />
+          <Route path="reports/vssc-ut/:id/edit" element={<VSSCUTReportFormPage />} />
+          <Route path="reports/utg/new" element={<UTGReportFormPage />} />
+          <Route path="reports/utg/:id/edit" element={<UTGReportFormPage />} />
+          <Route path="reports/tpi-ivr/new" element={<TPIIVRFormPage />} />
+          <Route path="reports/tpi-ivr/:id/edit" element={<TPIIVRFormPage />} />
+          <Route path="reports/awsd/new" element={<AWSDReportFormPage />} />
+          <Route path="reports/awsd/:id/edit" element={<AWSDReportFormPage />} />
           <Route path="settings" element={<Settings />} />
           <Route
             path="*"
@@ -463,6 +489,69 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/employee/reports/mpt/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+              <MPTReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employee/reports/pt/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+              <PTReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employee/reports/ut/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+              <UTReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employee/reports/vssc-ut/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+              <VSSCUTReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employee/reports/utg/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+              <UTGReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employee/reports/tpi-ivr/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+              <TPIIVRReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employee/reports/awsd/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+              <AWSDReportPrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/supervisor/reports/mpt/:id/print" element={<ProtectedRoute allowedRoles={["SUPERVISOR"]}><MPTReportPrintPage /></ProtectedRoute>} />
+        <Route path="/supervisor/reports/pt/:id/print" element={<ProtectedRoute allowedRoles={["SUPERVISOR"]}><PTReportPrintPage /></ProtectedRoute>} />
+        <Route path="/supervisor/reports/ut/:id/print" element={<ProtectedRoute allowedRoles={["SUPERVISOR"]}><UTReportPrintPage /></ProtectedRoute>} />
+        <Route path="/supervisor/reports/vssc-ut/:id/print" element={<ProtectedRoute allowedRoles={["SUPERVISOR"]}><VSSCUTReportPrintPage /></ProtectedRoute>} />
+        <Route path="/supervisor/reports/utg/:id/print" element={<ProtectedRoute allowedRoles={["SUPERVISOR"]}><UTGReportPrintPage /></ProtectedRoute>} />
+        <Route path="/supervisor/reports/tpi-ivr/:id/print" element={<ProtectedRoute allowedRoles={["SUPERVISOR"]}><TPIIVRReportPrintPage /></ProtectedRoute>} />
+        <Route path="/supervisor/reports/awsd/:id/print" element={<ProtectedRoute allowedRoles={["SUPERVISOR"]}><AWSDReportPrintPage /></ProtectedRoute>} />
 
         {/* NDT Certificate Print Page (standalone, no DashboardLayout) */}
         <Route
@@ -516,6 +605,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/employee/quotations/:type/:id/print"
+          element={
+            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+              <QuotationPrintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/supervisor/quotations/:type/:id/print" element={<ProtectedRoute allowedRoles={["SUPERVISOR"]}><QuotationPrintPage /></ProtectedRoute>} />
 
         <Route
           path="/admin/invoices/:id/print"
@@ -533,6 +631,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/supervisor/invoices/:id/print" element={<ProtectedRoute allowedRoles={["SUPERVISOR"]}><InvoicePrintPage /></ProtectedRoute>} />
 
         {/* New Invoice Print Routes */}
         <Route
@@ -551,6 +650,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/supervisor/new-invoices/:id/print" element={<ProtectedRoute allowedRoles={["SUPERVISOR"]}><NewInvoicePrintPage /></ProtectedRoute>} />
 
         <Route
           path="/reports/quotations/:type/:id/print"

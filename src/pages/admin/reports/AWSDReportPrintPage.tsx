@@ -223,6 +223,11 @@ export const AWSDReportPrintPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const basePath = location.pathname.startsWith("/employee")
+    ? "/employee"
+    : location.pathname.startsWith("/supervisor")
+      ? "/supervisor"
+      : "/admin";
   const locState = location.state as {
     customerId?: string;
     reportSubType?: string;
@@ -238,7 +243,7 @@ export const AWSDReportPrintPage: React.FC = () => {
 
   const goBack = () => {
     if (locState?.customerId) {
-      navigate(`/admin/customers/${locState.customerId}`, {
+      navigate(`${basePath}/customers/${locState.customerId}`, {
         state: {
           activeTab: "reports",
           reportSubType: locState.reportSubType ?? "awsd",

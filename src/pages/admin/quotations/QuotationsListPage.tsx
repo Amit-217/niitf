@@ -70,6 +70,11 @@ const fmt = (d?: string | null) =>
 export const QuotationsListPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const basePath = location.pathname.startsWith("/employee")
+    ? "/employee"
+    : location.pathname.startsWith("/supervisor")
+      ? "/supervisor"
+      : "/admin";
   const [allQuotations, setAllQuotations] = useState<any[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -205,7 +210,7 @@ export const QuotationsListPage: React.FC = () => {
         <button
           id="add-quote-btn"
           onClick={() =>
-            navigate(`/admin/quotations/${activeTab ?? "training"}/new`, {
+            navigate(`${basePath}/quotations/${activeTab ?? "training"}/new`, {
               state: { from: "quotations-list" },
             })
           }
@@ -401,7 +406,7 @@ export const QuotationsListPage: React.FC = () => {
                           <button
                             onClick={() =>
                               navigate(
-                                `/admin/quotations/${q._type}/${q._id}/print`,
+                                `${basePath}/quotations/${q._type}/${q._id}/print`,
                               )
                             }
                             className="p-1.5 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
@@ -412,7 +417,7 @@ export const QuotationsListPage: React.FC = () => {
                           <button
                             onClick={() =>
                               navigate(
-                                `/admin/quotations/${q._type}/${q._id}/edit`,
+                                `${basePath}/quotations/${q._type}/${q._id}/edit`,
                                 { state: { from: "quotations-list" } },
                               )
                             }
